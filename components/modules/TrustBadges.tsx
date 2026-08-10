@@ -37,7 +37,7 @@ export default function TrustBadges({ items = defaultBadges, className }: TrustB
         <motion.li
           key={title}
           variants={fadeInUp}
-          className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-sm"
+          className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/15 px-4 py-3"
         >
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-apex-500/20 text-apex-300">
             <Icon size={18} aria-hidden="true" />

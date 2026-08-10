@@ -72,7 +72,7 @@ export default function BookingWidget({
     <section
       aria-labelledby="booking-search-heading"
       className={cn(
-        'w-full rounded-3xl border border-white/10 bg-slate-950/70 p-4 shadow-glow backdrop-blur-xl sm:p-6',
+        'w-full rounded-3xl border border-white/10 bg-slate-950/80 p-4 shadow-glow sm:p-6',
         className
       )}
     >
@@ -81,7 +81,7 @@ export default function BookingWidget({
       </h2>
 
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div role="tablist" aria-label="Booking category" className="flex items-center gap-1 rounded-full bg-white/5 p-1">
+        <div role="tablist" aria-label="Booking category" className="flex items-center gap-1 rounded-full">
           {tabs.map((tab) => (
             <button
               key={tab}
@@ -90,7 +90,7 @@ export default function BookingWidget({
               aria-selected={activeTab === tab}
               onClick={() => setActiveTab(tab)}
               className={cn(
-                'cursor-hover rounded-full px-5 py-2 text-sm font-semibold transition',
+                'cursor-hover rounded-full px-6 py-2.5 text-sm font-semibold transition',
                 activeTab === tab ? 'bg-apex-500 text-white shadow-lg shadow-apex-500/30' : 'text-slate-300 hover:text-white'
               )}
             >
@@ -127,9 +127,9 @@ export default function BookingWidget({
 
         <button
           type="submit"
-          className="cursor-hover inline-flex items-center justify-center gap-2 rounded-2xl bg-apex-500 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-apex-500/30 transition hover:bg-apex-400"
+          className="cursor-hover inline-flex items-center justify-center gap-2 rounded-2xl bg-apex-500 px-8 py-3 text-md font-semibold text-white shadow-lg shadow-apex-500/30 transition hover:bg-apex-400"
         >
-          <Search size={18} />
+          <Search size={22} />
           Explore Tours
         </button>
       </form>

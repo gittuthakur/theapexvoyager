@@ -42,40 +42,42 @@ export default function HeroSection({ data, className, children }: HeroSectionPr
       {/* fill + sizes (not fixed width/height) keeps this full-bleed background sharp and CLS-free across breakpoints */}
       <div className="absolute inset-0">
         <SafeImage src={data.media.src} alt={data.media.alt} fill priority sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/85 via-[#0a0a0a]/45 to-[#0a0a0a]" />
-        <div className="absolute inset-0 bg-[#0a0a0a]/25" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#000]/65 to-[#000]/0" />
+        <div className="absolute inset-0 bg-[#000]/25" />
       </div>
 
       <motion.div
         initial="hidden"
         animate="visible"
         variants={staggerContainer}
-        className="relative mx-auto max-w-7xl px-6 pt-28 pb-16 sm:px-10 sm:pt-32 lg:px-16 lg:pt-36 lg:pb-20"
+        className="relative mx-auto max-w-[1440px] px-6 pt-28 pb-16 sm:pt-32 xxl:px-0 lg:pt-36 lg:pb-20"
       >
-        <header>
+        <header className="space-y-2">
           <motion.p
             variants={fadeInUp}
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-sm text-slate-200 backdrop-blur-sm"
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-md text-slate-200"
           >
-            {data.badge.icon}
+            <span className="inline-flex h-5 w-5 items-center justify-center text-apex-300">
+              {data.badge.icon}
+            </span>
             {data.badge.text}
           </motion.p>
 
           <motion.h1
             id="hero-heading"
             variants={fadeInUp}
-            className="mt-6 max-w-4xl text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl"
+            className="mt-6 text-4xl font-bold tracking-normal text-base/[1.75] text-white lg:text-7xl"
           >
-            <span className="block">{data.titleTop}</span>
-            <span className="block">
+            <span className="block leading-[1.25]">{data.titleTop}</span>
+            <span className="block leading-[1.25]">
               {data.titleBottomPrefix}
-              <span className="bg-gradient-to-r from-apex-300 via-sky-300 to-apex-200 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#60A5FA]/100 via-[#38BDF8]/100 to-[#67E8F9]/100 bg-clip-text text-transparent">
                 {data.titleHighlight}
               </span>
             </span>
           </motion.h1>
 
-          <motion.p variants={fadeInUp} className="mt-6 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
+          <motion.p variants={fadeInUp} className="max-w-4xl text-base leading-7 text-slate-300 sm:text-2xl">
             {data.subtitle}
           </motion.p>
         </header>
