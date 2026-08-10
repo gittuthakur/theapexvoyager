@@ -1,5 +1,6 @@
 export interface TourPackage {
-  slug: string;
+  id: string;
+  slug: string;             // <-- YEH IMPORTANST HAI
   title: string;
   category: string;
   badge?: string;
@@ -14,4 +15,6 @@ export interface TourPackage {
   image: string;
   destinationSlug?: string;
   featured?: boolean;
+  maxGuests?: string;
+  difficulty?: string;
 }

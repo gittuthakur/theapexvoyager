@@ -75,7 +75,7 @@ export default function BookingPage() {
                 </div>
                 <div className="rounded-3xl bg-slate-950/70 p-5">
                   <p className="text-sm uppercase tracking-[0.24em] text-slate-400">Guests</p>
-                  <p className="mt-3 text-3xl font-semibold text-white">{selectedTour.maxGuests ?? 'Up to 6'}</p>
+                  <p className="mt-3 text-3xl font-semibold text-white">{(selectedTour as any).maxGuests ?? 'Up to 6'}</p>
                 </div>
                 <div className="rounded-3xl bg-slate-950/70 p-5">
                   <p className="text-sm uppercase tracking-[0.24em] text-slate-400">Difficulty</p>
