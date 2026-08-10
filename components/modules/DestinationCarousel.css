@@ -1,0 +1,55 @@
+.destination-swiper {
+  padding-bottom: 3rem;
+  overflow: hidden;
+}
+
+.destination-swiper .swiper-wrapper {
+  align-items: stretch;
+}
+
+/* Slide width is now owned entirely by Swiper's numeric slidesPerView + breakpoints
+   (see DestinationCarousel.tsx) so it can show an exact slide count per breakpoint.
+   No CSS width override here on purpose — a competing width rule (even our own
+   !important one from before) would just pin every slide at one size regardless
+   of slidesPerView, which defeats the "show N slides" requirement entirely. */
+.destination-swiper .swiper-slide {
+  height: auto;
+  transition: opacity 0.5s ease, filter 0.5s ease, transform 0.5s ease;
+}
+
+/* loop mode clones slides into .swiper-slide-duplicate-* nodes — the "active" slide
+   at any moment may be an original OR a clone, so both must be covered here or
+   dimming breaks intermittently as the carousel wraps around. */
+.destination-swiper .swiper-slide:not(.swiper-slide-active):not(.swiper-slide-duplicate-active) {
+  opacity: 0.4;
+  filter: saturate(0.7);
+}
+
+.destination-swiper .swiper-slide-active,
+.destination-swiper .swiper-slide-duplicate-active {
+  opacity: 1;
+  filter: none;
+}
+
+.destination-swiper .swiper-slide-active > *,
+.destination-swiper .swiper-slide-duplicate-active > * {
+  box-shadow: 0 30px 80px -20px rgba(91, 132, 255, 0.45);
+  border-radius: 1.5rem;
+}
+
+.destination-swiper .swiper-pagination {
+  bottom: 0 !important;
+}
+
+.destination-swiper .swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.25);
+  opacity: 1;
+  width: 6px;
+  height: 6px;
+}
+
+.destination-swiper .swiper-pagination-bullet-active {
+  background: #5b84ff;
+  width: 22px;
+  border-radius: 999px;
+}

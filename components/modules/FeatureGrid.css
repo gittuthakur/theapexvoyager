@@ -1,0 +1,16 @@
+.feature-grid-swiper {
+  padding-bottom: 0.5rem;
+}
+
+.feature-grid-swiper .swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.25);
+  opacity: 1;
+  width: 6px;
+  height: 6px;
+}
+
+.feature-grid-swiper .swiper-pagination-bullet-active {
+  background: #5b84ff;
+  width: 22px;
+  border-radius: 999px;
+}

@@ -1,0 +1,20 @@
+.testimonial-swiper {
+  padding-bottom: 2.5rem;
+}
+
+.testimonial-swiper .swiper-slide {
+  height: auto;
+}
+
+.testimonial-swiper .swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.25);
+  opacity: 1;
+  width: 6px;
+  height: 6px;
+}
+
+.testimonial-swiper .swiper-pagination-bullet-active {
+  background: #5b84ff;
+  width: 22px;
+  border-radius: 999px;
+}
