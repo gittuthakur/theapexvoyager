@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, MapPin, Users } from 'lucide-react';
@@ -12,7 +12,8 @@ function findTour(slug: string | null): TourPackage | undefined {
   return tours.find((tour) => tour.slug === slug);
 }
 
-export default function BookingPage() {
+// 1. Booking Logics ko alag component me shift kiya
+function BookingContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const tourSlug = searchParams.get('tour');
@@ -125,5 +126,14 @@ export default function BookingPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+// 2. Main Page export me Suspense Boundary wrapper add kiya
+export default function BookingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Loading booking...</div>}>
+      <BookingContent />
+    </Suspense>
   );
 }

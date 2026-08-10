@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight, MapPin, Star } from 'lucide-react';
@@ -50,7 +51,8 @@ function TourCard({ tour }: { tour: TourPackage }) {
   );
 }
 
-export default function ToursPage() {
+// 1. Saara logic aur JSX ToursContent ke andar shift ho gaya
+function ToursContent() {
   const searchParams = useSearchParams();
   const destination = searchParams.get('destination') ?? '';
   const dates = searchParams.get('dates') ?? '';
@@ -82,5 +84,14 @@ export default function ToursPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+// 2. Main Export single rakha gaya hai jisme Suspense Boundary wrapper hai
+export default function ToursPage() {
+  return (
+    <Suspense fallback={<div className="p-10 text-center text-white">Loading tours...</div>}>
+      <ToursContent />
+    </Suspense>
   );
 }

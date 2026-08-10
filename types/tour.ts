@@ -1,6 +1,6 @@
 export interface TourPackage {
-  id: string;
-  slug: string;             // <-- YEH IMPORTANST HAI
+  id?: string;             // <-- YAHAN '?' LAGA DEIN (Optional)
+  slug: string;
   title: string;
   category: string;
   badge?: string;
