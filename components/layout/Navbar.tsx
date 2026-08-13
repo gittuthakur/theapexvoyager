@@ -119,7 +119,7 @@ export default function Navbar() {
     <header
       className={cn(
         'fixed inset-x-0 top-0 z-50 transition-colors duration-500 ease-out',
-        isScrolled ? 'bg-slate-950/95 shadow-xl shadow-slate-950/20 bg-[#000000]/90' : 'bg-transparent'
+        isScrolled ? 'shadow-xl shadow-slate-950/20 bg-[#050B1A]/95 border border-white/10' : 'bg-transparent'
       )}
     >
       

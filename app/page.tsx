@@ -11,13 +11,20 @@ import WhatsAppButton from '@/components/modules/WhatsAppButton';
 import { siteConfig } from '@/config/site.config';
 import { images } from '@/config/images.config';
 import { buildTouristTripSchema } from '@/lib/schema';
-import type { Destination, TourPackage, Testimonial } from '@/types';
+import { getTours } from '@/lib/tours';
+import type { Destination, Testimonial } from '@/types';
+
+// Tours now come live from MongoDB, so this page can't be statically prerendered at build time.
+export const dynamic = 'force-dynamic';
 
 const DestinationCarousel = createLazyModule<import('@/components/modules/DestinationCarousel').DestinationCarouselProps>(
   () => import('@/components/modules/DestinationCarousel')
 );
 const FeatureGrid = createLazyModule<import('@/components/modules/FeatureGrid').FeatureGridProps>(
   () => import('@/components/modules/FeatureGrid')
+);
+const ExploreStays = createLazyModule<import('@/components/modules/ExploreStays').ExploreStaysProps>(
+  () => import('@/components/modules/ExploreStays')
 );
 const TestimonialSection = createLazyModule<import('@/components/modules/TestimonialSection').TestimonialSectionProps>(
   () => import('@/components/modules/TestimonialSection'),
@@ -72,81 +79,38 @@ const destinations: Destination[] = [
     description: 'A laid-back riverside village tucked into the Parvati Valley, popular with trekkers.',
     toursCount: 12,
     image: images.destinations.kasol
-  }
-];
-
-const tours: TourPackage[] = [
+  },
   {
-    slug: 'spiti-circuit',
-    title: 'Spiti Circuit',
+    slug: 'bir-billing',
+    title: 'Bir Billing',
     category: 'Adventure',
-    badge: 'Best Seller',
-    location: 'Spiti Valley',
-    price: '₹28,500',
-    duration: '10 Days / 9 Nights',
-    rating: 4.9,
-    reviewCount: 140,
-    highlights: ['Transport', 'Stays', 'All Meals', 'Expert Guide'],
-    description: 'The ultimate high-altitude expedition through remote wilderness and alpine villages.',
-    image: images.tours.spitiCircuit,
-    destinationSlug: 'spiti-valley',
-    featured: true
+    description: "India's paragliding capital, with wide valley views and a laid-back Tibetan-influenced village.",
+    toursCount: 9,
+    image: images.destinations.manali
   },
   {
-    slug: 'manali-leh-highway',
-    title: 'Manali-Leh Highway',
+    slug: 'tirthan-valley',
+    title: 'Tirthan Valley',
+    category: 'Offbeat',
+    description: 'Trout-filled rivers and forest trails on the edge of the Great Himalayan National Park.',
+    toursCount: 8,
+    image: images.destinations.kasol
+  },
+  {
+    slug: 'sangla-valley',
+    title: 'Sangla Valley',
     category: 'Adventure',
-    badge: 'Adventure',
-    location: 'Manali → Leh',
-    price: '₹32,000',
-    duration: '8 Days / 7 Nights',
-    rating: 4.8,
-    reviewCount: 96,
-    description: "A legendary road adventure across India's most iconic mountain highway.",
-    image: images.tours.manaliLehHighway,
-    destinationSlug: 'manali'
+    description: 'Apple orchards and apricot groves along the Baspa river, deep in the Kinnaur Himalayas.',
+    toursCount: 7,
+    image: images.destinations.kinnaur
   },
   {
-    slug: 'dharamshala-retreat',
-    title: 'Dharamshala Retreat',
-    category: 'Wellness',
-    badge: 'Wellness',
-    location: 'Dharamshala',
-    price: '₹22,000',
-    duration: '6 Days / 5 Nights',
-    rating: 4.7,
-    reviewCount: 78,
-    description: 'Wellness, culture, and mountain trekking in the shadow of the Dhauladhar range.',
-    image: images.tours.dharamshalaRetreat,
-    destinationSlug: 'dharamshala'
-  },
-  {
-    slug: 'shimla-heritage-walk',
-    title: 'Shimla Heritage Walk',
-    category: 'Cultural',
-    badge: 'Cultural',
-    location: 'Shimla',
-    price: '₹14,500',
-    duration: '4 Days / 3 Nights',
-    rating: 4.6,
-    reviewCount: 52,
-    description: 'Colonial architecture, Mall Road markets, and pine-clad ridge walks.',
-    image: images.tours.shimlaHeritageWalk,
-    destinationSlug: 'shimla'
-  },
-  {
-    slug: 'kasol-backpacking-trail',
-    title: 'Kasol Backpacking Trail',
-    category: 'Adventure',
-    badge: 'Budget Friendly',
-    location: 'Kasol',
-    price: '₹11,000',
-    duration: '5 Days / 4 Nights',
-    rating: 4.5,
-    reviewCount: 64,
-    description: 'Riverside cafes, Parvati Valley treks, and a laid-back backpacker trail.',
-    image: images.tours.kasolBackpacking,
-    destinationSlug: 'kasol'
+    slug: 'chamba',
+    title: 'Chamba',
+    category: 'Colonial Charm',
+    description: 'Ancient temples and hillside palaces in one of Himachal’s oldest princely towns.',
+    toursCount: 10,
+    image: images.destinations.shimla
   }
 ];
 
@@ -216,13 +180,13 @@ const testimonials: Testimonial[] = [
 const heroData: HeroSectionData = {
   badge: {
     icon: <Compass size={16} className="text-apex-300" />,
-    text: 'The Apex Standard · Himachal Expeditions'
+    text: 'Real Himachal. Rarely Found.'
   },
-  titleTop: 'Expedition Travel',
-  titleBottomPrefix: 'At Its ',
-  titleHighlight: 'Highest Standard',
+  titleTop: 'Escape to the',
+  titleBottomPrefix: 'Quiet Side of ',
+  titleHighlight: 'the Mountains',
   subtitle:
-    'Unrivaled luxury treks, off-grid journeys, and curated mountain stays across Himachal Pradesh and the Himalayas.',
+    'Handpicked homestays, remote valleys, and slow mountain living — the Himachal that most travelers never discover.',
   media: {
     src: images.hero,
     alt: 'Luxury Himalayan expedition trek through Spiti Valley and Manali tour packages, Himachal Pradesh, at dusk'
@@ -230,7 +194,7 @@ const heroData: HeroSectionData = {
   schema: buildTouristTripSchema({
     name: 'Himachal Pradesh Expedition Tours — The Apex Voyager',
     description:
-      'Unrivaled luxury treks, off-grid journeys, and curated mountain stays across Himachal Pradesh and the Himalayas.',
+      'Handpicked homestays, remote valleys, and slow mountain living across Himachal Pradesh and the Himalayas.',
     image: `${siteConfig.url}${images.hero}`,
     url: siteConfig.url,
     priceFrom: { amount: 28500, currency: 'INR' },
@@ -242,7 +206,9 @@ const heroData: HeroSectionData = {
   })
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const tours = await getTours();
+
   return (
     <>
       <HeroSection data={heroData}>
@@ -255,6 +221,7 @@ export default function HomePage() {
       <main>
         <DestinationCarousel destinations={destinations} />
         <FeatureGrid tours={tours} />
+        <ExploreStays />
         <WhyChooseUs />
         <ImageCtaBanner media={{ src: images.ctaBanner, alt: 'Sunset over Himalayan peaks in Himachal Pradesh' }} />
         <TestimonialSection testimonials={testimonials} />

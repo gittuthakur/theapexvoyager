@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { connectDB } from '@/lib/mongodb';
+import { Enquiry } from '@/models/Enquiry';
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const SMTP_HOST = process.env.SMTP_HOST;
@@ -9,11 +11,14 @@ const SMTP_PASS = process.env.SMTP_PASS;
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { name, email, phone, message } = body;
+  const { name, email, phone, message, budgetRange } = body;
 
   if (!name || !email || !message) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
+
+  await connectDB();
+  await Enquiry.create({ fullName: name, email, phone, message, budgetRange });
 
   const transporter = nodemailer.createTransport({
     host: SMTP_HOST,

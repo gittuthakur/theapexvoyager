@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
+import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import type { ReactNode } from 'react';
 import JsonLd from '@/components/seo/JsonLd';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { fadeInUp, staggerContainer } from '@/lib/motion';
@@ -35,6 +35,16 @@ export interface HeroSectionProps {
 }
 
 export default function HeroSection({ data, className, children }: HeroSectionProps) {
+  const renderBadgeIcon = () => {
+    const icon = data.badge.icon;
+    if (React.isValidElement(icon)) {
+      const el = icon as React.ReactElement<any, any>;
+      const existingClass = (el.props && (el.props as any).className) || '';
+      return React.cloneElement(el, { ...(el.props as any), className: `${existingClass} h-5 w-5`, ['aria-hidden']: true } as any);
+    }
+    return icon;
+  };
+
   return (
     <section aria-labelledby="hero-heading" className={cn('relative isolate overflow-hidden bg-[#0a0a0a]', className)}>
       {data.schema ? <JsonLd data={data.schema} /> : null}
@@ -42,8 +52,8 @@ export default function HeroSection({ data, className, children }: HeroSectionPr
       {/* fill + sizes (not fixed width/height) keeps this full-bleed background sharp and CLS-free across breakpoints */}
       <div className="absolute inset-0">
         <SafeImage src={data.media.src} alt={data.media.alt} fill priority sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#000]/65 to-[#000]/0" />
-        <div className="absolute inset-0 bg-[#000]/25" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#080E1E]/100 via-[#080E1E]/45 to-[#080E1E]/0" />
+        <div className="absolute inset-0 bg-[#000]/15" />
       </div>
 
       <motion.div
@@ -55,10 +65,10 @@ export default function HeroSection({ data, className, children }: HeroSectionPr
         <header className="space-y-2">
           <motion.p
             variants={fadeInUp}
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-md text-slate-200"
+            className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-5 py-2.5 text-md text-slate-200"
           >
-            <span className="inline-flex h-5 w-5 items-center justify-center text-apex-300">
-              {data.badge.icon}
+            <span className="inline-flex h-6 w-6 items-center justify-center text-apex-300">
+              {renderBadgeIcon()}
             </span>
             {data.badge.text}
           </motion.p>

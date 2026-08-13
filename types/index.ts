@@ -1,5 +1,6 @@
 export * from './destination';
 export * from './tour';
+export * from './hotel';
 export * from './testimonial';
 export * from './booking';
 export * from './navigation';

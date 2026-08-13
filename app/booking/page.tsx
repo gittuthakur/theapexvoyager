@@ -1,23 +1,15 @@
-'use client';
-
-import { useMemo, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, MapPin, Users } from 'lucide-react';
-import { tours } from '@/config/tours.config';
-import type { TourPackage } from '@/types';
+import BookingForm from '@/components/modules/BookingForm';
+import { getTourBySlug } from '@/lib/tours';
 
-function findTour(slug: string | null): TourPackage | undefined {
-  if (!slug) return undefined;
-  return tours.find((tour) => tour.slug === slug);
+interface BookingPageProps {
+  searchParams: Promise<{ tour?: string }>;
 }
 
-// 1. Booking Logics ko alag component me shift kiya
-function BookingContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const tourSlug = searchParams.get('tour');
-  const selectedTour = useMemo(() => findTour(tourSlug), [tourSlug]);
+export default async function BookingPage({ searchParams }: BookingPageProps) {
+  const { tour: tourSlug } = await searchParams;
+  const selectedTour = tourSlug ? await getTourBySlug(tourSlug) : null;
 
   if (!selectedTour) {
     return (
@@ -26,17 +18,10 @@ function BookingContent() {
           <p className="text-sm uppercase tracking-[0.32em] text-sky-300">Booking unavailable</p>
           <h1 className="mt-6 text-4xl font-semibold text-white">No tour selected</h1>
           <p className="mt-4 text-slate-300">Please choose a tour from our catalog before booking.</p>
-          <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+          <div className="mt-8 flex justify-center">
             <Link href="/tours" className="rounded-full bg-apex-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-apex-400">
               Browse Tours
             </Link>
-            <button
-              type="button"
-              className="rounded-full border border-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:border-slate-300"
-              onClick={() => router.back()}
-            >
-              Go Back
-            </button>
           </div>
         </section>
       </main>
@@ -76,7 +61,7 @@ function BookingContent() {
                 </div>
                 <div className="rounded-3xl bg-slate-950/70 p-5">
                   <p className="text-sm uppercase tracking-[0.24em] text-slate-400">Guests</p>
-                  <p className="mt-3 text-3xl font-semibold text-white">{(selectedTour as any).maxGuests ?? 'Up to 6'}</p>
+                  <p className="mt-3 text-3xl font-semibold text-white">{selectedTour.maxGuests ?? 'Up to 6'}</p>
                 </div>
                 <div className="rounded-3xl bg-slate-950/70 p-5">
                   <p className="text-sm uppercase tracking-[0.24em] text-slate-400">Difficulty</p>
@@ -111,29 +96,12 @@ function BookingContent() {
               </div>
             </div>
 
-            <div className="rounded-[1.75rem] bg-slate-900/80 p-6 text-center">
-              <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Ready to confirm?</p>
-              <p className="mt-4 text-3xl font-semibold text-white">{selectedTour.price}</p>
-              <button
-                type="button"
-                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-apex-500 px-6 py-4 text-sm font-semibold text-white transition hover:bg-apex-400"
-                onClick={() => router.push(`/contact?tour=${selectedTour.slug}`)}
-              >
-                Request booking details
-              </button>
+            <div className="rounded-[1.75rem] bg-slate-900/80 p-6">
+              <BookingForm tourSlug={selectedTour.slug} price={selectedTour.price} />
             </div>
           </aside>
         </div>
       </section>
     </main>
-  );
-}
-
-// 2. Main Page export me Suspense Boundary wrapper add kiya
-export default function BookingPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Loading booking...</div>}>
-      <BookingContent />
-    </Suspense>
   );
 }

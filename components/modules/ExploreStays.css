@@ -1,0 +1,30 @@
+.explore-stays-swiper {
+  padding-top: 0.75rem;
+  padding-bottom: 3rem;
+  overflow: hidden;
+}
+
+.explore-stays-swiper .swiper-wrapper {
+  align-items: stretch;
+}
+
+.explore-stays-swiper .swiper-slide {
+  height: auto;
+}
+
+.explore-stays-swiper .swiper-pagination {
+  bottom: 0 !important;
+}
+
+.explore-stays-swiper .swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.25);
+  opacity: 1;
+  width: 6px;
+  height: 6px;
+}
+
+.explore-stays-swiper .swiper-pagination-bullet-active {
+  background: #5b84ff;
+  width: 22px;
+  border-radius: 999px;
+}

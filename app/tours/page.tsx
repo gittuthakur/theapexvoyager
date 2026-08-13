@@ -1,21 +1,24 @@
-'use client';
-
-import { Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { ArrowRight, MapPin, Star } from 'lucide-react';
-import { tours as allTours } from '@/config/tours.config';
+import { ArrowRight, Compass, MapPin, Star } from 'lucide-react';
+import HeroSection, { type HeroSectionData } from '@/components/modules/HeroSection';
+import { images } from '@/config/images.config';
+import { getTours } from '@/lib/tours';
 import type { TourPackage } from '@/types';
 
-function filterTours(tours: TourPackage[], destination?: string) {
-  if (!destination) return tours;
-  const normalized = destination.toLowerCase().trim();
-  return tours.filter((tour) => (
-    tour.location.toLowerCase().includes(normalized) ||
-    tour.destinationSlug?.toLowerCase().includes(normalized) ||
-    tour.title.toLowerCase().includes(normalized)
-  ));
-}
+const toursHeroData: HeroSectionData = {
+  badge: {
+    icon: <Compass size={16} className="text-apex-300" />,
+    text: 'Not Tourist Trails. Real Ones.'
+  },
+  titleTop: 'Expeditions Into the',
+  titleBottomPrefix: 'Untouched ',
+  titleHighlight: 'Himachal',
+  subtitle: 'Handpicked treks, road journeys, and village stays through valleys most maps still get wrong.',
+  media: {
+    src: images.toursHero,
+    alt: 'Himalayan expedition tour hero banner'
+  }
+};
 
 function TourCard({ tour }: { tour: TourPackage }) {
   return (
@@ -51,47 +54,42 @@ function TourCard({ tour }: { tour: TourPackage }) {
   );
 }
 
-// 1. Saara logic aur JSX ToursContent ke andar shift ho gaya
-function ToursContent() {
-  const searchParams = useSearchParams();
-  const destination = searchParams.get('destination') ?? '';
-  const dates = searchParams.get('dates') ?? '';
-  const guests = searchParams.get('guests') ?? '';
-  const filteredTours = filterTours(allTours, destination);
-
-  return (
-    <main className="min-h-screen px-6 py-10 sm:px-10 lg:px-16">
-      <section className="mx-auto max-w-6xl space-y-6">
-        <div className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-10 shadow-glow">
-          <p className="text-sm uppercase tracking-[0.32em] text-sky-300">Tours catalog</p>
-          <h1 className="mt-4 text-4xl font-semibold text-white sm:text-5xl">Find the perfect expedition</h1>
-          <p className="mt-4 max-w-3xl text-slate-300">
-            {destination || dates || guests
-              ? `Showing results for ${destination ? `destination: ${destination}` : ''}${destination && dates ? ', ' : ''}${dates ? `dates: ${dates}` : ''}${(destination || dates) && guests ? ', ' : ''}${guests ? `guests: ${guests}` : ''}`
-              : 'Browse our full collection of curated Himalayan expedition tours and book your next adventure.'}
-          </p>
-        </div>
-
-        <div className="grid gap-6 xl:grid-cols-2">
-          {filteredTours.length > 0 ? (
-            filteredTours.map((tour) => <TourCard key={tour.slug} tour={tour} />)
-          ) : (
-            <div className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-10 text-center text-slate-300 shadow-glow">
-              <p className="text-lg font-semibold text-white">No tours match your search filters.</p>
-              <p className="mt-3">Try a broader destination or leave the fields blank to explore all options.</p>
-            </div>
-          )}
-        </div>
-      </section>
-    </main>
-  );
+interface ToursPageProps {
+  searchParams: Promise<{ destination?: string; dates?: string; guests?: string }>;
 }
 
-// 2. Main Export single rakha gaya hai jisme Suspense Boundary wrapper hai
-export default function ToursPage() {
+export default async function ToursPage({ searchParams }: ToursPageProps) {
+  const { destination, dates, guests } = await searchParams;
+  const tours = await getTours({ destination });
+
   return (
-    <Suspense fallback={<div className="p-10 text-center text-white">Loading tours...</div>}>
-      <ToursContent />
-    </Suspense>
+    <>
+      <HeroSection data={toursHeroData} />
+
+      <main className="px-6 py-10 sm:px-10 lg:px-16">
+        <section className="mx-auto max-w-6xl space-y-6">
+          <div className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-10 shadow-glow">
+            <p className="text-sm uppercase tracking-[0.32em] text-sky-300">Tours catalog</p>
+            <h2 className="mt-4 text-3xl font-semibold text-white sm:text-4xl">Find the perfect expedition</h2>
+            <p className="mt-4 max-w-3xl text-slate-300">
+              {destination || dates || guests
+                ? `Showing results for ${destination ? `destination: ${destination}` : ''}${destination && dates ? ', ' : ''}${dates ? `dates: ${dates}` : ''}${(destination || dates) && guests ? ', ' : ''}${guests ? `guests: ${guests}` : ''}`
+                : 'Browse our full collection of curated Himalayan expedition tours and book your next adventure.'}
+            </p>
+          </div>
+
+          <div className="grid gap-6 xl:grid-cols-2">
+            {tours.length > 0 ? (
+              tours.map((tour) => <TourCard key={tour.slug} tour={tour} />)
+            ) : (
+              <div className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-10 text-center text-slate-300 shadow-glow">
+                <p className="text-lg font-semibold text-white">No tours match your search filters.</p>
+                <p className="mt-3">Try a broader destination or leave the fields blank to explore all options.</p>
+              </div>
+            )}
+          </div>
+        </section>
+      </main>
+    </>
   );
 }
