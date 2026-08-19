@@ -20,8 +20,8 @@ export interface ImageCtaBannerProps {
 
 export default function ImageCtaBanner({
   eyebrow = 'Beyond the tourist trail',
-  titlePrefix = '',
-  highlight = 'Real expeditions, real Himachal',
+  titlePrefix = 'Real expeditions ',
+  highlight = 'real Himachal',
   subtitle = 'Experience raw Himalayan beauty without compromising on comfort. Small groups, exclusive access, zero hassle.',
   ctaLabel = 'Explore All Tours',
   ctaHref = '/tours',
@@ -29,11 +29,11 @@ export default function ImageCtaBanner({
   className
 }: ImageCtaBannerProps) {
   return (
-    <section className={cn('relative isolate mt-20 overflow-hidden lg:mt-28', className)}>
+    <section className={cn('relative isolate overflow-hidden', className)}>
       <div className="absolute inset-0">
         <SafeImage src={media.src} alt={media.alt} fill sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-[#0a0a0a]/70" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/30 to-[#0a0a0a]/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0D1830]/85 to-transparent" />
       </div>
 
       <motion.div
@@ -41,14 +41,14 @@ export default function ImageCtaBanner({
         whileInView="visible"
         viewport={viewportOnce}
         variants={staggerContainer}
-        className="relative mx-auto flex max-w-3xl flex-col items-center px-6 py-24 text-center sm:py-32"
+        className="relative mx-auto flex max-w-3xl flex-col items-center px-6 py-24 text-center"
       >
         <motion.p variants={fadeInUp} className="text-sm font-semibold uppercase tracking-[0.32em] text-apex-300">
           {eyebrow}
         </motion.p>
-        <motion.h2 variants={fadeInUp} className="mt-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+        <motion.h2 variants={fadeInUp} className="mt-4 text-3xl font-bold text-white sm:text-4xl">
           {titlePrefix}
-          <span className="bg-gradient-to-r from-apex-300 via-sky-300 to-apex-200 bg-clip-text text-transparent">
+          <span className="block mt-2 sm:mt-3 bg-gradient-to-r from-[#60A5FA]/100 via-[#38BDF8]/100 to-[#67E8F9]/100 bg-clip-text text-transparent">
             {highlight}
           </span>
         </motion.h2>
@@ -58,10 +58,10 @@ export default function ImageCtaBanner({
         <motion.div variants={fadeInUp}>
           <Link
             href={ctaHref}
-            className="cursor-hover mt-8 inline-flex items-center gap-2 rounded-full bg-apex-500 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-apex-500/30 transition hover:scale-105 hover:bg-apex-400"
+            className="cursor-hover mt-12 inline-flex items-center gap-2 rounded-lg bg-apex-500 px-10 py-5 font-semibold text-white shadow-lg shadow-apex-500/30 transition-all duration-300 ease-in-out hover:bg-apex-400"
           >
             {ctaLabel}
-            <ArrowRight size={16} />
+            <ArrowRight size={24} />
           </Link>
         </motion.div>
       </motion.div>

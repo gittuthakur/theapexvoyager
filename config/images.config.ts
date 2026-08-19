@@ -6,7 +6,7 @@
  * gracefully to a themed placeholder if the file 404s.
  */
 export const images = {
-  hero: '/images/hero-hero.jpg',
+  hero: '/images/img-hero-hero.jpg',
   ctaBanner: '/images/cta-real-himachal.jpg',
   toursHero: '/images/feature-tour-hero.jpg',
   destinations: {
@@ -18,10 +18,34 @@ export const images = {
     kasol: '/images/destination-kasol.jpg'
   },
   tours: {
-    spitiCircuit: '/images/tour-spiti-circuit.jpg',
-    manaliLehHighway: '/images/tour-manali-leh.jpg',
-    dharamshalaRetreat: '/images/tour-dharamshala-retreat.jpg',
-    shimlaHeritageWalk: '/images/tour-shimla-heritage.jpg',
-    kasolBackpacking: '/images/tour-kasol-backpacking.jpg'
+    spitiCircuit: '/images/spiti-circuit.jpg',
+    manaliLehHighway: '/images/manali-leh-highway.jpg',
+    dharamshalaRetreat: '/images/dharamshala-retreat.jpg',
+    shimlaHeritageWalk: '/images/shimla-heritage-walk.jpg',
+    kasolBackpacking: '/images/destination-kasol.jpg'
+  },
+  packages: {
+    manaliPremiumEscape: '/images/destination-manali.jpg',
+    kashmirSignatureJourney: '/images/hero-hero.jpg',
+    spitiValleyAdventure: '/images/destination-spiti.jpg',
+    himachalHimalayanExplorer: '/images/feature-tour-hero.jpg',
+    dharamshalaDalhousieEscape: '/images/destination-dharamshala.jpg',
+    sikkimMountainEscape: '/images/cta-real-himachal.jpg'
+  },
+  // Every photo in public/images/ today is Himachal Pradesh-specific or a generic
+  // mountain hero shot — there is no dedicated Jammu & Kashmir or Uttarakhand
+  // photography yet. config/experiences.config.ts deliberately falls back to the
+  // generic entries below (himalayanVista, mountainDusk, valleyGeneric) for those
+  // two regions rather than mislabeling a Manali/Spiti photo as Srinagar or
+  // Rishikesh. Swap these for real regional photography as it becomes available.
+  experiences: {
+    spitiHomestay: '/images/spiti-valley-boutique-hotel.jpg',
+    kinnaurTrek: '/images/kinnaur-rampur-trek.jpg',
+    riversideCamp: '/images/manali-riverside-resort.jpg',
+    heritageLane: '/images/shimla-heritage-hotel.jpg',
+    hillCottage: '/images/Villas-and-Cottages.jpg',
+    himalayanVista: '/images/img-hero-hero.jpg',
+    mountainDusk: '/images/hero-hero.jpg',
+    valleyGeneric: '/images/feature-tour-hero.jpg'
   }
 } as const;

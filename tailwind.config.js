@@ -23,17 +23,22 @@ export default {
         ]
       },
       colors: {
+        // The "professional royal/indigo blue" accent for the light theme. Every
+        // primary button / active tab / badge across the app uses apex-500 as ITS
+        // main shade (not apex-600), so apex-500 itself is set to Tailwind's own
+        // blue-600 hex (#2563eb) — every bg-apex-500/text-apex-300/shadow-apex-500
+        // usage site-wide picks this up automatically; nothing else needs touching.
         apex: {
-          50: '#edf5ff',
-          100: '#d9e6ff',
-          200: '#b8ccff',
-          300: '#89abff',
-          400: '#5b84ff',
-          500: '#345fff',
-          600: '#2647db',
-          700: '#1f3aac',
-          800: '#1c2f83',
-          900: '#18265f'
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#3b82f6',
+          500: '#2563eb',
+          600: '#1d4ed8',
+          700: '#1e40af',
+          800: '#1e3a8a',
+          900: '#172554'
         }
       },
       boxShadow: {

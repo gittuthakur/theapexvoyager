@@ -9,15 +9,17 @@ export const siteConfig = {
   contactEmail: 'hello@theapexvoyager.com',
   contactPhone: '+91 7307521100',
   signInHref: '/sign-in',
-  bookNowHref: '/booking'
+  bookNowHref: '/plan-my-journey'
 } as const;
 
 export const navRoutes: NavItem[] = [
   { label: 'Destinations', href: '/destinations' },
-  { label: 'Featured Tours', href: '/tours' },
-  { label: 'Homestays', href: '/homestays' },
-  { label: 'About Us', href: '/about' },
-  { label: 'Blog', href: '/blog' }
+  { label: 'Journeys', href: '/journeys' },
+  { label: 'Stays', href: '/stays' },
+  { label: 'Experiences', href: '/experiences' },
+  { label: 'Transport', href: '/transport' },
+  { label: 'Travel Experts', href: '/experts' },
+  { label: 'About Us', href: '/about' }
 ];
 
 export const footerLinks: NavItem[] = [

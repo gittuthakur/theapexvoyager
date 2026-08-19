@@ -26,5 +26,5 @@ export const viewportOnce = { once: true, amount: 0.3 } as const;
 
 export const cursorVariants: Variants = {
   default: { scale: 1, opacity: 1 },
-  hover: { scale: 1.7, opacity: 1 }
+  hover: { scale: 1.3, opacity: 1 }
 };

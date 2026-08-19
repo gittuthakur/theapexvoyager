@@ -1,4 +1,5 @@
 import { connectDB } from '@/lib/mongodb';
+import { resolveHotelImages } from '@/lib/hotelImages.server';
 import { Hotel, type HotelDocument } from '@/models/Hotel';
 import type { HotelCategory, HotelPackage } from '@/types';
 
@@ -13,9 +14,15 @@ function toHotelPackage(doc: HotelDocument): HotelPackage {
     reviewCount: doc.reviewCount,
     category: doc.category,
     description: doc.description,
-    images: doc.images,
+    // Swaps any locally-referenced image that doesn't actually exist under
+    // public/ (true for every config/hotels.config.ts seed entry today) for a
+    // real category-appropriate photo — see lib/hotelImages.ts.
+    images: resolveHotelImages(doc.images, doc.category),
     amenities: doc.amenities,
-    featured: doc.featured
+    featured: doc.featured,
+    verified: doc.verified,
+    cancellationPolicy: doc.cancellationPolicy,
+    mealPlan: doc.mealPlan
   };
 }
 

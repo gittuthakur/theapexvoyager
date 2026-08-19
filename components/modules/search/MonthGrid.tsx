@@ -32,7 +32,7 @@ export function MonthGrid({ month, range, onSelectDay, minDate }: MonthGridProps
 
   return (
     <div className="w-full">
-      <p className="text-center text-sm font-semibold text-white">{format(month, 'MMMM yyyy')}</p>
+      <p className="text-center text-sm font-semibold text-slate-900">{format(month, 'MMMM yyyy')}</p>
       <div className="mt-3 grid grid-cols-7 gap-y-1 text-center text-[11px] text-slate-500">
         {WEEKDAY_LABELS.map((label, index) => (
           <span key={`${label}-${index}`}>{label}</span>
@@ -54,11 +54,11 @@ export function MonthGrid({ month, range, onSelectDay, minDate }: MonthGridProps
               disabled={!inMonth || disabled}
               onClick={() => onSelectDay(day)}
               className={cn(
-                'cursor-hover mx-auto flex h-9 w-9 items-center justify-center rounded-full text-xs transition',
+                'cursor-hover mx-auto flex h-9 w-9 items-center justify-center rounded-full text-xs transition-colors duration-300 ease-in-out',
                 !inMonth && 'pointer-events-none opacity-0',
-                inMonth && disabled && 'cursor-not-allowed text-slate-600',
-                inMonth && !disabled && !inRange && !isStart && !isEnd && 'text-slate-200 hover:bg-white/10',
-                inMonth && inRange && !isStart && !isEnd && 'rounded-none bg-apex-500/20 text-white',
+                inMonth && disabled && 'cursor-not-allowed text-slate-300',
+                inMonth && !disabled && !inRange && !isStart && !isEnd && 'text-slate-700 hover:bg-slate-100',
+                inMonth && inRange && !isStart && !isEnd && 'rounded-none bg-apex-50 text-slate-900',
                 (isStart || isEnd) && 'bg-apex-500 text-white'
               )}
             >

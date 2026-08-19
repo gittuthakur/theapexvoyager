@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 588 131">
+  <defs>
+    <style>
+      .st0 {
+        fill: url(#linear-gradient2);
+      }
+
+      .st1 {
+        fill: url(#linear-gradient1);
+      }
+
+      .st2 {
+        font-family: HelveticaNeue-MediumCond, 'Helvetica Neue';
+        font-size: 27.28px;
+        font-weight: 500;
+        letter-spacing: .04em;
+      }
+
+      .st2, .st3 {
+        fill: #010101;
+      }
+
+      .st4 {
+        fill: url(#linear-gradient3);
+      }
+
+      .st5 {
+        fill: #404141;
+        font-family: Inter-Regular, Inter;
+        font-size: 19.61px;
+        letter-spacing: .1em;
+      }
+
+      .st3 {
+        font-family: Nevera-Regular, Nevera;
+        font-size: 63.09px;
+        letter-spacing: .04em;
+      }
+
+      .st6 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="106.83" y1="134.92" x2="47.84" y2="29.97" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset=".05" stop-color="#c6dfea"/>
+      <stop offset=".11" stop-color="#8bbed4"/>
+      <stop offset=".17" stop-color="#5ba2c2"/>
+      <stop offset=".22" stop-color="#358db5"/>
+      <stop offset=".27" stop-color="#1a7eab"/>
+      <stop offset=".31" stop-color="#0975a5"/>
+      <stop offset=".35" stop-color="#0472a3"/>
+      <stop offset=".6" stop-color="#2a398b"/>
+      <stop offset=".67" stop-color="#283077"/>
+      <stop offset=".75" stop-color="#272866"/>
+      <stop offset=".82" stop-color="#272660"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient1" x1="81.01" y1="4.28" x2="-9.49" y2="152.64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset=".05" stop-color="#c6dfea"/>
+      <stop offset=".11" stop-color="#8bbed4"/>
+      <stop offset=".17" stop-color="#5ba2c2"/>
+      <stop offset=".22" stop-color="#358db5"/>
+      <stop offset=".27" stop-color="#1a7eab"/>
+      <stop offset=".31" stop-color="#0975a5"/>
+      <stop offset=".35" stop-color="#0472a3"/>
+      <stop offset=".6" stop-color="#2a398b"/>
+      <stop offset=".67" stop-color="#283077"/>
+      <stop offset=".75" stop-color="#272866"/>
+      <stop offset=".82" stop-color="#272660"/>
+      <stop offset="1" stop-color="#121427"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient2" x1="27.73" y1="90.18" x2="109.5" y2="133.63" xlink:href="#linear-gradient1"/>
+    <linearGradient id="linear-gradient3" x1="-7.32" y1="132.07" x2="81.13" y2="72.79" xlink:href="#linear-gradient1"/>
+  </defs>
+  <g>
+    <polygon class="st6" points="74.65 44.42 64.81 55.62 68.88 100.66 105.46 123.37 74.65 44.42"/>
+    <polygon class="st1" points="60.51 8.17 4.68 123.96 4.7 123.95 4.71 123.95 28.74 96.63 64.81 55.62 74.65 44.42 60.51 8.17"/>
+    <polygon class="st0" points="68.88 100.66 62.38 96.63 38.58 107.9 70.2 115.21 105.46 123.37 68.88 100.66"/>
+    <polygon class="st4" points="28.74 96.63 4.71 123.95 38.58 107.9 62.38 96.63 28.74 96.63"/>
+  </g>
+  <g>
+    <text class="st3" transform="translate(101.9 92.67) rotate(-.25) scale(.89 1)"><tspan x="0" y="0">Apex Voyager</tspan></text>
+    <text class="st5" transform="translate(110.34 119.73)"><tspan x="0" y="0">BEYOND DESTINATIONS INTO EXPERIENCE</tspan></text>
+    <text class="st2" transform="translate(101.9 29.7) rotate(-.25)"><tspan x="0" y="0">The</tspan></text>
+  </g>
+</svg>

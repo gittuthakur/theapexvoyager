@@ -17,12 +17,12 @@ export const footerColumns: FooterColumn[] = [
   {
     heading: 'Experiences',
     links: [
-      { label: 'Trekking Tours', href: '/tours?category=trekking' },
-      { label: 'Bike Expeditions', href: '/tours?category=biking' },
-      { label: 'Camping Trips', href: '/tours?category=camping' },
-      { label: 'Homestay Tours', href: '/homestays' },
-      { label: 'Wellness Retreats', href: '/tours?category=wellness' },
-      { label: 'Group Tours', href: '/tours?category=group' }
+      { label: 'Trekking Tours', href: '/journeys?category=Adventure' },
+      { label: 'Bike Expeditions', href: '/journeys' },
+      { label: 'Camping Trips', href: '/stays/glamping' },
+      { label: 'Homestay Tours', href: '/stays/homestays' },
+      { label: 'Wellness Retreats', href: '/journeys' },
+      { label: 'Group Tours', href: '/journeys' }
     ]
   },
   {

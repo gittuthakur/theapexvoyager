@@ -1,0 +1,81 @@
+import type { TransportRoute } from '@/types/transport';
+
+/**
+ * Demo popular-routes catalog — seeded into the TransportRoute collection by scripts/seed.ts
+ * and used as lib/transport.ts's fallback when the DB is empty/unreachable. Fares are
+ * illustrative starting figures, not live/externally-sourced rates.
+ */
+export const transportRoutes: TransportRoute[] = [
+  {
+    origin: 'Chandigarh',
+    destination: 'Shimla',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '3-4 hours',
+    distanceKm: 115,
+    supportedVehicleCategories: ['Comfort', 'SUV', 'Premium'],
+    startingFare: 4500,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Delhi',
+    destination: 'Manali',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '12-14 hours',
+    distanceKm: 540,
+    supportedVehicleCategories: ['SUV', 'Tempo Traveller', 'Premium'],
+    startingFare: 9500,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Shimla',
+    destination: 'Manali',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '7-8 hours',
+    distanceKm: 250,
+    supportedVehicleCategories: ['Comfort', 'SUV', 'Tempo Traveller'],
+    startingFare: 6500,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Manali',
+    destination: 'Spiti Valley',
+    routeType: 'Remote Himalayan Transfer',
+    estimatedDuration: '8-9 hours',
+    distanceKm: 200,
+    supportedVehicleCategories: ['SUV', 'Premium'],
+    startingFare: 9500,
+    seasonalStatus: 'Seasonal (May-Oct)',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Shimla',
+    destination: 'Kinnaur',
+    routeType: 'Remote Himalayan Transfer',
+    estimatedDuration: '6-7 hours',
+    distanceKm: 235,
+    supportedVehicleCategories: ['SUV', 'Premium'],
+    startingFare: 8500,
+    seasonalStatus: 'Seasonal (Mar-Nov)',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Chandigarh',
+    destination: 'Dharamshala',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '6-7 hours',
+    distanceKm: 240,
+    supportedVehicleCategories: ['Comfort', 'SUV', 'Tempo Traveller'],
+    startingFare: 6000,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  }
+];

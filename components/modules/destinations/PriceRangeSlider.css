@@ -1,0 +1,55 @@
+/* Two native range inputs stacked on the same track — the standard technique for a
+   dual-handle range slider without adding a dependency. Each input's own track is
+   made fully transparent so only the ::thumb (not the track) receives clicks; the
+   colored "selected range" bar is drawn separately behind them in the component. */
+.price-range-slider {
+  position: relative;
+  height: 20px;
+}
+
+.price-range-slider input[type='range'] {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  transform: translateY(-50%);
+  background: transparent;
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.price-range-slider input[type='range']::-webkit-slider-runnable-track {
+  background: transparent;
+  height: 20px;
+}
+
+.price-range-slider input[type='range']::-moz-range-track {
+  background: transparent;
+  height: 20px;
+}
+
+.price-range-slider input[type='range']::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #2563eb;
+  border: 3px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.35);
+  cursor: pointer;
+}
+
+.price-range-slider input[type='range']::-moz-range-thumb {
+  pointer-events: auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #2563eb;
+  border: 3px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.35);
+  cursor: pointer;
+}

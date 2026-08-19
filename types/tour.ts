@@ -1,5 +1,16 @@
+export interface TourItineraryDay {
+  day: number;
+  title: string;
+  description: string;
+}
+
+export interface TourFaq {
+  question: string;
+  answer: string;
+}
+
 export interface TourPackage {
-  id?: string;             // <-- YAHAN '?' LAGA DEIN (Optional)
+  id: string;
   slug: string;
   title: string;
   category: string;
@@ -11,10 +22,16 @@ export interface TourPackage {
   rating?: number;
   reviewCount?: number;
   highlights?: string[];
-  description: string;
+  inclusions?: string[];
+  exclusions?: string[];
+  itinerary?: TourItineraryDay[];
+  faqs?: TourFaq[];
+  description?: string;
   image: string;
   destinationSlug?: string;
   featured?: boolean;
   maxGuests?: string;
   difficulty?: string;
+  tags?: string[];
+  features?: string[];
 }

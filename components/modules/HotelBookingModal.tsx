@@ -5,21 +5,36 @@ import { CheckCircle2 } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 import { postJSON } from '@/lib/api';
-import type { ContactFormStatus } from '@/types';
+import { buildBookingMessage, buildWhatsAppLink } from '@/lib/whatsapp';
 
 export interface HotelBookingModalProps {
   hotelName: string;
+  destination?: string;
+  defaultCheckIn?: string;
+  defaultCheckOut?: string;
+  defaultGuests?: number;
 }
 
-export default function HotelBookingModal({ hotelName }: HotelBookingModalProps) {
+type Status = 'form' | 'sending' | 'success' | 'error';
+
+export default function HotelBookingModal({
+  hotelName,
+  destination,
+  defaultCheckIn,
+  defaultCheckOut,
+  defaultGuests
+}: HotelBookingModalProps) {
   const [open, setOpen] = useState(false);
-  const [status, setStatus] = useState<ContactFormStatus>('idle');
+  const [status, setStatus] = useState<Status>('form');
   const [error, setError] = useState('');
+  const [referenceId, setReferenceId] = useState('');
+  const [whatsappUrl, setWhatsappUrl] = useState('');
 
   function handleClose() {
     setOpen(false);
-    setStatus('idle');
+    setStatus('form');
     setError('');
   }
 
@@ -29,18 +44,33 @@ export default function HotelBookingModal({ hotelName }: HotelBookingModalProps)
     setError('');
 
     const form = new FormData(event.currentTarget);
-    const payload = {
-      hotelName,
-      userName: form.get('userName'),
-      email: form.get('email'),
-      phone: form.get('phone'),
-      checkInDate: form.get('checkInDate'),
-      checkOutDate: form.get('checkOutDate'),
-      guests: form.get('guests')
-    };
+    const checkInDate = String(form.get('checkInDate') ?? '');
+    const checkOutDate = String(form.get('checkOutDate') ?? '');
+    const guests = String(form.get('guests') ?? '');
 
     try {
-      await postJSON('/api/hotel-bookings', payload);
+      const { referenceId: newReferenceId } = await postJSON<{ referenceId: string }>('/api/booking-requests', {
+        type: 'stay',
+        name: form.get('userName'),
+        phone: form.get('phone'),
+        email: form.get('email'),
+        itemName: hotelName,
+        destination,
+        dates: `${checkInDate} to ${checkOutDate}`,
+        travelers: `${guests} guest${guests === '1' ? '' : 's'}`,
+        details: { checkInDate, checkOutDate, guests }
+      });
+
+      const messageText = buildBookingMessage({
+        referenceId: newReferenceId,
+        type: 'stay',
+        itemName: hotelName,
+        dates: `${checkInDate} to ${checkOutDate}`,
+        travelers: `${guests} guest${guests === '1' ? '' : 's'}`
+      });
+
+      setReferenceId(newReferenceId);
+      setWhatsappUrl(buildWhatsAppLink({ messageText }));
       setStatus('success');
     } catch {
       setStatus('error');
@@ -57,14 +87,25 @@ export default function HotelBookingModal({ hotelName }: HotelBookingModalProps)
       <Modal open={open} onClose={handleClose} title={status === 'success' ? undefined : `Book ${hotelName}`}>
         {status === 'success' ? (
           <div className="space-y-4 text-center">
-            <CheckCircle2 size={40} className="mx-auto text-emerald-400" />
-            <h3 className="text-xl font-semibold text-white">Booking request received!</h3>
-            <p className="text-slate-300">
-              Your booking request for <strong>{hotelName}</strong> has been received and is confirmed. A confirmation email is on its way to you.
+            <CheckCircle2 size={40} className="mx-auto text-emerald-500" />
+            <div>
+              <p className="text-slate-600">Your booking reference is</p>
+              <p className="mt-1 text-2xl font-bold tracking-wide text-slate-900">{referenceId}</p>
+            </div>
+            <p className="text-slate-600">
+              Send us the pre-filled message on WhatsApp and our team will confirm availability and pricing for{' '}
+              <strong>{hotelName}</strong> directly with you.
             </p>
-            <Button type="button" className="w-full" onClick={handleClose}>
-              Close
-            </Button>
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleClose}
+              className="cursor-hover flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:scale-105 hover:bg-[#20ba5a]"
+            >
+              <WhatsAppIcon size={16} />
+              Continue on WhatsApp
+            </a>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -72,16 +113,16 @@ export default function HotelBookingModal({ hotelName }: HotelBookingModalProps)
             <Input label="Email" name="email" type="email" required />
             <Input label="Phone" name="phone" type="tel" required />
             <div className="grid gap-4 sm:grid-cols-2">
-              <Input label="Check-in date" name="checkInDate" type="date" required />
-              <Input label="Check-out date" name="checkOutDate" type="date" required />
+              <Input label="Check-in date" name="checkInDate" type="date" defaultValue={defaultCheckIn} required />
+              <Input label="Check-out date" name="checkOutDate" type="date" defaultValue={defaultCheckOut} required />
             </div>
-            <Input label="Guests" name="guests" type="number" min={1} defaultValue={1} required />
+            <Input label="Guests" name="guests" type="number" min={1} defaultValue={defaultGuests ?? 1} required />
 
             <Button type="submit" className="w-full" disabled={status === 'sending'}>
-              {status === 'sending' ? 'Submitting...' : 'Confirm Booking Request'}
+              {status === 'sending' ? 'Submitting...' : 'Get My Booking Reference'}
             </Button>
 
-            {error ? <p className="text-sm text-rose-400">{error}</p> : null}
+            {error ? <p className="text-sm text-rose-500">{error}</p> : null}
           </form>
         )}
       </Modal>

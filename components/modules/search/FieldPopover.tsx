@@ -2,7 +2,10 @@
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useBodyScrollLock } from '@/lib/useBodyScrollLock';
+import { SEARCH_OVERLAY_CLASS } from './panelStyles';
 
 export interface FieldPopoverProps {
   open: boolean;
@@ -16,7 +19,7 @@ export interface FieldPopoverProps {
 
 /**
  * Renders into document.body via a portal, fixed-positioned against the anchor field's
- * live bounding box. BookingWidget sits inside HeroSection, whose root has
+ * live bounding box. GlobalSearchFilter sits inside HeroSection, whose root has
  * overflow-hidden (needed to clip the full-bleed background image) — a normal
  * absolutely-positioned dropdown nested inside it would get clipped the moment it
  * grew taller than the remaining hero space below. Portaling to body sidesteps that
@@ -24,7 +27,15 @@ export interface FieldPopoverProps {
  */
 export function FieldPopover({ open, onClose, anchorRef, children, width, align = 'left', className }: FieldPopoverProps) {
   const panelRef = useRef<HTMLDivElement>(null);
-  const [coords, setCoords] = useState<{ top: number; left: number; minWidth: number } | null>(null);
+  const [coords, setCoords] = useState<{
+    top?: number;
+    bottom?: number;
+    left: number;
+    minWidth: number;
+    maxHeight: number;
+  } | null>(null);
+
+  useBodyScrollLock(open);
 
   useLayoutEffect(() => {
     if (!open || !anchorRef.current) return;
@@ -36,7 +47,19 @@ export function FieldPopover({ open, onClose, anchorRef, children, width, align 
       const panelWidth = width ?? rect.width;
       const rawLeft = align === 'right' ? rect.right - panelWidth : rect.left;
       const left = Math.max(16, Math.min(rawLeft, window.innerWidth - panelWidth - 16));
-      setCoords({ top: rect.bottom + 8, left, minWidth: rect.width });
+      const viewportPadding = 16;
+      const gap = 8;
+      const spaceBelow = window.innerHeight - rect.bottom - viewportPadding - gap;
+      const spaceAbove = rect.top - viewportPadding - gap;
+      const openAbove = spaceBelow < 240 && spaceAbove > spaceBelow;
+      const availableSpace = openAbove ? spaceAbove : spaceBelow;
+
+      setCoords({
+        ...(openAbove ? { bottom: window.innerHeight - rect.top + gap } : { top: rect.bottom + gap }),
+        left,
+        minWidth: rect.width,
+        maxHeight: Math.min(window.innerHeight * 0.85, Math.max(0, availableSpace))
+      });
     }
 
     updatePosition();
@@ -68,19 +91,34 @@ export function FieldPopover({ open, onClose, anchorRef, children, width, align 
     };
   }, [open, onClose, anchorRef]);
 
-  if (!open || !coords || typeof document === 'undefined') return null;
+  if (typeof document === 'undefined' || !coords) return null;
 
   return createPortal(
-    <div
-      ref={panelRef}
-      style={{ position: 'fixed', top: coords.top, left: coords.left, minWidth: coords.minWidth, zIndex: 100 }}
-      className={cn(
-        'max-h-[80vh] max-w-[95vw] overflow-y-auto rounded-2xl border border-white/10 bg-slate-950/95 p-4 shadow-glow backdrop-blur-xl',
-        className
-      )}
-    >
-      {children}
-    </div>,
+    <AnimatePresence>
+      {open ? (
+        <motion.div
+          key="field-popover"
+          ref={panelRef}
+          initial={{ opacity: 0, y: -6, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -6, scale: 0.98 }}
+          transition={{ duration: 0.16, ease: 'easeOut' }}
+          style={{
+            position: 'fixed',
+            top: coords.top,
+            bottom: coords.bottom,
+            left: coords.left,
+            minWidth: coords.minWidth,
+            maxHeight: coords.maxHeight,
+            zIndex: 100
+          }}
+          className={cn(SEARCH_OVERLAY_CLASS, 'pointer-events-auto max-h-[85vh] max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain p-4', className)}
+          onWheel={(event) => event.stopPropagation()}
+        >
+          {children}
+        </motion.div>
+      ) : null}
+    </AnimatePresence>,
     document.body
   );
 }

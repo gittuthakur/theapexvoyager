@@ -9,6 +9,27 @@ const SMTP_PORT = Number(process.env.SMTP_PORT ?? 587);
 const SMTP_USER = process.env.SMTP_USER;
 const SMTP_PASS = process.env.SMTP_PASS;
 
+// Reused across requests (and across dev hot-reloads, via `global`) — nodemailer
+// pools SMTP connections internally, so a fresh transporter per request would pay
+// a new TCP/TLS handshake on every submission instead of reusing an open socket.
+declare global {
+  // eslint-disable-next-line no-var
+  var contactMailTransporter: nodemailer.Transporter | undefined;
+}
+
+const transporter =
+  global.contactMailTransporter ??
+  nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_PORT === 465,
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASS
+    }
+  });
+global.contactMailTransporter = transporter;
+
 export async function POST(request: Request) {
   const body = await request.json();
   const { name, email, phone, message, budgetRange } = body;
@@ -19,16 +40,6 @@ export async function POST(request: Request) {
 
   await connectDB();
   await Enquiry.create({ fullName: name, email, phone, message, budgetRange });
-
-  const transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: SMTP_PORT,
-    secure: SMTP_PORT === 465,
-    auth: {
-      user: SMTP_USER,
-      pass: SMTP_PASS
-    }
-  });
 
   const adminMail = {
     from: `Apex Voyager <${SMTP_USER}>`,
@@ -55,8 +66,7 @@ export async function POST(request: Request) {
     `
   };
 
-  await transporter.sendMail(adminMail);
-  await transporter.sendMail(guestMail);
+  await Promise.all([transporter.sendMail(adminMail), transporter.sendMail(guestMail)]);
 
   return NextResponse.json({ success: true });
 }

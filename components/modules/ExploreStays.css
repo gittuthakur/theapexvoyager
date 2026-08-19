@@ -17,14 +17,14 @@
 }
 
 .explore-stays-swiper .swiper-pagination-bullet {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(15, 23, 42, 0.15);
   opacity: 1;
   width: 6px;
   height: 6px;
 }
 
 .explore-stays-swiper .swiper-pagination-bullet-active {
-  background: #5b84ff;
+  background: #2563eb;
   width: 22px;
   border-radius: 999px;
 }

@@ -3,8 +3,8 @@ import { cn } from '@/lib/utils';
 
 export function glassCardClass(hoverLift = false, className?: string) {
   return cn(
-    'rounded-[2rem] border border-white/10 bg-slate-950/70 shadow-glow backdrop-blur-xl',
-    hoverLift && 'transition hover:-translate-y-1 hover:bg-slate-900/90',
+    'rounded-[2rem] border border-slate-200 bg-white shadow-glow',
+    hoverLift && 'transition hover:-translate-y-1 hover:bg-slate-50',
     className
   );
 }

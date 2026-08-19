@@ -14,6 +14,9 @@ export interface HotelDocument extends Document {
   images: string[];
   amenities?: string[];
   featured?: boolean;
+  verified?: boolean;
+  cancellationPolicy?: string;
+  mealPlan?: string;
 }
 
 const HotelSchema = new Schema<HotelDocument>(
@@ -32,10 +35,19 @@ const HotelSchema = new Schema<HotelDocument>(
     description: { type: String, required: true },
     images: { type: [String], required: true },
     amenities: { type: [String] },
-    featured: { type: Boolean }
+    featured: { type: Boolean },
+    verified: { type: Boolean },
+    cancellationPolicy: { type: String },
+    mealPlan: { type: String }
   },
   { timestamps: true }
 );
+
+// Matches getHotels()'s default sort (lib/hotels.ts) so an unfiltered listing reads
+// straight off the index instead of an in-memory sort of the full collection.
+HotelSchema.index({ featured: -1, createdAt: 1 });
+// Supports the `category` filter in getHotels().
+HotelSchema.index({ category: 1 });
 
 // `models.Hotel` survives Next.js dev hot-reloads — without this guard, re-running this
 // module would call `model()` on an already-registered name and throw.

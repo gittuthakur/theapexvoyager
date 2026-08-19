@@ -53,7 +53,7 @@ export default function ContactForm({ apiEndpoint = '/api/contact', onSuccess }:
           {status === 'sending' ? 'Sending...' : 'Send Message'}
         </Button>
         {message ? (
-          <p className={status === 'error' ? 'text-sm text-rose-400' : 'text-sm text-slate-300'}>{message}</p>
+          <p className={status === 'error' ? 'text-sm text-rose-500' : 'text-sm text-slate-600'}>{message}</p>
         ) : null}
       </div>
     </form>

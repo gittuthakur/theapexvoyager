@@ -1,3 +1,5 @@
+import type { Stay } from './stay';
+
 export type HotelCategory =
   | 'Hotel'
   | 'Homestay'
@@ -23,4 +25,13 @@ export interface HotelPackage {
   images: string[];
   amenities?: string[];
   featured?: boolean;
+  // Apex Verified trust badge (Apex Stays) — only ever set true once a property
+  // actually satisfies the configured verification criteria; never inferred.
+  verified?: boolean;
+  cancellationPolicy?: string;
+  mealPlan?: string;
+  // Live Google Places rating/photos, matched by name+location and attached on
+  // read — never persisted on the Hotel document itself. Absent when the Places
+  // API key is unset, the lookup fails, or no confident name match was found.
+  places?: Stay;
 }

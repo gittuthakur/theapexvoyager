@@ -1,8 +1,9 @@
 'use client';
 
-import { ArrowRight, MessageSquare } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
 import { cn } from '@/lib/utils';
+import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 
 export interface WhatsAppButtonProps {
   phoneNumber?: string;
@@ -31,13 +32,13 @@ export default function WhatsAppButton({
       type="button"
       onClick={openChat}
       className={cn(
-        'cursor-hover fixed bottom-6 right-6 z-50 inline-flex items-center gap-3 rounded-full bg-emerald-500 px-5 py-4 text-sm font-semibold text-white shadow-2xl shadow-emerald-500/20 transition hover:bg-emerald-400',
+        'cursor-hover fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-4 font-semibold text-white shadow-2xl shadow-[#25D366]/20 transition-all duration-300 ease-in-out hover:scale-105 hover:bg-[#20ba5a]',
         className
       )}
     >
-      <MessageSquare size={18} />
+      <WhatsAppIcon size={22} />
       Chat on WhatsApp
-      <ArrowRight size={18} />
+      <ArrowRight size={22} />
     </button>
   );
 }
