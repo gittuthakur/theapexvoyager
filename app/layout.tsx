@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Poppins } from 'next/font/google';
 import { CustomCursor } from '@/components/ui';
+import BackToTopButton from '@/components/ui/BackToTopButton';
 import { Navbar, Footer, SmoothScroll } from '@/components/layout';
+import NavigationTracker from '@/components/NavigationTracker';
 import { WhatsAppInquiryProvider } from '@/components/modules/WhatsAppInquiryModal';
 import { BookingRequestProvider } from '@/components/modules/BookingRequestModal';
 import { siteConfig } from '@/config/site.config';
@@ -44,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#ffffff" />
       </head>
       <body className="font-sans">
+        <NavigationTracker />
         <WhatsAppInquiryProvider>
           <BookingRequestProvider>
             <SmoothScroll>
@@ -52,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Footer />
             </SmoothScroll>
             <CustomCursor />
+            <BackToTopButton />
           </BookingRequestProvider>
         </WhatsAppInquiryProvider>
       </body>

@@ -1,7 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { registerBottomOverlay } from '@/lib/bottomOverlay';
 import { WizardProgress } from './WizardProgress';
 import { StepHeader } from './StepHeader';
 import { ResultsView } from './ResultsView';
@@ -15,6 +17,7 @@ import { TransportStep } from './steps/TransportStep';
 import { BudgetStep } from './steps/BudgetStep';
 import { WIZARD_STEP_LABELS } from '@/config/tripPlanner.config';
 import { computeJourneyChoices } from '@/lib/tripPlannerPricing';
+import { destinations } from '@/config/destinations.config';
 import type { TripPlannerWizardState } from '@/types/tripPlanner';
 
 const TOTAL_STEPS = WIZARD_STEP_LABELS.length;
@@ -30,6 +33,33 @@ const DEFAULT_STATE: TripPlannerWizardState = {
   budget: { mode: 'total', bracketId: null }
 };
 
+// config/regions.config.ts's region ids ('himachal-pradesh', 'jammu-kashmir', 'uttarakhand')
+// don't quite match this wizard's own PLANNER_REGIONS ids ('himachal-pradesh', 'kashmir',
+// 'uttarakhand') — see that file's header comment for why the two lists were kept separate.
+// This is the one small bridge between them, needed only so a region-page CTA can prefill
+// the matching region chip here.
+const REGION_ID_TO_PLANNER_REGION_ID: Record<string, string> = {
+  'himachal-pradesh': 'himachal-pradesh',
+  'jammu-kashmir': 'kashmir',
+  uttarakhand: 'uttarakhand'
+};
+
+// A "Book Now"/"Plan My Journey" CTA elsewhere on the site links here with
+// ?destination=<slug> or ?region=<regionId> — prefill the destination step with that
+// place/region so the selection carries over instead of starting the wizard from a
+// blank slate. `destination` takes priority when both are somehow present.
+function buildInitialState(destinationSlug: string | null, regionId: string | null): TripPlannerWizardState {
+  if (destinationSlug) {
+    const destination = destinations.find((entry) => entry.slug === destinationSlug);
+    if (destination) return { ...DEFAULT_STATE, destination: { regionIds: [], places: [destination.title] } };
+  }
+  if (regionId) {
+    const plannerRegionId = REGION_ID_TO_PLANNER_REGION_ID[regionId];
+    if (plannerRegionId) return { ...DEFAULT_STATE, destination: { regionIds: [plannerRegionId], places: [] } };
+  }
+  return DEFAULT_STATE;
+}
+
 const STEP_SUBTITLES: Record<number, string> = {
   1: 'Pick the regions and specific valleys or towns you want to explore.',
   2: 'When are you planning to travel?',
@@ -42,7 +72,10 @@ const STEP_SUBTITLES: Record<number, string> = {
 };
 
 export default function PlanMyJourneyWizard() {
-  const [state, setState] = useState<TripPlannerWizardState>(DEFAULT_STATE);
+  const searchParams = useSearchParams();
+  const [state, setState] = useState<TripPlannerWizardState>(() =>
+    buildInitialState(searchParams.get('destination'), searchParams.get('region'))
+  );
   const [step, setStep] = useState(1);
   const [phase, setPhase] = useState<'wizard' | 'results'>('wizard');
 
@@ -70,13 +103,38 @@ export default function PlanMyJourneyWizard() {
     setStep((current) => Math.min(current, Math.max(1, target)));
   }
 
+  // The sticky mobile nav bar below (`sm:hidden`) occupies the same bottom-right
+  // real estate as the global Back-to-Top button — claim that space only while it's
+  // actually visible (mobile viewport, wizard phase) so Back-to-Top yields to it.
+  useEffect(() => {
+    if (phase !== 'wizard') return;
+    const mediaQuery = window.matchMedia('(max-width: 639px)');
+    let unregister: (() => void) | null = null;
+
+    function sync() {
+      if (mediaQuery.matches && !unregister) {
+        unregister = registerBottomOverlay();
+      } else if (!mediaQuery.matches && unregister) {
+        unregister();
+        unregister = null;
+      }
+    }
+
+    sync();
+    mediaQuery.addEventListener('change', sync);
+    return () => {
+      mediaQuery.removeEventListener('change', sync);
+      unregister?.();
+    };
+  }, [phase]);
+
   if (phase === 'results') {
     return <ResultsView state={state} choices={choices} onEditAnswers={() => setPhase('wizard')} />;
   }
 
   return (
-    <div className="pb-28 sm:pb-0">
-      <div className="mx-auto max-w-5xl px-6 py-10 sm:px-10 sm:py-14">
+    <div className="py-8">
+      <div className="">
         <WizardProgress currentStep={step} onStepClick={goToStep} />
 
         <div className="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-glow sm:p-10">

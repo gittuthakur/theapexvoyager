@@ -97,7 +97,7 @@ export default function StaysGrid({ location }: StaysGridProps) {
 
 function StayCard({ stay, priority = false }: { stay: Stay; priority?: boolean }) {
   return (
-    <article className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-glow transition hover:-translate-y-1">
+    <article className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-lg transition hover:-translate-y-1">
       <div className="relative h-48 w-full overflow-hidden bg-slate-100">
         <span className="absolute left-3 top-3 z-10 rounded-full bg-apex-500 px-3 py-1 text-xs font-semibold text-white">
           {STAY_TYPE_LABELS[stay.stayType]}
@@ -127,8 +127,8 @@ function StayCard({ stay, priority = false }: { stay: Stay; priority?: boolean }
       <div className="space-y-3 p-5">
         <h3 className="text-lg font-bold text-slate-900">{stay.name}</h3>
         {stay.formattedAddress ? (
-          <p className="flex items-center gap-1.5 truncate text-xs text-slate-500">
-            <MapPin size={12} className="shrink-0 text-apex-600" />
+          <p className="flex items-center gap-1.5 truncate text-sm text-slate-500">
+            <MapPin size={14} className="shrink-0 text-apex-600" />
             <span className="truncate">{stay.formattedAddress}</span>
           </p>
         ) : null}
@@ -143,14 +143,16 @@ function StayCard({ stay, priority = false }: { stay: Stay; priority?: boolean }
           </div>
         ) : null}
 
-        <div className="flex items-center justify-between gap-3 pt-2">
+        <div className="flex flex-col justify-between gap-3 pt-2">
           <div>
-            <p className="text-[11px] uppercase tracking-wider text-slate-500">Starting from</p>
-            <p className="text-sm font-bold text-slate-900">
+            <p className="text-xs uppercase tracking-wider text-slate-500">Starting from</p>
+            <p className="text-md font-bold text-slate-900">
               {stay.customPrice ? `₹${stay.customPrice.toLocaleString('en-IN')} / night` : 'Contact for pricing'}
             </p>
           </div>
-          <WhatsAppEnquireButton selection={{ name: stay.name, type: 'stay', stayType: stay.stayType }} />
+          <WhatsAppEnquireButton
+            selection={{ name: stay.name, type: 'stay', stayType: stay.stayType, slug: stay.slug, destinationSlug: stay.destinationSlug }}
+          />
         </div>
       </div>
     </article>

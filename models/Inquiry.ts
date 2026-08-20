@@ -8,6 +8,12 @@ export interface InquiryDocument extends Document {
   selection: string;
   selectionType: 'stay' | 'destination';
   stayType?: string;
+  /** Stable slug for the enquired-about entity itself — lets a lead be traced back to a real record instead of just the display-name `selection` string. */
+  slug?: string;
+  /** The destination this entity belongs to, when known and distinct from `slug`. */
+  destinationSlug?: string;
+  /** Pathname the enquiry was submitted from, for lead-source attribution. */
+  sourcePage?: string;
   date?: string;
   createdAt: Date;
 }
@@ -19,6 +25,9 @@ const InquirySchema = new Schema<InquiryDocument>(
     selection: { type: String, required: true },
     selectionType: { type: String, enum: ['stay', 'destination'], required: true },
     stayType: { type: String },
+    slug: { type: String },
+    destinationSlug: { type: String },
+    sourcePage: { type: String },
     date: { type: String }
   },
   { timestamps: true }

@@ -32,7 +32,6 @@ interface JourneysPageProps {
     destination?: string;
     category?: string;
     region?: string;
-    style?: string;
     season?: string;
     priceMin?: string;
     priceMax?: string;
@@ -44,7 +43,7 @@ interface JourneysPageProps {
 }
 
 export default async function JourneysPage({ searchParams }: JourneysPageProps) {
-  const { destination, category, region, style, season, priceMin, priceMax, duration, accommodation, sort, page } = await searchParams;
+  const { destination, category, region, season, priceMin, priceMax, duration, accommodation, sort, page } = await searchParams;
 
   const packages = await getAllPackages();
   const featuredPackages = await getFeaturedPackages(3);
@@ -72,7 +71,6 @@ export default async function JourneysPage({ searchParams }: JourneysPageProps) 
           initialQuery={destination}
           initialCategory={category}
           initialRegion={region}
-          initialStyles={style}
           initialSeasons={season}
           initialPriceMin={priceMin}
           initialPriceMax={priceMax}

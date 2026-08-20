@@ -10,7 +10,7 @@ import {
   TransportFAQ
 } from '@/components/modules/transport';
 import { images } from '@/config/images.config';
-import { getVehiclesWithFallback, getRoutesWithFallback } from '@/lib/transport';
+import { getVehicles, getRoutes } from '@/lib/transport';
 
 export const metadata: Metadata = {
   title: 'Travel Transport & Private Transfers | The Apex Voyager',
@@ -39,8 +39,8 @@ export default async function TransportPage({ searchParams }: TransportPageProps
   // (e.g. "Manali" never appearing verbatim in a "Himachal Pradesh" service area). Route
   // matching below is genuinely city-level and stays filtered by pickup/destination.
   const [vehicles, routes] = await Promise.all([
-    getVehiclesWithFallback({ category: vehicle }),
-    getRoutesWithFallback({ origin: pickup, destination })
+    getVehicles({ category: vehicle }),
+    getRoutes({ origin: pickup, destination })
   ]);
 
   const hasActiveFilter = Boolean(vehicle);

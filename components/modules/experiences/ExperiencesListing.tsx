@@ -228,7 +228,7 @@ export default function ExperiencesListing({
           <FilterPill key={value} active={difficulties.includes(value)} onClick={() => setDifficulties((current) => toggleValue(current, value))}>
             {value}
           </FilterPill>
-        ))}
+        ))}   
       </FilterGroup>
     </div>
   );
@@ -238,7 +238,7 @@ export default function ExperiencesListing({
       <div className="mx-auto max-w-[1400px] px-6">
         <div className="max-w-2xl">
           <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">Explore All Experiences</h2>
-        </div>
+        </div>  
 
         {/* Compact toolbar — search, sort and a single "Filters" trigger, not a permanent sidebar. */}
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

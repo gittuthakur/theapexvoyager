@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, type FormEvent, type ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
 import { STAY_TYPE_LABELS, type StayType } from '@/types/stay';
@@ -11,6 +12,10 @@ export interface InquirySelection {
   name: string;
   type: 'stay' | 'destination';
   stayType?: StayType;
+  /** Stable slug for the enquired-about entity itself (the stay's slug, or the destination's slug) — lets a lead be traced back to a real record instead of just a display-name string. */
+  slug?: string;
+  /** The destination this entity belongs to, when known and distinct from `slug` (e.g. a stay's parent destination). */
+  destinationSlug?: string;
 }
 
 interface InquiryContextValue {
@@ -32,6 +37,7 @@ export function useInquiryModal(): InquiryContextValue {
 }
 
 export function WhatsAppInquiryProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const [selection, setSelection] = useState<InquirySelection | null>(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -74,6 +80,9 @@ export function WhatsAppInquiryProvider({ children }: { children: ReactNode }) {
           selection: selection.name,
           selectionType: selection.type,
           stayType: selection.stayType,
+          slug: selection.slug,
+          destinationSlug: selection.destinationSlug,
+          sourcePage: pathname,
           date: date || undefined
         })
       });

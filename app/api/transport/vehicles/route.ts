@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getVehiclesWithFallback } from '@/lib/transport';
+import { getVehicles } from '@/lib/transport';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   const minSeats = minSeatsParam ? Number(minSeatsParam) : undefined;
 
   try {
-    const vehicles = await getVehiclesWithFallback({
+    const vehicles = await getVehicles({
       category,
       serviceArea,
       minSeats: Number.isFinite(minSeats) ? minSeats : undefined

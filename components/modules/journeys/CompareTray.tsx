@@ -1,8 +1,10 @@
 'use client';
 
+import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { registerBottomOverlay } from '@/lib/bottomOverlay';
 import type { TravelPackage } from '@/types';
 
 export interface CompareTrayProps {
@@ -13,6 +15,13 @@ export interface CompareTrayProps {
 }
 
 export default function CompareTray({ packages, onRemove, onClear, onCompare }: CompareTrayProps) {
+  const isVisible = packages.length > 0;
+
+  useEffect(() => {
+    if (!isVisible) return;
+    return registerBottomOverlay();
+  }, [isVisible]);
+
   return (
     <AnimatePresence>
       {packages.length > 0 ? (

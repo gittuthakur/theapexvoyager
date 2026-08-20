@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 
 // Routes whose page starts with <HeroSection> — the navbar overlays these transparently
 // at scroll = 0 and turns solid on scroll. Every other route stays solid from the top.
-const HERO_ROUTES = new Set(['/', '/journeys', '/destinations', '/experiences', '/transport', '/experts', '/plan-my-journey', '/stays']);
+const HERO_ROUTES = new Set(['/', '/journeys', '/destinations', '/experiences', '/transport', '/experts', '/stays']);
 
 // Same navRoutes entries (same labels, hrefs, functionality) — these three are just
 // relocated into the compact "More" dropdown instead of sitting in the primary row.

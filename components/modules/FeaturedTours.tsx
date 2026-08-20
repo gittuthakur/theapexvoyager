@@ -130,7 +130,10 @@ export default function FeaturedTours({ tours, viewAllHref = '/tours' }: Feature
                     {activeTour.price} <span className="text-xs font-normal text-slate-500">/ Person</span>
                   </p>
                 </div>
-                <ButtonLink href={`/booking?tour=${activeTour.slug}`} size="md">
+                <ButtonLink
+                  href={`/booking?tour=${activeTour.slug}${activeTour.destinationSlug ? `&destination=${activeTour.destinationSlug}` : ''}`}
+                  size="md"
+                >
                   Book Now <ArrowRight size={16} />
                 </ButtonLink>
               </div>

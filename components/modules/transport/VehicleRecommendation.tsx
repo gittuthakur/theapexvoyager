@@ -53,7 +53,7 @@ export default function VehicleRecommendation({ vehicles }: VehicleRecommendatio
   if (vehicles.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
+    <section className="mx-auto max-w-[1440px] px-6">
       <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-glow sm:p-10">
         <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.24em] text-apex-600">
           <Sparkles size={16} />

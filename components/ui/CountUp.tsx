@@ -44,7 +44,10 @@ export default function CountUp({ value, className }: CountUpProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.6 });
   const parsed = useMemo(() => parseStatValue(value), [value]);
-  const [display, setDisplay] = useState(() => (parsed ? formatStat(0, parsed) : value));
+  // Initial render (including SSR/no-JS output) shows the real target value, not 0 — the
+  // count-from-0 animation below is a progressive enhancement that takes over once the
+  // element scrolls into view, not the only path to a correct number.
+  const [display, setDisplay] = useState(() => (parsed ? formatStat(parsed.target, parsed) : value));
 
   useEffect(() => {
     if (!isInView || !parsed) return;

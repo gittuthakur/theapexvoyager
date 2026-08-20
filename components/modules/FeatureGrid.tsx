@@ -181,13 +181,17 @@ function TourCard({ tour, size, isActive, onSelect }: TourCardProps) {
             </div>
             <div className="flex shrink-0 items-center gap-4">
               <Link
-                href="/journeys"
+                href={tour.destinationSlug ? `/journeys?destination=${tour.destinationSlug}` : '/journeys'}
                 className="cursor-hover text-md font-semibold text-white underline-offset-4 transition hover:underline"
               >
                 View Details
               </Link>
               <ButtonLink
-                href="/plan-my-journey"
+                href={
+                  tour.slug
+                    ? `/plan-my-journey?tour=${tour.slug}${tour.destinationSlug ? `&destination=${tour.destinationSlug}` : ''}`
+                    : '/plan-my-journey'
+                }
                 size="lg"
                 className="cursor-hover rounded-xl shrink-0"
               >

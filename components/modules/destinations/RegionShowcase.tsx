@@ -35,7 +35,7 @@ export default function RegionShowcase({ destinations }: RegionShowcaseProps) {
             return (
               <motion.div key={region.id} variants={fadeInUp}>
                 <Link
-                  href={`/destinations?region=${region.id}`}
+                  href={`/regions/${region.id}`}
                   className="group relative block h-80 overflow-hidden rounded-[24px] border border-slate-200 shadow-glow transition-shadow duration-300 hover:shadow-apex-500/20"
                 >
                   <SafeImage

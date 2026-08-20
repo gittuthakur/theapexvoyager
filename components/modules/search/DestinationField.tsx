@@ -28,8 +28,18 @@ export function DestinationField({
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
-    if (!query) return destinations;
-    return destinations.filter((name) => name.toLowerCase().includes(query.toLowerCase()));
+    const needle = query.trim().toLowerCase();
+    if (!needle) return destinations;
+    // Exact match first, then "starts with", then any other substring match — so
+    // searching "Spiti" surfaces "Spiti Valley" ahead of an unrelated place that merely
+    // contains the letters "spiti" somewhere in the middle of its name.
+    const rank = (name: string) => {
+      const lower = name.toLowerCase();
+      if (lower === needle) return 0;
+      if (lower.startsWith(needle)) return 1;
+      return 2;
+    };
+    return destinations.filter((name) => name.toLowerCase().includes(needle)).sort((a, b) => rank(a) - rank(b));
   }, [destinations, query]);
 
   function selectDestination(name: string) {

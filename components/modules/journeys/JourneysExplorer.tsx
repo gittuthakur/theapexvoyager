@@ -27,16 +27,16 @@ import {
   DURATION_BUCKETS,
   filterPackages,
   getAccommodationTiers,
+  getPackageCategories,
   getPackageRating,
   getPackageRegionIds,
   sortPackages
 } from '@/lib/packageFilters';
 import { paginate } from '@/lib/destinationFilters';
 import { getAllRegions } from '@/lib/regions';
-import { getAllTravelStyles, resolveTravelStyleFromLabel } from '@/lib/travelStyles';
 import { seasons as seasonOptions } from '@/config/seasons.config';
 import { cn } from '@/lib/utils';
-import type { Destination, DestinationStyleId, PackageSortOption, RegionId, SeasonId, TravelPackage } from '@/types';
+import type { Destination, PackageSortOption, RegionId, SeasonId, TravelPackage } from '@/types';
 
 export interface JourneysExplorerProps {
   packages: TravelPackage[];
@@ -47,7 +47,6 @@ export interface JourneysExplorerProps {
   initialQuery?: string;
   initialCategory?: string;
   initialRegion?: string;
-  initialStyles?: string;
   initialSeasons?: string;
   initialPriceMin?: string;
   initialPriceMax?: string;
@@ -90,7 +89,6 @@ export default function JourneysExplorer({
   initialQuery = '',
   initialCategory,
   initialRegion,
-  initialStyles,
   initialSeasons,
   initialPriceMin,
   initialPriceMax,
@@ -105,7 +103,11 @@ export default function JourneysExplorer({
   const destinationsBySlug = useMemo(() => new Map(destinations.map((destination) => [destination.slug, destination])), [destinations]);
   const ratingsBySlug = useMemo(() => new Map(Object.entries(destinationRatings ?? {})), [destinationRatings]);
   const regions = getAllRegions();
-  const travelStyleOptions = getAllTravelStyles();
+  // The single "kind of journey" vocabulary, shared by the hero search, the category
+  // grid, this toolbar and the drawer — TravelPackage's own `category` field, not a
+  // separate style taxonomy (see PackageFilter.category's comment for why the two used
+  // to be kept apart, and why that split is exactly the "disconnected filters" problem).
+  const categories = useMemo(() => getPackageCategories(packages), [packages]);
   const accommodationTiers = useMemo(() => getAccommodationTiers(packages), [packages]);
 
   const priceBounds = useMemo(() => {
@@ -117,7 +119,6 @@ export default function JourneysExplorer({
   const [query, setQuery] = useState(initialQuery);
   const [activeCategory, setActiveCategory] = useState(initialCategory ?? 'all');
   const [activeRegion, setActiveRegion] = useState<RegionId | 'all'>((initialRegion as RegionId) || 'all');
-  const [activeStyles, setActiveStyles] = useState<string[]>(splitParam(initialStyles));
   const [activeSeasons, setActiveSeasons] = useState<string[]>(splitParam(initialSeasons));
   const [activeDuration, setActiveDuration] = useState(initialDuration ?? '');
   const [activeAccommodation, setActiveAccommodation] = useState(initialAccommodation ?? '');
@@ -142,10 +143,6 @@ export default function JourneysExplorer({
     [priceRange, priceBounds]
   );
 
-  const activeStyleIds = useMemo(
-    () => activeStyles.map((label) => resolveTravelStyleFromLabel(label)?.id).filter((id): id is DestinationStyleId => Boolean(id)),
-    [activeStyles]
-  );
   const activeSeasonIds = useMemo(
     () => activeSeasons.map((label) => seasonOptions.find((season) => season.label === label)?.id).filter((id): id is SeasonId => Boolean(id)),
     [activeSeasons]
@@ -159,7 +156,6 @@ export default function JourneysExplorer({
           query,
           category: activeCategory === 'all' ? undefined : activeCategory,
           region: activeRegion === 'all' ? undefined : activeRegion,
-          styles: activeStyleIds,
           seasons: activeSeasonIds,
           priceMin: isPriceNarrowed ? displayedPriceRange[0] : undefined,
           priceMax: isPriceNarrowed ? displayedPriceRange[1] : undefined,
@@ -173,7 +169,6 @@ export default function JourneysExplorer({
       query,
       activeCategory,
       activeRegion,
-      activeStyleIds,
       activeSeasonIds,
       isPriceNarrowed,
       displayedPriceRange,
@@ -189,7 +184,6 @@ export default function JourneysExplorer({
   const activeFilterCount =
     (activeCategory !== 'all' ? 1 : 0) +
     (activeRegion !== 'all' ? 1 : 0) +
-    activeStyles.length +
     activeSeasons.length +
     (isPriceNarrowed ? 1 : 0) +
     (activeDuration ? 1 : 0) +
@@ -204,7 +198,6 @@ export default function JourneysExplorer({
     query,
     activeCategory,
     activeRegion,
-    activeStyles.join(','),
     activeSeasons.join(','),
     isPriceNarrowed,
     displayedPriceRange.join(','),
@@ -229,7 +222,6 @@ export default function JourneysExplorer({
       if (query.trim()) params.set('destination', query.trim());
       if (activeCategory !== 'all') params.set('category', activeCategory);
       if (activeRegion !== 'all') params.set('region', activeRegion);
-      if (activeStyles.length) params.set('style', activeStyles.join(','));
       if (activeSeasons.length) params.set('season', activeSeasons.join(','));
       if (isPriceNarrowed) {
         params.set('priceMin', String(displayedPriceRange[0]));
@@ -253,7 +245,6 @@ export default function JourneysExplorer({
     query,
     activeCategory,
     activeRegion,
-    activeStyles,
     activeSeasons,
     isPriceNarrowed,
     displayedPriceRange.join(','),
@@ -278,7 +269,6 @@ export default function JourneysExplorer({
     setQuery(params.get('destination') ?? '');
     setActiveCategory(params.get('category') ?? 'all');
     setActiveRegion(((params.get('region') as RegionId) || 'all') as RegionId | 'all');
-    setActiveStyles(splitParam(params.get('style')));
     setActiveSeasons(splitParam(params.get('season')));
     const priceMinParam = params.get('priceMin');
     const priceMaxParam = params.get('priceMax');
@@ -295,13 +285,18 @@ export default function JourneysExplorer({
     setQuery('');
     setActiveCategory('all');
     setActiveRegion('all');
-    setActiveStyles([]);
     setActiveSeasons([]);
     setPriceRange(null);
     setActiveDuration('');
     setActiveAccommodation('');
     setSortBy('popular');
     setDrawerOpen(false);
+  }
+
+  // RegionDiscovery/SeasonalDiscovery sit below the results grid, so selecting from
+  // them would otherwise silently change results the user can no longer see.
+  function scrollToResults() {
+    document.getElementById('journeys-listing')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function toggleCompare(slug: string) {
@@ -345,16 +340,17 @@ export default function JourneysExplorer({
         </label>
       </FilterAccordion>
 
-      <FilterAccordion title="Travel style" count={activeStyles.length} defaultOpen>
-        {travelStyleOptions.map((style) => (
-          <FilterCheckbox
-            key={style.id}
-            checked={activeStyles.includes(style.label)}
-            onChange={() => setActiveStyles((current) => toggleValue(current, style.label))}
-          >
-            {style.label}
-          </FilterCheckbox>
-        ))}
+      <FilterAccordion title="Travel style" count={activeCategory !== 'all' ? 1 : 0} defaultOpen>
+        <div className="col-span-2 flex flex-wrap gap-2">
+          <FilterPill active={activeCategory === 'all'} onClick={() => setActiveCategory('all')}>
+            Any
+          </FilterPill>
+          {categories.map((category) => (
+            <FilterPill key={category} active={activeCategory === category} onClick={() => setActiveCategory(category)}>
+              {category}
+            </FilterPill>
+          ))}
+        </div>
       </FilterAccordion>
 
       <FilterAccordion title="Duration" count={activeDuration ? 1 : 0} defaultOpen>
@@ -434,65 +430,71 @@ export default function JourneysExplorer({
             ) : null}
           </div>
 
-          <label className="flex items-center gap-2 text-sm text-slate-600">
-            <MapPin size={15} className="text-apex-600" />
+          {/* Region/Travel Style/Duration/Budget are quick-access duplicates of facets already
+              inside "More Filters" — on mobile that's too many inline controls at once ("a wall
+              of filters"), so they're hidden there and reachable through the drawer instead;
+              `sm:contents` un-wraps this group at sm+ so it lays out exactly as before. */}
+          <div className="hidden sm:contents">
+            <label className="flex items-center gap-2 text-sm text-slate-600">
+              <MapPin size={15} className="text-apex-600" />
+              <select
+                value={activeRegion}
+                onChange={(event) => setActiveRegion(event.target.value as RegionId | 'all')}
+                className="cursor-hover rounded-lg border-none bg-transparent py-1 text-sm font-medium text-slate-700 outline-none"
+              >
+                <option value="all">All Destinations</option>
+                {regions.map((region) => (
+                  <option key={region.id} value={region.id}>
+                    {region.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
             <select
-              value={activeRegion}
-              onChange={(event) => setActiveRegion(event.target.value as RegionId | 'all')}
+              value={activeCategory === 'all' ? '' : activeCategory}
+              onChange={(event) => setActiveCategory(event.target.value || 'all')}
               className="cursor-hover rounded-lg border-none bg-transparent py-1 text-sm font-medium text-slate-700 outline-none"
             >
-              <option value="all">All Destinations</option>
-              {regions.map((region) => (
-                <option key={region.id} value={region.id}>
-                  {region.name}
+              <option value="">Travel Style</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
                 </option>
               ))}
             </select>
-          </label>
 
-          <select
-            value={activeStyles[0] ?? ''}
-            onChange={(event) => setActiveStyles(event.target.value ? [event.target.value] : [])}
-            className="cursor-hover rounded-lg border-none bg-transparent py-1 text-sm font-medium text-slate-700 outline-none"
-          >
-            <option value="">Travel Style</option>
-            {travelStyleOptions.map((style) => (
-              <option key={style.id} value={style.label}>
-                {style.label}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={activeDuration}
-            onChange={(event) => setActiveDuration(event.target.value)}
-            className="cursor-hover rounded-lg border-none bg-transparent py-1 text-sm font-medium text-slate-700 outline-none"
-          >
-            <option value="">Duration</option>
-            {DURATION_BUCKETS.map((bucket) => (
-              <option key={bucket.id} value={bucket.id}>
-                {bucket.label}
-              </option>
-            ))}
-          </select>
-
-          <div ref={budgetAnchorRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setBudgetOpen((current) => !current)}
-              className={cn(
-                'cursor-hover rounded-lg px-2 py-1 text-sm font-medium transition-colors duration-300 ease-in-out',
-                isPriceNarrowed ? 'text-apex-600' : 'text-slate-700 hover:text-slate-900'
-              )}
+            <select
+              value={activeDuration}
+              onChange={(event) => setActiveDuration(event.target.value)}
+              className="cursor-hover rounded-lg border-none bg-transparent py-1 text-sm font-medium text-slate-700 outline-none"
             >
-              Budget
-            </button>
-            <FieldPopover open={budgetOpen} onClose={() => setBudgetOpen(false)} anchorRef={budgetAnchorRef} width={320} align="left">
-              <p className="px-1 text-sm font-bold text-slate-900">Budget</p>
-              <div className="mt-3 px-1">
-                <PriceRangeSlider prices={priceBounds?.prices ?? []} value={displayedPriceRange} onChange={setPriceRange} />
-              </div>
-            </FieldPopover>
+              <option value="">Duration</option>
+              {DURATION_BUCKETS.map((bucket) => (
+                <option key={bucket.id} value={bucket.id}>
+                  {bucket.label}
+                </option>
+              ))}
+            </select>
+
+            <div ref={budgetAnchorRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setBudgetOpen((current) => !current)}
+                className={cn(
+                  'cursor-hover rounded-lg px-2 py-1 text-sm font-medium transition-colors duration-300 ease-in-out',
+                  isPriceNarrowed ? 'text-apex-600' : 'text-slate-700 hover:text-slate-900'
+                )}
+              >
+                Budget
+              </button>
+              <FieldPopover open={budgetOpen} onClose={() => setBudgetOpen(false)} anchorRef={budgetAnchorRef} width={320} align="left">
+                <p className="px-1 text-sm font-bold text-slate-900">Budget</p>
+                <div className="mt-3 px-1">
+                  <PriceRangeSlider prices={priceBounds?.prices ?? []} value={displayedPriceRange} onChange={setPriceRange} />
+                </div>
+              </FieldPopover>
+            </div>
           </div>
 
           <button
@@ -536,9 +538,6 @@ export default function JourneysExplorer({
             {activeRegion !== 'all' ? (
               <FilterChip label={regions.find((region) => region.id === activeRegion)?.name ?? activeRegion} onRemove={() => setActiveRegion('all')} />
             ) : null}
-            {activeStyles.map((style) => (
-              <FilterChip key={style} label={style} onRemove={() => setActiveStyles((current) => toggleValue(current, style))} />
-            ))}
             {isPriceNarrowed ? (
               <FilterChip
                 label={`₹${displayedPriceRange[0].toLocaleString('en-IN')} – ₹${displayedPriceRange[1].toLocaleString('en-IN')}`}
@@ -609,14 +608,25 @@ export default function JourneysExplorer({
         <Pagination page={safePage} totalPages={totalPages} onChange={setPage} className="mt-10" />
       </div>
 
-      <RegionDiscovery packages={packages} regions={regions} destinationsBySlug={destinationsBySlug} onSelect={(regionId) => setActiveRegion(regionId)} />
+      <RegionDiscovery
+        packages={packages}
+        regions={regions}
+        destinationsBySlug={destinationsBySlug}
+        onSelect={(regionId) => {
+          setActiveRegion(regionId);
+          scrollToResults();
+        }}
+      />
 
       <SeasonalDiscovery
         packages={packages}
         seasons={seasonOptions}
         destinationsBySlug={destinationsBySlug}
         activeSeasons={activeSeasons}
-        onSelect={(seasonLabel) => setActiveSeasons((current) => toggleValue(current, seasonLabel))}
+        onSelect={(seasonLabel) => {
+          setActiveSeasons((current) => toggleValue(current, seasonLabel));
+          scrollToResults();
+        }}
       />
 
       <FilterDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} resultCount={sorted.length} onClear={clearFilters}>

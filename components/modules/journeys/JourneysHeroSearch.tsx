@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
 import { DestinationField, TravelStyleField, DateRangeField, OccupancyField, SEARCH_PANEL_CLASS } from '@/components/modules/search';
-import { trendingDestinations } from '@/config/search.config';
+import { destinations as curatedDestinations } from '@/config/destinations.config';
 import { cn } from '@/lib/utils';
 import type { DateRange, OccupancyDetails } from '@/types';
 
@@ -15,13 +15,19 @@ export interface JourneysHeroSearchProps {
   className?: string;
 }
 
+// The full curated catalog (not the short "trending" shortlist used by other search
+// contexts) — this is a genuine destination search, so typing any real destination
+// name (not just the handful of trending ones) should surface a match.
+const DESTINATION_TITLES = curatedDestinations.map((destination) => destination.title);
+
 /**
  * A compact, single-purpose search bar for the Journeys hero — not the full
  * multi-tab BookingWidget. Dates and travellers are collected for a premium,
  * complete-feeling search (matching the brief's 4-field layout) but only
  * destination/category actually filter /journeys — JourneysExplorer has no
  * date-based inventory to filter against, mirroring BookingWidget's own
- * "Journeys" tab, which has the same two real params.
+ * "Journeys" tab, which has the same two real params. Selecting any field only
+ * updates local state; only submitting runs the actual search.
  */
 export default function JourneysHeroSearch({ categories, className }: JourneysHeroSearchProps) {
   const router = useRouter();
@@ -36,7 +42,10 @@ export default function JourneysHeroSearch({ categories, className }: JourneysHe
     if (destination.trim()) query.set('destination', destination.trim());
     if (travelStyle.trim()) query.set('category', travelStyle.trim());
     const qs = query.toString();
-    router.push(qs ? `/journeys?${qs}` : '/journeys');
+    // scroll: false — JourneysExplorer's own results section is what should come into
+    // view, not the top of the page Next.js would otherwise jump to.
+    router.push(qs ? `/journeys?${qs}` : '/journeys', { scroll: false });
+    document.getElementById('journeys-listing')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   return (
@@ -52,7 +61,7 @@ export default function JourneysHeroSearch({ categories, className }: JourneysHe
             label="Where do you want to go?"
             icon={Search}
             placeholder="Search destinations"
-            destinations={trendingDestinations}
+            destinations={DESTINATION_TITLES}
           />
         </motion.div>
         <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: 'easeOut' }}>

@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Check, Clock, Gem, MapPin, X as XIcon } from 'lucide-react';
+import { ArrowRight, Check, Clock, Gem, MapPin, X as XIcon } from 'lucide-react';
+import BackButton from '@/components/ui/BackButton';
 import { SafeImage } from '@/components/ui/SafeImage';
 import PackageBookingModal from '@/components/modules/PackageBookingModal';
 import WhatsAppButton from '@/components/modules/WhatsAppButton';
@@ -20,9 +21,7 @@ export default function PackageDetailContent({ pkg, autoOpenBooking = false }: P
   return (
     <main className="min-h-screen px-6 py-14 sm:px-10 lg:px-16">
       <section className="mx-auto max-w-6xl space-y-6">
-        <Link href="/journeys" className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors duration-300 ease-in-out hover:text-slate-900">
-          <ArrowLeft size={16} /> Back to Journeys
-        </Link>
+        <BackButton fallbackHref="/journeys" label="Back to Journeys" />
 
         {/* Hero */}
         <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-glow sm:p-10">

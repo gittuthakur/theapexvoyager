@@ -22,7 +22,7 @@ export default function VehicleCategories({ vehicles }: VehicleCategoriesProps) 
   if (categories.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
+    <section className="mx-auto max-w-[1440px] px-6">
       <p className="text-sm font-semibold uppercase tracking-[0.24em] text-apex-600">Vehicle categories</p>
       <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">Pick the right fit for your journey</h2>
 
@@ -36,14 +36,14 @@ export default function VehicleCategories({ vehicles }: VehicleCategoriesProps) 
               : `${seatsInCategory[0]} seats`;
 
           return (
-            <div key={category} className="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-glow">
-              <div className="relative h-40 overflow-hidden bg-slate-100">
+            <div key={category} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+              <div className="relative h-44 overflow-hidden bg-slate-100">
                 <img src={representative.image} alt={category} className="h-full w-full object-cover" />
               </div>
               <div className="p-5">
-                <h3 className="text-lg font-semibold text-slate-900">{category}</h3>
-                <p className="mt-1 text-xs uppercase tracking-wide text-apex-600">{seatsRange}</p>
-                <p className="mt-2 text-sm text-slate-600">
+                <h3 className="text-xl font-semibold text-slate-900">{category}</h3>
+                <p className="mt-1 text-md font-semibold uppercase tracking-wide text-apex-600">{seatsRange}</p>
+                <p className="mt-2 text-md text-slate-600">
                   {CATEGORY_SUITABILITY[category] ?? 'A suitable option for your Himalayan journey.'}
                 </p>
               </div>

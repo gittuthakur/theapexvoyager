@@ -14,11 +14,13 @@ import { SafeImage } from '@/components/ui/SafeImage';
 import { siteConfig } from '@/config/site.config';
 import { images } from '@/config/images.config';
 import { buildTouristTripSchema } from '@/lib/schema';
-import { getToursWithFallback } from '@/lib/tours';
+import { getTours } from '@/lib/tours';
 import { getAllPackages, getPackagesByDestinationSlug } from '@/lib/packages';
+import { getHotels } from '@/lib/hotels';
 import { formatINR } from '@/lib/pricing';
 import { destinations } from '@/config/destinations.config';
-import type { Testimonial } from '@/types';
+import { statsItems } from '@/config/stats.config';
+import type { StatItem, Testimonial } from '@/types';
 
 // Tours now come live from MongoDB, so this page can't be statically prerendered at build time.
 export const dynamic = 'force-dynamic';
@@ -225,6 +227,19 @@ export default async function HomePage() {
     (pkg): pkg is (typeof allPackages)[number] => Boolean(pkg)
   );
 
+  // "Destinations", "Stays & Properties" and "Curated Journeys" are real catalog counts —
+  // compute them from the same data sources the rest of the homepage uses instead of the
+  // hardcoded placeholders in stats.config.ts. Safety Record and Average Rating are
+  // manually-reported business figures with no underlying record count, so those two
+  // entries pass through from config unchanged.
+  const hotels = await getHotels();
+  const homepageStats: StatItem[] = statsItems.map((item) => {
+    if (item.label === 'Destinations') return { ...item, value: `${destinations.length}+` };
+    if (item.label === 'Stays & Properties') return { ...item, value: `${hotels.length}+` };
+    if (item.label === 'Curated Journeys') return { ...item, value: `${allPackages.length}+` };
+    return item;
+  });
+
   const heroData: HeroSectionData = {
     badge: {
       icon: <Compass size={16} className="text-apex-600" />,
@@ -295,7 +310,7 @@ export default async function HomePage() {
         <TrustBadges />
       </HeroSection>
 
-      <StatsBar />
+      <StatsBar items={homepageStats} />
 
       <main>
         <PopularDestinationsSection destinations={popularDestinations} />
@@ -334,6 +349,6 @@ export default async function HomePage() {
 }
 
 async function FeaturedToursSection() {
-  const tours = await getToursWithFallback();
+  const tours = await getTours();
   return <FeatureGrid tours={tours} />;
 }

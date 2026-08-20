@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ArrowRight, BadgeCheck, Car, MapPin, Sparkles, Star, Users } from 'lucide-react';
+import { ArrowRight, BadgeCheck, Car, MapPin, Sparkles, Star, Users } from 'lucide-react';
 import PropertyCard from '@/components/modules/PropertyCard';
 import HotelBookingModal from '@/components/modules/HotelBookingModal';
 import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
+import BackButton from '@/components/ui/BackButton';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { getHotels, getHotelBySlug } from '@/lib/hotels';
 import { getPackagesByDestinationSlug } from '@/lib/packages';
@@ -192,9 +193,10 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
   return (
     <main className="min-h-screen px-6 py-14 sm:px-10 lg:px-16">
       <section className="mx-auto max-w-5xl space-y-6">
-        <Link href="/stays" className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors duration-300 ease-in-out hover:text-slate-900">
-          <ArrowLeft size={16} /> Back to Apex Stays
-        </Link>
+        <BackButton
+          fallbackHref={matchedDestination ? `/destinations/${matchedDestination.slug}` : '/stays'}
+          label="Back to Apex Stays"
+        />
 
         <div className="rounded-[2rem] border border-slate-200 bg-white p-10 shadow-glow">
           {/* Above the fold */}
@@ -332,7 +334,13 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
                     <Users size={14} /> Talk to an Expert
                   </Link>
                   <WhatsAppEnquireButton
-                    selection={{ name: hotel.title, type: 'stay', stayType: CATEGORY_TO_STAY_TYPE[hotel.category] }}
+                    selection={{
+                      name: hotel.title,
+                      type: 'stay',
+                      stayType: CATEGORY_TO_STAY_TYPE[hotel.category],
+                      slug: hotel.slug,
+                      destinationSlug: matchedDestination?.slug
+                    }}
                     label="Ask on WhatsApp"
                   />
                 </div>

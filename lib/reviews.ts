@@ -1,6 +1,5 @@
 import { connectDB } from '@/lib/mongodb';
 import { Review as ReviewModel, type ReviewDocument } from '@/models/Review';
-import { DEMO_REVIEWS } from '@/config/reviews.config';
 import type { Destination, Review, Testimonial } from '@/types';
 
 const STYLE_CHIP_BY_KEYWORD: Array<{ keyword: string; chip: string }> = [
@@ -33,33 +32,11 @@ function toReview(doc: ReviewDocument): Review {
   };
 }
 
-// This page is server-rendered per-request, so the fallback path below would otherwise
-// re-log on every single page load. Once per process is enough to flag "you haven't
-// seeded reviews yet" without spamming the dev console.
-let hasWarnedEmptyReviews = false;
-
-/**
- * Reviews live in MongoDB once real ones exist (see models/Review.ts). Until then —
- * or if the database is unreachable — this falls back to config/reviews.config.ts's
- * clearly-marked DEMO_REVIEWS, following the same DB-then-static-fallback convention
- * as getAllPackages() in lib/packages.ts. Run `npm run db:seed` to populate the
- * DEMO_REVIEWS into MongoDB so this stops hitting the fallback.
- */
+/** Reviews live in MongoDB (see models/Review.ts, seeded from config/reviews.config.ts by scripts/seed.ts). */
 export async function getReviewsForDestinationsPage(): Promise<Review[]> {
-  try {
-    await connectDB();
-    const docs = await ReviewModel.find().sort({ createdAt: -1 }).lean<ReviewDocument[]>();
-    if (docs.length > 0) {
-      return JSON.parse(JSON.stringify(docs.map(toReview)));
-    }
-    if (!hasWarnedEmptyReviews) {
-      console.warn('Review.find() returned no results — falling back to demo reviews. Run `npm run db:seed` to populate them.');
-      hasWarnedEmptyReviews = true;
-    }
-  } catch (error) {
-    console.error('Failed to fetch reviews from the database — falling back to demo reviews', error);
-  }
-  return DEMO_REVIEWS;
+  await connectDB();
+  const docs = await ReviewModel.find().sort({ createdAt: -1 }).lean<ReviewDocument[]>();
+  return JSON.parse(JSON.stringify(docs.map(toReview)));
 }
 
 export interface DestinationRating {

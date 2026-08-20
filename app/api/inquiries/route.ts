@@ -13,6 +13,9 @@ export async function POST(request: Request) {
     const selection = typeof body?.selection === 'string' ? body.selection.trim() : '';
     const selectionType = body?.selectionType;
     const stayType = typeof body?.stayType === 'string' ? body.stayType.trim() : undefined;
+    const slug = typeof body?.slug === 'string' ? body.slug.trim() : undefined;
+    const destinationSlug = typeof body?.destinationSlug === 'string' ? body.destinationSlug.trim() : undefined;
+    const sourcePage = typeof body?.sourcePage === 'string' ? body.sourcePage.trim() : undefined;
     const date = typeof body?.date === 'string' ? body.date.trim() : undefined;
 
     if (!name || !phone) {
@@ -32,6 +35,9 @@ export async function POST(request: Request) {
       selection: selection.slice(0, 200),
       selectionType,
       stayType: stayType?.slice(0, 30),
+      slug: slug?.slice(0, 200),
+      destinationSlug: destinationSlug?.slice(0, 200),
+      sourcePage: sourcePage?.slice(0, 300),
       date: date?.slice(0, 30)
     });
 

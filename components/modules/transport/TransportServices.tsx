@@ -41,7 +41,7 @@ const SERVICES: ServiceItem[] = [
 
 export default function TransportServices() {
   return (
-    <section className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
+    <section className="mx-auto max-w-[1440px] px-6">
       <p className="text-sm font-semibold uppercase tracking-[0.24em] text-apex-600">What we arrange</p>
       <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">We don&apos;t just arrange a vehicle</h2>
       <p className="mt-3 max-w-2xl text-slate-600">We help you move through the journey.</p>

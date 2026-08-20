@@ -71,7 +71,7 @@ export default function TransportResults({
   }
 
   return (
-    <section id="transport-results" className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
+    <section id="transport-results" className="mx-auto max-w-[1440px] px-6">
       <p className="text-sm font-semibold uppercase tracking-[0.24em] text-apex-600">Our fleet</p>
       <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">Choose your vehicle</h2>
 

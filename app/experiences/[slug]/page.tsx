@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
-  ArrowLeft,
   BadgeCheck,
   Backpack,
   Calendar,
@@ -16,6 +14,7 @@ import {
   X as XIcon
 } from 'lucide-react';
 import ExperienceBookingActions from '@/components/modules/experiences/ExperienceBookingActions';
+import BackButton from '@/components/ui/BackButton';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { formatINR } from '@/lib/pricing';
 import { getExperienceBySlug } from '@/lib/experiences';
@@ -54,9 +53,7 @@ export default async function ExperienceDetailPage({ params }: ExperienceDetailP
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-14 sm:px-10 lg:px-16">
       <section className="mx-auto max-w-6xl space-y-6">
-        <Link href="/experiences" className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors duration-300 ease-in-out hover:text-slate-900">
-          <ArrowLeft size={16} /> Back to Experiences
-        </Link>
+        <BackButton fallbackHref="/experiences" label="Back to Experiences" />
 
         <div>
           <div className="flex flex-wrap items-center gap-2">

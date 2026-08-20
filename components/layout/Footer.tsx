@@ -101,7 +101,7 @@ export default function Footer({
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">{column.heading}</p>
             <ul className="mt-4 space-y-3">
               {column.links.map((link) => (
-                <li key={link.href}>
+                <li key={`${link.href}-${link.label}`}>
                   <Link href={link.href} className="cursor-hover text-sm text-slate-400 transition-colors duration-300 ease-in-out hover:text-white">
                     {link.label}
                   </Link>

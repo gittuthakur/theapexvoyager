@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { ArrowLeft, Languages, MapPin } from 'lucide-react';
+import { Languages, MapPin } from 'lucide-react';
 import ExpertTalkButton from '@/components/modules/ExpertTalkButton';
 import { PackageCard } from '@/components/modules';
+import BackButton from '@/components/ui/BackButton';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { getExpertBySlug } from '@/lib/experts';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
@@ -43,12 +44,7 @@ export default async function ExpertDetailPage({ params }: ExpertDetailPageProps
   return (
     <main className="min-h-screen px-6 py-14 sm:px-10 lg:px-16">
       <section className="mx-auto max-w-5xl space-y-6">
-        <Link
-          href="/experts"
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors duration-300 ease-in-out hover:text-slate-900"
-        >
-          <ArrowLeft size={16} /> Back to Travel Experts
-        </Link>
+        <BackButton fallbackHref="/experts" label="Back to Travel Experts" />
 
         <div className="rounded-[2rem] border border-slate-200 bg-white p-10 shadow-glow">
           <div>

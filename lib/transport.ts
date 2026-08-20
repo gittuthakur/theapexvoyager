@@ -1,8 +1,6 @@
 import { connectDB } from '@/lib/mongodb';
 import { TransportVehicle, type TransportVehicleDocument } from '@/models/TransportVehicle';
 import { TransportRoute, type TransportRouteDocument } from '@/models/TransportRoute';
-import { vehicleOptions } from '@/config/transport.config';
-import { transportRoutes } from '@/config/transportRoutes.config';
 import type { VehicleOption, TransportRoute as TransportRouteType } from '@/types/transport';
 
 function toVehicleOption(doc: TransportVehicleDocument): VehicleOption {
@@ -93,45 +91,3 @@ export async function getRoutes(filter?: RouteFilter): Promise<TransportRouteTyp
   return docs.map(toTransportRoute);
 }
 
-function matchesVehicleFilter(vehicle: VehicleOption, filter?: VehicleFilter): boolean {
-  if (filter?.category && vehicle.category?.toLowerCase() !== filter.category.trim().toLowerCase()) return false;
-  if (filter?.minSeats && vehicle.seats < filter.minSeats) return false;
-  if (filter?.serviceArea) {
-    const area = filter.serviceArea.trim().toLowerCase();
-    if (!vehicle.serviceAreas?.some((a) => a.toLowerCase().includes(area))) return false;
-  }
-  return true;
-}
-
-function matchesRouteFilter(route: TransportRouteType, filter?: RouteFilter): boolean {
-  if (filter?.origin && !route.origin.toLowerCase().includes(filter.origin.trim().toLowerCase())) return false;
-  if (filter?.destination && !route.destination.toLowerCase().includes(filter.destination.trim().toLowerCase())) return false;
-  return true;
-}
-
-// The transport catalog page should never render empty just because the database is
-// unreachable or hasn't been seeded yet — fall back to the demo config data in either
-// case, filtered in-memory the same way the DB query would filter it. Mirrors
-// getToursWithFallback (lib/tours.ts), simplified: the config array is already in
-// memory here, so there's no need for tours.ts's extra self-fetch-over-HTTP step.
-export async function getVehiclesWithFallback(filter?: VehicleFilter): Promise<VehicleOption[]> {
-  try {
-    const vehicles = await getVehicles(filter);
-    if (vehicles.length > 0) return vehicles;
-    console.warn('getVehicles() returned no results — falling back to demo transport config data');
-  } catch (error) {
-    console.error('Failed to fetch transport vehicles from the database — falling back to demo config data', error);
-  }
-  return vehicleOptions.filter((vehicle) => matchesVehicleFilter(vehicle, filter));
-}
-
-export async function getRoutesWithFallback(filter?: RouteFilter): Promise<TransportRouteType[]> {
-  try {
-    const routes = await getRoutes(filter);
-    if (routes.length > 0) return routes;
-    console.warn('getRoutes() returned no results — falling back to demo transport routes config data');
-  } catch (error) {
-    console.error('Failed to fetch transport routes from the database — falling back to demo config data', error);
-  }
-  return transportRoutes.filter((route) => matchesRouteFilter(route, filter));
-}

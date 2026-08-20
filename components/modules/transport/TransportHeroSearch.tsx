@@ -92,7 +92,7 @@ export default function TransportHeroSearch({
       onSubmit={handleSubmit}
       className={cn(SEARCH_PANEL_CLASS, 'flex w-full flex-col gap-2 lg:flex-row lg:items-end lg:gap-3', className)}
     >
-      <div className="grid flex-1 gap-2 sm:grid-cols-2 lg:grid-cols-6 lg:items-center lg:gap-3">
+      <div className="grid flex-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 lg:items-center lg:gap-3">
         <motion.div className="sm:col-span-2 lg:col-span-2" whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
           <DestinationField
             value={pickup}

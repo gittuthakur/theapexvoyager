@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, MapPin, Star } from 'lucide-react';
 import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
+import { SafeImage } from '@/components/ui/SafeImage';
 import { CATEGORY_TO_STAY_TYPE } from '@/types/stay';
 import type { HotelPackage } from '@/types';
 
@@ -21,8 +22,14 @@ export default function HotelCard({ hotel, checkIn, checkOut, guests }: HotelCar
 
   return (
     <article className="group rounded-[2rem] border border-slate-200 bg-white p-6 shadow-glow transition hover:-translate-y-1">
-      <div className="relative overflow-hidden rounded-[1.5rem] bg-slate-100">
-        <img src={hotel.images[0]} alt={hotel.title} className="h-72 w-full object-cover transition duration-500 group-hover:scale-105" />
+      <div className="relative h-72 overflow-hidden rounded-[1.5rem] bg-slate-100">
+        <SafeImage
+          src={hotel.images[0]}
+          alt={hotel.title}
+          fill
+          sizes="(min-width: 1024px) 33vw, 90vw"
+          className="object-cover transition duration-500 group-hover:scale-105"
+        />
         <span className="absolute left-4 top-4 rounded-full bg-apex-500 px-3 py-1 text-xs font-semibold uppercase text-white">
           {hotel.category}
         </span>
@@ -30,13 +37,15 @@ export default function HotelCard({ hotel, checkIn, checkOut, guests }: HotelCar
       {hotel.places?.photos?.length ? (
         <div className="mt-3 flex snap-x snap-mandatory gap-2 overflow-x-auto pb-1">
           {hotel.places.photos.slice(0, 6).map((photo, index) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={photo}
-              src={photo}
-              alt={`${hotel.title} — Google Places photo ${index + 1}`}
-              className="h-20 w-28 shrink-0 snap-start rounded-lg border border-slate-200 object-cover"
-            />
+            <div key={photo} className="relative h-20 w-28 shrink-0 snap-start overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
+              <SafeImage
+                src={photo}
+                alt={`${hotel.title} — Google Places photo ${index + 1}`}
+                fill
+                sizes="112px"
+                className="object-cover"
+              />
+            </div>
           ))}
         </div>
       ) : null}
@@ -87,7 +96,7 @@ export default function HotelCard({ hotel, checkIn, checkOut, guests }: HotelCar
           </div>
           <div className="flex items-center gap-3">
             <WhatsAppEnquireButton
-              selection={{ name: hotel.title, type: 'stay', stayType: CATEGORY_TO_STAY_TYPE[hotel.category] }}
+              selection={{ name: hotel.title, type: 'stay', stayType: CATEGORY_TO_STAY_TYPE[hotel.category], slug: hotel.slug }}
             />
             <Link
               href={detailHref}

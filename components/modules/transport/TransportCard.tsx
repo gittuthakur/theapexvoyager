@@ -2,6 +2,7 @@
 
 import { Briefcase, Snowflake, Users } from 'lucide-react';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
+import { SafeImage } from '@/components/ui/SafeImage';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
 import { formatINR } from '@/lib/pricing';
 import type { VehicleOption } from '@/types/transport';
@@ -18,15 +19,17 @@ export default function TransportCard({ vehicle, pickup, destination, onViewDeta
   const routeLabel = pickup && destination ? `${pickup} → ${destination}` : undefined;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-glow transition hover:-translate-y-1">
-      <div className="relative overflow-hidden bg-slate-100">
-        <img
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl transition hover:-translate-y-1 hover:shadow-2xl">
+      <div className="relative h-52 overflow-hidden bg-slate-100">
+        <SafeImage
           src={vehicle.image}
           alt={vehicle.name}
-          className="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
+          fill
+          sizes="(min-width: 1024px) 33vw, 90vw"
+          className="object-cover transition duration-500 group-hover:scale-105"
         />
         {vehicle.category ? (
-          <span className="absolute left-4 top-4 rounded-full bg-apex-500 px-3 py-1 text-xs font-semibold uppercase text-white">
+          <span className="absolute left-4 top-4 rounded-full bg-apex-500 px-3 py-1 text-xs font-semibold uppercase text-white shadow-lg">
             {vehicle.category}
           </span>
         ) : null}
@@ -34,7 +37,7 @@ export default function TransportCard({ vehicle, pickup, destination, onViewDeta
 
       <div className="flex flex-1 flex-col space-y-4 p-6">
         <div>
-          <h3 className="text-xl font-semibold text-slate-900">{vehicle.name}</h3>
+          <h3 className="text-2xl font-semibold text-slate-900">{vehicle.name}</h3>
           <p className="mt-2 text-sm leading-6 text-slate-600">{vehicle.description}</p>
         </div>
 
@@ -60,7 +63,7 @@ export default function TransportCard({ vehicle, pickup, destination, onViewDeta
         {vehicle.inclusions?.length ? (
           <div className="flex flex-wrap gap-2">
             {vehicle.inclusions.slice(0, 4).map((inclusion) => (
-              <span key={inclusion} className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">
+              <span key={inclusion} className="rounded-full bg-slate-200 px-2.5 py-1 text-xs text-slate-600">
                 {inclusion}
               </span>
             ))}
@@ -76,11 +79,18 @@ export default function TransportCard({ vehicle, pickup, destination, onViewDeta
             <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
               {vehicle.estimatedFromPrice ? 'Estimated from' : ''}
             </p>
-            <p className="text-xl font-bold text-slate-900">
+            <p className="text-3xl font-bold text-slate-900">
               {vehicle.estimatedFromPrice ? formatINR(vehicle.estimatedFromPrice) : 'Price on request'}
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => onRequestVehicle(vehicle)}
+            className="cursor-hover inline-flex items-center justify-center gap-2 rounded-lg bg-apex-500 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400"
+          >
+            Request This Vehicle
+          </button>
+          <div className="flex w-full flex-wrap items-center justify-between gap-3">
             <button
               type="button"
               onClick={() => onViewDetails(vehicle)}
@@ -88,25 +98,18 @@ export default function TransportCard({ vehicle, pickup, destination, onViewDeta
             >
               View Details
             </button>
-            <button
-              type="button"
-              onClick={() => onRequestVehicle(vehicle)}
-              className="cursor-hover inline-flex items-center justify-center gap-2 rounded-full bg-apex-500 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400"
+            <a
+              href={buildWhatsAppLink({ destination: routeLabel ?? vehicle.name, tripTitle: vehicle.name })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cursor-hover inline-flex items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:scale-105 hover:bg-[#20ba5a]"
             >
-              Request This Vehicle
-            </button>
+              <WhatsAppIcon size={16} />
+              Customise on WhatsApp
+            </a>
           </div>
         </div>
 
-        <a
-          href={buildWhatsAppLink({ destination: routeLabel ?? vehicle.name, tripTitle: vehicle.name })}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="cursor-hover inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:scale-105 hover:bg-[#20ba5a]"
-        >
-          <WhatsAppIcon size={16} />
-          Customise on WhatsApp
-        </a>
       </div>
     </article>
   );

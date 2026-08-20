@@ -152,7 +152,9 @@ export default function PropertyCard({ hotel, checkIn, checkOut, guests, priorit
             </p>
           </div>
           <div className="flex w-full flex-wrap items-center gap-3">
-            <WhatsAppEnquireButton selection={{ name: hotel.title, type: 'stay', stayType: CATEGORY_TO_STAY_TYPE[hotel.category] }} />
+            <WhatsAppEnquireButton
+              selection={{ name: hotel.title, type: 'stay', stayType: CATEGORY_TO_STAY_TYPE[hotel.category], slug: hotel.slug }}
+            />
             <Link
               href={detailHref}
               className="cursor-hover inline-flex items-center gap-2 rounded-full bg-apex-500 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400"

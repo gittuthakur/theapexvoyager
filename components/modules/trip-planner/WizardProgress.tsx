@@ -73,9 +73,9 @@ export function WizardProgress({ currentStep, onStepClick }: WizardProgressProps
                 onClick={reached ? () => onStepClick?.(stepNumber) : undefined}
                 className={cn(
                   'relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-all duration-300 ease-in-out disabled:cursor-not-allowed',
-                  active && 'scale-110 bg-apex-500 text-white shadow-lg shadow-apex-500/30',
-                  done && 'cursor-hover bg-apex-100 text-apex-600 hover:bg-apex-200',
-                  !active && !done && 'border border-slate-200 bg-slate-100 text-slate-400'
+                  active && 'scale-110 bg-apex-500 text-white shadow-lg shadow-apex-500/40',
+                  done && 'cursor-hover bg-apex-100 text-apex-700 hover:bg-apex-200',
+                  !active && !done && 'border border-slate-300 bg-slate-200 text-slate-400'
                 )}
               >
                 {done ? <Check size={18} strokeWidth={3} /> : String(stepNumber).padStart(2, '0')}
@@ -85,7 +85,7 @@ export function WizardProgress({ currentStep, onStepClick }: WizardProgressProps
                   'hidden truncate text-xs transition-colors duration-300 ease-in-out lg:block',
                   active && 'font-bold text-apex-600',
                   done && 'font-semibold text-apex-500',
-                  !active && !done && 'font-semibold text-slate-400'
+                  !active && !done && 'font-semibold text-slate-500'
                 )}
               >
                 {label}

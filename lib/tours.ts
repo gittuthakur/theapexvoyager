@@ -1,4 +1,3 @@
-import { headers } from 'next/headers';
 import { connectDB } from '@/lib/mongodb';
 import { Tour, type TourDocument } from '@/models/Tour';
 import type { TourPackage } from '@/types';
@@ -76,30 +75,3 @@ export async function getToursByDestinationSlug(destinationSlug: string): Promis
   return docs.map(toTourPackage);
 }
 
-async function getFeaturedToursFallback(): Promise<TourPackage[]> {
-  const headersList = await headers();
-  const host = headersList.get('host') ?? 'localhost:3000';
-  const protocol = headersList.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https');
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? `${protocol}://${host}`;
-
-  const res = await fetch(`${baseUrl}/api/tours/featured`, { cache: 'no-store' });
-  if (!res.ok) {
-    throw new Error(`Featured tours fallback request failed with status ${res.status}`);
-  }
-  const { tours } = (await res.json()) as { tours: TourPackage[] };
-  return tours;
-}
-
-// The homepage's Featured Tours section should never render empty just because the
-// database is unreachable or hasn't been seeded yet — fall back to the static
-// /api/tours/featured mock data in either case.
-export async function getToursWithFallback(filter?: { destination?: string; category?: string }): Promise<TourPackage[]> {
-  try {
-    const tours = await getTours(filter);
-    if (tours.length > 0) return tours;
-    console.warn('getTours() returned no results — falling back to featured tours mock data');
-  } catch (error) {
-    console.error('Failed to fetch tours from the database — falling back to featured tours mock data', error);
-  }
-  return getFeaturedToursFallback();
-}

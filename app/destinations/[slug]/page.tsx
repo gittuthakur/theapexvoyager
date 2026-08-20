@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ArrowRight, Car, Clock, Compass, Eye, Gem, Mountain, Sparkles, Map, MapPin, Star, Users } from 'lucide-react';
+import { ArrowRight, Car, Clock, Compass, Eye, Gem, Mountain, Sparkles, Map, MapPin, Star, Users } from 'lucide-react';
 import StaysGrid from '@/components/modules/StaysGrid';
 import DestinationCard from '@/components/modules/DestinationCard';
 import PackageCard from '@/components/modules/PackageCard';
@@ -9,14 +9,17 @@ import ExpertCard from '@/components/modules/ExpertCard';
 import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
 import DestinationPlanJourneyButton from '@/components/modules/DestinationPlanJourneyButton';
 import DestinationSeasonModule from '@/components/modules/DestinationSeasonModule';
+import BackButton from '@/components/ui/BackButton';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
 import { getPackagesByDestinationSlug } from '@/lib/packages';
 import { getToursByDestinationSlug } from '@/lib/tours';
 import { getExperiencesByDestination } from '@/lib/experiences';
 import { getExpertsByDestinationSlug } from '@/lib/experts';
+import { getRoutes } from '@/lib/transport';
+import { getDestinationRatingsMap } from '@/lib/reviews';
+import { getRegionForState } from '@/lib/regions';
 import { formatINR } from '@/lib/pricing';
-import { vehicleOptions } from '@/config/transport.config';
 import type { DestinationMatchScores } from '@/types/destination';
 
 export const dynamic = 'force-dynamic';
@@ -69,6 +72,12 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
   const tours = await getToursByDestinationSlug(destination.slug);
   const catalogExperiences = getExperiencesByDestination(destination.title);
   const localExperts = await getExpertsByDestinationSlug(destination.slug);
+  const routesToDestination = await getRoutes({ destination: destination.title });
+  // Real rating computed from actual Review documents — takes precedence over the static
+  // config rating so this never disagrees with the rating shown on journey cards
+  // elsewhere on the site (both of which read from the same getDestinationRatingsMap).
+  const destinationRating = (await getDestinationRatingsMap()).get(destination.slug);
+  const parentRegion = getRegionForState(destination.state);
   const related = (destination.relatedSlugs ?? [])
     .map((relatedSlug) => getCuratedDestinationBySlug(relatedSlug))
     .filter((item): item is NonNullable<typeof item> => Boolean(item))
@@ -90,30 +99,32 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
   return (
     <main className="min-h-screen px-6 py-14 sm:px-10 lg:px-16">
       <section className="mx-auto max-w-6xl space-y-6">
-        <Link href="/destinations" className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors duration-300 ease-in-out hover:text-slate-900">
-          <ArrowLeft size={16} /> Back to Destinations
-        </Link>
+        <BackButton fallbackHref={parentRegion ? `/regions/${parentRegion.id}` : '/destinations'} label="Back to Destinations" />
 
-        <div className="relative isolate min-h-[440px] overflow-hidden rounded-[2rem] bg-slate-950 shadow-glow sm:min-h-[540px]">
-          <SafeImage src={destination.image} alt={`${destination.title}, ${destination.state ?? 'Himalayas'}`} fill priority sizes="(min-width: 1024px) 1152px, 100vw" className="object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-transparent" />
-          <div className="relative flex min-h-[440px] flex-col justify-end p-6 sm:min-h-[540px] sm:p-10">
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-apex-200">{destination.region ?? destination.category}</p>
-            <h1 className="mt-3 text-5xl font-bold text-white sm:text-6xl">{destination.title}</h1>
-            <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-100">{destination.description}</p>
-            <div className="mt-6 flex flex-wrap gap-2">{destination.travelStyles?.slice(0, 3).map((style) => <span key={style} className="rounded-full border border-white/20 bg-black/20 px-4 py-2 text-sm text-white">{style}</span>)}</div>
-
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <DestinationPlanJourneyButton destinationTitle={destination.title} />
-              {destination.rating ? (
-                <span className="inline-flex items-center gap-2 rounded-full bg-black/30 px-4 py-2 text-sm text-white backdrop-blur-sm">
-                  <Star size={14} className="fill-amber-400 text-amber-400" />
-                  {destination.rating.toFixed(1)}
-                  {destination.userRatingCount ? <span className="text-slate-300"> ({destination.userRatingCount} reviews)</span> : null}
-                </span>
-              ) : null}
-              <WhatsAppEnquireButton selection={{ name: destination.title, type: 'destination' }} label="Enquire on WhatsApp" />
+        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-glow sm:p-10">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.5em] text-apex-500">{destination.region ?? destination.category}</p>
+              <h1 className="mt-3 text-4xl font-bold text-slate-900 sm:text-5xl">{destination.title}</h1>
+              <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-600">{destination.description}</p>
+              <div className="mt-4 flex flex-wrap gap-2">{destination.travelStyles?.slice(0, 3).map((style) => <span key={style} className="rounded-full bg-apex-500 px-4 py-2 text-sm text-white">{style}</span>)}</div>
             </div>
+            {destinationRating ? (
+              <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-700">
+                <Star size={14} className="fill-amber-400 text-amber-400" />
+                {destinationRating.rating.toFixed(1)}
+                <span className="text-slate-500"> ({destinationRating.count} review{destinationRating.count === 1 ? '' : 's'})</span>
+              </span>
+            ) : null}
+          </div>
+
+          <div className="relative mt-8 h-[360px] w-full overflow-hidden rounded-[1.5rem] bg-slate-900">
+            <SafeImage src={destination.image} alt={`${destination.title}, ${destination.state ?? 'Himalayas'}`} fill priority sizes="(min-width: 1024px) 960px, 100vw" className="object-cover" />
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <DestinationPlanJourneyButton destinationTitle={destination.title} />
+            <WhatsAppEnquireButton selection={{ name: destination.title, type: 'destination', slug: destination.slug }} label="Enquire on WhatsApp" />
           </div>
         </div>
 
@@ -127,14 +138,14 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
 
         <section id="overview" className="grid gap-8 py-8 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-apex-300">The story</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-apex-500">The story</p>
             <h2 className="mt-3 text-3xl font-bold text-slate-900">Discover {destination.title}</h2>
             <p className="mt-5 text-lg leading-8 text-slate-600">{destination.editorialDescription ?? destination.description}</p>
           </div>
           {information.length ? <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-200">
             {information.map(([Icon, label, value]) => (
               <div key={label} className="bg-white p-5">
-                <Icon className="text-apex-300" size={18} />
+                <Icon className="text-apex-500" size={18} />
                 <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-slate-500">{label}</p>
                 <p className="mt-1 text-sm font-semibold leading-6 text-slate-900">{value}</p>
               </div>
@@ -165,11 +176,11 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
         ) : null}
 
         {destination.highlights?.length ? <section className="py-8"><SectionHeading eyebrow="Why visit" title={`Why You’ll Love ${destination.title}`} /><div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {destination.highlights.map((highlight) => <article key={highlight.title} className="rounded-[1.5rem] border border-slate-200 bg-white p-6"><Sparkles className="text-apex-300" size={20} /><h3 className="mt-4 text-lg font-semibold text-slate-900">{highlight.title}</h3><p className="mt-2 text-sm leading-6 text-slate-500">{highlight.description}</p></article>)}
+          {destination.highlights.map((highlight) => <article key={highlight.title} className="rounded-[1.5rem] border border-slate-200 bg-white p-6"><Sparkles className="text-apex-500" size={20} /><h3 className="mt-4 text-lg font-semibold text-slate-900">{highlight.title}</h3><p className="mt-2 text-sm leading-6 text-slate-500">{highlight.description}</p></article>)}
         </div></section> : null}
 
         {destination.places?.length ? <section id="places" className="py-8"><SectionHeading eyebrow="Go deeper" title="Places Worth Discovering" /><div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {destination.places.map((place, index) => <article key={place.title} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-6"><span className="text-sm font-semibold text-apex-300">0{index + 1}</span><h3 className="mt-3 text-xl font-semibold text-slate-900">{place.title}</h3><p className="mt-2 text-sm leading-6 text-slate-500">{place.description}</p></article>)}
+          {destination.places.map((place, index) => <article key={place.title} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-6"><span className="text-sm font-semibold text-apex-500">0{index + 1}</span><h3 className="mt-3 text-xl font-semibold text-slate-900">{place.title}</h3><p className="mt-2 text-sm leading-6 text-slate-500">{place.description}</p></article>)}
         </div></section> : null}
 
         <section id="experiences" className="py-8">
@@ -188,12 +199,12 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
                     </div>
                     <h3 className="mt-4 font-semibold text-slate-900">{experience.title}</h3>
                     <p className="mt-1 line-clamp-2 text-sm text-slate-500">{experience.shortDescription}</p>
-                    <p className="mt-2 text-sm font-semibold text-apex-600">From {formatINR(experience.price)} / person</p>
+                    <p className="mt-2 text-lg font-semibold text-apex-600">From {formatINR(experience.price)} <span className="text-sm font-medium text-slate-500">/ person</span></p>
                   </Link>
                 ))}
               </div>
-              <Link href={`/experiences?q=${encodeURIComponent(destination.title)}`} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-apex-600 hover:text-apex-700">
-                Explore all Experiences <ArrowRight size={16} />
+              <Link href={`/experiences?q=${encodeURIComponent(destination.title)}`} className="mt-6 inline-flex items-center gap-2 text-md font-semibold text-apex-600 hover:text-apex-700">
+                Explore all Experiences <ArrowRight size={18} />
               </Link>
             </>
           ) : destination.experiences?.length ? (
@@ -218,7 +229,7 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
                   </div>
                   <h3 className="mt-4 font-semibold text-slate-900">{tour.title}</h3>
                   <p className="mt-1 text-sm text-slate-500">{tour.duration}</p>
-                  <p className="mt-2 text-sm font-semibold text-apex-600">{tour.price}</p>
+                  <p className="mt-2 text-2xl font-bold text-apex-600">{tour.price}</p>
                 </Link>
               ))}
             </div>
@@ -235,17 +246,23 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
 
         <section id="getting-around" className="py-8">
           <SectionHeading eyebrow="Plan the route" title={`Getting Around ${destination.title}`} />
-          <div className="mt-6 grid gap-4 sm:grid-cols-3">
-            {vehicleOptions.map((vehicle) => (
-              <div key={vehicle.id} className="rounded-[1.5rem] border border-slate-200 bg-white p-6">
-                <Car className="text-apex-300" size={20} />
-                <h3 className="mt-3 font-semibold text-slate-900">{vehicle.name}</h3>
-                <p className="mt-1 text-xs text-slate-500">{vehicle.seats} seats</p>
-                <p className="mt-3 text-sm font-semibold text-apex-600">{formatINR(vehicle.estimatedFromPrice)}</p>
-                <p className="text-xs text-slate-500">{vehicle.priceNote}</p>
-              </div>
-            ))}
-          </div>
+          {routesToDestination.length ? (
+            <div className="mt-6 grid gap-4 sm:grid-cols-3">
+              {routesToDestination.map((route) => (
+                <div key={`${route.origin}-${route.destination}`} className="rounded-[1.5rem] border border-slate-200 bg-white p-6">
+                  <Car className="text-apex-400" size={24} />
+                  <h3 className="mt-3 font-semibold text-slate-900">{route.origin} → {route.destination}</h3>
+                  {route.estimatedDuration ? <p className="mt-1 text-sm text-slate-500">{route.estimatedDuration}{route.distanceKm ? ` • ${route.distanceKm} km` : ''}</p> : null}
+                  {route.startingFare ? <p className="mt-3 text-lg font-semibold text-apex-600">From {formatINR(route.startingFare)}</p> : null}
+                  {route.seasonalStatus ? <p className="text-sm text-slate-500">{route.seasonalStatus}</p> : null}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-6 rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500">
+              No fixed routes to {destination.title} listed yet — our team can still arrange private transport.
+            </p>
+          )}
           <Link href="/transport" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-apex-600 hover:text-apex-700">
             Plan Transport to {destination.title} <ArrowRight size={16} />
           </Link>
@@ -270,17 +287,17 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
           )}
         </section>
 
-        <div id="stays" className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-glow sm:p-10">
+        <div id="stays" className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl sm:p-10">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-sm uppercase tracking-[0.24em] text-apex-300">Where to stay</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-apex-600">Where to stay</p>
               <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">Hotels, Homestays &amp; Unique Stays in {destination.title}</h2>
             </div>
             <Link
               href={`/stays/${destination.slug}`}
-              className="inline-flex shrink-0 items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 transition-all duration-300 ease-in-out hover:bg-slate-50"
+              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-apex-500 px-5 py-3 text-sm font-medium text-white transition-all duration-300 ease-in-out hover:bg-slate-50"
             >
-              <Eye size={16} /> View bookable stays
+              <Eye size={18} /> View bookable stays
             </Link>
           </div>
           <div className="mt-6">
@@ -293,15 +310,15 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
             <SectionHeading eyebrow="Off the main road" title="Beyond the Tourist Trail" />
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               {destination.hiddenGems.map((gem) => (
-                <article key={gem.title} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-6">
-                  <Map className="text-apex-300" size={18} />
+                <article key={gem.title} className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+                  <Map className="text-apex-500" size={20} />
                   <h3 className="mt-3 text-lg font-semibold text-slate-900">{gem.title}</h3>
                   <p className="mt-2 text-sm leading-6 text-slate-500">{gem.description}</p>
                 </article>
               ))}
             </div>
             {destination.travelTips?.length ? (
-              <div className="mt-6 rounded-[1.5rem] border border-slate-200 bg-white p-6">
+              <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Travel tips</p>
                 <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
                   {destination.travelTips.map((tip) => <li key={tip}>• {tip}</li>)}
@@ -322,7 +339,7 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
 
         {destination.matchScores ? (
           <section className="py-8">
-            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-apex-300">How {destination.title} compares</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.20em] text-apex-500">How {destination.title} compares</p>
             <div className="mt-4 space-y-3 rounded-[1.5rem] border border-slate-200 bg-white p-6">
               {MATCH_SCORE_LABELS.map(({ key, label }) => (
                 <div key={key} className="flex items-center gap-4">
@@ -344,5 +361,5 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
 }
 
 function SectionHeading({ eyebrow, title }: { eyebrow: string; title: string }) {
-  return <div><p className="text-sm font-semibold uppercase tracking-[0.28em] text-apex-300">{eyebrow}</p><h2 className="mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">{title}</h2></div>;
+  return <div><p className="text-sm font-semibold uppercase tracking-[0.28em] text-apex-500">{eyebrow}</p><h2 className="mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">{title}</h2></div>;
 }
