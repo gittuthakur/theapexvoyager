@@ -54,8 +54,8 @@ export default function TransportDetail({ vehicle, pickup, destination, date, tr
   }
 
   return (
-    <FloatingOverlay open onClose={onClose} labelledBy="transport-detail-title" panelClassName="max-w-2xl rounded-[2rem] bg-white shadow-glow">
-      <div className="max-h-[85vh] overflow-y-auto p-6 sm:p-8">
+    <FloatingOverlay open onClose={onClose} labelledBy="transport-detail-title" panelClassName="max-w-2xl rounded-3xl pointer-events-auto p-6 sm:p-8 bg-white shadow-glow">
+      <div className="">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-apex-600">{vehicle.category ?? 'Vehicle'}</p>
@@ -78,15 +78,15 @@ export default function TransportDetail({ vehicle, pickup, destination, date, tr
         </div>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center">
+          <div className="rounded-2xl border border-slate-300 bg-slate-100 p-4 text-center">
             <Users size={18} className="mx-auto text-apex-600" />
             <p className="mt-2 text-sm font-semibold text-slate-900">{vehicle.seats} seats</p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center">
+          <div className="rounded-2xl border border-slate-300 bg-slate-100 p-4 text-center">
             <Briefcase size={18} className="mx-auto text-apex-600" />
             <p className="mt-2 text-sm font-semibold text-slate-900">{vehicle.luggageCapacity ?? 'Luggage — on request'}</p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center">
+          <div className="rounded-2xl border border-slate-300 bg-slate-100 p-4 text-center">
             <Snowflake size={18} className="mx-auto text-apex-600" />
             <p className="mt-2 text-sm font-semibold text-slate-900">{vehicle.acType ?? 'AC — on request'}</p>
           </div>
@@ -125,17 +125,17 @@ export default function TransportDetail({ vehicle, pickup, destination, date, tr
           </div>
         ) : null}
 
-        <div className="mt-6 flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 p-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+        <div className="mt-6 flex gap-5 items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <div className="flex flex-1 flex-col gap-1">
+            <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
               {vehicle.estimatedFromPrice ? 'Estimated from' : ''}
             </p>
-            <p className="text-xl font-bold text-slate-900">
+            <p className="text-3xl font-extrabold text-slate-900">
               {vehicle.estimatedFromPrice ? formatINR(vehicle.estimatedFromPrice) : 'Price on request'}
             </p>
-            {vehicle.priceNote ? <p className="mt-1 text-xs text-slate-500">{vehicle.priceNote}</p> : null}
+            {vehicle.priceNote ? <p className="mt-1 text-sm text-slate-500">{vehicle.priceNote}</p> : null}
           </div>
-          <p className="text-sm font-medium text-slate-600">Availability on request</p>
+          <p className="text-md font-medium text-slate-600">Availability on request</p>
         </div>
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">

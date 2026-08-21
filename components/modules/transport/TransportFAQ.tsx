@@ -20,12 +20,12 @@ const FAQS = [
 
 export default function TransportFAQ() {
   return (
-    <section className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
-      <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-glow sm:p-10">
+    <section className="mx-auto max-w-[1440px] px-6">
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl sm:p-8">
         <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">Frequently Asked Questions</h2>
-        <div className="mt-5 space-y-4">
+        <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {FAQS.map((faq) => (
-            <div key={faq.question} className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <div key={faq.question} className="rounded-2xl border border-slate-300 bg-slate-100 p-5">
               <p className="font-semibold text-slate-900">{faq.question}</p>
               <p className="mt-2 text-sm text-slate-600">{faq.answer}</p>
             </div>

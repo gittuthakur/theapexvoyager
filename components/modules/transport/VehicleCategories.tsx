@@ -36,7 +36,7 @@ export default function VehicleCategories({ vehicles }: VehicleCategoriesProps) 
               : `${seatsInCategory[0]} seats`;
 
           return (
-            <div key={category} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+            <div key={category} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl transition hover:-translate-y-1 hover:shadow-2xl">
               <div className="relative h-44 overflow-hidden bg-slate-100">
                 <img src={representative.image} alt={category} className="h-full w-full object-cover" />
               </div>

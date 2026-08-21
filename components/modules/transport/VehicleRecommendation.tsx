@@ -54,8 +54,8 @@ export default function VehicleRecommendation({ vehicles }: VehicleRecommendatio
 
   return (
     <section className="mx-auto max-w-[1440px] px-6">
-      <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-glow sm:p-10">
-        <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.24em] text-apex-600">
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl sm:p-8">
+        <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.20em] text-apex-600">
           <Sparkles size={16} />
           Not sure which vehicle to choose?
         </p>
@@ -72,10 +72,10 @@ export default function VehicleRecommendation({ vehicles }: VehicleRecommendatio
                   key={type}
                   type="button"
                   onClick={() => setTripType(type)}
-                  className={`cursor-hover rounded-xl border px-3 py-2.5 text-xs font-semibold transition ${
+                  className={`cursor-hover rounded-lg px-3 py-3 text-xs font-semibold transition ${
                     tripType === type
-                      ? 'border-apex-400 bg-apex-50 text-slate-900'
-                      : 'border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300'
+                      ? 'bg-apex-500 text-white'
+                      : 'border border-apex-400 bg-apex-50 text-slate-900 hover:bg-apex-100 hover:border-apex-600'
                   }`}
                 >
                   {type}
@@ -88,13 +88,13 @@ export default function VehicleRecommendation({ vehicles }: VehicleRecommendatio
         {recommended ? (
           <div className="mt-6 flex flex-col items-start gap-4 rounded-2xl border border-apex-200 bg-apex-50 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-apex-600">Recommended for your trip</p>
+              <p className="text-sm font-semibold uppercase tracking-wide text-apex-600">Recommended for your trip</p>
               <p className="mt-1 text-lg font-bold text-slate-900">{recommended.name}</p>
               <p className="mt-1 text-sm text-slate-600">
                 Ideal for {travellers} traveller{travellers === 1 ? '' : 's'} on a {tripType.toLowerCase()} journey.
               </p>
               {recommended.estimatedFromPrice ? (
-                <p className="mt-1 text-sm font-semibold text-slate-900">{formatINR(recommended.estimatedFromPrice)}</p>
+                <p className="mt-1 text-3xl font-extrabold text-slate-900">{formatINR(recommended.estimatedFromPrice)}</p>
               ) : null}
             </div>
             <button

@@ -146,7 +146,7 @@ function Stepper({
 
 function PriceBreakdownPanel({ pkg, breakdown }: { pkg: TravelPackage; breakdown: PriceBreakdown }) {
   return (
-    <div className="rounded-2xl border border-apex-200 bg-apex-50 p-5">
+    <div className="rounded-2xl border border-apex-200 bg-apex-50 p-5 static top-0">
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-apex-600">Live Trip Price</p>
       <div className="mt-3 space-y-2 text-sm text-slate-700">
         <div className="flex items-center justify-between">
@@ -329,10 +329,10 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
   };
 
   return (
-    <Modal open={open} onClose={onClose} title={stepTitles[step]} className="max-w-2xl">
+    <Modal open={open} onClose={onClose} title={stepTitles[step]} className="max-w-4xl">
       {step === 'config' ? (
         <div className="space-y-6">
-          <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+          <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr] relative">
             <div className="space-y-5">
               <div>
                 <label htmlFor="travel-date" className="mb-2 block text-sm font-semibold text-slate-900">

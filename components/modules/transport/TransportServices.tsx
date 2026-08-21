@@ -48,7 +48,7 @@ export default function TransportServices() {
 
       <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {SERVICES.map(({ icon: Icon, title, description }) => (
-          <div key={title} className="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-glow">
+          <div key={title} className="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-xl transition hover:-translate-y-1 hover:shadow-2xl">
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-apex-50 text-apex-600">
               <Icon size={20} />
             </span>

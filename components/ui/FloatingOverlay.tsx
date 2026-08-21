@@ -42,7 +42,7 @@ export function FloatingOverlay({
       {open ? (
         <motion.div
           className={cn(
-            'fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overscroll-contain bg-slate-950/80 p-4 sm:p-6',
+            'fixed inset-0 pointer-events-auto z-50 flex items-center justify-center overflow-y-auto overscroll-hidden bg-slate-950/80 p-4 sm:p-6',
             overlayClassName
           )}
           initial={{ opacity: 0 }}
