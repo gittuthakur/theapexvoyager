@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Car, Check, Gem, X as XIcon } from 'lucide-react';
+import BackButton from '@/components/ui/BackButton';
+import DetailPageContainer from '@/components/modules/detail/DetailPageContainer';
 import PackageBookingModal from '@/components/modules/PackageBookingModal';
 import JourneyHero from '@/components/modules/journey-detail/JourneyHero';
 import JourneyBookingSidebar from '@/components/modules/journey-detail/JourneyBookingSidebar';
@@ -31,11 +33,12 @@ export default function PackageDetailContent({ pkg, autoOpenBooking = false, rel
   }, [autoOpenBooking]);
 
   return (
-    <main className="min-h-screen px-6 pb-28 pt-6 sm:px-10 lg:px-16 lg:pb-14">
-      <div className="mx-auto max-w-7xl">
-        <JourneyHero pkg={pkg} />
+    <DetailPageContainer mainClassName="pb-28 lg:pb-14">
+      <BackButton fallbackHref="/journeys" label="Back to Journeys" />
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_340px] lg:gap-8">
+      <JourneyHero pkg={pkg} />
+
+      <div className="grid gap-6 lg:grid-cols-[1fr_340px] lg:gap-8">
           <div className="space-y-6">
             {/* Highlights */}
             <JourneySection title="Highlights">
@@ -237,9 +240,8 @@ export default function PackageDetailContent({ pkg, autoOpenBooking = false, rel
 
           <JourneyBookingSidebar pkg={pkg} onCustomize={() => setBookingOpen(true)} />
         </div>
-      </div>
 
       <PackageBookingModal pkg={pkg} open={bookingOpen} onClose={() => setBookingOpen(false)} />
-    </main>
+    </DetailPageContainer>
   );
 }

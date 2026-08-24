@@ -28,10 +28,10 @@ export default function ExpertHelpOptions() {
           <Link
             key={label}
             href={`/experts?help=${encodeURIComponent(needHelpWith)}#plan-my-trip`}
-            className="cursor-hover group flex flex-col items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-left text-sm font-semibold text-slate-700 shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:border-apex-300 hover:text-slate-900 hover:shadow-md"
+            className="cursor-hover group flex flex-col items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-center text-sm font-semibold text-slate-700 shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:border-apex-300 hover:text-slate-900 hover:shadow-md"
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-apex-50 text-apex-600 transition-colors duration-300 ease-in-out group-hover:bg-apex-500 group-hover:text-white">
-              <Icon size={18} />
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-apex-50 text-apex-600 transition-colors duration-300 ease-in-out group-hover:bg-apex-500 group-hover:text-white">
+              <Icon size={24} />
             </span>
             {label}
           </Link>

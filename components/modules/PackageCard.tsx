@@ -55,7 +55,7 @@ export default function PackageCard({ pkg, rating, regionLabel, isComparing = fa
   }
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg transition-all duration-300 ease-in-out motion-safe:hover:-translate-y-1.5 hover:shadow-xl">
+    <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg transition-all duration-300 ease-in-out motion-safe:hover:-translate-y-1.5 hover:shadow-2xl">
       <div className="relative h-56 overflow-hidden bg-slate-100">
         <img
           src={pkg.image}

@@ -4,6 +4,7 @@ import { useBookingRequest } from '@/components/modules/BookingRequestModal';
 import { destinations } from '@/config/destinations.config';
 import { cn } from '@/lib/utils';
 import type { TravelExpert } from '@/types/expert';
+import { WhatsAppIcon } from '../ui/WhatsAppIcon';
 
 // Reads directly from the plain config catalog rather than lib/destinations.ts —
 // that module also pulls in the Mongoose/MongoDB connection code (for its Google
@@ -33,7 +34,7 @@ export default function ExpertTalkButton({ expert, className }: ExpertTalkButton
     <button
       type="button"
       className={cn(
-        'cursor-hover inline-flex items-center justify-center gap-2 rounded-full bg-apex-500 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400',
+        'cursor-hover inline-flex items-center justify-center gap-2 rounded-full gap-2 bg-[#25D366] px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:scale-105 hover:bg-[#20ba5a]',
         className
       )}
       onClick={() =>
@@ -45,6 +46,7 @@ export default function ExpertTalkButton({ expert, className }: ExpertTalkButton
         })
       }
     >
+      <WhatsAppIcon size={20} />
       Talk to {expert.name.split(' ')[0]}
     </button>
   );

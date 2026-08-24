@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 import {
-  BadgeCheck,
   Backpack,
   Calendar,
   Check,
@@ -9,11 +8,12 @@ import {
   Gauge,
   Info,
   MapPin,
-  Star,
   Users,
   X as XIcon
 } from 'lucide-react';
 import ExperienceBookingActions from '@/components/modules/experiences/ExperienceBookingActions';
+import ExperienceHero from '@/components/modules/experiences/ExperienceHero';
+import DetailPageContainer from '@/components/modules/detail/DetailPageContainer';
 import BackButton from '@/components/ui/BackButton';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { formatINR } from '@/lib/pricing';
@@ -34,12 +34,6 @@ export async function generateMetadata({ params }: ExperienceDetailPageProps): P
   };
 }
 
-const badgeStyles: Record<string, string> = {
-  'Best Seller': 'bg-apex-500 text-white',
-  Popular: 'bg-slate-900 text-white',
-  New: 'bg-emerald-600 text-white'
-};
-
 export default async function ExperienceDetailPage({ params }: ExperienceDetailPageProps) {
   const { slug } = await params;
   const experience = await getExperienceBySlug(slug);
@@ -51,55 +45,22 @@ export default async function ExperienceDetailPage({ params }: ExperienceDetailP
   const gallery = experience.gallery.length > 0 ? experience.gallery : [experience.image];
 
   return (
-    <main className="min-h-screen px-6 py-14 sm:px-10 lg:px-16">
-      <section className="mx-auto max-w-6xl space-y-6">
-        <BackButton fallbackHref="/experiences" label="Back to Experiences" />
+    <DetailPageContainer>
+      <BackButton fallbackHref="/experiences" label="Back to Experiences" />
 
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            {experience.badge ? (
-              <span className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.04em] ${badgeStyles[experience.badge]}`}>
-                {experience.badge}
-              </span>
-            ) : null}
-            {experience.verified ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                <BadgeCheck size={13} className="text-emerald-600" />
-                Verified Experience
-              </span>
-            ) : null}
-          </div>
-          <h1 className="mt-3 text-4xl font-bold text-slate-900 sm:text-5xl">{experience.title}</h1>
-          <div className="mt-3 flex flex-wrap items-center gap-4 text-slate-600">
-            <span className="inline-flex items-center gap-2">
-              <MapPin size={16} className="text-apex-600" /> {experience.location}
-            </span>
-            {experience.rating ? (
-              <span className="inline-flex items-center gap-2">
-                <Star size={15} className="fill-amber-400 text-amber-400" />
-                {experience.rating.toFixed(1)}
-                {experience.reviewCount ? <span className="text-slate-500"> ({experience.reviewCount} reviews)</span> : null}
-              </span>
-            ) : null}
-          </div>
-        </div>
+      <ExperienceHero experience={experience} image={gallery[0]} />
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="relative h-72 overflow-hidden rounded-[1.5rem] bg-slate-200 sm:col-span-2 sm:h-96">
-            <SafeImage src={gallery[0]} alt={experience.title} fill priority sizes="(min-width: 640px) 65vw, 100vw" className="object-cover" />
-          </div>
-          {gallery.length > 1 ? (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-1">
-              {gallery.slice(1, 3).map((image, index) => (
-                <div key={image + index} className="relative h-32 overflow-hidden rounded-[1.5rem] bg-slate-200 sm:h-[11.5rem]">
-                  <SafeImage src={image} alt={`${experience.title} — photo ${index + 2}`} fill sizes="30vw" className="object-cover" />
-                </div>
-              ))}
+      {gallery.length > 1 ? (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {gallery.slice(1, 3).map((image, index) => (
+            <div key={image + index} className="relative h-32 overflow-hidden rounded-[1.5rem] bg-slate-200 sm:h-40">
+              <SafeImage src={image} alt={`${experience.title} — photo ${index + 2}`} fill sizes="30vw" className="object-cover" />
             </div>
-          ) : null}
+          ))}
         </div>
+      ) : null}
 
-        <div className="grid gap-8 xl:grid-cols-[1.5fr_1fr]">
+      <div className="grid gap-8 xl:grid-cols-[1.5fr_1fr]">
           <div className="space-y-8">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <StatTile icon={Clock} label="Duration" value={experience.duration} />
@@ -221,8 +182,7 @@ export default async function ExperienceDetailPage({ params }: ExperienceDetailP
             <ExperienceBookingActions experience={experience} />
           </aside>
         </div>
-      </section>
-    </main>
+    </DetailPageContainer>
   );
 }
 

@@ -76,13 +76,16 @@ export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
             Plan My Journey
           </Link>
         </div>
+
+        <div className="mt-8">
+          <ExpertFilters facets={facets} destination={destination} travelStyle={travelStyle} expertise={expertise} q={q} />
+        </div>
       </InnerHeroBanner>
 
       <ExpertHelpOptions />
 
       <main>
-        <section className="mx-auto max-w-7xl space-y-8 px-6 pb-14 sm:px-10 lg:px-16">
-          <ExpertFilters facets={facets} destination={destination} travelStyle={travelStyle} expertise={expertise} q={q} />
+        <section className="mx-auto max-w-[1440px] px-6 pb-16">
           <ExpertGrid experts={experts} />
         </section>
 
@@ -91,33 +94,35 @@ export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
         <ExpertTripPlanner initialNeedHelpWith={help} />
 
         {recommendedJourneys.length > 0 ? (
-          <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 lg:px-16">
-            <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">Expert-Recommended Journeys</h2>
-            <p className="mt-3 max-w-2xl text-slate-600">Real itineraries our specialists recommend most often.</p>
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              {recommendedJourneys.map((journey) => (
-                <PackageCard key={journey.slug} pkg={journey} />
-              ))}
-            </div>
+          <section className="bg-slate-100 py-16">
+            <section className="mx-auto max-w-[1440px] px-6">
+              <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">Expert-Recommended Journeys</h2>
+              <p className="mt-3 max-w-2xl text-slate-600">Real itineraries our specialists recommend most often.</p>
+              <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                {recommendedJourneys.map((journey) => (
+                  <PackageCard key={journey.slug} pkg={journey} />
+                ))}
+              </div>
+            </section>
           </section>
         ) : null}
 
         <ExpertTravelSupport />
-
-        <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 lg:px-16">
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-2xl sm:p-8">
-            <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">Frequently Asked Questions</h2>
-            <div className="mt-5 space-y-4">
-              {expertFaqs.map((faq) => (
-                <div key={faq.question} className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                  <p className="font-semibold text-slate-900">{faq.question}</p>
-                  <p className="mt-2 text-sm text-slate-600">{faq.answer}</p>
-                </div>
-              ))}
+        <section className="bg-slate-100 py-16">
+          <section className="mx-auto max-w-[1440px] px-6">
+            <div className="">
+              <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">Frequently Asked Questions</h2>
+              <div className="mt-5 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                {expertFaqs.map((faq) => (
+                  <div key={faq.question} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md transition-all duration-300 ease-in-out motion-safe:hover:-translate-y-1.5 hover:shadow-xl">
+                    <p className="font-semibold text-slate-900">{faq.question}</p>
+                    <p className="mt-2 text-sm text-slate-600">{faq.answer}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          </section>
         </section>
-
         <FinalCta
           eyebrow="Still deciding?"
           title="Need Help "

@@ -18,8 +18,8 @@ export default async function ExpertCard({ expert }: ExpertCardProps) {
   ).filter((title): title is string => Boolean(title));
 
   return (
-    <article className="group flex h-full flex-col rounded-[2rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-      <div className="relative h-56 overflow-hidden rounded-t-[1.5rem] bg-slate-100">
+    <article className="group flex h-full flex-col rounded-3xl border border-slate-200 bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl">
+      <div className="relative h-56 overflow-hidden rounded-t-3xl bg-slate-100">
         <SafeImage
           src={expert.profileImage}
           alt={expert.name}
@@ -37,7 +37,7 @@ export default async function ExpertCard({ expert }: ExpertCardProps) {
           <h3 className="text-xl font-semibold text-slate-900">{expert.name}</h3>
           {destinationTitles.length > 0 ? (
             <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-slate-500">
-              <MapPin size={14} className="text-apex-600" />
+              <MapPin size={16} className="text-apex-600" />
               {destinationTitles.join(' • ')}
             </p>
           ) : null}
@@ -62,9 +62,9 @@ export default async function ExpertCard({ expert }: ExpertCardProps) {
         <div className="flex flex-wrap items-center gap-3 pt-2">
           <Link
             href={`/experts/${expert.slug}`}
-            className="cursor-hover inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-900 transition-all duration-300 ease-in-out hover:bg-slate-50"
+            className="cursor-hover inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-apex-500 px-5 py-3 text-center text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:scale-105 hover:bg-apex-400"
           >
-            <Eye size={18} />
+            <Eye size={20} />
             View Profile
           </Link>
           <ExpertTalkButton expert={expert} className="flex-1" />

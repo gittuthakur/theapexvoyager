@@ -10,7 +10,7 @@ export interface ExpertGridProps {
 export default function ExpertGrid({ experts }: ExpertGridProps) {
   if (experts.length === 0) {
     return (
-      <div className="rounded-[2rem] border border-slate-200 bg-white p-10 text-center text-slate-600 shadow-glow">
+      <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center text-slate-600 shadow-glow">
         <p className="text-lg font-semibold text-slate-900">We couldn&apos;t find an expert for these filters.</p>
         <p className="mt-3">Try a different destination, style or expertise — or talk to our travel team directly.</p>
         <div className="mt-6 flex justify-center">

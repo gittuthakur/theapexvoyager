@@ -1,0 +1,51 @@
+/* Same thumb/track technique as components/modules/destinations/PriceRangeSlider.css,
+   duplicated (not imported) for a single-handle slider so this component has no
+   dependency on the Destinations folder. */
+.price-max-slider {
+  position: relative;
+  height: 20px;
+}
+
+.price-max-slider input[type='range'] {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  transform: translateY(-50%);
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.price-max-slider input[type='range']::-webkit-slider-runnable-track {
+  background: transparent;
+  height: 20px;
+}
+
+.price-max-slider input[type='range']::-moz-range-track {
+  background: transparent;
+  height: 20px;
+}
+
+.price-max-slider input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #2563eb;
+  border: 3px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.35);
+  cursor: pointer;
+}
+
+.price-max-slider input[type='range']::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #2563eb;
+  border: 3px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.35);
+  cursor: pointer;
+}

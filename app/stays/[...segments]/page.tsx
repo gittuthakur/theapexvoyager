@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArrowRight, BadgeCheck, Car, MapPin, Sparkles, Star, Users } from 'lucide-react';
+import { ArrowRight, Car, MapPin, Sparkles, Users } from 'lucide-react';
 import PropertyCard from '@/components/modules/PropertyCard';
 import HotelBookingModal from '@/components/modules/HotelBookingModal';
 import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
+import StayHero from '@/components/modules/stays/StayHero';
+import DetailPageContainer from '@/components/modules/detail/DetailPageContainer';
 import BackButton from '@/components/ui/BackButton';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { getHotels, getHotelBySlug } from '@/lib/hotels';
@@ -191,56 +193,26 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
   const galleryImages = hotel.images.length > 0 ? hotel.images : [getPlaceholderImageForCategory(hotel.category)];
 
   return (
-    <main className="min-h-screen px-6 py-14 sm:px-10 lg:px-16">
-      <section className="mx-auto max-w-5xl space-y-6">
-        <BackButton
-          fallbackHref={matchedDestination ? `/destinations/${matchedDestination.slug}` : '/stays'}
-          label="Back to Apex Stays"
-        />
+    <DetailPageContainer>
+      <BackButton
+        fallbackHref={matchedDestination ? `/destinations/${matchedDestination.slug}` : '/stays'}
+        label="Back to Apex Stays"
+      />
 
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-10 shadow-glow">
-          {/* Above the fold */}
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full bg-apex-500 px-3 py-1 text-xs font-semibold uppercase text-white">{hotel.category}</span>
-                {hotel.verified ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                    <BadgeCheck size={13} /> Apex Verified
-                  </span>
-                ) : null}
-              </div>
-              <h1 className="mt-4 text-4xl font-semibold text-slate-900 sm:text-5xl">{hotel.title}</h1>
-              <p className="mt-3 inline-flex items-center gap-2 text-slate-600">
-                <MapPin size={16} className="text-apex-600" /> {hotel.location}
-              </p>
+      <StayHero hotel={hotel} image={galleryImages[0]} />
+
+      {galleryImages.length > 1 ? (
+        <div className="flex gap-2 overflow-x-auto">
+          {galleryImages.slice(1).map((image, index) => (
+            <div key={image} className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-slate-100">
+              <SafeImage src={image} alt={`${hotel.title} photo ${index + 2}`} fill sizes="112px" className="object-cover" />
             </div>
-            {hotel.rating ? (
-              <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600">
-                <Star size={14} className="fill-amber-400 text-amber-400" />
-                {hotel.rating.toFixed(1)}
-                {hotel.reviewCount ? <span className="text-slate-500"> ({hotel.reviewCount} Reviews)</span> : null}
-              </span>
-            ) : null}
-          </div>
+          ))}
+        </div>
+      ) : null}
 
-          {/* 1. Image gallery */}
-          <div className="mt-8 grid gap-2 overflow-hidden rounded-[1.5rem]">
-            <div className="relative h-[360px] w-full overflow-hidden bg-slate-100">
-              <SafeImage src={galleryImages[0]} alt={hotel.title} fill sizes="(min-width: 1024px) 60vw, 100vw" className="object-cover" priority />
-            </div>
-            {galleryImages.length > 1 ? (
-              <div className="flex gap-2 overflow-x-auto">
-                {galleryImages.slice(1).map((image, index) => (
-                  <div key={image} className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-slate-100">
-                    <SafeImage src={image} alt={`${hotel.title} photo ${index + 2}`} fill sizes="112px" className="object-cover" />
-                  </div>
-                ))}
-              </div>
-            ) : null}
-          </div>
-
-          <div className="mt-8 grid gap-8 xl:grid-cols-[1.4fr_0.9fr]">
+      <div className="rounded-[2rem] border border-slate-200 bg-white p-10 shadow-glow">
+        <div className="grid gap-8 xl:grid-cols-[1.4fr_0.9fr]">
             <div className="space-y-8">
               {/* 1. About the Stay */}
               <div>
@@ -395,7 +367,6 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
             </div>
           </div>
         ) : null}
-      </section>
-    </main>
+    </DetailPageContainer>
   );
 }

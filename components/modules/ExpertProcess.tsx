@@ -12,20 +12,20 @@ const steps = [
 
 export default function ExpertProcess() {
   return (
-    <section className="bg-slate-50 px-6 py-16 sm:px-10 lg:px-16">
+    <section className="bg-slate-100 py-16">
       <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={viewportOnce}
         variants={staggerContainer}
-        className="mx-auto max-w-7xl"
+        className="mx-auto max-w-[1440px]"
       >
         <motion.h2 variants={fadeInUp} className="text-2xl font-semibold text-slate-900 sm:text-3xl">
           How Your Expert Helps
         </motion.h2>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((step) => (
-            <motion.div key={step.number} variants={fadeInUp} className="rounded-[1.75rem] border border-slate-200 bg-white p-6">
+            <motion.div key={step.number} variants={fadeInUp} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
               <p className="text-3xl font-bold text-apex-500">{step.number}</p>
               <h3 className="mt-3 text-lg font-semibold text-slate-900">{step.title}</h3>
               <p className="mt-2 text-sm text-slate-600">{step.description}</p>

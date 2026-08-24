@@ -1,14 +1,15 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArrowRight, Car, Clock, Compass, Eye, Gem, Mountain, Sparkles, Map, MapPin, Star, Users } from 'lucide-react';
+import { ArrowRight, Car, Clock, Compass, Eye, Gem, Mountain, Sparkles, Map, MapPin, Users } from 'lucide-react';
 import StaysGrid from '@/components/modules/StaysGrid';
 import DestinationCard from '@/components/modules/DestinationCard';
 import PackageCard from '@/components/modules/PackageCard';
 import ExpertCard from '@/components/modules/ExpertCard';
-import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
-import DestinationPlanJourneyButton from '@/components/modules/DestinationPlanJourneyButton';
 import DestinationSeasonModule from '@/components/modules/DestinationSeasonModule';
+import DestinationHero from '@/components/modules/destinations/DestinationHero';
+import DetailPageContainer from '@/components/modules/detail/DetailPageContainer';
+import DetailSectionNav from '@/components/modules/detail/DetailSectionNav';
 import BackButton from '@/components/ui/BackButton';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
@@ -97,47 +98,26 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
       Boolean(entry.pick)
     );
 
+  const destinationSections = [
+    { id: 'overview', label: 'Overview' },
+    { id: 'apex-picks', label: 'Apex picks' },
+    { id: 'experiences', label: 'Experiences' },
+    { id: 'tours', label: 'Tours' },
+    { id: 'packages', label: 'Packages' },
+    { id: 'getting-around', label: 'Getting around' },
+    { id: 'experts', label: 'Experts' },
+    { id: 'stays', label: 'Stays' }
+  ];
+
   return (
-    <main className="min-h-screen px-6 py-14 sm:px-10 lg:px-16">
-      <section className="mx-auto max-w-6xl space-y-6">
-        <BackButton fallbackHref={parentRegion ? `/regions/${parentRegion.id}` : '/destinations'} label="Back to Destinations" />
+    <DetailPageContainer>
+      <BackButton fallbackHref={parentRegion ? `/regions/${parentRegion.id}` : '/destinations'} label="Back to Destinations" />
 
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-2xl sm:p-8">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.5em] text-apex-500">{destination.region ?? destination.category}</p>
-              <h1 className="mt-3 text-4xl font-bold text-slate-900 sm:text-5xl">{destination.title}</h1>
-              <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-600">{destination.description}</p>
-              <div className="mt-4 flex flex-wrap gap-2">{destination.travelStyles?.slice(0, 3).map((style) => <span key={style} className="rounded-full bg-apex-500 px-4 py-2 text-sm text-white">{style}</span>)}</div>
-            </div>
-            {destinationRating ? (
-              <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-700">
-                <Star size={14} className="fill-amber-400 text-amber-400" />
-                {destinationRating.rating.toFixed(1)}
-                <span className="text-slate-500"> ({destinationRating.count} review{destinationRating.count === 1 ? '' : 's'})</span>
-              </span>
-            ) : null}
-          </div>
+      <DestinationHero destination={destination} rating={destinationRating} />
 
-          <div className="relative mt-8 h-[360px] w-full overflow-hidden rounded-[1.5rem] bg-slate-900">
-            <SafeImage src={destination.image} alt={`${destination.title}, ${destination.state ?? 'Himalayas'}`} fill priority sizes="(min-width: 1024px) 960px, 100vw" className="object-cover" />
-          </div>
+      <DetailSectionNav sections={destinationSections} />
 
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            <DestinationPlanJourneyButton destinationTitle={destination.title} destinationSlug={destination.slug} />
-            <WhatsAppEnquireButton selection={{ name: destination.title, type: 'destination', slug: destination.slug }} label="Enquire on WhatsApp" />
-          </div>
-        </div>
-
-        <nav aria-label="Destination sections" className="sticky top-0 z-20 -mx-6 overflow-x-auto border-y border-slate-200 bg-white/95 px-6 py-3 backdrop-blur sm:-mx-10 sm:px-10 lg:-mx-16 lg:px-16">
-          <div className="flex w-max gap-6 text-sm font-semibold text-slate-600">
-            {['Overview', 'Apex picks', 'Experiences', 'Tours', 'Packages', 'Getting around', 'Experts', 'Stays'].map((label) => (
-              <a key={label} href={`#${label.toLowerCase().replace(/\s+/g, '-')}`} className="whitespace-nowrap transition-colors duration-300 ease-in-out hover:text-apex-600">{label}</a>
-            ))}
-          </div>
-        </nav>
-
-        <section id="overview" className="grid gap-8 py-8 lg:grid-cols-[1.1fr_0.9fr]">
+      <section id="overview" className="grid gap-8 py-8 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.28em] text-apex-500">The story</p>
             <h2 className="mt-3 text-3xl font-bold text-slate-900">Discover {destination.title}</h2>
@@ -357,9 +337,8 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
           </section>
         ) : null}
 
-        {related.length ? <section><SectionHeading eyebrow="Keep exploring" title="You May Also Like" /><div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <DestinationCard key={item.slug} destination={item} />)}</div></section> : null}
-      </section>
-    </main>
+      {related.length ? <section><SectionHeading eyebrow="Keep exploring" title="You May Also Like" /><div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <DestinationCard key={item.slug} destination={item} />)}</div></section> : null}
+    </DetailPageContainer>
   );
 }
 

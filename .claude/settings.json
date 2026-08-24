@@ -5,7 +5,17 @@
       "WebFetch(domain:carousel-slider.uiinitiative.com)",
       "Bash(git status *)",
       "Bash(npx --no-install playwright --version)",
-      "Bash(node \"C:/Users/geeta.ram/AppData/Local/Temp/claude/d--githob-The-Apex-Voyager-theapexvoyager/aff0055f-fde0-4e91-8ca2-5ad7c6b8c894/scratchpad/shot.js\")"
+      "Bash(node \"C:/Users/geeta.ram/AppData/Local/Temp/claude/d--githob-The-Apex-Voyager-theapexvoyager/aff0055f-fde0-4e91-8ca2-5ad7c6b8c894/scratchpad/shot.js\")",
+      "Bash(powershell -Command \"Get-Process -Id 33612 -ErrorAction SilentlyContinue | Select-Object Id,ProcessName,StartTime\")",
+      "Bash(powershell -Command \"Stop-Process -Id 33612 -Force\")",
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Select-Object OwningProcess\")",
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Select-Object Id,StartTime\")",
+      "Bash(node \"C:\\\\Users\\\\geeta.ram\\\\.claude\\\\skills\\\\browser-automation\\\\browser.mjs\" http://localhost:3000/ --script \"C:\\\\Users\\\\geeta.ram\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--githob-The-Apex-Voyager-theapexvoyager\\\\c9c54434-c520-4588-aadf-f7f36c5fc933\\\\scratchpad\\\\sticky-verify.mjs\")",
+      "Bash(node \"C:\\\\Users\\\\geeta.ram\\\\.claude\\\\skills\\\\browser-automation\\\\browser.mjs\" http://localhost:3000/ --script \"C:\\\\Users\\\\geeta.ram\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--githob-The-Apex-Voyager-theapexvoyager\\\\c9c54434-c520-4588-aadf-f7f36c5fc933\\\\scratchpad\\\\final-regression.mjs\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/ --max-time 3)",
+      "Bash(node \"C:\\\\Users\\\\geeta.ram\\\\.claude\\\\skills\\\\browser-automation\\\\browser.mjs\" http://localhost:3000/ --script \"C:\\\\Users\\\\geeta.ram\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--githob-The-Apex-Voyager-theapexvoyager\\\\c9c54434-c520-4588-aadf-f7f36c5fc933\\\\scratchpad\\\\checkbox-verify.mjs\")",
+      "Bash(node \"C:\\\\Users\\\\geeta.ram\\\\.claude\\\\skills\\\\browser-automation\\\\browser.mjs\" http://localhost:3000/ --script \"C:\\\\Users\\\\geeta.ram\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--githob-The-Apex-Voyager-theapexvoyager\\\\c9c54434-c520-4588-aadf-f7f36c5fc933\\\\scratchpad\\\\mobile-scope-check.mjs\")",
+      "Bash(node \"C:\\\\Users\\\\geeta.ram\\\\.claude\\\\skills\\\\browser-automation\\\\browser.mjs\" http://localhost:3000/ --script \"C:\\\\Users\\\\geeta.ram\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--githob-The-Apex-Voyager-theapexvoyager\\\\c9c54434-c520-4588-aadf-f7f36c5fc933\\\\scratchpad\\\\final-checkbox-shot.mjs\")"
     ]
   }
 }

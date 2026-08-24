@@ -3,7 +3,9 @@ import type { Metadata } from 'next';
 import StaySearch from '@/components/modules/StaySearch';
 import StayFilters from '@/components/modules/StayFilters';
 import PropertyCard from '@/components/modules/PropertyCard';
+import { FILTER_EMPTY_STATE_CLASS } from '@/components/modules/filters/filterStyles';
 import { SkeletonGrid } from '@/components/ui/Skeleton';
+import { cn } from '@/lib/utils';
 import { getHotels } from '@/lib/hotels';
 import { findStayTypeBySlug } from '@/config/stayTypes.config';
 import { findStayMoodBySlug } from '@/config/stayMoods.config';
@@ -104,6 +106,15 @@ async function StaySearchResults({ destination, checkIn, checkOut, guests, type,
 
   const amenityOptions = Array.from(new Set(scoped.flatMap((hotel) => hotel.amenities ?? []))).sort((a, b) => a.localeCompare(b));
 
+  // Real min/max nightly price across the current (destination/type-scoped) result
+  // set, for the desktop price slider — never fabricated; null when there's nothing
+  // meaningful to slide between, mirroring PriceRangeSlider's own honest-empty-state rule.
+  const scopedPrices = scoped.map((hotel) => hotel.places?.customPrice ?? hotel.pricePerNight);
+  const priceBounds =
+    scopedPrices.length > 0 && Math.max(...scopedPrices) > Math.min(...scopedPrices)
+      ? { min: Math.min(...scopedPrices), max: Math.max(...scopedPrices) }
+      : null;
+
   const priceMaxValue = priceMax ? Number(priceMax) : undefined;
   const hotels: HotelPackage[] = scoped.filter((hotel) => {
     const price = hotel.places?.customPrice ?? hotel.pricePerNight;
@@ -115,18 +126,24 @@ async function StaySearchResults({ destination, checkIn, checkOut, guests, type,
   const currentParams: Record<string, string | undefined> = { destination, checkIn, checkOut, guests, type, priceMax, amenity, mood };
 
   const filters = (
-    <StayFilters currentParams={currentParams} amenityOptions={amenityOptions} activePriceMax={priceMax} activeType={type} activeAmenity={amenity} />
+    <StayFilters
+      currentParams={currentParams}
+      amenityOptions={amenityOptions}
+      activePriceMax={priceMax}
+      activeType={type}
+      activeAmenity={amenity}
+      resultCount={hotels.length}
+      priceBounds={priceBounds}
+    />
   );
 
   if (hotels.length === 0) {
     return (
       <div className="flex flex-col gap-5 xl:flex-row xl:items-start">
         {filters}
-        <div className="grid flex-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-10 text-center text-slate-600 shadow-glow xl:col-span-2">
-            <p className="text-lg font-semibold text-slate-900">No stays match your search.</p>
-            <p className="mt-3">Try a different destination, stay type, or price range.</p>
-          </div>
+        <div className={cn(FILTER_EMPTY_STATE_CLASS, 'flex-1')}>
+          <p className="text-lg font-semibold text-slate-900">No stays match your search.</p>
+          <p className="mt-3 text-slate-600">Try a different destination, stay type, or price range.</p>
         </div>
       </div>
     );

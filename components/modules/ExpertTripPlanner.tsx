@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { CheckCircle2, MapPin } from 'lucide-react';
+import { ArrowRight, CheckCircle2, MapPin } from 'lucide-react';
 import { useBookingRequest } from '@/components/modules/BookingRequestModal';
 import TalkToTravelTeamButton from '@/components/modules/TalkToTravelTeamButton';
 import { destinations } from '@/config/destinations.config';
@@ -103,15 +103,15 @@ export default function ExpertTripPlanner({ initialNeedHelpWith }: ExpertTripPla
   }
 
   return (
-    <section id="plan-my-trip" className="mx-auto max-w-7xl scroll-mt-24 px-6 py-16 sm:px-10 lg:px-16">
-      <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-glow sm:p-10">
+    <section id="plan-my-trip" className="mx-auto max-w-[1440px] scroll-mt-24 px-6 py-16">
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-md sm:p-8">
         <p className="text-sm uppercase tracking-[0.32em] text-apex-600">Personal trip planner</p>
         <h2 className="mt-4 text-2xl font-semibold text-slate-900 sm:text-3xl">Tell Us About Your Journey</h2>
         <p className="mt-3 max-w-2xl text-slate-600">
           Share a few details and we&apos;ll point you to the specialist best placed to help — no long forms, no commitment.
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-8 grid gap-6 sm:grid-cols-2">
+        <form onSubmit={handleSubmit} className="mt-8 grid gap-6 sm:grid-cols-3">
           <label className="block text-sm">
             <span className="font-semibold text-slate-700">Where do you want to go?</span>
             <select
@@ -196,7 +196,7 @@ export default function ExpertTripPlanner({ initialNeedHelpWith }: ExpertTripPla
             </select>
           </label>
 
-          <label className="block text-sm sm:col-span-2">
+          <label className="block text-sm sm:col-span-3">
             <span className="font-semibold text-slate-700">What do you need help with?</span>
             <select
               value={needHelpWith}
@@ -211,7 +211,7 @@ export default function ExpertTripPlanner({ initialNeedHelpWith }: ExpertTripPla
             </select>
           </label>
 
-          <label className="block text-sm sm:col-span-2">
+          <label className="block text-sm sm:col-span-3">
             <span className="font-semibold text-slate-700">Additional requirements (optional)</span>
             <textarea
               value={requirements}
@@ -233,9 +233,10 @@ export default function ExpertTripPlanner({ initialNeedHelpWith }: ExpertTripPla
             <button
               type="submit"
               disabled={status === 'loading'}
-              className="cursor-hover inline-flex items-center justify-center gap-2 rounded-full bg-apex-500 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400 disabled:cursor-not-allowed disabled:opacity-60"
+              className="cursor-hover inline-flex items-center justify-center gap-2 rounded-lg bg-apex-500 px-8 py-4 text-md font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {status === 'loading' ? 'Finding your expert…' : 'Get My Travel Plan'}
+              <ArrowRight size={18} />
             </button>
           </div>
         </form>

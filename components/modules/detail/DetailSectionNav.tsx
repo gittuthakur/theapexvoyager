@@ -3,24 +3,22 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
-export interface RegionSection {
+export interface DetailSection {
   id: string;
   label: string;
 }
 
-export interface RegionSectionNavigationProps {
-  sections: RegionSection[];
+export interface DetailSectionNavProps {
+  sections: DetailSection[];
 }
 
-// Mobile horizontal-scroll idiom mirrors SearchTabs (components/GlobalSearchFilter.tsx):
-// `overflow-x-auto` + `whitespace-nowrap` within the section's own natural width, with
-// NO negative-margin "bleed to viewport edge" trick — that combination (used by
-// app/destinations/[slug]/page.tsx's own section nav, `-mx-6 ... px-6`) measurably
-// leaked past the viewport at 320-375px when tested here, since this nav sits one level
-// deeper (inside a plain, unpadded `max-w-6xl` section, not main's own padded box) than
-// where that pattern was authored. Dropping the negative margins avoids the issue
-// entirely while keeping the identical scroll behavior.
-export default function RegionSectionNavigation({ sections }: RegionSectionNavigationProps) {
+// Shared sticky scroll-spy tabs for the internal detail pages that use anchor-section
+// navigation (Region, Destination) — lifted from Region's original implementation.
+// Deliberately has NO negative-margin "bleed to viewport edge" trick: that combination
+// (used by Destination's now-retired inline nav) measurably leaked past the viewport at
+// 320-375px, since this nav sits one level deep inside a plain, unpadded
+// DetailPageContainer section rather than main's own padded box.
+export default function DetailSectionNav({ sections }: DetailSectionNavProps) {
   const [activeId, setActiveId] = useState<string | undefined>(sections[0]?.id);
 
   useEffect(() => {
@@ -45,7 +43,7 @@ export default function RegionSectionNavigation({ sections }: RegionSectionNavig
 
   return (
     <nav
-      aria-label="Region sections"
+      aria-label="Page sections"
       className="sticky top-0 z-20 min-w-0 overflow-x-auto border-y border-slate-200 bg-white/95 px-2 py-3 backdrop-blur"
     >
       <div className="flex w-max min-w-full gap-6 text-sm font-semibold text-slate-600">

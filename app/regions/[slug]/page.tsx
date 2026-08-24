@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import BackButton from '@/components/ui/BackButton';
 import WhatsAppButton from '@/components/modules/WhatsAppButton';
+import DetailPageContainer from '@/components/modules/detail/DetailPageContainer';
+import DetailSectionNav from '@/components/modules/detail/DetailSectionNav';
 import RegionHero from '@/components/modules/regions/RegionHero';
-import RegionSectionNavigation from '@/components/modules/regions/RegionSectionNavigation';
 import RegionOverview from '@/components/modules/regions/RegionOverview';
 import RegionDestinations from '@/components/modules/regions/RegionDestinations';
 import RegionJourneys from '@/components/modules/regions/RegionJourneys';
@@ -80,13 +81,13 @@ export default async function RegionHubPage({ params }: RegionHubPageProps) {
   ].filter((section) => section.hasData);
 
   return (
-    <main className="min-h-screen px-6 py-14 sm:px-10 lg:px-16">
-      <section className="mx-auto max-w-6xl space-y-6">
+    <>
+      <DetailPageContainer>
         <BackButton fallbackHref="/destinations" label="Back to Destinations" />
 
         <RegionHero region={region} />
 
-        <RegionSectionNavigation sections={sections} />
+        <DetailSectionNav sections={sections} />
 
         {sections.some((s) => s.id === 'overview') ? <RegionOverview region={region} /> : null}
         {sections.some((s) => s.id === 'destinations') ? <RegionDestinations destinations={destinations} regionName={region.name} /> : null}
@@ -100,9 +101,9 @@ export default async function RegionHubPage({ params }: RegionHubPageProps) {
         <RegionTransport transportServices={transportServices} transportVehicles={transportVehicles} regionName={region.name} />
         <RegionExperts travelExperts={travelExperts} regionName={region.name} />
         <RegionFinalCTA region={region} />
-      </section>
+      </DetailPageContainer>
 
       <WhatsAppButton destination={region.name} />
-    </main>
+    </>
   );
 }
