@@ -381,7 +381,7 @@ export default function ExperiencesListing({
         onClose={() => setFiltersOpen(false)}
         label="Filter experiences"
         overlayClassName="items-end p-0 sm:items-center sm:p-6"
-        panelClassName="my-0 w-full max-w-none rounded-t-[2rem] rounded-b-none bg-white p-6 max-h-[90vh] overflow-y-auto sm:my-auto sm:max-w-xl sm:rounded-[2rem]"
+        panelClassName="my-0 w-full max-w-none rounded-t-[2rem] rounded-b-none bg-white p-6 overflow-y-auto sm:my-auto sm:max-w-xl sm:rounded-[2rem]"
       >
         <div className="flex items-center justify-between">
           <p className="text-base font-bold text-slate-900">Filters</p>

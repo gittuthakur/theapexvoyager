@@ -143,7 +143,7 @@ export function FieldPopover({ open, onClose, anchorRef, children, width, align 
             maxHeight: coords.maxHeight,
             zIndex: 100
           }}
-          className={cn(SEARCH_OVERLAY_CLASS, 'pointer-events-auto max-h-[85vh] max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain p-4', className)}
+          className={cn(SEARCH_OVERLAY_CLASS, 'pointer-events-auto max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain p-4', className)}
           onWheel={(event) => event.stopPropagation()}
         >
           {children}

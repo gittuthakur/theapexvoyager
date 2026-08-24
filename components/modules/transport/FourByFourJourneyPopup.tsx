@@ -185,7 +185,7 @@ export default function FourByFourJourneyPopup({
       open
       onClose={onClose}
       labelledBy="fourbyfour-journey-popup-title"
-      panelClassName="max-w-4xl rounded-3xl pointer-events-auto p-6 sm:p-8 bg-white shadow-glow max-h-[90vh] overflow-y-auto"
+      panelClassName="max-w-4xl rounded-3xl pointer-events-auto p-6 sm:p-8 bg-white shadow-glow overflow-y-auto"
     >
       <div className="flex items-start justify-between gap-4">
         <div>

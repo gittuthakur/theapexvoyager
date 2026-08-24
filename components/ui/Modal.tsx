@@ -20,7 +20,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
       onClose={onClose}
       label={title}
       panelClassName={cn(
-        'flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 shadow-glow',
+        'flex w-full max-w-lg flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 shadow-glow',
         className
       )}
     >
