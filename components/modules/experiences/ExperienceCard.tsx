@@ -133,10 +133,10 @@ export default function ExperienceCard({ experience, variant = 'grid', priority 
 
         <div className="flex-1" />
 
-        <div className="flex items-center justify-between gap-3 border-t border-slate-100 pt-4">
+        <div className="flex items-end justify-between gap-3 border-t border-slate-100 pt-4">
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.18em] text-slate-500">From</p>
-            <p className={cn('font-bold text-slate-900', isFeatured ? 'text-3xl' : 'text-3xl')}>
+            <p className={cn('font-extrabold text-slate-900', isFeatured ? 'text-3xl' : 'text-3xl')}>
               {formatINR(experience.price)} <span className="text-sm font-normal text-slate-500">/ person</span>
             </p>
           </div>

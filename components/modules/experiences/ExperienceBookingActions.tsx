@@ -2,46 +2,31 @@
 
 import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
-import { useBookingRequest } from '@/components/modules/BookingRequestModal';
+import { useBookingNavigation } from '@/lib/bookingNavigation';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 import { Button } from '@/components/ui/Button';
 import { Input, Textarea } from '@/components/ui/Input';
-import { buildExperienceRequestMessage, buildWhatsAppLink } from '@/lib/whatsapp';
+import { buildWhatsAppLink } from '@/lib/whatsapp';
 import type { Experience } from '@/types/experience';
 
 export interface ExperienceBookingActionsProps {
   experience: Experience;
 }
 
-// Since there's no payment gateway yet, both CTAs below hand the request off to
-// WhatsApp rather than attempting an online checkout — "Plan This Experience"
-// captures a lead first (via the shared BookingRequestModal, same flow tours/stays
-// use), "WhatsApp to Book" skips straight to a pre-filled chat for travelers who
-// just want to ask a quick question.
+// "Plan This Experience" now hands off to the universal Plan My Journey flow
+// (source=experience&slug=...) instead of the shared BookingRequestModal lead form, so
+// the wizard opens already prefilled with this experience's destination/region. The
+// date/travellers/special-request fields below are left in place for the traveler's own
+// reference on this page, but — per the booking-context contract (identifiers only in
+// the URL) — their values aren't carried into the wizard. "WhatsApp to Book" is unchanged.
 export default function ExperienceBookingActions({ experience }: ExperienceBookingActionsProps) {
-  const { openBookingRequest } = useBookingRequest();
+  const { navigateToBooking } = useBookingNavigation();
   const [preferredDate, setPreferredDate] = useState('');
   const [travelers, setTravelers] = useState(2);
   const [specialRequest, setSpecialRequest] = useState('');
 
   function handlePlanExperience() {
-    openBookingRequest({
-      type: 'experience',
-      itemName: experience.title,
-      destination: experience.location,
-      dates: preferredDate || undefined,
-      travelers: String(travelers),
-      details: { category: experience.category, subCategory: experience.subCategory, specialRequest: specialRequest || undefined },
-      buildWhatsAppMessage: (referenceId) =>
-        buildExperienceRequestMessage({
-          referenceId,
-          title: experience.title,
-          location: experience.location,
-          dates: preferredDate || undefined,
-          travelers: String(travelers),
-          specialRequest: specialRequest || undefined
-        })
-    });
+    navigateToBooking({ source: 'experience', slug: experience.slug });
   }
 
   const quickWhatsAppHref = buildWhatsAppLink({ tripTitle: experience.title, destination: experience.location });

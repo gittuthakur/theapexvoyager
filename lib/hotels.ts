@@ -3,7 +3,7 @@ import { resolveHotelImages } from '@/lib/hotelImages.server';
 import { Hotel, type HotelDocument } from '@/models/Hotel';
 import type { HotelCategory, HotelPackage } from '@/types';
 
-function toHotelPackage(doc: HotelDocument): HotelPackage {
+export function toHotelPackage(doc: HotelDocument): HotelPackage {
   return {
     id: String(doc._id),
     slug: doc.slug,
@@ -22,7 +22,8 @@ function toHotelPackage(doc: HotelDocument): HotelPackage {
     featured: doc.featured,
     verified: doc.verified,
     cancellationPolicy: doc.cancellationPolicy,
-    mealPlan: doc.mealPlan
+    mealPlan: doc.mealPlan,
+    regionId: doc.regionId ? String(doc.regionId) : undefined
   };
 }
 

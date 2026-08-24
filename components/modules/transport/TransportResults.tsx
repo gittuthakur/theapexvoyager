@@ -5,6 +5,7 @@ import { useBookingRequest } from '@/components/modules/BookingRequestModal';
 import { buildTransportRequestMessage } from '@/lib/whatsapp';
 import TransportCard from './TransportCard';
 import TransportDetail from './TransportDetail';
+import NoInventoryActions from './NoInventoryActions';
 import type { VehicleOption } from '@/types/transport';
 
 export interface TransportResultsProps {
@@ -15,6 +16,12 @@ export interface TransportResultsProps {
   travellers?: string;
   hasActiveFilter: boolean;
   journeyContext?: { from?: string; journeySlug?: string };
+  /** e.g. "Cab with Driver · Manali → Chandigarh · 27 Aug" — only when this search is active. */
+  searchSummary?: string;
+  service?: string;
+  vehicleCategory?: string;
+  tripType?: string;
+  isActiveService?: boolean;
 }
 
 export default function TransportResults({
@@ -24,38 +31,42 @@ export default function TransportResults({
   date,
   travellers,
   hasActiveFilter,
-  journeyContext
+  journeyContext,
+  searchSummary,
+  service,
+  vehicleCategory,
+  tripType,
+  isActiveService = false
 }: TransportResultsProps) {
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleOption | null>(null);
   const { openBookingRequest } = useBookingRequest();
 
+  // Same direct BookingRequestModal lead-capture flow every other transport service
+  // uses (Self-Drive/4x4/Bike/Local Mobility) — carries the pickup/drop/date/travellers
+  // this section's own search actually captured straight into the enquiry and the
+  // WhatsApp message, instead of detouring through the generic Plan-My-Journey wizard
+  // (which only recognised 2 of 13 vehicle categories and dropped the rest of this
+  // context on the floor).
   function handleRequestVehicle(vehicle: VehicleOption) {
-    const routeLabel = pickup && destination ? `${pickup} → ${destination}` : undefined;
     openBookingRequest({
       type: 'transport',
       itemName: vehicle.name,
-      destination: routeLabel,
+      destination: pickup && destination ? `${pickup} → ${destination}` : destination,
       dates: date,
       travelers: travellers,
       details: {
+        serviceType: vehicle.serviceType ?? 'Cab with Driver',
         vehicleSlug: vehicle.slug ?? vehicle.id,
-        category: vehicle.category,
         pickup,
         destination,
         date,
         travellers,
-        source: journeyContext?.from ?? 'transport-page',
-        journeySlug: journeyContext?.journeySlug
+        from: journeyContext?.from,
+        journeySlug: journeyContext?.journeySlug,
+        source: 'transport'
       },
       buildWhatsAppMessage: (referenceId) =>
-        buildTransportRequestMessage({
-          referenceId,
-          pickup: pickup || 'your pickup point',
-          destination: destination || 'your destination',
-          date,
-          travelers: travellers,
-          vehicleName: vehicle.name
-        })
+        buildTransportRequestMessage({ referenceId, pickup, destination, date, travelers: travellers, vehicleName: vehicle.name })
     });
   }
 
@@ -66,14 +77,15 @@ export default function TransportResults({
       destination: pickup && destination ? `${pickup} → ${destination}` : undefined,
       dates: date,
       travelers: travellers,
-      details: { pickup, destination, date, travellers, source: 'transport-empty-state' }
+      details: { serviceType: service, vehicleCategory, pickup, destination, date, travellers, tripType, source: 'transport-empty-state' }
     });
   }
 
   return (
-    <section id="transport-results" className="mx-auto max-w-[1440px] px-6">
-      <p className="text-sm font-semibold uppercase tracking-[0.24em] text-apex-600">Our fleet</p>
-      <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">Choose your vehicle</h2>
+    <section id={isActiveService ? 'transport-results' : undefined} className="mx-auto max-w-[1440px] px-6">
+      <p className="text-sm font-semibold uppercase tracking-[0.24em] text-apex-600">Chauffeur-driven transport</p>
+      <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">Chauffeur-Driven Transport</h2>
+      {searchSummary ? <p className="mt-2 text-sm text-slate-500">{searchSummary}</p> : null}
 
       {vehicles.length > 0 ? (
         <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
@@ -83,6 +95,9 @@ export default function TransportResults({
               vehicle={vehicle}
               pickup={pickup}
               destination={destination}
+              date={date}
+              travellers={travellers}
+              journeyContext={journeyContext}
               onViewDetails={setSelectedVehicle}
               onRequestVehicle={handleRequestVehicle}
             />
@@ -91,18 +106,12 @@ export default function TransportResults({
       ) : (
         <div className="mt-6 rounded-[2rem] border border-slate-200 bg-white p-10 text-center shadow-glow">
           <p className="text-lg font-semibold text-slate-900">
-            {hasActiveFilter ? 'No transport options found for this route.' : 'Our fleet is being updated.'}
+            {hasActiveFilter ? 'No matching verified vehicle is currently listed for this trip.' : 'Our fleet is being updated.'}
           </p>
           <p className="mt-3 text-slate-600">
             Tell us what you need and our travel experts will arrange it for you.
           </p>
-          <button
-            type="button"
-            onClick={handleCustomQuote}
-            className="cursor-hover mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-apex-500 px-6 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400"
-          >
-            Request a Custom Quote
-          </button>
+          <NoInventoryActions onRequestCustomVehicle={handleCustomQuote} modifyHref="#vehicle-recommendation" modifyLabel="Modify Recommendation" />
         </div>
       )}
 
@@ -114,6 +123,7 @@ export default function TransportResults({
           date={date}
           travellers={travellers}
           journeyContext={journeyContext}
+          onRequestVehicle={handleRequestVehicle}
           onClose={() => setSelectedVehicle(null)}
         />
       ) : null}

@@ -79,4 +79,6 @@ export interface TravelPackage {
   /** Reuses the generic {view,stay,experience,taste,moment} shape built for destinations (types/destination.ts) — no need for a parallel type. */
   apexPicks?: DestinationApexPicks;
   faqs?: PackageFaq[];
+  /** ObjectId (as a string) of the MongoDB Region document this journey belongs to — see models/Region.ts. */
+  regionId?: string;
 }

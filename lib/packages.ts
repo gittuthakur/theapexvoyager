@@ -2,7 +2,7 @@ import { connectDB } from '@/lib/mongodb';
 import { Journey, type JourneyDocument } from '@/models/Journey';
 import type { TravelPackage } from '@/types/package';
 
-function toTravelPackage(doc: JourneyDocument): TravelPackage {
+export function toTravelPackage(doc: JourneyDocument): TravelPackage {
   return {
     slug: doc.slug,
     name: doc.name,
@@ -25,7 +25,8 @@ function toTravelPackage(doc: JourneyDocument): TravelPackage {
     pace: doc.pace,
     signatureMoments: doc.signatureMoments,
     apexPicks: doc.apexPicks,
-    faqs: doc.faqs
+    faqs: doc.faqs,
+    regionId: doc.regionId ? String(doc.regionId) : undefined
   };
 }
 

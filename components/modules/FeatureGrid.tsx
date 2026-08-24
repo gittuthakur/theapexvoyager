@@ -20,6 +20,7 @@ import { ButtonLink } from '@/components/ui/Button';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { cn } from '@/lib/utils';
 import { fadeInUp, viewportOnce } from '@/lib/motion';
+import { buildBookingHref } from '@/lib/bookingNavigation';
 import type { TourPackage } from '@/types';
 
 export interface FeatureGridProps {
@@ -89,7 +90,7 @@ function TourCard({ tour, size, isActive, onSelect }: TourCardProps) {
         className="relative group flex min-h-[520px] h-full flex-col justify-end overflow-hidden rounded-[1.75rem] bg-slate-950/70 shadow-xl transition-shadow duration-300 hover:shadow-apex-500/20 motion-safe:hover:-translate-y-0.5"
       >
         {/* Background Image Container */}
-        <div className="absolute inset-0 z-0 h-full w-full overflow-hidden">
+        <div className={cn('absolute inset-0 z-0 h-full w-full overflow-hidden', !tour.image && 'bg-slate-700')}>
           {tour.badge ? (
             <span className="flex gap-1.5 absolute left-4 top-4 z-20 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-apex-600 backdrop-blur-sm shadow-md">
               {tour.badge}
@@ -103,13 +104,15 @@ function TourCard({ tour, size, isActive, onSelect }: TourCardProps) {
             </span>
           ) : null}
 
-          <SafeImage
-            src={tour.image}
-            alt={`${tour.title} tour photo`}
-            fill
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            className="h-full w-full object-cover transition duration-500 ease-in-out motion-safe:group-hover:scale-105"
-          />
+          {tour.image ? (
+            <SafeImage
+              src={tour.image}
+              alt={`${tour.title} tour photo`}
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="h-full w-full object-cover transition duration-500 ease-in-out motion-safe:group-hover:scale-105"
+            />
+          ) : null}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0D1830] via-[#0D1830]/75 to-transparent" />
         </div>
 
@@ -176,7 +179,7 @@ function TourCard({ tour, size, isActive, onSelect }: TourCardProps) {
           <div className="mt-2 flex items-center justify-between gap-4 pt-3">
             <div>
               <span className="block text-xs font-medium uppercase tracking-wider text-slate-400">Starting from</span>
-              <span className="text-2xl font-bold text-white sm:text-4xl">{tour.price}</span>
+              <span className="text-2xl font-extrabold text-white sm:text-4xl">{tour.price}</span>
               <span className="text-sm text-slate-400"> {tour.priceUnit ?? '/ Person'}</span>
             </div>
             <div className="flex shrink-0 items-center gap-4">
@@ -187,11 +190,7 @@ function TourCard({ tour, size, isActive, onSelect }: TourCardProps) {
                 View Details
               </Link>
               <ButtonLink
-                href={
-                  tour.slug
-                    ? `/plan-my-journey?tour=${tour.slug}${tour.destinationSlug ? `&destination=${tour.destinationSlug}` : ''}`
-                    : '/plan-my-journey'
-                }
+                href={tour.slug ? buildBookingHref({ source: 'journey', slug: tour.slug }) : '/plan-my-journey'}
                 size="lg"
                 className="cursor-hover rounded-xl shrink-0"
               >
@@ -219,14 +218,16 @@ function TourCard({ tour, size, isActive, onSelect }: TourCardProps) {
         isActive ? 'border-apex-400 bg-apex-50 shadow-lg' : 'border-slate-300 hover:shadow-lg'
       )}
     >
-      <div className="relative w-36 shrink-0 self-stretch sm:w-40">
-        <SafeImage
-          src={tour.image}
-          alt={`${tour.title} thumbnail`}
-          fill
-          sizes="150px"
-          className="h-full w-full object-cover transition duration-300 ease-in-out motion-safe:group-hover:scale-105"
-        />
+      <div className={cn('relative w-36 shrink-0 self-stretch sm:w-40', !tour.image && 'bg-slate-200')}>
+        {tour.image ? (
+          <SafeImage
+            src={tour.image}
+            alt={`${tour.title} thumbnail`}
+            fill
+            sizes="150px"
+            className="h-full w-full object-cover transition duration-300 ease-in-out motion-safe:group-hover:scale-105"
+          />
+        ) : null}
       </div>
 
       <div className="flex flex-1 flex-col justify-between p-4 min-w-0 gap-2">
@@ -281,7 +282,7 @@ function TourCard({ tour, size, isActive, onSelect }: TourCardProps) {
         <div className="flex items-center justify-between gap-2 border-t border-slate-100 pt-2">
           <div>
             <span className="block text-xs uppercase tracking-wider text-slate-500">Starting from</span>
-            <p className="text-2xl font-bold text-slate-900 sm:text-xl">{tour.price}</p>
+            <p className="text-2xl font-bold text-slate-900">{tour.price}</p>
           </div>
           <span
             className={cn(

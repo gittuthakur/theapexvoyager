@@ -2,7 +2,8 @@ export interface Testimonial {
   id: string;
   author: string;
   location?: string;
-  rating: number;
+  /** Omitted (never a fabricated number) for non-review content, e.g. curated experience previews. */
+  rating?: number;
   quote: string;
   tourTitle?: string;
   duration?: string;

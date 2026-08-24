@@ -31,6 +31,8 @@ export interface Experience {
   /** Town/village-level place name, e.g. "Kaza, Spiti Valley" — distinct from `region`. */
   location: string;
   region: ExperienceRegion;
+  /** ObjectId (as a string) of the MongoDB Region document this experience belongs to — see models/Region.ts. */
+  regionId?: string;
   category: ExperienceType;
   /** Free-text refinement shown as a small tag on the detail page, e.g. "Homestay", "River Rafting". */
   subCategory: string;

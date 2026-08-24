@@ -17,6 +17,10 @@ import { fadeInUp, viewportOnce } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import type { Testimonial } from '@/types';
 
+// Renders real testimonials when the caller has any (see lib/reviews.ts's
+// approved+verified query); otherwise falls back to FALLBACK_EXPERIENCE_PREVIEWS below.
+// Its rating/review-count/recommend labels are never given hardcoded defaults — a
+// caller must pass genuine, computed values or the stats row simply doesn't render.
 export interface TestimonialSectionProps {
   eyebrow?: string;
   title?: string;
@@ -38,6 +42,40 @@ const AUTOPLAY_DELAY = 5000;
 
 const DEFAULT_REGIONS = ['All', 'Himachal Pradesh', 'Jammu & Kashmir', 'Uttarakhand'];
 const DEFAULT_TRAVEL_STYLES = ['Adventure', 'Family', 'Honeymoon', 'Cultural', 'Wellness'];
+
+// Honest, non-customer content shown only until real reviews exist — no invented
+// names, ratings, review counts or "Verified" claims (rating/verified/source are all
+// intentionally omitted so the card design's existing conditionals hide those elements).
+const FALLBACK_EXPERIENCE_PREVIEWS: Testimonial[] = [
+  {
+    id: 'preview-couple-escape-manali',
+    author: 'Slow Mornings in Manali',
+    location: 'Designed for Couples',
+    quote:
+      'Wake up to mountain views, explore at your own pace, drive through Atal Tunnel and spend time in Sissu without turning the journey into a rushed sightseeing checklist.',
+    category: 'Couple Escape',
+    verified: false,
+    featured: true
+  },
+  {
+    id: 'preview-family-journey-himachal',
+    author: 'A Comfortable Himachal Holiday',
+    location: 'Designed for Families',
+    quote:
+      'Comfortable stays, private transport and a balanced itinerary designed to give families enough time to explore, relax and enjoy the mountains together.',
+    category: 'Family Journey',
+    verified: false
+  },
+  {
+    id: 'preview-adventure-journey-kinnaur-spiti',
+    author: 'Beyond the Usual Himachal',
+    location: 'Designed for Explorers',
+    quote:
+      'Travel deeper into Kinnaur and Spiti through mountain roads, remote valleys, local villages and landscapes beyond ordinary tourist routes.',
+    category: 'Adventure Journey',
+    verified: false
+  }
+];
 
 function initials(name: string) {
   return name
@@ -109,12 +147,12 @@ export default function TestimonialSection({
   title = 'Real Journeys.',
   highlight = 'Real Stories.',
   subtitle = 'From quiet Himalayan villages to unforgettable road trips, hear from travelers who experienced the journey with The Apex Voyager.',
-  ratingLabel = '4.8/5 Rating',
-  reviewCountLabel = '250+ Verified Reviews',
-  recommendLabel = '96% Would Recommend',
+  ratingLabel,
+  reviewCountLabel,
+  recommendLabel,
   testimonials,
-  viewAllHref = '/reviews',
-  viewAllLabel = 'Explore All 250+ Stories',
+  viewAllHref = '/journeys',
+  viewAllLabel = 'Explore All Journeys',
   regions = DEFAULT_REGIONS,
   travelStyles = DEFAULT_TRAVEL_STYLES
 }: TestimonialSectionProps) {
@@ -123,7 +161,8 @@ export default function TestimonialSection({
   const [activeRegion, setActiveRegion] = useState('All');
   const [activeStyle, setActiveStyle] = useState<string | null>(null);
 
-  const items = testimonials.filter(
+  const sourceTestimonials = testimonials.length > 0 ? testimonials : FALLBACK_EXPERIENCE_PREVIEWS;
+  const items = sourceTestimonials.filter(
     (testimonial) =>
       (activeRegion === 'All' || testimonial.region === activeRegion) &&
       (!activeStyle || testimonial.category === activeStyle)
@@ -171,16 +210,26 @@ export default function TestimonialSection({
           </h2>
           <p className="mt-3 max-w-xl text-slate-600">{subtitle}</p>
 
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm font-semibold text-slate-700 sm:gap-x-4">
-            <span className="inline-flex items-center gap-1.5">
-              <Star size={16} className="fill-amber-400 text-amber-400" aria-hidden="true" />
-              {ratingLabel}
-            </span>
-            <span className="hidden h-1 w-1 rounded-full bg-slate-300 sm:inline-block" aria-hidden="true" />
-            <span>{reviewCountLabel}</span>
-            <span className="hidden h-1 w-1 rounded-full bg-slate-300 sm:inline-block" aria-hidden="true" />
-            <span>{recommendLabel}</span>
-          </div>
+          {ratingLabel || reviewCountLabel ? (
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm font-semibold text-slate-700 sm:gap-x-4">
+              {ratingLabel ? (
+                <span className="inline-flex items-center gap-1.5">
+                  <Star size={16} className="fill-amber-400 text-amber-400" aria-hidden="true" />
+                  {ratingLabel}
+                </span>
+              ) : null}
+              {ratingLabel && reviewCountLabel ? (
+                <span className="hidden h-1 w-1 rounded-full bg-slate-300 sm:inline-block" aria-hidden="true" />
+              ) : null}
+              {reviewCountLabel ? <span>{reviewCountLabel}</span> : null}
+              {recommendLabel ? (
+                <>
+                  <span className="hidden h-1 w-1 rounded-full bg-slate-300 sm:inline-block" aria-hidden="true" />
+                  <span>{recommendLabel}</span>
+                </>
+              ) : null}
+            </div>
+          ) : null}
         </motion.div>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
@@ -237,7 +286,7 @@ export default function TestimonialSection({
                 <div>
                   <div className="flex items-center justify-between gap-6">
                     <Quote size={36} className="shrink-0 text-apex-400/60" aria-hidden="true" />
-                    <RatingStars rating={active.rating} />
+                    {active.rating ? <RatingStars rating={active.rating} /> : null}
                   </div>
                   <p className="mt-4 text-lg italic leading-8 text-slate-900 sm:text-xl">&ldquo;{active.quote}&rdquo;</p>
                 </div>
@@ -317,7 +366,7 @@ export default function TestimonialSection({
                       )}
                     >
                       <div className="flex items-center justify-between gap-3">
-                        <RatingStars rating={testimonial.rating} size={14} />
+                        {testimonial.rating ? <RatingStars rating={testimonial.rating} size={14} /> : null}
                         {testimonial.verified !== false ? <VerifiedBadge /> : null}
                       </div>
                       <p className="mt-3 flex-1 text-sm text-slate-600">&ldquo;{testimonial.quote}&rdquo;</p>

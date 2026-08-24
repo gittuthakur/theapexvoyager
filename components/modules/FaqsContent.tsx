@@ -21,7 +21,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
       {
         question: 'What payment methods do you accept?',
         answer:
-          'We accept UPI, bank transfer, and major cards. A partial advance secures most bookings, with the balance due closer to your travel date — your travel expert will confirm the exact split for your trip.'
+          'Payment is arranged directly with your travel expert — typically via UPI or bank transfer. A partial advance secures most bookings, with the balance due closer to your travel date; your travel expert will confirm the exact payment options and split for your trip.'
       },
       {
         question: 'Is my booking confirmed instantly?',

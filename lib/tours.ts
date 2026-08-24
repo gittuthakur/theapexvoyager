@@ -1,8 +1,9 @@
 import { connectDB } from '@/lib/mongodb';
 import { Tour, type TourDocument } from '@/models/Tour';
+import { resolveLocalImage } from '@/lib/contentImage.server';
 import type { TourPackage } from '@/types';
 
-function toTourPackage(doc: TourDocument): TourPackage {
+export function toTourPackage(doc: TourDocument): TourPackage {
   return {
     id: String(doc._id),
     slug: doc.slug,
@@ -17,7 +18,7 @@ function toTourPackage(doc: TourDocument): TourPackage {
     reviewCount: doc.reviewCount,
     highlights: doc.highlights,
     description: doc.description,
-    image: doc.image,
+    image: resolveLocalImage(doc.image),
     destinationSlug: doc.destinationSlug,
     featured: doc.featured,
     maxGuests: doc.maxGuests,
@@ -25,7 +26,8 @@ function toTourPackage(doc: TourDocument): TourPackage {
     itinerary: doc.itinerary,
     inclusions: doc.inclusions,
     exclusions: doc.exclusions,
-    faqs: doc.faqs
+    faqs: doc.faqs,
+    regionId: doc.regionId ? String(doc.regionId) : undefined
   };
 }
 

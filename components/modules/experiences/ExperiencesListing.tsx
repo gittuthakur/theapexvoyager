@@ -21,7 +21,7 @@ import {
   experienceRegions,
   seasonOptions
 } from '@/config/experiences.config';
-import { filterExperiences, sortExperiences, type ExperienceSortOption } from '@/lib/experiences';
+import { filterExperiences, sortExperiences, type ExperienceSortOption } from '@/lib/experienceFilters';
 import { cn } from '@/lib/utils';
 import type {
   Experience,
@@ -395,7 +395,7 @@ export default function ExperiencesListing({
           </button>
         </div>
         <div className="mt-5">{filtersContent}</div>
-        <div className="mt-6 flex items-center justify-between gap-3 border-t border-slate-100 pt-4">
+        <div className="mt-6 flex items-end justify-between gap-3 border-t border-slate-100 pt-4">
           <button
             type="button"
             onClick={clearFilters}

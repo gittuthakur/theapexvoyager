@@ -13,25 +13,27 @@ export interface InnerHeroBannerProps {
   eyebrow?: string;
   bgImage: string;
   className?: string;
+  /** Extra classes merged onto the background image itself (e.g. a custom object-position) — defaults to plain object-cover so every existing caller is unaffected. */
+  imageClassName?: string;
   children?: ReactNode;
 }
 
 // Drop this at the very top of a page, right after the (sticky, in-flow) Navbar —
 // no special top padding or header-transparency wiring needed anymore, since the
 // header no longer floats over hero content in the light theme.
-export default function InnerHeroBanner({ title, highlite, subtitle, eyebrow, bgImage, className, children }: InnerHeroBannerProps) {
+export default function InnerHeroBanner({ title, highlite, subtitle, eyebrow, bgImage, className, imageClassName, children }: InnerHeroBannerProps) {
   return (
-    <section className={cn('relative isolate flex h-[380px] items-end overflow-hidden bg-slate-100 sm:h-[520px]', className)}>
+    <section className={cn('relative isolate flex min-h-[380px] items-end overflow-hidden bg-slate-100 sm:min-h-[520px]', className)}>
       <div className="absolute inset-0">
-        <SafeImage src={bgImage} alt={title} fill priority sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/90 to-white/50" />
+        <SafeImage src={bgImage} alt={title} fill priority sizes="100vw" className={cn('object-cover', imageClassName)} />
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/50 to-white/80" />
       </div>
 
       <motion.div
         initial="hidden"
         animate="visible"
         variants={staggerContainer}
-        className="relative mx-auto w-full max-w-[1440px] px-6 pb-12 pt-10"
+        className="relative mx-auto w-full max-w-[1440px] px-6 pb-12 pt-32"
       >
         <section className="">
           {eyebrow ? (
@@ -43,7 +45,7 @@ export default function InnerHeroBanner({ title, highlite, subtitle, eyebrow, bg
             {title} <span className="bg-gradient-to-r from-apex-500 via-apex-600 to-apex-700 bg-clip-text text-transparent">{highlite}</span>
           </motion.h1>
           {subtitle ? (
-            <motion.p variants={fadeInUp} className="mt-3 text-lg text-slate-600">
+            <motion.p variants={fadeInUp} className="mt-3 text-lg text-slate-800">
               {subtitle}
             </motion.p>
           ) : null}

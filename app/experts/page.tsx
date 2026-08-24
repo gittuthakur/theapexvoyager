@@ -105,7 +105,7 @@ export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
         <ExpertTravelSupport />
 
         <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 lg:px-16">
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-glow sm:p-10">
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-2xl sm:p-8">
             <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">Frequently Asked Questions</h2>
             <div className="mt-5 space-y-4">
               {expertFaqs.map((faq) => (

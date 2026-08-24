@@ -50,23 +50,29 @@ interface DestinationsPageProps {
 export default async function DestinationsPage({ searchParams }: DestinationsPageProps) {
   const { destination, style, season, region, priceMin, priceMax, bestFor, sort, page, view } = await searchParams;
 
-  const destinations = getCuratedDestinations();
+  const destinations = await getCuratedDestinations();
   const [statsMap, reviews] = await Promise.all([getDestinationStatsMap(destinations), getReviewsForDestinationsPage()]);
   const stats = Object.fromEntries(statsMap);
 
   const activeRegionId = region ? getRegionById(region)?.id : undefined;
+  // Real reviews only — no fallback/demo data. An empty Review collection means this
+  // page's testimonial section simply doesn't render (see the conditional below).
   const destinationsBySlug = new Map(destinations.map((item) => [item.slug, item]));
   const testimonials = reviews.map((review) => reviewToTestimonial(review, destinationsBySlug));
+  const averageRating =
+    testimonials.length > 0 ? Number((testimonials.reduce((sum, t) => sum + (t.rating ?? 0), 0) / testimonials.length).toFixed(1)) : undefined;
   const beyondTheTrail = destinations.filter((item) => BEYOND_THE_TRAIL_SLUGS.includes(item.slug));
 
   return (
     <>
       <InnerHeroBanner
         eyebrow="Explore the Himalayas"
-        title="Find Your Next"
-        highlite="Himalayan Escape"
-        subtitle="Discover handpicked destinations across Himachal Pradesh, Jammu & Kashmir and Uttarakhand — from iconic valleys to places most travelers never find."
-        bgImage={images.hero}
+        title="Places Worth"
+        highlite="Travelling For."
+        subtitle="From iconic mountain towns to remote valleys, discover Himalayan destinations shaped by landscapes, culture and unforgettable journeys."
+        bgImage={images.destinationsHero}
+        imageClassName="object-[62%_center] sm:object-[60%_center]"
+        className="min-h-[620px] sm:min-h-[520px]"
       >
         <DestinationsHeroSearch initialDestination={destination} initialStyle={style} />
       </InnerHeroBanner>
@@ -99,7 +105,11 @@ export default async function DestinationsPage({ searchParams }: DestinationsPag
 
       <WhyTheApexSection />
 
-      <TestimonialSection testimonials={testimonials} />
+      <TestimonialSection
+        testimonials={testimonials}
+        ratingLabel={testimonials.length > 0 ? `${averageRating}/5 Rating` : undefined}
+        reviewCountLabel={testimonials.length > 0 ? `${testimonials.length} Review${testimonials.length === 1 ? '' : 's'}` : undefined}
+      />
 
       <NewsletterBanner
         heading="Get Closer to the Himalayas"

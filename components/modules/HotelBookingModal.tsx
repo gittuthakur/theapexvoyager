@@ -8,9 +8,11 @@ import { Input } from '@/components/ui/Input';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 import { postJSON } from '@/lib/api';
 import { buildBookingMessage, buildWhatsAppLink } from '@/lib/whatsapp';
+import { useBookingNavigation } from '@/lib/bookingNavigation';
 
 export interface HotelBookingModalProps {
   hotelName: string;
+  hotelSlug: string;
   destination?: string;
   defaultCheckIn?: string;
   defaultCheckOut?: string;
@@ -19,13 +21,18 @@ export interface HotelBookingModalProps {
 
 type Status = 'form' | 'sending' | 'success' | 'error';
 
+// "Book Now" hands off to the universal Plan My Journey flow (source=stay&slug=...)
+// instead of opening the form below — the form/Modal are kept as-is (unreachable, not
+// deleted) since nothing else in the app still opens them; see the booking-context plan.
 export default function HotelBookingModal({
   hotelName,
+  hotelSlug,
   destination,
   defaultCheckIn,
   defaultCheckOut,
   defaultGuests
 }: HotelBookingModalProps) {
+  const { navigateToBooking } = useBookingNavigation();
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<Status>('form');
   const [error, setError] = useState('');
@@ -80,7 +87,7 @@ export default function HotelBookingModal({
 
   return (
     <>
-      <Button type="button" className="w-full" onClick={() => setOpen(true)}>
+      <Button type="button" className="w-full" onClick={() => navigateToBooking({ source: 'stay', slug: hotelSlug })}>
         Book Now
       </Button>
 

@@ -41,7 +41,8 @@ export async function GET(request: Request) {
     return acc;
   }, {} as DestinationMatchScores);
 
-  const ranked = getCuratedDestinations()
+  const curated = await getCuratedDestinations();
+  const ranked = curated
     .filter((destination) => Boolean(destination.matchScores))
     .map((destination) => ({
       destination,

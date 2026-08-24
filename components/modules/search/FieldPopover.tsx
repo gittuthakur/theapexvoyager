@@ -17,6 +17,20 @@ export interface FieldPopoverProps {
   className?: string;
 }
 
+/** Walks up from the anchor to whichever ancestor sits directly inside a <form> —
+ *  i.e. the field-row container a search bar's fields share, excluding a sibling
+ *  submit button that lives outside that container as the form's other direct
+ *  child. Returns null when the anchor isn't inside a <form> at all, so callers can
+ *  fall back to viewport-only bounds unchanged. */
+function getRowBoundary(anchor: HTMLElement): DOMRect | null {
+  let node: HTMLElement | null = anchor;
+  while (node && node.parentElement) {
+    if (node.parentElement.tagName === 'FORM') return node.getBoundingClientRect();
+    node = node.parentElement;
+  }
+  return null;
+}
+
 /**
  * Renders into document.body via a portal, fixed-positioned against the anchor field's
  * live bounding box. GlobalSearchFilter sits inside HeroSection, whose root has
@@ -32,6 +46,7 @@ export function FieldPopover({ open, onClose, anchorRef, children, width, align 
     bottom?: number;
     left: number;
     minWidth: number;
+    maxWidth?: number;
     maxHeight: number;
   } | null>(null);
 
@@ -45,9 +60,23 @@ export function FieldPopover({ open, onClose, anchorRef, children, width, align 
       if (!anchor) return;
       const rect = anchor.getBoundingClientRect();
       const panelWidth = width ?? rect.width;
-      const rawLeft = align === 'right' ? rect.right - panelWidth : rect.left;
-      const left = Math.max(16, Math.min(rawLeft, window.innerWidth - panelWidth - 16));
       const viewportPadding = 16;
+      // When the field sits in a row alongside other controls (e.g. a submit button
+      // next to the search fields), constrain the popover to the field-row's own
+      // right edge so a wide popover can't visually spill sideways onto a sibling
+      // control and steal its clicks. `getRowBoundary` only returns a rect for that
+      // specific shape (a <form> whose direct child holds the fields); everywhere
+      // else this is a no-op and behaviour is unchanged.
+      const rowBoundary = getRowBoundary(anchor);
+      const maxRight = rowBoundary ? Math.min(window.innerWidth - viewportPadding, rowBoundary.right) : window.innerWidth - viewportPadding;
+      const rawLeft = align === 'right' ? rect.right - panelWidth : rect.left;
+      const left = Math.max(viewportPadding, Math.min(rawLeft, maxRight - panelWidth));
+      // The panel otherwise only carries a `min-width` (below), so its actual
+      // rendered width is free to grow from content — wide enough, on its own, to
+      // reach past `left` and back into the row boundary the clamp above just
+      // established. Cap it explicitly wherever that boundary exists; everywhere
+      // else (no <form> ancestor) leave it undefined, same as before this fix.
+      const maxWidth = rowBoundary ? Math.max(rect.width, maxRight - left) : undefined;
       const gap = 8;
       const spaceBelow = window.innerHeight - rect.bottom - viewportPadding - gap;
       const spaceAbove = rect.top - viewportPadding - gap;
@@ -58,6 +87,7 @@ export function FieldPopover({ open, onClose, anchorRef, children, width, align 
         ...(openAbove ? { bottom: window.innerHeight - rect.top + gap } : { top: rect.bottom + gap }),
         left,
         minWidth: rect.width,
+        maxWidth,
         maxHeight: Math.min(window.innerHeight * 0.85, Math.max(0, availableSpace))
       });
     }
@@ -109,6 +139,7 @@ export function FieldPopover({ open, onClose, anchorRef, children, width, align 
             bottom: coords.bottom,
             left: coords.left,
             minWidth: coords.minWidth,
+            maxWidth: coords.maxWidth,
             maxHeight: coords.maxHeight,
             zIndex: 100
           }}

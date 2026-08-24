@@ -1,4 +1,4 @@
-import mongoose, { Schema, type Document } from 'mongoose';
+import mongoose, { Schema, type Document, type Types } from 'mongoose';
 
 const { model, models } = mongoose;
 
@@ -17,6 +17,8 @@ export interface HotelDocument extends Document {
   verified?: boolean;
   cancellationPolicy?: string;
   mealPlan?: string;
+  /** Backfilled by scripts/backfillRegionRefs.ts from `location` — see models/Region.ts. */
+  regionId?: Types.ObjectId;
 }
 
 const HotelSchema = new Schema<HotelDocument>(
@@ -38,7 +40,8 @@ const HotelSchema = new Schema<HotelDocument>(
     featured: { type: Boolean },
     verified: { type: Boolean },
     cancellationPolicy: { type: String },
-    mealPlan: { type: String }
+    mealPlan: { type: String },
+    regionId: { type: Schema.Types.ObjectId, ref: 'Region' }
   },
   { timestamps: true }
 );
@@ -48,6 +51,8 @@ const HotelSchema = new Schema<HotelDocument>(
 HotelSchema.index({ featured: -1, createdAt: 1 });
 // Supports the `category` filter in getHotels().
 HotelSchema.index({ category: 1 });
+// Supports the Region Hub's per-region stays listing.
+HotelSchema.index({ regionId: 1, featured: -1, createdAt: 1 });
 
 // `models.Hotel` survives Next.js dev hot-reloads — without this guard, re-running this
 // module would call `model()` on an already-registered name and throw.

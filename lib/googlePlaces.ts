@@ -29,7 +29,11 @@ const REQUEST_TIMEOUT_MS = 8000;
 // serializes per result, so asking for more than we render is pure waste.
 const DEFAULT_PAGE_SIZE = 8;
 
-async function searchPlaces(textQuery: string, apiKey: string, pageSize = DEFAULT_PAGE_SIZE): Promise<RawGooglePlace[]> {
+// Exported (in addition to the Himachal-flavored searchDestinations/searchStays below)
+// so region-neutral callers — e.g. services/providers/google/googlePlaces.attractions.ts,
+// which must work for Kashmir and Uttarakhand too, not just Himachal Pradesh — can
+// compose their own query text without duplicating this fetch/timeout/cache logic.
+export async function searchPlaces(textQuery: string, apiKey: string, pageSize = DEFAULT_PAGE_SIZE): Promise<RawGooglePlace[]> {
   // Fetch has no default timeout — a blocked/slow host would otherwise hang the
   // calling page (getStaysForDestination, getDestinationsForLocation) indefinitely
   // instead of falling back to mock data.

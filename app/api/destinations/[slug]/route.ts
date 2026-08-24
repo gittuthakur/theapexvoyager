@@ -14,7 +14,7 @@ import { getHotels } from '@/lib/hotels';
 // call here.
 export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const destination = getCuratedDestinationBySlug(slug);
+  const destination = await getCuratedDestinationBySlug(slug);
 
   if (!destination) {
     return NextResponse.json({ error: 'Destination not found' }, { status: 404 });
@@ -22,7 +22,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
 
   const journeys = await getPackagesByDestinationSlug(destination.slug);
   const tours = await getToursByDestinationSlug(destination.slug);
-  const experiences = getExperiencesByDestination(destination.title);
+  const experiences = await getExperiencesByDestination(destination.title);
   const experts = await getExpertsByDestinationSlug(destination.slug);
 
   // Hotel reads go through MongoDB and have no built-in fallback — this endpoint

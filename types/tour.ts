@@ -27,11 +27,14 @@ export interface TourPackage {
   itinerary?: TourItineraryDay[];
   faqs?: TourFaq[];
   description?: string;
-  image: string;
+  /** Undefined when the source path doesn't resolve to a real file — see lib/tours.ts / lib/contentImage.server.ts. Never a fake local path. */
+  image?: string;
   destinationSlug?: string;
   featured?: boolean;
   maxGuests?: string;
   difficulty?: string;
   tags?: string[];
   features?: string[];
+  /** ObjectId (as a string) of the MongoDB Region document this tour belongs to — see models/Region.ts. */
+  regionId?: string;
 }

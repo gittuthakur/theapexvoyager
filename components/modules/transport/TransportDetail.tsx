@@ -1,12 +1,29 @@
 'use client';
 
+import { useState } from 'react';
+import { format } from 'date-fns';
 import { Briefcase, Snowflake, Users, X } from 'lucide-react';
 import { FloatingOverlay } from '@/components/ui/FloatingOverlay';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
-import { useBookingRequest } from '@/components/modules/BookingRequestModal';
-import { buildWhatsAppLink, buildTransportRequestMessage } from '@/lib/whatsapp';
+import { openTransportWhatsAppLead } from '@/lib/whatsapp';
 import { formatINR } from '@/lib/pricing';
 import type { VehicleOption } from '@/types/transport';
+
+/** Parses a 'YYYY-MM-DD' string as a local-time Date, avoiding the UTC-midnight
+ *  off-by-one day that `new Date('YYYY-MM-DD')` can produce in negative-UTC timezones. */
+function parseISODateLocal(iso: string): Date {
+  const [year, month, day] = iso.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function formatTripDate(iso?: string): string | undefined {
+  if (!iso) return undefined;
+  try {
+    return format(parseISODateLocal(iso), 'd MMM yyyy');
+  } catch {
+    return iso;
+  }
+}
 
 export interface TransportDetailProps {
   vehicle: VehicleOption;
@@ -14,42 +31,93 @@ export interface TransportDetailProps {
   destination?: string;
   date?: string;
   travellers?: string;
+  /** Optional — Self-Drive/Bike return date, only used to enrich the WhatsApp message. */
+  returnDate?: string;
+  /** Optional — 4x4 "With Driver"/"Self Drive", only used to enrich the WhatsApp message. */
+  driveMode?: string;
+  /** Optional — Bike rental quantity, only used to enrich the WhatsApp message. */
+  quantity?: number;
   journeyContext?: { from?: string; journeySlug?: string };
+  /** Defaults to 'Request This Vehicle' — set to e.g. 'Check Availability' for rental-style sections. */
+  ctaLabel?: string;
+  /** Every caller supplies its own request handler (BookingRequestModal lead-capture,
+   *  with full search context in `details`) so "View Details" offers the same action
+   *  as the card's own CTA. */
+  onRequestVehicle: (vehicle: VehicleOption) => void;
   onClose: () => void;
 }
 
-export default function TransportDetail({ vehicle, pickup, destination, date, travellers, journeyContext, onClose }: TransportDetailProps) {
-  const { openBookingRequest } = useBookingRequest();
+export default function TransportDetail({
+  vehicle,
+  pickup,
+  destination,
+  date,
+  travellers,
+  returnDate,
+  driveMode,
+  quantity,
+  journeyContext,
+  ctaLabel,
+  onRequestVehicle,
+  onClose
+}: TransportDetailProps) {
+  const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
 
-  const routeLabel = pickup && destination ? `${pickup} → ${destination}` : undefined;
+  const tripRouteLine = pickup && destination ? `${pickup} → ${destination}` : pickup || destination;
+  // Gated on real trip facts (or journey attribution) only — `vehicle.serviceType` is
+  // added to the detail line below once this is already true, but never triggers the
+  // box on its own, since every vehicle has one regardless of whether anything was
+  // actually searched.
+  const hasTripSummary = Boolean(
+    tripRouteLine || date || returnDate || travellers || driveMode || (quantity && quantity > 1) || journeyContext?.from
+  );
+  const tripDetailParts = hasTripSummary
+    ? [
+        formatTripDate(date),
+        returnDate ? `Return ${formatTripDate(returnDate)}` : undefined,
+        travellers ? `${travellers} Traveller${travellers === '1' ? '' : 's'}` : undefined,
+        driveMode,
+        quantity && quantity > 1 ? `${quantity} vehicles` : undefined,
+        vehicle.serviceType
+      ].filter((part): part is string => Boolean(part))
+    : [];
+
+  function handleCustomiseOnWhatsApp() {
+    if (sendingWhatsApp) return;
+    setSendingWhatsApp(true);
+    openTransportWhatsAppLead({
+      vehicle,
+      pickup,
+      destination,
+      date,
+      returnDate,
+      travelers: travellers,
+      driveMode,
+      quantity,
+      journeyContext
+    }).finally(() => setSendingWhatsApp(false));
+  }
+
+  // Only the fields this specific vehicle actually has configured — a chauffeur
+  // vehicle never has fuelPolicy/securityDeposit set, so it never shows rental
+  // language, and a self-drive/bike vehicle never has driver-allowance inclusions.
+  const policyDetails: Array<{ label: string; value: string }> = [
+    vehicle.pickupLocation ? { label: 'Pickup Location', value: vehicle.pickupLocation } : null,
+    vehicle.fuelPolicy ? { label: 'Fuel Policy', value: vehicle.fuelPolicy } : null,
+    vehicle.securityDeposit ? { label: 'Security Deposit', value: formatINR(vehicle.securityDeposit) } : null,
+    vehicle.includedKilometres ? { label: 'Included Kilometres', value: `${vehicle.includedKilometres} km/day` } : null,
+    vehicle.extraKmCharge ? { label: 'Extra Km Charge', value: formatINR(vehicle.extraKmCharge) } : null,
+    vehicle.minimumAge ? { label: 'Minimum Age', value: `${vehicle.minimumAge} years` } : null,
+    vehicle.drivingLicenceRequired ? { label: 'Driving Licence', value: vehicle.drivingLicenceRequired } : null,
+    vehicle.licenceRequired ? { label: 'Licence Required', value: vehicle.licenceRequired } : null,
+    vehicle.dropOffPolicy ? { label: 'Drop-off Policy', value: vehicle.dropOffPolicy } : null,
+    vehicle.engineCategory ? { label: 'Engine', value: vehicle.engineCategory } : null,
+    vehicle.helmetAvailable !== undefined ? { label: 'Helmet', value: vehicle.helmetAvailable ? 'Provided' : 'Not provided' } : null,
+    vehicle.rentalTerms ? { label: 'Rental Terms', value: vehicle.rentalTerms } : null
+  ].filter((entry): entry is { label: string; value: string } => entry !== null);
 
   function handleRequest() {
-    openBookingRequest({
-      type: 'transport',
-      itemName: vehicle.name,
-      destination: routeLabel,
-      dates: date,
-      travelers: travellers,
-      details: {
-        vehicleSlug: vehicle.slug ?? vehicle.id,
-        category: vehicle.category,
-        pickup,
-        destination,
-        date,
-        travellers,
-        source: journeyContext?.from ?? 'transport-page',
-        journeySlug: journeyContext?.journeySlug
-      },
-      buildWhatsAppMessage: (referenceId) =>
-        buildTransportRequestMessage({
-          referenceId,
-          pickup: pickup || 'your pickup point',
-          destination: destination || 'your destination',
-          date,
-          travelers: travellers,
-          vehicleName: vehicle.name
-        })
-    });
+    onRequestVehicle(vehicle);
     onClose();
   }
 
@@ -92,10 +160,14 @@ export default function TransportDetail({ vehicle, pickup, destination, date, tr
           </div>
         </div>
 
-        {routeLabel ? (
-          <div className="mt-6">
-            <p className="text-sm font-semibold text-slate-900">Route</p>
-            <p className="mt-1 text-sm text-slate-600">{routeLabel}</p>
+        {hasTripSummary ? (
+          <div className="mt-6 rounded-2xl border border-apex-100 bg-apex-50/60 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-apex-600">Your Trip</p>
+            {tripRouteLine ? <p className="mt-1 text-base font-semibold text-slate-900">{tripRouteLine}</p> : null}
+            {tripDetailParts.length > 0 ? <p className="mt-1 text-sm text-slate-600">{tripDetailParts.join(' · ')}</p> : null}
+            {journeyContext?.from === 'journey' ? (
+              <p className="mt-2 text-xs font-medium text-apex-600">Linked to your saved journey</p>
+            ) : null}
           </div>
         ) : null}
 
@@ -125,6 +197,20 @@ export default function TransportDetail({ vehicle, pickup, destination, date, tr
           </div>
         ) : null}
 
+        {policyDetails.length > 0 ? (
+          <div className="mt-6">
+            <p className="text-sm font-semibold text-slate-900">Rental &amp; Policy Details</p>
+            <dl className="mt-2 grid gap-3 sm:grid-cols-2">
+              {policyDetails.map(({ label, value }) => (
+                <div key={label}>
+                  <dt className="text-xs uppercase tracking-wide text-slate-500">{label}</dt>
+                  <dd className="mt-0.5 text-sm text-slate-700">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        ) : null}
+
         <div className="mt-6 flex gap-5 items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 p-4">
           <div className="flex flex-1 flex-col gap-1">
             <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
@@ -138,23 +224,26 @@ export default function TransportDetail({ vehicle, pickup, destination, date, tr
           <p className="text-md font-medium text-slate-600">Availability on request</p>
         </div>
 
+        <p className="mt-3 text-xs text-slate-500">Cancellation terms are shared at the time of quote confirmation.</p>
+
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <button
             type="button"
             onClick={handleRequest}
             className="cursor-hover flex flex-1 items-center justify-center gap-2 rounded-full bg-apex-500 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400"
           >
-            Request This Vehicle
+            {ctaLabel ?? 'Request This Vehicle'}
           </button>
-          <a
-            href={buildWhatsAppLink({ destination: routeLabel ?? vehicle.name, tripTitle: vehicle.name })}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="cursor-hover flex flex-1 items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:scale-105 hover:bg-[#20ba5a]"
+          <button
+            type="button"
+            onClick={handleCustomiseOnWhatsApp}
+            disabled={sendingWhatsApp}
+            aria-busy={sendingWhatsApp}
+            className="cursor-hover flex flex-1 items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:scale-105 hover:bg-[#20ba5a] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <WhatsAppIcon size={16} />
-            Customise on WhatsApp
-          </a>
+            {sendingWhatsApp ? 'Opening…' : 'Customise on WhatsApp'}
+          </button>
         </div>
       </div>
     </FloatingOverlay>

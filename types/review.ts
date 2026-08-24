@@ -1,16 +1,20 @@
 export interface Review {
   id: string;
-  /** Links a review to a curated destination — omitted for general/site-wide reviews. */
+  /** Links a review to a curated destination — omitted for journey-specific or general reviews. */
   destinationSlug?: string;
-  author: string;
+  /** Links a review to a specific journey/package — omitted for destination-level or general reviews. */
+  journeyId?: string;
+  customerName: string;
   location?: string;
   rating: number;
-  quote: string;
+  reviewText: string;
   tripTitle?: string;
   tripDate?: string;
-  verified?: boolean;
+  verified: boolean;
+  approved: boolean;
   source?: {
     label: string;
     url: string;
   };
+  createdAt?: string;
 }

@@ -7,7 +7,7 @@ import { SafeImage } from '@/components/ui/SafeImage';
 import { SkeletonGrid } from '@/components/ui/Skeleton';
 import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
 import { cn } from '@/lib/utils';
-import { fadeInUp, viewportOnce } from '@/lib/motion';
+import { fadeInUp } from '@/lib/motion';
 import { STAY_TYPES, STAY_TYPE_LABELS, type Stay, type StayType } from '@/types/stay';
 
 export interface StaysGridProps {
@@ -59,7 +59,14 @@ export default function StaysGrid({ location }: StaysGridProps) {
   }
 
   return (
-    <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={fadeInUp}>
+    // This section runs much taller than a typical fade-in block (a full hotel grid,
+    // often several rows), so the shared `viewportOnce` 30%-visible threshold can
+    // require scrolling deep into it before it's ever satisfied — on shorter viewports
+    // that never happens naturally, leaving the grid stuck at opacity: 0. `amount: 0`
+    // triggers as soon as any part of it enters the viewport, same fade/once behavior
+    // otherwise. Scoped to this component only — lib/motion.ts's viewportOnce (used
+    // elsewhere) is untouched.
+    <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0 }} variants={fadeInUp}>
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
@@ -136,7 +143,7 @@ function StayCard({ stay, priority = false }: { stay: Stay; priority?: boolean }
         {stay.photos.length > 1 ? (
           <div className="flex gap-1.5">
             {stay.photos.slice(1, 4).map((photo, index) => (
-              <span key={photo} className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-slate-200">
+              <span key={photo} className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-slate-200">
                 <SafeImage src={photo} alt={`${stay.name} photo ${index + 2}`} fill sizes="40px" className="object-cover" />
               </span>
             ))}

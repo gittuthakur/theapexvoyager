@@ -1,8 +1,8 @@
 import ExperienceCard from '@/components/modules/experiences/ExperienceCard';
 import { getFeaturedExperiences } from '@/lib/experiences';
 
-export default function FeaturedExperiences() {
-  const featured = getFeaturedExperiences();
+export default async function FeaturedExperiences() {
+  const featured = await getFeaturedExperiences();
   if (featured.length === 0) return null;
 
   return (

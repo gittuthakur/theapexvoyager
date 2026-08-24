@@ -1,4 +1,4 @@
-import mongoose, { Schema, type Document } from 'mongoose';
+import mongoose, { Schema, type Document, type Types } from 'mongoose';
 
 const { model, models } = mongoose;
 
@@ -35,6 +35,8 @@ export interface TourDocument extends Document {
   inclusions?: string[];
   exclusions?: string[];
   faqs?: TourFaq[];
+  /** Backfilled by scripts/backfillRegionRefs.ts from `destinationSlug` — see models/Region.ts. */
+  regionId?: Types.ObjectId;
 }
 
 const TourSchema = new Schema<TourDocument>(
@@ -59,7 +61,8 @@ const TourSchema = new Schema<TourDocument>(
     itinerary: [{ day: Number, title: String, description: String }],
     inclusions: { type: [String] },
     exclusions: { type: [String] },
-    faqs: [{ question: String, answer: String }]
+    faqs: [{ question: String, answer: String }],
+    regionId: { type: Schema.Types.ObjectId, ref: 'Region' }
   },
   { timestamps: true }
 );
@@ -69,6 +72,8 @@ const TourSchema = new Schema<TourDocument>(
 TourSchema.index({ featured: -1, createdAt: 1 });
 // Supports the `destination` filter's destinationSlug clause in getTours().
 TourSchema.index({ destinationSlug: 1 });
+// Supports the Region Hub's per-region tours listing.
+TourSchema.index({ regionId: 1, featured: -1, createdAt: 1 });
 
 // `models.Tour` survives Next.js dev hot-reloads — without this guard, re-running this
 // module would call `model()` on an already-registered name and throw.

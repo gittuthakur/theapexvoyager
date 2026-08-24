@@ -1,96 +1,86 @@
-import { budgetBands, experiences } from '@/config/experiences.config';
-import type {
-  Experience,
-  ExperienceBestFor,
-  ExperienceDifficulty,
-  ExperienceDurationBand,
-  ExperienceRegion,
-  ExperienceSeason,
-  ExperienceType
-} from '@/types/experience';
+import { connectDB } from '@/lib/mongodb';
+import { Experience as ExperienceModel, type ExperienceDocument } from '@/models/Experience';
+import type { Experience } from '@/types/experience';
 
-/**
- * Experience data is a small, static demo catalog (see config/experiences.config.ts) —
- * no database involved, so these are plain synchronous lookups.
- */
-export function getAllExperiences(): Experience[] {
-  return experiences;
+// Pure filter/sort helpers (filterExperiences, sortExperiences, ExperienceFilters,
+// ExperienceSortOption) live in lib/experienceFilters.ts, NOT here — this file imports
+// models/Experience.ts (mongoose), so a client component importing anything from here
+// would pull mongoose into the browser bundle. See that file's header comment.
+
+export function toExperience(doc: ExperienceDocument): Experience {
+  return {
+    id: doc.id,
+    slug: doc.slug,
+    title: doc.title,
+    location: doc.location,
+    region: doc.region,
+    regionId: doc.regionId ? String(doc.regionId) : undefined,
+    category: doc.category,
+    subCategory: doc.subCategory,
+    mood: doc.mood,
+    shortDescription: doc.shortDescription,
+    description: doc.description,
+    image: doc.image,
+    gallery: doc.gallery,
+    rating: doc.rating,
+    reviewCount: doc.reviewCount,
+    duration: doc.duration,
+    durationBand: doc.durationBand,
+    groupSize: doc.groupSize,
+    groupSizeMax: doc.groupSizeMax,
+    difficulty: doc.difficulty,
+    price: doc.price,
+    currency: doc.currency,
+    bestFor: doc.bestFor,
+    seasons: doc.seasons,
+    highlights: doc.highlights,
+    whatYoullExperience: doc.whatYoullExperience,
+    inclusions: doc.inclusions,
+    exclusions: doc.exclusions,
+    meetingPoint: doc.meetingPoint,
+    whatToBring: doc.whatToBring,
+    importantInfo: doc.importantInfo,
+    availability: doc.availability,
+    verified: doc.verified,
+    featured: doc.featured,
+    badge: doc.badge,
+    basePrice: doc.basePrice,
+    commission: doc.commission,
+    partner: doc.partner,
+    bookingMethod: doc.bookingMethod
+  };
 }
 
-export function getExperienceBySlug(slug: string): Experience | undefined {
-  return experiences.find((experience) => experience.slug === slug);
+/**
+ * Experience data lives in MongoDB (see models/Experience.ts, seeded from
+ * config/experiences.config.ts by scripts/seed.ts).
+ */
+export async function getAllExperiences(): Promise<Experience[]> {
+  await connectDB();
+  const docs = await ExperienceModel.find().lean<ExperienceDocument[]>();
+  return JSON.parse(JSON.stringify(docs.map(toExperience)));
+}
+
+export async function getExperienceBySlug(slug: string): Promise<Experience | undefined> {
+  await connectDB();
+  const doc = await ExperienceModel.findOne({ slug }).lean<ExperienceDocument | null>();
+  return doc ? JSON.parse(JSON.stringify(toExperience(doc))) : undefined;
+}
+
+/** Pure, synchronous filter over an already-fetched list — extracted from getExperiencesByDestination so batch callers (lib/destinationStats.ts) can fetch once and filter many times instead of one Mongo round-trip per destination. */
+export function filterExperiencesByDestinationTitle(source: Experience[], destinationTitle: string): Experience[] {
+  const needle = destinationTitle.trim().toLowerCase();
+  if (!needle) return [];
+  return source.filter((experience) => experience.location.toLowerCase().includes(needle));
 }
 
 /** Case-insensitive substring match against `location` — used by destination pages (lib/destinationStats.ts, app/destinations/[slug]/page.tsx) to surface related bookable experiences for a given place. */
-export function getExperiencesByDestination(destinationTitle: string): Experience[] {
-  const needle = destinationTitle.trim().toLowerCase();
-  if (!needle) return [];
-  return experiences.filter((experience) => experience.location.toLowerCase().includes(needle));
+export async function getExperiencesByDestination(destinationTitle: string): Promise<Experience[]> {
+  const all = await getAllExperiences();
+  return filterExperiencesByDestinationTitle(all, destinationTitle);
 }
 
-export function getFeaturedExperiences(): Experience[] {
-  return experiences.filter((experience) => experience.featured);
-}
-
-export interface ExperienceFilters {
-  query?: string;
-  region?: ExperienceRegion;
-  categories?: ExperienceType[];
-  durations?: ExperienceDurationBand[];
-  /** Budget band ids from config/experiences.config.ts's `budgetBands`. */
-  budgets?: string[];
-  bestFor?: ExperienceBestFor[];
-  seasons?: ExperienceSeason[];
-  difficulties?: ExperienceDifficulty[];
-}
-
-/** Single source of truth for narrowing the catalog — shared by the listing UI and, if needed, any future server-rendered fallback. */
-export function filterExperiences(source: Experience[], filters: ExperienceFilters): Experience[] {
-  const needle = filters.query?.trim().toLowerCase();
-  const activeBudgetBands = filters.budgets?.length ? budgetBands.filter((band) => filters.budgets!.includes(band.id)) : null;
-
-  return source.filter((experience) => {
-    if (needle) {
-      const haystack = `${experience.title} ${experience.location} ${experience.category} ${experience.subCategory}`.toLowerCase();
-      if (!haystack.includes(needle)) return false;
-    }
-    if (filters.region && experience.region !== filters.region) return false;
-    if (filters.categories?.length && !filters.categories.includes(experience.category)) return false;
-    if (filters.durations?.length && !filters.durations.includes(experience.durationBand)) return false;
-    if (activeBudgetBands && !activeBudgetBands.some((band) => experience.price >= band.min && experience.price <= band.max)) return false;
-    if (filters.bestFor?.length && !filters.bestFor.some((value) => experience.bestFor.includes(value))) return false;
-    if (filters.seasons?.length && !filters.seasons.some((value) => experience.seasons.includes(value))) return false;
-    if (filters.difficulties?.length && (!experience.difficulty || !filters.difficulties.includes(experience.difficulty))) return false;
-    return true;
-  });
-}
-
-export type ExperienceSortOption = 'recommended' | 'popular' | 'rating' | 'price-asc' | 'price-desc' | 'newest';
-
-const BADGE_WEIGHT: Record<string, number> = { 'Best Seller': 3, Popular: 2, New: 1 };
-
-/** "Recommended" = featured first, then badge strength, then rating — a simple, deterministic editorial ordering rather than a fabricated relevance score. "Newest" walks `id` in reverse since the catalog has no real creation timestamp. */
-export function sortExperiences(source: Experience[], sort: ExperienceSortOption): Experience[] {
-  const list = [...source];
-  switch (sort) {
-    case 'popular':
-      return list.sort((a, b) => (b.reviewCount ?? 0) - (a.reviewCount ?? 0));
-    case 'rating':
-      return list.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
-    case 'price-asc':
-      return list.sort((a, b) => a.price - b.price);
-    case 'price-desc':
-      return list.sort((a, b) => b.price - a.price);
-    case 'newest':
-      return list.sort((a, b) => b.id.localeCompare(a.id));
-    case 'recommended':
-    default:
-      return list.sort((a, b) => {
-        const featuredDelta = Number(b.featured ?? false) - Number(a.featured ?? false);
-        if (featuredDelta !== 0) return featuredDelta;
-        const badgeDelta = (BADGE_WEIGHT[b.badge ?? ''] ?? 0) - (BADGE_WEIGHT[a.badge ?? ''] ?? 0);
-        if (badgeDelta !== 0) return badgeDelta;
-        return (b.rating ?? 0) - (a.rating ?? 0);
-      });
-  }
+export async function getFeaturedExperiences(): Promise<Experience[]> {
+  const all = await getAllExperiences();
+  return all.filter((experience) => experience.featured);
 }

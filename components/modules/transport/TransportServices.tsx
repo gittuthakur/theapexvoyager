@@ -1,45 +1,36 @@
-import { Bus, Car, MapPinned, Mountain, Route, Users2, type LucideIcon } from 'lucide-react';
+'use client';
 
-interface ServiceItem {
+import { Bus, Car, MapPinned, Mountain, Route, Users2, type LucideIcon } from 'lucide-react';
+import { TRIP_PURPOSE_UI, type TripPurpose } from '@/config/transportServiceTypes.config';
+import { useTransportSearch } from './TransportSearchContext';
+import { cn } from '@/lib/utils';
+
+interface ServiceCardMeta {
   icon: LucideIcon;
-  title: string;
   description: string;
 }
 
-const SERVICES: ServiceItem[] = [
-  {
-    icon: Route,
-    title: 'Airport & Railway Transfers',
-    description: 'Comfortable pickup and drop services timed to your flight or train.'
-  },
-  {
-    icon: MapPinned,
-    title: 'Local Sightseeing',
-    description: 'Flexible transport for a day of destination exploration.'
-  },
-  {
-    icon: Car,
-    title: 'Intercity Transfers',
-    description: 'Reliable travel between Himalayan destinations.'
-  },
-  {
-    icon: Mountain,
-    title: 'Multi-Day Private Vehicle',
-    description: 'A dedicated vehicle and driver for the entire journey.'
-  },
-  {
+// Trip-use-case discovery, not vehicle inventory — the 6 core Ride Styles (Self-Drive,
+// Bike, 4x4, Local Transport) already have their own tiles in "Choose Your Ride Style"
+// plus a dedicated section further down, so listing them here too would just duplicate
+// that job. Presentation (icon/description) lives here; the value/service/tripType
+// mapping each card configures lives in TRIP_PURPOSE_UI (config/transportServiceTypes.config.ts)
+// — the same source the Hero's "Purpose: ..." indicator and TransportSearchContext read from.
+const SERVICE_CARD_META: Record<TripPurpose, ServiceCardMeta> = {
+  'airport-transfer': { icon: Route, description: 'Comfortable pickup and drop services timed to your flight or train.' },
+  'local-sightseeing': { icon: MapPinned, description: 'Flexible transport for a day of destination exploration.' },
+  intercity: { icon: Car, description: 'Reliable travel between Himalayan destinations.' },
+  'multi-day': { icon: Mountain, description: 'A dedicated vehicle and driver for the entire journey.' },
+  'remote-himalayan': {
     icon: Bus,
-    title: 'Remote Himalayan Transfers',
     description: 'Transport for Spiti, Kinnaur, Lahaul and other remote routes, subject to route and seasonal availability.'
   },
-  {
-    icon: Users2,
-    title: 'Group Travel',
-    description: 'Tempo Travellers, minibuses and suitable vehicles for larger groups.'
-  }
-];
+  'group-travel': { icon: Users2, description: 'Tempo Travellers, minibuses and suitable vehicles for larger groups.' }
+};
 
 export default function TransportServices() {
+  const { fields, selectTripPurpose } = useTransportSearch();
+
   return (
     <section className="mx-auto max-w-[1440px] px-6">
       <p className="text-sm font-semibold uppercase tracking-[0.24em] text-apex-600">What we arrange</p>
@@ -47,15 +38,33 @@ export default function TransportServices() {
       <p className="mt-3 max-w-2xl text-slate-600">We help you move through the journey.</p>
 
       <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {SERVICES.map(({ icon: Icon, title, description }) => (
-          <div key={title} className="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-xl transition hover:-translate-y-1 hover:shadow-2xl">
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-apex-50 text-apex-600">
-              <Icon size={20} />
-            </span>
-            <h3 className="mt-4 text-lg font-semibold text-slate-900">{title}</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
-          </div>
-        ))}
+        {TRIP_PURPOSE_UI.map(({ value, label }) => {
+          const { icon: Icon, description } = SERVICE_CARD_META[value];
+          const selected = fields.tripPurpose === value;
+          return (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={selected}
+              onClick={() => selectTripPurpose(value)}
+              className={cn(
+                'cursor-hover block w-full rounded-[1.5rem] border bg-white p-6 text-left shadow-xl transition hover:-translate-y-1 hover:shadow-2xl',
+                selected ? 'border-apex-500 ring-2 ring-apex-500/30' : 'border-slate-200'
+              )}
+            >
+              <span
+                className={cn(
+                  'inline-flex h-14 w-14 items-center justify-center rounded-full',
+                  selected ? 'bg-apex-500 text-white' : 'bg-apex-100 text-apex-600'
+                )}
+              >
+                <Icon size={24} />
+              </span>
+              <h3 className="mt-4 text-lg font-semibold text-slate-900">{label}</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+            </button>
+          );
+        })}
       </div>
     </section>
   );

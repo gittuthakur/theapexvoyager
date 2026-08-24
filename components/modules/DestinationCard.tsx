@@ -83,15 +83,17 @@ export default function DestinationCard({ destination, stats, className, priorit
           ) : null}
 
           {hasStatsRow ? (
-            <div className="mt-3 flex items-center gap-3 border-t border-white/10 pt-3 text-xs text-slate-300">
+            <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-3 text-xs text-slate-300">
               {stats?.startingPrice ? (
-                <span className="text-2xl font-bold text-white">
+                <span className="text-3xl font-extrabold text-white">
                   ₹{stats.startingPrice.toLocaleString('en-IN')}
-                  <span className="text-xs font-normal text-slate-400">/person</span>
+                  <span className="text-sm font-normal text-slate-400">/person</span>
                 </span>
               ) : null}
-              {stats?.journeyCount ? <span>{stats.journeyCount} journey{stats.journeyCount === 1 ? '' : 's'}</span> : null}
-              {stats?.stayCount ? <span>{stats.stayCount} stay{stats.stayCount === 1 ? '' : 's'}</span> : null}
+              <span className="flex gap-2">
+                {stats?.journeyCount ? <span>{stats.journeyCount} journey{stats.journeyCount === 1 ? '' : 's'}</span> : null}
+                {stats?.stayCount ? <span>{stats.stayCount} stay{stats.stayCount === 1 ? '' : 's'}</span> : null}
+              </span>
             </div>
           ) : null}
 

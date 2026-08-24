@@ -76,7 +76,7 @@ export default function DestinationsHeroSearch({ initialDestination = '', initia
       </div>
       <Button type="button" onClick={handleExplore} disabled={!canExplore} className="shrink-0" size='lg'>
         <Compass size={22} aria-hidden="true" />
-        Explore Places
+        Explore Destinations
       </Button>
     </div>
   );

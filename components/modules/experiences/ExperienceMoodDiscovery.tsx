@@ -4,8 +4,8 @@ import { SafeImage } from '@/components/ui/SafeImage';
 import { experienceMoods } from '@/config/experiences.config';
 import { getAllExperiences } from '@/lib/experiences';
 
-export default function ExperienceMoodDiscovery() {
-  const experiences = getAllExperiences();
+export default async function ExperienceMoodDiscovery() {
+  const experiences = await getAllExperiences();
 
   return (
     <section className="py-12 lg:py-16">

@@ -7,7 +7,7 @@ import type { VehicleOption } from '@/types/transport';
  * illustrative "Estimated from" starting figures for this demo, not live/externally-sourced
  * rates — final pricing is confirmed by The Apex Voyager team over WhatsApp.
  */
-const SERVICE_AREAS = ['Himachal Pradesh', 'Jammu & Kashmir', 'Uttarakhand', 'Chandigarh', 'Delhi'];
+export const SERVICE_AREAS = ['Himachal Pradesh', 'Jammu & Kashmir', 'Uttarakhand', 'Chandigarh', 'Delhi'];
 
 export const vehicleOptions: VehicleOption[] = [
   {
@@ -15,6 +15,7 @@ export const vehicleOptions: VehicleOption[] = [
     slug: 'sedan',
     name: 'Sedan',
     category: 'Comfort',
+    serviceType: 'Cab with Driver',
     seats: 4,
     image: images.destinations.shimla,
     images: [images.destinations.shimla],
@@ -33,6 +34,7 @@ export const vehicleOptions: VehicleOption[] = [
     slug: 'suv',
     name: 'SUV',
     category: 'SUV',
+    serviceType: 'Cab with Driver',
     seats: 6,
     image: images.toursHero,
     images: [images.toursHero],
@@ -52,6 +54,7 @@ export const vehicleOptions: VehicleOption[] = [
     slug: 'tempo-traveller',
     name: 'Tempo Traveller',
     category: 'Tempo Traveller',
+    serviceType: 'Group Transport',
     seats: 14,
     image: images.destinations.manali,
     images: [images.destinations.manali],
@@ -70,6 +73,7 @@ export const vehicleOptions: VehicleOption[] = [
     slug: 'premium-suv',
     name: 'Premium SUV',
     category: 'Premium',
+    serviceType: 'Cab with Driver',
     seats: 6,
     image: images.destinations.dharamshala,
     images: [images.destinations.dharamshala],
@@ -88,6 +92,7 @@ export const vehicleOptions: VehicleOption[] = [
     slug: 'coach',
     name: 'Coach / Mini Bus',
     category: 'Coach',
+    serviceType: 'Group Transport',
     seats: 32,
     image: images.destinations.kinnaur,
     images: [images.destinations.kinnaur],

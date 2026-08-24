@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Info, X } from 'lucide-react';
 import { registerBottomOverlay } from '@/lib/bottomOverlay';
 import { WizardProgress } from './WizardProgress';
 import { StepHeader } from './StepHeader';
@@ -15,10 +15,12 @@ import { StayPreferenceStep } from './steps/StayPreferenceStep';
 import { ExperiencesStep } from './steps/ExperiencesStep';
 import { TransportStep } from './steps/TransportStep';
 import { BudgetStep } from './steps/BudgetStep';
-import { WIZARD_STEP_LABELS } from '@/config/tripPlanner.config';
+import { mapBookingContextToWizardState } from './bookingContextToWizardState';
+import { WIZARD_STEP_LABELS, getPlannerRegionId } from '@/config/tripPlanner.config';
 import { computeJourneyChoices } from '@/lib/tripPlannerPricing';
 import { destinations } from '@/config/destinations.config';
 import type { TripPlannerWizardState } from '@/types/tripPlanner';
+import type { BookingContext } from '@/types/bookingContext';
 
 const TOTAL_STEPS = WIZARD_STEP_LABELS.length;
 
@@ -33,31 +35,31 @@ const DEFAULT_STATE: TripPlannerWizardState = {
   budget: { mode: 'total', bracketId: null }
 };
 
-// config/regions.config.ts's region ids ('himachal-pradesh', 'jammu-kashmir', 'uttarakhand')
-// don't quite match this wizard's own PLANNER_REGIONS ids ('himachal-pradesh', 'kashmir',
-// 'uttarakhand') — see that file's header comment for why the two lists were kept separate.
-// This is the one small bridge between them, needed only so a region-page CTA can prefill
-// the matching region chip here.
-const REGION_ID_TO_PLANNER_REGION_ID: Record<string, string> = {
-  'himachal-pradesh': 'himachal-pradesh',
-  'jammu-kashmir': 'kashmir',
-  uttarakhand: 'uttarakhand'
-};
-
-// A "Book Now"/"Plan My Journey" CTA elsewhere on the site links here with
-// ?destination=<slug> or ?region=<regionId> — prefill the destination step with that
-// place/region so the selection carries over instead of starting the wizard from a
-// blank slate. `destination` takes priority when both are somehow present.
-function buildInitialState(destinationSlug: string | null, regionId: string | null): TripPlannerWizardState {
+// A CTA anywhere on the site can link here with ?source=<journey|destination|stay|
+// experience|transport>&slug=<slug> (see lib/bookingNavigation.ts) — resolved
+// server-side into `bookingContext` (app/plan-my-journey/page.tsx) and mapped onto the
+// full wizard state. It takes priority over the older, narrower ?destination=<slug> /
+// ?region=<regionId> params (still supported below for existing region-page/legacy
+// links), which only ever prefill the destination step.
+function buildInitialState(
+  bookingContext: BookingContext | null,
+  destinationSlug: string | null,
+  regionId: string | null
+): TripPlannerWizardState {
+  if (bookingContext) return mapBookingContextToWizardState(bookingContext, DEFAULT_STATE);
   if (destinationSlug) {
     const destination = destinations.find((entry) => entry.slug === destinationSlug);
     if (destination) return { ...DEFAULT_STATE, destination: { regionIds: [], places: [destination.title] } };
   }
   if (regionId) {
-    const plannerRegionId = REGION_ID_TO_PLANNER_REGION_ID[regionId];
+    const plannerRegionId = getPlannerRegionId(regionId);
     if (plannerRegionId) return { ...DEFAULT_STATE, destination: { regionIds: [plannerRegionId], places: [] } };
   }
   return DEFAULT_STATE;
+}
+
+function contextKey(context: BookingContext | null): string | null {
+  return context ? `${context.source}:${context.slug}` : null;
 }
 
 const STEP_SUBTITLES: Record<number, string> = {
@@ -71,13 +73,41 @@ const STEP_SUBTITLES: Record<number, string> = {
   8: 'One last thing — what should we plan around?'
 };
 
-export default function PlanMyJourneyWizard() {
+export interface PlanMyJourneyWizardProps {
+  bookingContext?: BookingContext | null;
+  /** True whenever the URL carried a `source`/`slug` pair at all, even one that failed
+   *  to resolve — drives the invalid-slug notice below (never shown for a bare visit
+   *  or a legacy destination=/region= link). */
+  hadBookingParams?: boolean;
+}
+
+export default function PlanMyJourneyWizard({ bookingContext = null, hadBookingParams = false }: PlanMyJourneyWizardProps) {
   const searchParams = useSearchParams();
   const [state, setState] = useState<TripPlannerWizardState>(() =>
-    buildInitialState(searchParams.get('destination'), searchParams.get('region'))
+    buildInitialState(bookingContext, searchParams.get('destination'), searchParams.get('region'))
   );
   const [step, setStep] = useState(1);
   const [phase, setPhase] = useState<'wizard' | 'results'>('wizard');
+  const [noticeDismissed, setNoticeDismissed] = useState(false);
+  const appliedContextKey = useRef<string | null>(contextKey(bookingContext));
+
+  // Re-initializes only when the resolved item actually changes (a fresh source+slug
+  // navigation, including a client-side one that doesn't remount this component) —
+  // never on an unrelated re-render, so answers the traveler has already edited are
+  // never clobbered. A full replace (not a merge) is what makes switching from one
+  // booked item to another discard the previous selection instead of layering on it.
+  useEffect(() => {
+    const nextKey = contextKey(bookingContext);
+    if (nextKey === appliedContextKey.current) return;
+    appliedContextKey.current = nextKey;
+    setNoticeDismissed(false);
+    if (!bookingContext) return;
+    setState(mapBookingContextToWizardState(bookingContext, DEFAULT_STATE));
+    setStep(1);
+    setPhase('wizard');
+  }, [bookingContext]);
+
+  const showInvalidBookingNotice = hadBookingParams && !bookingContext && !noticeDismissed && step === 1 && phase === 'wizard';
 
   const choices = useMemo(() => (phase === 'results' ? computeJourneyChoices(state) : []), [phase, state]);
 
@@ -137,7 +167,22 @@ export default function PlanMyJourneyWizard() {
       <div className="">
         <WizardProgress currentStep={step} onStepClick={goToStep} />
 
-        <div className="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-glow sm:p-10">
+        <div className="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl sm:p-8">
+          {showInvalidBookingNotice ? (
+            <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+              <Info size={16} className="mt-0.5 shrink-0" />
+              <p className="flex-1">We couldn&apos;t find what you were booking, so we&apos;ve started a fresh plan for you.</p>
+              <button
+                type="button"
+                onClick={() => setNoticeDismissed(true)}
+                aria-label="Dismiss"
+                className="cursor-hover shrink-0 text-amber-600 transition-colors duration-300 ease-in-out hover:text-amber-900"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          ) : null}
+
           <StepHeader index={step} total={TOTAL_STEPS} title={WIZARD_STEP_LABELS[step - 1]} subtitle={STEP_SUBTITLES[step]} />
 
           <div className="mt-8">

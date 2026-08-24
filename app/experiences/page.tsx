@@ -29,7 +29,7 @@ interface ExperiencesPageProps {
 
 export default async function ExperiencesPage({ searchParams }: ExperiencesPageProps) {
   const { q, region, category, duration, budget, bestFor, season, difficulty, sort } = await searchParams;
-  const experiences = getAllExperiences();
+  const experiences = await getAllExperiences();
 
   // ExperiencesHero, ExperienceMoodDiscovery and RegionShowcase all navigate here with
   // new query params from *outside* ExperiencesListing, but the listing only seeds its

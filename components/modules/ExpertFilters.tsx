@@ -64,12 +64,14 @@ function FilterGroup({
 // hardcoded list, so a filter option only ever appears if an expert actually covers
 // it (spec §6). Plain <Link>s keep this working with JS disabled, same as the
 // original prototype's needTabs pattern.
-export default function ExpertFilters({ facets, destination, travelStyle, expertise, q }: ExpertFiltersProps) {
+export default async function ExpertFilters({ facets, destination, travelStyle, expertise, q }: ExpertFiltersProps) {
   const current = { destination, travelStyle, expertise, q };
 
-  const destinationOptions = facets.destinations
-    .map((slug) => ({ value: slug, display: getCuratedDestinationBySlug(slug)?.title ?? slug }))
-    .filter((option) => option.display);
+  const destinationOptions = (
+    await Promise.all(
+      facets.destinations.map(async (slug) => ({ value: slug, display: (await getCuratedDestinationBySlug(slug))?.title ?? slug }))
+    )
+  ).filter((option) => option.display);
 
   const travelStyleOptions = facets.travelStyles.map((style) => ({ value: style, display: style }));
   const expertiseOptions = facets.expertise.map((item) => ({ value: item, display: item }));

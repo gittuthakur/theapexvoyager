@@ -57,9 +57,10 @@ const staysHeroData: HeroSectionData = {
 // free-text destination search otherwise (never a fabricated route).
 const POPULAR_DESTINATION_LABELS = ['Manali', 'Spiti Valley', 'Shimla', 'Kashmir', 'Rishikesh', 'Tirthan Valley'];
 
-function resolveDestinationHref(label: string): string {
+async function resolveDestinationHref(label: string): Promise<string> {
   const slug = label.toLowerCase().replace(/\s+/g, '-');
-  return getCuratedDestinationBySlug(slug) ? `/stays/${slug}` : `/stays/search?destination=${encodeURIComponent(label)}`;
+  const destination = await getCuratedDestinationBySlug(slug);
+  return destination ? `/stays/${slug}` : `/stays/search?destination=${encodeURIComponent(label)}`;
 }
 
 const UNIQUE_STAYS: Array<{ label: string; description: string; href: string; icon: LucideIcon }> = [
@@ -82,6 +83,7 @@ const WHY_APEX_STAYS: Array<{ title: string; description: string; icon: LucideIc
 export default async function StaysPage() {
   const allHotels = await getHotels();
   const curated = allHotels.filter((hotel) => hotel.featured);
+  const popularDestinationHrefs = await Promise.all(POPULAR_DESTINATION_LABELS.map(resolveDestinationHref));
 
   return (
     <main className="">
@@ -96,10 +98,10 @@ export default async function StaysPage() {
       <section className="mx-auto max-w-[1440px] px-6 py-8">
         <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
           <span className="font-semibold text-slate-600">Popular:</span>
-          {POPULAR_DESTINATION_LABELS.map((label) => (
+          {POPULAR_DESTINATION_LABELS.map((label, index) => (
             <Link
               key={label}
-              href={resolveDestinationHref(label)}
+              href={popularDestinationHrefs[index]}
               className="cursor-hover rounded-full font-medium border border-slate-400 bg-white px-5 py-2.5 text-slate-600 transition-colors duration-300 ease-in-out hover:border-apex-400/90 hover:text-slate-900"
             >
               {label}

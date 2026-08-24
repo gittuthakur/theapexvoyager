@@ -1,4 +1,4 @@
-import mongoose, { Schema, type Document } from 'mongoose';
+import mongoose, { Schema, type Document, type Types } from 'mongoose';
 
 const { model, models } = mongoose;
 
@@ -81,6 +81,8 @@ export interface JourneyDocument extends Document {
   signatureMoments?: JourneySignatureMoment[];
   apexPicks?: JourneyApexPicks;
   faqs?: JourneyFaq[];
+  /** Backfilled by scripts/backfillRegionRefs.ts from `destinationSlugs` — see models/Region.ts. */
+  regionId?: Types.ObjectId;
 }
 
 const PickSchema = { title: String, description: String };
@@ -114,7 +116,8 @@ const JourneySchema = new Schema<JourneyDocument>(
       taste: PickSchema,
       moment: PickSchema
     },
-    faqs: [{ question: String, answer: String }]
+    faqs: [{ question: String, answer: String }],
+    regionId: { type: Schema.Types.ObjectId, ref: 'Region' }
   },
   { timestamps: true }
 );
@@ -124,6 +127,8 @@ const JourneySchema = new Schema<JourneyDocument>(
 JourneySchema.index({ featured: -1, createdAt: 1 });
 // Supports getPackagesByDestinationSlug()'s lookup.
 JourneySchema.index({ destinationSlugs: 1 });
+// Supports the Region Hub's per-region journeys listing.
+JourneySchema.index({ regionId: 1, featured: -1, createdAt: 1 });
 
 // `models.Journey` survives Next.js dev hot-reloads — without this guard, re-running this
 // module would call `model()` on an already-registered name and throw.

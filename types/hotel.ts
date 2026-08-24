@@ -30,6 +30,8 @@ export interface HotelPackage {
   verified?: boolean;
   cancellationPolicy?: string;
   mealPlan?: string;
+  /** ObjectId (as a string) of the MongoDB Region document this hotel belongs to — see models/Region.ts. */
+  regionId?: string;
   // Live Google Places rating/photos, matched by name+location and attached on
   // read — never persisted on the Hotel document itself. Absent when the Places
   // API key is unset, the lookup fails, or no confident name match was found.

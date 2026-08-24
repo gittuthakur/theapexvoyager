@@ -1,8 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
 import { ShieldCheck, Compass, Users, Headphones, ArrowRight, Flame, Globe, Building2, Smile, Award, HeartHandshake, Sparkles } from 'lucide-react';
+import { destinations } from '@/config/destinations.config';
+import { getAllPackages } from '@/lib/packages';
+import { getHotels } from '@/lib/hotels';
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  // Quick Stats Strip below uses real catalog counts — never invented business
+  // metrics — computed the same way the homepage's StatsBar figures are.
+  const [packages, hotels] = await Promise.all([getAllPackages(), getHotels()]);
+
   return (
     <main className="min-h-screen bg-white pt-24 pb-12 px-4 sm:px-6 lg:px-8 text-slate-900 flex flex-col justify-center">
       <div className="max-w-[1440px] mx-auto w-full space-y-7">
@@ -34,16 +41,16 @@ export default function AboutPage() {
           {/* Right: Quick Stats Strip */}
           <div className="lg:col-span-5 grid grid-cols-2 gap-3">
             <div className="px-5 py-7 rounded-2xl border border-slate-200 bg-slate-50 text-center space-y-1">
-              <p className="text-3xl sm:text-4xl font-black text-apex-600">10K+</p>
-              <p className="text-sm text-slate-500 font-medium uppercase tracking-wider">Happy Travellers</p>
+              <p className="text-3xl sm:text-4xl font-black text-apex-600">{destinations.length}+</p>
+              <p className="text-sm text-slate-500 font-medium uppercase tracking-wider">Handpicked Destinations</p>
             </div>
             <div className="px-5 py-7 rounded-2xl border border-slate-200 bg-slate-50 text-center space-y-1">
-              <p className="text-3xl sm:text-4xl font-black text-apex-600">50+</p>
-              <p className="text-sm text-slate-500 font-medium uppercase tracking-wider">Curated Routes</p>
+              <p className="text-3xl sm:text-4xl font-black text-apex-600">{packages.length}+</p>
+              <p className="text-sm text-slate-500 font-medium uppercase tracking-wider">Curated Journeys</p>
             </div>
             <div className="px-5 py-7 rounded-2xl border border-slate-200 bg-slate-50 text-center space-y-1">
-              <p className="text-3xl sm:text-4xl font-black text-apex-600">100%</p>
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Verified Stays</p>
+              <p className="text-3xl sm:text-4xl font-black text-apex-600">{hotels.length}+</p>
+              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Handpicked Stays</p>
             </div>
             <div className="px-5 py-7 rounded-2xl border border-slate-200 bg-slate-50 text-center space-y-1">
               <p className="text-3xl sm:text-4xl font-black text-emerald-500">24/7</p>
@@ -93,7 +100,7 @@ export default function AboutPage() {
           <div className="space-y-2 max-w-xl">
             <h2 className="text-2xl font-bold text-slate-900">Ready to experience the extraordinary?</h2>
             <p className="text-sm text-slate-600">
-              Join thousands of modern travelers who trust The Apex Voyager for their unforgettable mountain getaways.
+              Join the modern travelers who trust The Apex Voyager for their unforgettable mountain getaways.
             </p>
           </div>
 

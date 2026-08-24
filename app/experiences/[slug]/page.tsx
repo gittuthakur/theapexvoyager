@@ -26,7 +26,7 @@ interface ExperienceDetailPageProps {
 
 export async function generateMetadata({ params }: ExperienceDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const experience = getExperienceBySlug(slug);
+  const experience = await getExperienceBySlug(slug);
   if (!experience) return { title: 'Experience Not Found | The Apex Voyager' };
   return {
     title: `${experience.title} | The Apex Voyager`,
@@ -42,7 +42,7 @@ const badgeStyles: Record<string, string> = {
 
 export default async function ExperienceDetailPage({ params }: ExperienceDetailPageProps) {
   const { slug } = await params;
-  const experience = getExperienceBySlug(slug);
+  const experience = await getExperienceBySlug(slug);
 
   if (!experience) {
     notFound();
@@ -51,7 +51,7 @@ export default async function ExperienceDetailPage({ params }: ExperienceDetailP
   const gallery = experience.gallery.length > 0 ? experience.gallery : [experience.image];
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-14 sm:px-10 lg:px-16">
+    <main className="min-h-screen px-6 py-14 sm:px-10 lg:px-16">
       <section className="mx-auto max-w-6xl space-y-6">
         <BackButton fallbackHref="/experiences" label="Back to Experiences" />
 
@@ -108,7 +108,7 @@ export default async function ExperienceDetailPage({ params }: ExperienceDetailP
               <StatTile icon={Calendar} label="Best Season" value={experience.seasons.join(', ')} />
             </div>
 
-            <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-glow">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
               <p className="text-lg leading-8 text-slate-600">{experience.description}</p>
             </div>
 
@@ -202,7 +202,7 @@ export default async function ExperienceDetailPage({ params }: ExperienceDetailP
             ) : null}
           </div>
 
-          <aside className="space-y-6 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-glow xl:sticky xl:top-24 xl:self-start">
+          <aside className="space-y-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-xl xl:sticky xl:top-24 xl:self-start">
             <div>
               <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Starting from</p>
               <p className="text-3xl font-bold text-slate-900">
@@ -228,7 +228,7 @@ export default async function ExperienceDetailPage({ params }: ExperienceDetailP
 
 function StatTile({ icon: Icon, label, value }: { icon: typeof Clock; label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-lg p-4">
       <Icon size={16} className="text-apex-600" />
       <p className="mt-2 text-[11px] uppercase tracking-wide text-slate-500">{label}</p>
       <p className="text-sm font-semibold text-slate-900">{value}</p>
@@ -238,7 +238,7 @@ function StatTile({ icon: Icon, label, value }: { icon: typeof Clock; label: str
 
 function ContentBlock({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-glow">
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
       <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">{title}</p>
       <div className="mt-4">{children}</div>
     </div>

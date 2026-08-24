@@ -24,6 +24,7 @@ export const navRoutes: NavItem[] = [
 
 export const footerLinks: NavItem[] = [
   { label: 'About Us', href: '/about' },
+  { label: 'Why The Apex Voyager', href: '/why-the-apex-voyager' },
   { label: 'Careers', href: '/careers' },
   { label: 'Privacy Policy', href: '/privacy' },
   { label: 'Contact Us', href: '/contact' },

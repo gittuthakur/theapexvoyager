@@ -21,21 +21,31 @@ function toReview(doc: ReviewDocument): Review {
   return {
     id: String(doc._id),
     destinationSlug: doc.destinationSlug,
-    author: doc.author,
+    journeyId: doc.journeyId,
+    customerName: doc.customerName,
     location: doc.location,
     rating: doc.rating,
-    quote: doc.quote,
+    reviewText: doc.reviewText,
     tripTitle: doc.tripTitle,
     tripDate: doc.tripDate,
     verified: doc.verified,
-    source: doc.source
+    approved: doc.approved,
+    source: doc.source,
+    createdAt: doc.createdAt?.toISOString()
   };
 }
 
-/** Reviews live in MongoDB (see models/Review.ts, seeded from config/reviews.config.ts by scripts/seed.ts). */
+/**
+ * Public-facing reviews only — live in MongoDB (see models/Review.ts). Gated to
+ * `approved: true, verified: true` so an unreviewed or unconfirmed submission never
+ * reaches the site. There is no fallback/demo data: an empty result means no reviews
+ * exist yet, and callers should render nothing rather than fake content.
+ */
 export async function getReviewsForDestinationsPage(): Promise<Review[]> {
   await connectDB();
-  const docs = await ReviewModel.find().sort({ createdAt: -1 }).lean<ReviewDocument[]>();
+  const docs = await ReviewModel.find({ approved: true, verified: true })
+    .sort({ createdAt: -1 })
+    .lean<ReviewDocument[]>();
   return JSON.parse(JSON.stringify(docs.map(toReview)));
 }
 
@@ -77,10 +87,10 @@ export function reviewToTestimonial(review: Review, destinationsBySlug?: Map<str
   const destination = review.destinationSlug ? destinationsBySlug?.get(review.destinationSlug) : undefined;
   return {
     id: review.id,
-    author: review.author,
+    author: review.customerName,
     location: review.location,
     rating: review.rating,
-    quote: review.quote,
+    quote: review.reviewText,
     tourTitle: review.tripTitle,
     tripDate: review.tripDate,
     verified: review.verified,

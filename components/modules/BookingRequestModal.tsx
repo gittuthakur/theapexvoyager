@@ -38,7 +38,7 @@ export function useBookingRequest(): BookingRequestContextValue {
   return context;
 }
 
-type Status = 'form' | 'submitting' | 'success' | 'error';
+type Status = 'form' | 'review' | 'submitting' | 'success';
 
 export function BookingRequestProvider({ children }: { children: ReactNode }) {
   const [input, setInput] = useState<BookingRequestInput | null>(null);
@@ -65,7 +65,11 @@ export function BookingRequestProvider({ children }: { children: ReactNode }) {
     setInput(null);
   }
 
-  async function handleSubmit(event: FormEvent) {
+/** Customer details are collected first, then reviewed against the trip context
+   *  already captured (route/dates/travelers) before the MongoDB write actually
+   *  happens — so a mis-typed phone number or wrong date is caught before an enquiry
+   *  reference is generated, not after. */
+  function handleContinueToReview(event: FormEvent) {
     event.preventDefault();
     if (!input) return;
 
@@ -73,6 +77,13 @@ export function BookingRequestProvider({ children }: { children: ReactNode }) {
       setErrorMessage('Name and phone are required.');
       return;
     }
+
+    setErrorMessage('');
+    setStatus('review');
+  }
+
+  async function handleConfirmSubmit() {
+    if (!input) return;
 
     setStatus('submitting');
     setErrorMessage('');
@@ -105,7 +116,7 @@ export function BookingRequestProvider({ children }: { children: ReactNode }) {
       setStatus('success');
     } catch (error) {
       console.error('Failed to save booking request', error);
-      setStatus('error');
+      setStatus('review');
       setErrorMessage('Something went wrong — please try again, or message us directly on WhatsApp.');
     }
   }
@@ -124,7 +135,7 @@ export function BookingRequestProvider({ children }: { children: ReactNode }) {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-apex-600">
-                {status === 'success' ? 'Request received' : 'Request to book'}
+                {status === 'success' ? 'Request received' : status === 'review' || status === 'submitting' ? 'Review your request' : 'Request to book'}
               </p>
               <h3 id="booking-request-modal-title" className="mt-1 text-xl font-bold text-slate-900">
                 {input.itemName}
@@ -162,8 +173,68 @@ export function BookingRequestProvider({ children }: { children: ReactNode }) {
                 Continue on WhatsApp
               </a>
             </div>
+          ) : status === 'review' || status === 'submitting' ? (
+            <div className="mt-5 space-y-4">
+              <div className="space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
+                <p className="font-semibold text-slate-900">{input.itemName}</p>
+                {input.destination ? (
+                  <p className="text-slate-600">
+                    <span className="text-slate-500">Route / Destination: </span>
+                    {input.destination}
+                  </p>
+                ) : null}
+                {input.dates ? (
+                  <p className="text-slate-600">
+                    <span className="text-slate-500">Dates: </span>
+                    {input.dates}
+                  </p>
+                ) : null}
+                {input.travelers ? (
+                  <p className="text-slate-600">
+                    <span className="text-slate-500">Travelers: </span>
+                    {input.travelers}
+                  </p>
+                ) : null}
+                <hr className="border-slate-200" />
+                <p className="text-slate-600">
+                  <span className="text-slate-500">Name: </span>
+                  {name}
+                </p>
+                <p className="text-slate-600">
+                  <span className="text-slate-500">Phone: </span>
+                  {phone}
+                </p>
+                {email ? (
+                  <p className="text-slate-600">
+                    <span className="text-slate-500">Email: </span>
+                    {email}
+                  </p>
+                ) : null}
+              </div>
+
+              {errorMessage ? <p className="text-sm text-red-500">{errorMessage}</p> : null}
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setStatus('form')}
+                  disabled={status === 'submitting'}
+                  className="cursor-hover rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition-all duration-300 ease-in-out hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Edit Details
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmSubmit}
+                  disabled={status === 'submitting'}
+                  className="cursor-hover rounded-full bg-apex-500 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {status === 'submitting' ? 'Sending…' : 'Confirm & Submit Enquiry'}
+                </button>
+              </div>
+            </div>
           ) : (
-            <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+            <form onSubmit={handleContinueToReview} className="mt-5 space-y-4">
               <div>
                 <label htmlFor="booking-request-name" className="text-xs text-slate-500">
                   Name
@@ -206,10 +277,9 @@ export function BookingRequestProvider({ children }: { children: ReactNode }) {
 
               <button
                 type="submit"
-                disabled={status === 'submitting'}
-                className="cursor-hover flex w-full items-center justify-center gap-2 rounded-full bg-apex-500 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400 disabled:cursor-not-allowed disabled:opacity-60"
+                className="cursor-hover flex w-full items-center justify-center gap-2 rounded-full bg-apex-500 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400"
               >
-                {status === 'submitting' ? 'Sending…' : 'Get my booking reference'}
+                Review Request
               </button>
             </form>
           )}

@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:seed": "tsx scripts/seed.ts"
+    "db:seed": "tsx scripts/seed.ts",
+    "db:backfill-region-refs": "tsx scripts/backfillRegionRefs.ts",
+    "db:backfill-transport-service-type": "tsx scripts/backfillTransportServiceType.ts"
   },
   "dependencies": {
     "@studio-freight/lenis": "^1.0.42",

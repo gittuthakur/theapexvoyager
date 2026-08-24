@@ -45,7 +45,7 @@ export async function GET(request: Request) {
     }
 
     if (isCuratedBrowseRequest) {
-      let curated = getCuratedDestinations();
+      let curated = await getCuratedDestinations();
       if (isPopularParam === 'true') curated = curated.filter((destination) => destination.isPopular);
       if (regionParam) curated = curated.filter((destination) => destination.state === regionParam);
       if (styleParam) curated = curated.filter((destination) => destination.travelStyles?.includes(styleParam));

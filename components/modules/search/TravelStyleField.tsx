@@ -64,6 +64,9 @@ export function TravelStyleField({
 
       <FieldPopover open={open} onClose={() => setOpen(false)} anchorRef={anchorRef} width={320} className="z-50">
         <p className="px-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Pick a travel style</p>
+        {styles.length === 0 ? (
+          <p className="mt-3 px-1 text-sm text-slate-500">No options available yet.</p>
+        ) : (
         <div className="mt-3 flex flex-wrap gap-2">
           {styles.map((style) => {
             const Icon = styleIcon(style);
@@ -86,6 +89,7 @@ export function TravelStyleField({
             );
           })}
         </div>
+        )}
       </FieldPopover>
     </div>
   );

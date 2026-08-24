@@ -209,6 +209,22 @@ export const BUDGET_MODES: { id: BudgetModeId; label: string }[] = [
   { id: 'per-person', label: 'Per person' }
 ];
 
+// config/regions.config.ts's region ids ('himachal-pradesh', 'jammu-kashmir', 'uttarakhand')
+// don't quite match this file's own PLANNER_REGIONS ids above ('himachal-pradesh',
+// 'kashmir', 'uttarakhand') — see that constant's header comment for why the two lists
+// were kept separate. This is the one bridge between them, shared by the wizard's own
+// destination/region query-param prefill (PlanMyJourneyWizard.tsx) and the booking-context
+// resolver (lib/bookingContext.ts) — do not add a second, parallel mapping elsewhere.
+export const REGION_ID_TO_PLANNER_REGION_ID: Record<string, string> = {
+  'himachal-pradesh': 'himachal-pradesh',
+  'jammu-kashmir': 'kashmir',
+  uttarakhand: 'uttarakhand'
+};
+
+export function getPlannerRegionId(regionId: string): string | undefined {
+  return REGION_ID_TO_PLANNER_REGION_ID[regionId];
+}
+
 export const WIZARD_STEP_LABELS = [
   'Destination',
   'Dates',

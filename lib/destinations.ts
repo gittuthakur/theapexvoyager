@@ -1,10 +1,58 @@
 import { connectDB } from '@/lib/mongodb';
 import { DestinationSearchCache } from '@/models/DestinationSearchCache';
+import { Destination as DestinationModel, type DestinationDocument } from '@/models/Destination';
 import { searchDestinations, placeName, placePhotoUrls, type RawGooglePlace } from '@/lib/googlePlaces';
 import { isRecentFailure, markFailure } from '@/lib/negativeCache';
 import { isLocalDevelopment } from '@/lib/env';
 import { destinations as mockDestinations } from '@/config/destinations.config';
 import type { Destination } from '@/types/destination';
+
+export function toDestination(doc: DestinationDocument): Destination {
+  return {
+    id: doc.id,
+    slug: doc.slug,
+    title: doc.title,
+    category: doc.category,
+    description: doc.description,
+    toursCount: doc.toursCount,
+    image: doc.image,
+    link: doc.link,
+    region: doc.region,
+    state: doc.state,
+    regionId: doc.regionId ? String(doc.regionId) : undefined,
+    editorialDescription: doc.editorialDescription,
+    bestTime: doc.bestTime,
+    idealDuration: doc.idealDuration,
+    altitude: doc.altitude,
+    travelStyles: doc.travelStyles,
+    seasons: doc.seasons,
+    highlights: doc.highlights,
+    places: doc.places,
+    experiences: doc.experiences,
+    relatedSlugs: doc.relatedSlugs,
+    seo: doc.seo,
+    isPopular: doc.isPopular,
+    priority: doc.priority,
+    personality: doc.personality,
+    badge: doc.badge,
+    popularityScore: doc.popularityScore,
+    apexScore: doc.apexScore,
+    apexPicks: doc.apexPicks,
+    hiddenGems: doc.hiddenGems,
+    travelTips: doc.travelTips,
+    matchScores: doc.matchScores,
+    seasonalNotes: doc.seasonalNotes,
+    bestFor: doc.bestFor,
+    coordinates: doc.coordinates,
+    placeId: doc.placeId,
+    formattedAddress: doc.formattedAddress,
+    photos: doc.photos,
+    rating: doc.rating,
+    userRatingCount: doc.userRatingCount,
+    lastSyncedAt: doc.lastSyncedAt,
+    source: doc.source
+  };
+}
 
 export const DEFAULT_HIMACHAL_LOCATIONS = ['Spiti', 'Manali', 'Shimla', 'Kasol', 'Jibhi', 'Dharamshala'];
 
@@ -86,19 +134,38 @@ export async function getDestinationsWithFallback(): Promise<Destination[]> {
   }
 }
 
-// The curated directory (config/destinations.config.ts) — used by the homepage grid,
-// the /destinations search page, and as the primary slug lookup below. Synchronous:
-// no DB or API dependency, so it's always available even before any Places call runs.
-export function getCuratedDestinations(): Destination[] {
-  return mockDestinations;
+// The curated directory — lives in MongoDB (see models/Destination.ts, seeded from
+// config/destinations.config.ts by scripts/seed.ts). Used by the homepage grid, the
+// /destinations search page, the Region Hub, and as the primary slug lookup below.
+export async function getCuratedDestinations(): Promise<Destination[]> {
+  await connectDB();
+  const docs = await DestinationModel.find().sort({ priority: 1 }).lean<DestinationDocument[]>();
+  return JSON.parse(JSON.stringify(docs.map(toDestination)));
 }
 
-export function getCuratedDestinationBySlug(slug: string): Destination | undefined {
-  return mockDestinations.find((destination) => destination.slug === slug);
+export async function getCuratedDestinationBySlug(slug: string): Promise<Destination | undefined> {
+  await connectDB();
+  const doc = await DestinationModel.findOne({ slug }).lean<DestinationDocument | null>();
+  return doc ? JSON.parse(JSON.stringify(toDestination(doc))) : undefined;
+}
+
+/**
+ * Case-insensitive substring match against the curated destinations' titles — mirrors
+ * lib/experiences.ts's getExperiencesByDestination. Used by lib/bookingContext.ts to
+ * link a Hotel/Experience (which only carry a free-text `location`, not a destination
+ * slug) back to a curated Destination for region/travel-style prefill.
+ */
+export async function findDestinationByLocationText(text: string): Promise<Destination | undefined> {
+  const needle = normalizeLocation(text);
+  if (!needle) return undefined;
+  const curated = await getCuratedDestinations();
+  return curated.find(
+    (destination) => needle.includes(destination.title.toLowerCase()) || destination.title.toLowerCase().includes(needle)
+  );
 }
 
 export async function getDestinationBySlug(slug: string): Promise<Destination | undefined> {
-  const curated = mockDestinations.find((destination) => destination.slug === slug);
+  const curated = await getCuratedDestinationBySlug(slug);
   if (curated) return curated;
 
   // Not one of our curated destinations — try the slug as a location name for a live lookup.

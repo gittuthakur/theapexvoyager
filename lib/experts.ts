@@ -2,7 +2,7 @@ import { connectDB } from '@/lib/mongodb';
 import { Expert, type ExpertDocument } from '@/models/Expert';
 import type { ExpertFacets, TravelExpert } from '@/types/expert';
 
-function toTravelExpert(doc: ExpertDocument): TravelExpert {
+export function toTravelExpert(doc: ExpertDocument): TravelExpert {
   return {
     slug: doc.slug,
     name: doc.name,
@@ -15,7 +15,8 @@ function toTravelExpert(doc: ExpertDocument): TravelExpert {
     languages: doc.languages,
     journeySlugs: doc.journeySlugs,
     featured: doc.featured,
-    active: doc.active
+    active: doc.active,
+    regionIds: doc.regionIds?.map(String)
   };
 }
 

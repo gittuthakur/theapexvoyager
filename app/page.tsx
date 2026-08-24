@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Compass, Mountain, MountainSnow } from 'lucide-react';
 import HeroSection, { type HeroSectionData } from '@/components/modules/HeroSection';
+import homeHeroStyles from '@/components/modules/home/HomeHeroMobileFix.module.css';
 import GlobalSearchFilter from '@/components/GlobalSearchFilter';
 import TrustBadges from '@/components/modules/TrustBadges';
 import StatsBar from '@/components/modules/StatsBar';
@@ -20,7 +21,9 @@ import { getHotels } from '@/lib/hotels';
 import { formatINR } from '@/lib/pricing';
 import { destinations } from '@/config/destinations.config';
 import { statsItems } from '@/config/stats.config';
-import type { StatItem, Testimonial } from '@/types';
+import { getReviewsForDestinationsPage, reviewToTestimonial } from '@/lib/reviews';
+import { getHomeHeroRegions } from '@/services/regions/regionHub.service';
+import type { StatItem } from '@/types';
 
 // Tours now come live from MongoDB, so this page can't be statically prerendered at build time.
 export const dynamic = 'force-dynamic';
@@ -34,12 +37,12 @@ const FeatureGrid = createLazyModule<import('@/components/modules/FeatureGrid').
 const ExploreStays = createLazyModule<import('@/components/modules/ExploreStays').ExploreStaysProps>(
   () => import('@/components/modules/ExploreStays')
 );
+const PackageSection = createLazyModule<import('@/components/modules/PackageSection').PackageSectionProps>(
+  () => import('@/components/modules/PackageSection')
+);
 const TestimonialSection = createLazyModule<import('@/components/modules/TestimonialSection').TestimonialSectionProps>(
   () => import('@/components/modules/TestimonialSection'),
   { skeletonCount: 3 }
-);
-const PackageSection = createLazyModule<import('@/components/modules/PackageSection').PackageSectionProps>(
-  () => import('@/components/modules/PackageSection')
 );
 const BeyondTouristTrailSection = createLazyModule<import('@/components/modules/BeyondTouristTrailSection').BeyondTouristTrailSectionProps>(
   () => import('@/components/modules/BeyondTouristTrailSection')
@@ -55,152 +58,10 @@ const FEATURED_JOURNEY_SLUGS = [
   'himachal-himalayan-explorer'
 ];
 
-const testimonials: Testimonial[] = [
-  {
-    id: 'ananya-sharma',
-    author: 'Ananya Sharma',
-    location: 'Delhi, India',
-    rating: 5,
-    quote:
-      "Spiti Circuit with Apex was the best 10 days of my life. Every detail was perfect — the homestays, the food, the guides. They delivered an experience I didn't think was possible in India.",
-    tourTitle: 'Spiti Circuit',
-    duration: '10 Days',
-    tripDate: 'Jul 2026',
-    region: 'Himachal Pradesh',
-    category: 'Adventure',
-    featured: true,
-    verified: true,
-    source: { label: 'Google Reviews', url: 'https://www.google.com/search?q=The+Apex+Voyager+reviews' }
-  },
-  {
-    id: 'vikram-mehra',
-    author: 'Vikram Mehra',
-    location: 'Manali, India',
-    rating: 5,
-    quote: 'True local access and unmatched quality. No one else compares.',
-    tourTitle: 'Manali Adventure Circuit',
-    duration: '6 Days',
-    tripDate: 'May 2026',
-    region: 'Himachal Pradesh',
-    category: 'Adventure',
-    verified: true
-  },
-  {
-    id: 'rohit-kumar',
-    author: 'Rohit Kumar',
-    location: 'Kullu, India',
-    rating: 5,
-    quote: 'The river rafting was intense and perfectly organized. 10/10 would do again.',
-    tourTitle: 'Kullu Rafting Expedition',
-    duration: '3 Days',
-    tripDate: 'Jun 2026',
-    region: 'Himachal Pradesh',
-    category: 'Adventure',
-    verified: true,
-    source: { label: 'Google Reviews', url: 'https://www.google.com/search?q=The+Apex+Voyager+reviews' }
-  },
-  {
-    id: 'priya-nair',
-    author: 'Priya Nair',
-    location: 'Dharamshala, India',
-    rating: 5,
-    quote: 'A life-changing retreat, my parents came back completely transformed.',
-    tourTitle: 'Dharamshala Wellness Retreat',
-    duration: '5 Days',
-    tripDate: 'Mar 2026',
-    region: 'Himachal Pradesh',
-    category: 'Wellness',
-    verified: true
-  },
-  {
-    id: 'karan-verma',
-    author: 'Karan Verma',
-    location: 'Shimla, India',
-    rating: 4.8,
-    quote: 'The heritage walk was so well curated — our guide knew every alley of Mall Road.',
-    tourTitle: 'Shimla Heritage Walk',
-    duration: '4 Days',
-    tripDate: 'Feb 2026',
-    region: 'Himachal Pradesh',
-    category: 'Cultural',
-    verified: true
-  },
-  {
-    id: 'meera-iyer',
-    author: 'Meera Iyer',
-    location: 'Kasol, India',
-    rating: 4.9,
-    quote: 'Backpacking Kasol with Apex felt effortless. Every stay and cafe stop was on point.',
-    tourTitle: 'Kasol Backpacking Trail',
-    duration: '7 Days',
-    tripDate: 'Apr 2026',
-    region: 'Himachal Pradesh',
-    category: 'Adventure',
-    verified: true,
-    source: { label: 'Google Reviews', url: 'https://www.google.com/search?q=The+Apex+Voyager+reviews' }
-  },
-  {
-    id: 'arjun-nair',
-    author: 'Arjun Nair',
-    location: 'Kinnaur, India',
-    rating: 5,
-    quote: 'Took my whole family trekking through Kinnaur — safe, scenic, and unforgettable.',
-    tourTitle: 'Kinnaur Family Trek',
-    duration: '8 Days',
-    tripDate: 'Jun 2026',
-    region: 'Himachal Pradesh',
-    category: 'Family',
-    verified: true
-  },
-  {
-    id: 'sana-imran-qureshi',
-    author: 'Sana & Imran Qureshi',
-    location: 'Hyderabad, India',
-    rating: 5,
-    quote: 'Our honeymoon in Kashmir felt like a dream — houseboats, saffron fields, and views we still talk about.',
-    tourTitle: 'Kashmir Signature Journey',
-    duration: '6 Days',
-    tripDate: 'May 2026',
-    region: 'Jammu & Kashmir',
-    category: 'Honeymoon',
-    verified: true
-  },
-  {
-    id: 'neha-kapoor',
-    author: 'Neha Kapoor',
-    location: 'Bengaluru, India',
-    rating: 4.9,
-    quote: 'Morning yoga by the Ganga and evening rafting — Rishikesh with Apex reset me completely.',
-    tourTitle: 'Rishikesh Yoga & Rafting',
-    duration: '5 Days',
-    tripDate: 'Jan 2026',
-    region: 'Uttarakhand',
-    category: 'Wellness',
-    verified: true,
-    source: { label: 'Google Reviews', url: 'https://www.google.com/search?q=The+Apex+Voyager+reviews' }
-  }
-];
-
-const stateLinks = [
-  {
-    label: 'Himachal Pradesh',
-    href: '/destinations',
-    description: 'Manali, Spiti, Shimla & more',
-    avatar: images.destinations.manali
-  },
-  {
-    label: 'Kashmir',
-    href: '/destinations?destination=Kashmir',
-    description: 'Gulmarg & the valley',
-    avatar: images.destinations.kinnaur
-  },
-  {
-    label: 'Uttarakhand',
-    href: '/destinations?destination=Uttarakhand',
-    description: 'Rishikesh & Haridwar',
-    avatar: images.destinations.dharamshala
-  }
-];
+// The Home Hero's "state cards" now come from MongoDB (Region.showOnHomeHero) via
+// getHomeHeroRegions() — see services/regions/regionHub.service.ts. Adding a published
+// region there makes it appear here with no React change. `href` now points to the
+// region's own /regions/[slug] hub instead of a /destinations filter.
 
 export default async function HomePage() {
   // Backend-flag-driven homepage curation — selection and ordering come from each
@@ -229,9 +90,7 @@ export default async function HomePage() {
 
   // "Destinations", "Stays & Properties" and "Curated Journeys" are real catalog counts —
   // compute them from the same data sources the rest of the homepage uses instead of the
-  // hardcoded placeholders in stats.config.ts. Safety Record and Average Rating are
-  // manually-reported business figures with no underlying record count, so those two
-  // entries pass through from config unchanged.
+  // hardcoded placeholders in stats.config.ts.
   const hotels = await getHotels();
   const homepageStats: StatItem[] = statsItems.map((item) => {
     if (item.label === 'Destinations') return { ...item, value: `${destinations.length}+` };
@@ -239,6 +98,15 @@ export default async function HomePage() {
     if (item.label === 'Curated Journeys') return { ...item, value: `${allPackages.length}+` };
     return item;
   });
+
+  // Real reviews only — sourced from the Review collection (see lib/reviews.ts). No
+  // fallback/demo data: an empty collection means no testimonials render at all.
+  const reviews = await getReviewsForDestinationsPage();
+  const testimonials = reviews.map((review) => reviewToTestimonial(review));
+  const averageRating =
+    testimonials.length > 0 ? Number((testimonials.reduce((sum, t) => sum + (t.rating ?? 0), 0) / testimonials.length).toFixed(1)) : undefined;
+
+  const stateLinks = await getHomeHeroRegions();
 
   const heroData: HeroSectionData = {
     badge: {
@@ -261,21 +129,20 @@ export default async function HomePage() {
       image: `${siteConfig.url}${images.hero}`,
       url: siteConfig.url,
       priceFrom: { amount: 12999, currency: 'INR' },
-      ratingValue: Number(
-        (testimonials.reduce((sum, testimonial) => sum + testimonial.rating, 0) / testimonials.length).toFixed(1)
-      ),
-      reviewCount: testimonials.length,
+      ratingValue: averageRating,
+      reviewCount: testimonials.length > 0 ? testimonials.length : undefined,
       areaServed: destinations.map((destination) => destination.title)
     })
   };
 
   return (
     <>
+      <div className={homeHeroStyles.scope}>
       <HeroSection
         data={heroData}
         searchBar={<GlobalSearchFilter />}
         sidePanel={
-          <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5">
+          <div className="w-full sm:max-w-sm rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5">
             <div className='flex gap-2 items-center'>
               <span className="flex h-12 w-12 items-center justify-center rounded-full bg-apex-100 text-apex-500">
                 <MountainSnow size={24} />
@@ -309,6 +176,7 @@ export default async function HomePage() {
       >
         <TrustBadges />
       </HeroSection>
+      </div>
 
       <StatsBar items={homepageStats} />
 
@@ -338,7 +206,11 @@ export default async function HomePage() {
           viewAllHref="/stays"
         />
         <WhyChooseUs />
-        <TestimonialSection testimonials={testimonials} />
+        <TestimonialSection
+          testimonials={testimonials}
+          ratingLabel={testimonials.length > 0 ? `${averageRating}/5 Rating` : undefined}
+          reviewCountLabel={testimonials.length > 0 ? `${testimonials.length} Review${testimonials.length === 1 ? '' : 's'}` : undefined}
+        />
         <div className="">
           <NewsletterBanner />
         </div>

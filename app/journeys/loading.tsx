@@ -3,7 +3,7 @@ import { Skeleton, SkeletonGrid } from '@/components/ui/Skeleton';
 export default function JourneysLoading() {
   return (
     <main className="min-h-screen bg-[#FAFAFC]">
-      <div className="relative h-[520px] w-full overflow-hidden bg-slate-200">
+      <div className="relative min-h-[520px] w-full overflow-hidden bg-slate-200">
         <div className="absolute inset-x-6 bottom-10 sm:inset-x-10 lg:inset-x-16">
           <Skeleton className="h-14 w-full max-w-3xl rounded-3xl bg-white/60" />
         </div>

@@ -87,14 +87,16 @@ export default function FeaturedTours({ tours, viewAllHref = '/tours' }: Feature
                       "did this image fail" in its own state, which would otherwise carry over
                       from whichever tour was active before and wrongly show the fallback icon
                       for a perfectly valid next image. */}
-                  <SafeImage
-                    key={activeTour.slug}
-                    src={activeTour.image}
-                    alt={activeTour.title}
-                    fill
-                    sizes="(min-width: 1024px) 55vw, 100vw"
-                    className="object-cover"
-                  />
+                  {activeTour.image ? (
+                    <SafeImage
+                      key={activeTour.slug}
+                      src={activeTour.image}
+                      alt={activeTour.title}
+                      fill
+                      sizes="(min-width: 1024px) 55vw, 100vw"
+                      className="object-cover"
+                    />
+                  ) : null}
                 </div>
 
                 <h3 className="mt-6 text-2xl font-bold text-slate-900 sm:text-3xl">{activeTour.title}</h3>
@@ -169,13 +171,15 @@ export default function FeaturedTours({ tours, viewAllHref = '/tours' }: Feature
                       above is the single source of truth for selection, so nothing nested in
                       here (image, pills, text) should be able to intercept or swallow the click. */}
                   <div className="pointer-events-none relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl bg-slate-100 sm:h-28 sm:w-28">
-                    <SafeImage
-                      src={tour.image}
-                      alt={tour.title}
-                      fill
-                      sizes="120px"
-                      className="object-cover transition duration-300 group-hover:scale-105"
-                    />
+                    {tour.image ? (
+                      <SafeImage
+                        src={tour.image}
+                        alt={tour.title}
+                        fill
+                        sizes="120px"
+                        className="object-cover transition duration-300 group-hover:scale-105"
+                      />
+                    ) : null}
                   </div>
 
                   <div className="pointer-events-none min-w-0 flex-1">

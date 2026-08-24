@@ -45,6 +45,8 @@ export interface Destination extends Partial<GooglePlaceEnrichment> {
   link?: string;
   region?: string;
   state?: string;
+  /** ObjectId (as a string) of the MongoDB Region document this destination belongs to — see models/Region.ts. */
+  regionId?: string;
   editorialDescription?: string;
   bestTime?: string;
   idealDuration?: string;

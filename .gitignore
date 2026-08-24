@@ -41,3 +41,11 @@ __pycache__/
 *.zip
 *.tar
 *.gz
+
+# Browser / automated testing temporary profiles
+.tmp/
+
+# Test artifacts
+test-results/
+playwright-report/
+blob-report/

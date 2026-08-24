@@ -1,0 +1,22 @@
+/*
+ * Home Hero-specific mobile fix. Scoped to `.scope` so it can never affect the shared
+ * HeroSection/GlobalSearchFilter components on other pages (Journeys, Stays, etc.) that
+ * render the exact same markup — only the Home page wraps its Hero in this class.
+ *
+ * Root cause: below ~620px, HeroSection's top-level grid has no explicit
+ * grid-template-columns (only `lg:grid-cols-[2.6fr_1fr]`), so its single implicit column
+ * falls back to browser-default `auto` track sizing. That sizes the track to the
+ * *max-content* width of its widest descendant instead of the viewport — and the search
+ * panel's tab row (six whitespace-nowrap tabs) has an unwrapped natural width of ~560px.
+ * The grid track blows out to fit it, and the section's `overflow-hidden` then clips
+ * everything (heading, subtitle, badges, search panel) at the viewport edge instead of
+ * letting it reflow. `minmax(0, 1fr)` is the same technique Tailwind's own `grid-cols-1`
+ * uses to prevent this — it caps the track's automatic minimum size at 0 so it sizes to
+ * the available width instead, and the tab row's own `overflow-x-auto` then scrolls
+ * internally exactly as designed.
+ */
+@media (max-width: 619.98px) {
+  .scope :global(section[aria-labelledby='hero-heading']) > :global(div.grid) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

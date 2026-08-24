@@ -4,8 +4,8 @@ import { SafeImage } from '@/components/ui/SafeImage';
 import { experienceRegions } from '@/config/experiences.config';
 import { getAllExperiences } from '@/lib/experiences';
 
-export default function RegionShowcase() {
-  const experiences = getAllExperiences();
+export default async function RegionShowcase() {
+  const experiences = await getAllExperiences();
 
   return (
     <section className="bg-slate-100 py-12 lg:py-16">

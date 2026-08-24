@@ -73,9 +73,9 @@ export default function HeroSection({ data, className, children, sidePanel, sear
         initial="hidden"
         animate="visible"
         variants={staggerContainer}
-        className="relative mx-auto grid max-w-[1440px] gap-4 px-6 pb-10 pt-28 lg:px-8 xl:px-5 lg:grid-cols-[2.6fr_1fr] lg:items-center lg:pb-18 lg:pt-28"
+        className="relative mx-auto w-full max-w-[1440px] grid gap-4 px-6 pb-10 pt-28 lg:px-8 xl:px-5 lg:grid-cols-[2.6fr_1fr] lg:items-center lg:pb-18 lg:pt-28"
       >
-        <div>
+        <div className='w-full'>
           <header className={cn(
             isDark ? 'space-y-0' : 'space-y-3'
           )}>

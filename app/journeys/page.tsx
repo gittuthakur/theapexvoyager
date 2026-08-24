@@ -47,7 +47,7 @@ export default async function JourneysPage({ searchParams }: JourneysPageProps) 
 
   const packages = await getAllPackages();
   const featuredPackages = await getFeaturedPackages(3);
-  const destinations = getCuratedDestinations();
+  const destinations = await getCuratedDestinations();
   const destinationRatings = await getDestinationRatingsMap();
   const categories = getPackageCategories(packages);
 

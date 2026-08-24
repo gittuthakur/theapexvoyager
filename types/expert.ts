@@ -17,6 +17,8 @@ export interface TravelExpert {
   journeySlugs?: string[];
   featured?: boolean;
   active: boolean;
+  /** ObjectId(s) (as strings) of the MongoDB Region documents this expert covers — an expert may support multiple regions. See models/Region.ts. */
+  regionIds?: string[];
 }
 
 export interface ExpertFacets {

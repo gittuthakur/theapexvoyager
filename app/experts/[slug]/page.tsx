@@ -33,9 +33,9 @@ export default async function ExpertDetailPage({ params }: ExpertDetailPageProps
     notFound();
   }
 
-  const destinations = expert.destinationSlugs
-    .map((destinationSlug) => getCuratedDestinationBySlug(destinationSlug))
-    .filter((destination): destination is NonNullable<typeof destination> => Boolean(destination));
+  const destinations = (await Promise.all(expert.destinationSlugs.map((destinationSlug) => getCuratedDestinationBySlug(destinationSlug)))).filter(
+    (destination): destination is NonNullable<typeof destination> => Boolean(destination)
+  );
 
   const recommendedJourneys = (await Promise.all((expert.journeySlugs ?? []).map((journeySlug) => getPackageBySlug(journeySlug)))).filter(
     (journey): journey is NonNullable<typeof journey> => Boolean(journey)

@@ -38,6 +38,11 @@ export async function POST(request: Request) {
     await connectDB();
     const referenceId = await generateBookingId();
 
+    // See models/BookingRequest.ts for the `details.transportStatus` convention this
+    // seeds — a future internal tool can advance it through a richer lifecycle without
+    // this shared model's own `status` needing to fork per domain.
+    const enrichedDetails = type === 'transport' ? { ...details, transportStatus: 'REQUESTED' } : details;
+
     const bookingRequest = await BookingRequest.create({
       referenceId,
       type,
@@ -48,7 +53,7 @@ export async function POST(request: Request) {
       destination: destination?.slice(0, 200),
       dates: dates?.slice(0, 100),
       travelers: travelers?.slice(0, 100),
-      details
+      details: enrichedDetails
     });
 
     // Scheduled for after the response is sent — the visitor gets their reference ID (and

@@ -1,4 +1,4 @@
-import mongoose, { Schema, type Document } from 'mongoose';
+import mongoose, { Schema, type Document, type Types } from 'mongoose';
 
 const { model, models } = mongoose;
 
@@ -13,6 +13,8 @@ export interface TransportRouteDocument extends Document {
   seasonalStatus?: string;
   active: boolean;
   featured?: boolean;
+  /** Backfilled by scripts/backfillRegionRefs.ts from `origin`/`destination` — see models/Region.ts. */
+  regionId?: Types.ObjectId;
 }
 
 const TransportRouteSchema = new Schema<TransportRouteDocument>(
@@ -26,7 +28,8 @@ const TransportRouteSchema = new Schema<TransportRouteDocument>(
     startingFare: { type: Number },
     seasonalStatus: { type: String },
     active: { type: Boolean, required: true, default: true },
-    featured: { type: Boolean }
+    featured: { type: Boolean },
+    regionId: { type: Schema.Types.ObjectId, ref: 'Region' }
   },
   { timestamps: true }
 );
@@ -36,6 +39,8 @@ const TransportRouteSchema = new Schema<TransportRouteDocument>(
 TransportRouteSchema.index({ origin: 1, destination: 1 }, { unique: true });
 // Matches getRoutes()'s default sort so an unfiltered listing reads straight off the index.
 TransportRouteSchema.index({ featured: -1, createdAt: 1 });
+// Supports the Region Hub's per-region transport listing.
+TransportRouteSchema.index({ regionId: 1, active: 1, featured: -1 });
 
 // `models.TransportRoute` survives Next.js dev hot-reloads — without this guard, re-running
 // this module would call `model()` on an already-registered name and throw.

@@ -1,6 +1,6 @@
 import { getAllPackages } from '@/lib/packages';
 import { getHotels } from '@/lib/hotels';
-import { getExperiencesByDestination } from '@/lib/experiences';
+import { getAllExperiences, filterExperiencesByDestinationTitle } from '@/lib/experiences';
 import type { Destination, DestinationStats } from '@/types';
 
 /**
@@ -18,13 +18,17 @@ import type { Destination, DestinationStats } from '@/types';
  * source never blocks the whole page from rendering.
  */
 export async function getDestinationStatsMap(destinations: Destination[]): Promise<Map<string, DestinationStats>> {
-  const [packages, hotels] = await Promise.all([
+  const [packages, hotels, allExperiences] = await Promise.all([
     getAllPackages().catch((error) => {
       console.error('Failed to load journeys for destination stats', error);
       return [];
     }),
     getHotels().catch((error) => {
       console.error('Failed to load hotels for destination stats', error);
+      return [];
+    }),
+    getAllExperiences().catch((error) => {
+      console.error('Failed to load experiences for destination stats', error);
       return [];
     })
   ]);
@@ -38,7 +42,7 @@ export async function getDestinationStatsMap(destinations: Destination[]): Promi
     const needle = destination.title.trim().toLowerCase();
     const stayCount = needle ? hotels.filter((hotel) => hotel.location.toLowerCase().includes(needle)).length : 0;
 
-    const experienceCount = getExperiencesByDestination(destination.title).length;
+    const experienceCount = filterExperiencesByDestinationTitle(allExperiences, destination.title).length;
 
     statsMap.set(destination.slug, {
       journeyCount: matchingPackages.length,

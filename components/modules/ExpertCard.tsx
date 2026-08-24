@@ -12,10 +12,10 @@ export interface ExpertCardProps {
 // Visual convention mirrors PackageCard (rounded image + badge pill top-left,
 // padded content below). No rating/review/years-of-experience badge — that data
 // isn't real for this catalog (see AGENTS.md's ban on fabricated trust signals).
-export default function ExpertCard({ expert }: ExpertCardProps) {
-  const destinationTitles = expert.destinationSlugs
-    .map((slug) => getCuratedDestinationBySlug(slug)?.title)
-    .filter((title): title is string => Boolean(title));
+export default async function ExpertCard({ expert }: ExpertCardProps) {
+  const destinationTitles = (
+    await Promise.all(expert.destinationSlugs.map(async (slug) => (await getCuratedDestinationBySlug(slug))?.title))
+  ).filter((title): title is string => Boolean(title));
 
   return (
     <article className="group flex h-full flex-col rounded-[2rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">

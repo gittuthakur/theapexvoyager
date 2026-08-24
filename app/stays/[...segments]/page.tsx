@@ -39,7 +39,7 @@ async function resolveSegments(segments: string[]) {
     const stayType = findStayTypeBySlug(slug);
     if (stayType) return { kind: 'type' as const, stayType };
 
-    const destination = getCuratedDestinationBySlug(slug);
+    const destination = await getCuratedDestinationBySlug(slug);
     if (destination) return { kind: 'destination' as const, destination };
 
     const hotel = await getHotelBySlug(slug);
@@ -50,7 +50,7 @@ async function resolveSegments(segments: string[]) {
 
   if (segments.length === 2) {
     const [destinationSlug, typeSlug] = segments;
-    const destination = getCuratedDestinationBySlug(destinationSlug);
+    const destination = await getCuratedDestinationBySlug(destinationSlug);
     const stayType = findStayTypeBySlug(typeSlug);
     if (destination && stayType) return { kind: 'combined' as const, destination, stayType };
     return { kind: 'not-found' as const };
@@ -374,6 +374,7 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
               <p className="text-3xl font-semibold text-slate-900">₹{price.toLocaleString('en-IN')}</p>
               <HotelBookingModal
                 hotelName={hotel.title}
+                hotelSlug={hotel.slug}
                 destination={hotel.location}
                 defaultCheckIn={checkIn}
                 defaultCheckOut={checkOut}

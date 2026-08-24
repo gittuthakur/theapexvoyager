@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Check, Clock, Heart, MapPin, Star } from 'lucide-react';
+import { ArrowRight, Check, Clock, Eye, Heart, MapPin, Star } from 'lucide-react';
 import { formatINR } from '@/lib/pricing';
 import { formatDurationShort, getPackageInclusionTags } from '@/lib/packageFilters';
 import { cn } from '@/lib/utils';
@@ -55,7 +55,7 @@ export default function PackageCard({ pkg, rating, regionLabel, isComparing = fa
   }
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-sm transition-all duration-300 ease-in-out motion-safe:hover:-translate-y-1.5 hover:shadow-xl">
+    <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg transition-all duration-300 ease-in-out motion-safe:hover:-translate-y-1.5 hover:shadow-xl">
       <div className="relative h-56 overflow-hidden bg-slate-100">
         <img
           src={pkg.image}
@@ -148,19 +148,20 @@ export default function PackageCard({ pkg, rating, regionLabel, isComparing = fa
           </p>
         </div>
 
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <Link
             href={`/journeys/${pkg.slug}`}
             className="cursor-hover inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-slate-600 underline-offset-4 transition-colors duration-300 ease-in-out hover:text-apex-600 hover:underline"
           >
+            <Eye size={18} />
             View Journey
           </Link>
           <Link
             href={`/journeys/${pkg.slug}?book=1`}
-            className="cursor-hover inline-flex shrink-0 items-center gap-2 rounded-xl bg-apex-500 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 ease-in-out hover:bg-apex-600 hover:shadow-md"
+            className="cursor-hover inline-flex shrink-0 items-center gap-2 rounded-xl bg-apex-500 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 ease-in-out hover:bg-apex-600 hover:shadow-md"
           >
             Plan This Journey
-            <ArrowRight size={16} className="transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
+            <ArrowRight size={18} className="transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
           </Link>
         </div>
       </div>

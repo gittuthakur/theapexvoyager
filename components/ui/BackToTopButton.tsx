@@ -4,6 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { hasBottomOverlay, subscribeBottomOverlay } from '@/lib/bottomOverlay';
+import { usePathname } from 'next/navigation';
 
 const SCROLL_THRESHOLD = 300;
 
@@ -35,6 +36,14 @@ export default function BackToTopButton() {
   }, []);
 
   const visible = scrolled && !overlayActive;
+  const pathname = usePathname();
+  // Check karein ki current page home page hai ya nahi
+  const isHomePage = pathname === '/';
+
+  // Home page ke liye 6rem, baki pages ke liye 2rem
+  const bottomPosition = isHomePage 
+    ? 'max(6rem, calc(env(safe-area-inset-bottom) + 5rem))' 
+    : 'calc(env(safe-area-inset-bottom) + 2rem)'; 
 
   function handleClick() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -47,14 +56,14 @@ export default function BackToTopButton() {
       aria-label="Back to top"
       tabIndex={visible ? 0 : -1}
       className={cn(
-        'cursor-hover fixed right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-apex-500 shadow-glow transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-apex-50 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-apex-300',
+        'cursor-hover fixed right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-black/90 text-white shadow-glow transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-black hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-apex-300',
         visible ? 'visible translate-y-0 opacity-100 pointer-events-auto' : 'invisible translate-y-2 opacity-0 pointer-events-none'
       )}
       // 6rem clears the existing bottom-right WhatsApp button (bottom-6, 56px tall)
+      style={{ bottom: bottomPosition }}
       // wherever it's rendered, with room to spare on pages that don't have it.
-      style={{ bottom: 'max(6rem, calc(env(safe-area-inset-bottom) + 5rem))' }}
     >
-      <ArrowUp size={20} aria-hidden="true" />
+      <ArrowUp size={24} aria-hidden="true" />
     </button>
   );
 }

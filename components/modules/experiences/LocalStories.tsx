@@ -20,8 +20,10 @@ const STORIES: StoryBlock[] = [
   { title: 'Discover Traditional Mountain Crafts', category: 'Culture', slug: 'himachali-craft-workshop-kullu' }
 ];
 
-export default function LocalStories() {
-  const blocks = STORIES.map((story) => ({ story, experience: getExperienceBySlug(story.slug) })).filter((entry) => entry.experience);
+export default async function LocalStories() {
+  const blocks = (await Promise.all(STORIES.map(async (story) => ({ story, experience: await getExperienceBySlug(story.slug) })))).filter(
+    (entry) => entry.experience
+  );
   if (blocks.length === 0) return null;
 
   return (

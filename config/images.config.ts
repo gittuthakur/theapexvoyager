@@ -9,6 +9,7 @@ export const images = {
   hero: '/images/img-hero-hero.jpg',
   ctaBanner: '/images/cta-real-himachal.jpg',
   toursHero: '/images/feature-tour-hero.jpg',
+  destinationsHero: '/images/destination-hero-img.jpg',
   destinations: {
     manali: '/images/destination-manali.jpg',
     kinnaur: '/images/destination-kinnaur.jpg',
