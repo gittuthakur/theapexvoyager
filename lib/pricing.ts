@@ -89,3 +89,17 @@ export function calculateBookingPrice(pkg: TravelPackage, config: BookingConfig)
 export function formatINR(amount: number): string {
   return `₹${Math.round(amount).toLocaleString('en-IN')}`;
 }
+
+/** Every real transport vehicle's `priceNote` (config/transport.config.ts,
+ *  config/transportRentals.config.ts) leads with the actual configured pricing basis —
+ *  "per day", "per trip", etc. — followed by descriptive detail. This pulls that real
+ *  basis out so a price line can show it as a unit ("/ day") instead of a bare,
+ *  ambiguous amount, without hardcoding a unit per service type. Returns null when
+ *  `priceNote` doesn't start with a recognized "per X" basis, so callers fall back to
+ *  showing the amount (and the full note) as before rather than inventing a unit. */
+export function splitTransportPriceNote(priceNote?: string): { unit: string; detail: string } | null {
+  if (!priceNote) return null;
+  const match = priceNote.match(/^per\s+(\w+)\s*,?\s*(.*)$/i);
+  if (!match) return null;
+  return { unit: match[1].toLowerCase(), detail: match[2] };
+}

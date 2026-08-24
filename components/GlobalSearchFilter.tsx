@@ -421,7 +421,7 @@ export default function GlobalSearchFilter({
                 <InlineDateTimeField icon={Calendar} label="When?" type="date" value={date} onChange={setDate} />
               </motion.div>
               <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
-                <CounterField label="Travelers" value={travelers} onChange={setTravelers} min={1} max={20} />
+                <CounterField label="Travelers" value={travelers} onChange={setTravelers} min={1} max={20} stepperLabel="Traveler" />
               </motion.div>
             </>
           )}

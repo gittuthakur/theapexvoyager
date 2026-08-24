@@ -237,7 +237,7 @@ export default function FourByFourVehicles({
         <div className="mt-6 rounded-[2rem] border border-slate-200 bg-white p-10 text-center shadow-glow">
           <p className="text-lg font-semibold text-slate-900">{activeSearchEmptyMessage}</p>
           <p className="mt-3 text-slate-600">Tell us what you need and our travel experts will arrange it for you.</p>
-          <NoInventoryActions onRequestCustomVehicle={handleCustomQuote} modifyHref="#vehicle-recommendation" modifyLabel="Modify Recommendation" />
+          <NoInventoryActions onRequestCustomVehicle={handleCustomQuote} />
         </div>
       )}
 

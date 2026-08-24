@@ -19,4 +19,5 @@ export { default as ServiceTypeSelector } from './ServiceTypeSelector';
 export { default as WhyBookTransport } from './WhyBookTransport';
 export { default as HowTransportBookingWorks } from './HowTransportBookingWorks';
 export { default as NoInventoryActions } from './NoInventoryActions';
+export { default as TransportSearchResultsBar } from './TransportSearchResultsBar';
 export { TransportSearchProvider, useTransportSearch } from './TransportSearchContext';

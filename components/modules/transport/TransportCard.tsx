@@ -5,7 +5,7 @@ import { Briefcase, Cog, Snowflake, Users } from 'lucide-react';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { openTransportWhatsAppLead } from '@/lib/whatsapp';
-import { formatINR } from '@/lib/pricing';
+import { formatINR, splitTransportPriceNote } from '@/lib/pricing';
 import type { VehicleOption } from '@/types/transport';
 
 export interface TransportCardProps {
@@ -45,6 +45,8 @@ export default function TransportCard({
   onRequestVehicle
 }: TransportCardProps) {
   const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
+  const priceSplit = vehicle.estimatedFromPrice ? splitTransportPriceNote(vehicle.priceNote) : null;
+  const priceDetail = priceSplit ? priceSplit.detail : vehicle.priceNote;
 
   function handleCustomiseOnWhatsApp() {
     if (sendingWhatsApp) return;
@@ -130,9 +132,16 @@ export default function TransportCard({
               {vehicle.estimatedFromPrice ? 'Estimated from' : ''}
             </p>
             <p className="text-3xl font-bold text-slate-900">
-              {vehicle.estimatedFromPrice ? formatINR(vehicle.estimatedFromPrice) : 'Price on request'}
+              {vehicle.estimatedFromPrice ? (
+                <>
+                  {formatINR(vehicle.estimatedFromPrice)}
+                  {priceSplit ? <span className="text-base font-semibold text-slate-500"> / {priceSplit.unit}</span> : null}
+                </>
+              ) : (
+                'Price on request'
+              )}
             </p>
-            {vehicle.estimatedFromPrice && vehicle.priceNote ? <p className="mt-1 text-xs text-slate-500">{vehicle.priceNote}</p> : null}
+            {vehicle.estimatedFromPrice && priceDetail ? <p className="mt-1 text-xs text-slate-500">{priceDetail}</p> : null}
           </div>
           <button
             type="button"

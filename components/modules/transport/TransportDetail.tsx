@@ -6,7 +6,7 @@ import { Briefcase, Snowflake, Users, X } from 'lucide-react';
 import { FloatingOverlay } from '@/components/ui/FloatingOverlay';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 import { openTransportWhatsAppLead } from '@/lib/whatsapp';
-import { formatINR } from '@/lib/pricing';
+import { formatINR, splitTransportPriceNote } from '@/lib/pricing';
 import type { VehicleOption } from '@/types/transport';
 
 /** Parses a 'YYYY-MM-DD' string as a local-time Date, avoiding the UTC-midnight
@@ -62,6 +62,8 @@ export default function TransportDetail({
   onClose
 }: TransportDetailProps) {
   const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
+  const priceSplit = vehicle.estimatedFromPrice ? splitTransportPriceNote(vehicle.priceNote) : null;
+  const priceDetail = priceSplit ? priceSplit.detail : vehicle.priceNote;
 
   const tripRouteLine = pickup && destination ? `${pickup} → ${destination}` : pickup || destination;
   // Gated on real trip facts (or journey attribution) only — `vehicle.serviceType` is
@@ -217,9 +219,16 @@ export default function TransportDetail({
               {vehicle.estimatedFromPrice ? 'Estimated from' : ''}
             </p>
             <p className="text-3xl font-extrabold text-slate-900">
-              {vehicle.estimatedFromPrice ? formatINR(vehicle.estimatedFromPrice) : 'Price on request'}
+              {vehicle.estimatedFromPrice ? (
+                <>
+                  {formatINR(vehicle.estimatedFromPrice)}
+                  {priceSplit ? <span className="text-lg font-semibold text-slate-500"> / {priceSplit.unit}</span> : null}
+                </>
+              ) : (
+                'Price on request'
+              )}
             </p>
-            {vehicle.priceNote ? <p className="mt-1 text-sm text-slate-500">{vehicle.priceNote}</p> : null}
+            {vehicle.estimatedFromPrice && priceDetail ? <p className="mt-1 text-sm text-slate-500">{priceDetail}</p> : null}
           </div>
           <p className="text-md font-medium text-slate-600">Availability on request</p>
         </div>

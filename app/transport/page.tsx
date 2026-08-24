@@ -17,12 +17,13 @@ import {
   HowTransportBookingWorks,
   TransportFAQ,
   TransportPartnerCTA,
-  TransportSearchProvider
+  TransportSearchProvider,
+  TransportSearchResultsBar
 } from '@/components/modules/transport';
 import { images } from '@/config/images.config';
 import { getVehicles, getRoutes, getVehiclesByDestinationSlug } from '@/lib/transport';
 import { findDestinationByLocationText } from '@/lib/destinations';
-import { categoriesForMotorcycleType, serviceTypeFromUrlSlug } from '@/config/transportServiceTypes.config';
+import { categoriesForMotorcycleType, serviceTypeFromUrlSlug, SERVICE_TYPE_UI } from '@/config/transportServiceTypes.config';
 
 export const metadata: Metadata = {
   title: 'Travel Transport & Private Transfers | The Apex Voyager',
@@ -51,6 +52,10 @@ interface TransportPageProps {
     minSeats?: string;
     maxPrice?: string;
     bikeType?: string;
+    /** Set only by a real Hero-search submission (TransportHeroSearch.tsx) — never by
+     *  a discovery-card click. Distinguishes an intentional search from browsing; see
+     *  "SEARCH RESULTS MODE" below. */
+    searched?: string;
   }>;
 }
 
@@ -82,8 +87,17 @@ export default async function TransportPage({ searchParams }: TransportPageProps
     transmission,
     minSeats,
     maxPrice,
-    bikeType
+    bikeType,
+    searched
   } = await searchParams;
+
+  // Search Results Mode: only a real Hero-search submission sets `searched=1` — a
+  // discovery-card click (Choose Your Ride Style / Pick the Right Fit / We Don't Just
+  // Arrange a Vehicle) updates TransportSearchContext/the URL too but never this flag,
+  // so simply browsing never leaves Discovery Mode (brief §2, §10, Test G). In this
+  // mode the page shows only the searched service's own results, hiding every other
+  // discovery/marketing section (brief §1 Mode B, §4).
+  const isSearchResultsMode = searched === '1';
 
   // "How do you want to travel?" is now the first decision (service, always resolved
   // to a real value — defaults to Cab with Driver so a fresh page load is unchanged).
@@ -192,6 +206,36 @@ export default async function TransportPage({ searchParams }: TransportPageProps
   const fourByFourSummary = fourByFourSearchActive ? buildSearchSummary(pickup, destination, date, returnDate) : '';
   const selfDriveSummary = selfDriveSearchActive ? buildSearchSummary(pickup, undefined, date, returnDate) : '';
   const bikeSummary = bikeSearchActive ? buildSearchSummary(pickup, undefined, date, returnDate) : '';
+  const localSummary = localSearchActive ? buildSearchSummary(undefined, destination, date, undefined) : '';
+
+  // Search Results Mode summary bar (brief §6/§9) — resolves to whichever single
+  // service is active, mirroring the same per-section `active`/summary/count values
+  // used below so the bar and the results it sits above never disagree.
+  const resultsBarServiceLabel = SERVICE_TYPE_UI.find((entry) => entry.value === service)?.label ?? service;
+  const resultsBarSummary =
+    service === 'Cab with Driver' || service === 'Group Transport' || service === 'Local Taxi'
+      ? chauffeurSummary
+      : selfDriveIsActiveService
+        ? selfDriveSummary
+        : service === '4x4 / Mountain Vehicle'
+          ? fourByFourSummary
+          : bikeIsActiveService
+            ? bikeSummary
+            : service === 'Local Mobility'
+              ? localSummary
+              : '';
+  const resultsBarCount =
+    service === 'Cab with Driver' || service === 'Group Transport' || service === 'Local Taxi'
+      ? chauffeurVehicles.length
+      : selfDriveIsActiveService
+        ? selfDriveVehicles.length
+        : service === '4x4 / Mountain Vehicle'
+          ? fourByFourVehicles.length
+          : bikeIsActiveService
+            ? bikeVehicles.length
+            : service === 'Local Mobility'
+              ? localMobilityVehicles.length
+              : 0;
 
   // Each of the 5 inventory sections stays exactly as it renders today — this only
   // reorders which one appears first, so a selected service's own inventory is never
@@ -304,6 +348,10 @@ export default async function TransportPage({ searchParams }: TransportPageProps
     }
   ];
   const orderedInventorySections = [...inventorySections.filter((s) => s.active), ...inventorySections.filter((s) => !s.active)];
+  // Search Results Mode (brief §4): only the searched service's own inventory section
+  // renders — never the other 4 catalogs. Discovery Mode is unchanged (all 5, active
+  // one first).
+  const visibleInventorySections = isSearchResultsMode ? orderedInventorySections.filter((s) => s.active) : orderedInventorySections;
 
   return (
     <TransportSearchProvider>
@@ -318,40 +366,56 @@ export default async function TransportPage({ searchParams }: TransportPageProps
       </InnerHeroBanner>
 
       <main className="space-y-14 py-14">
-        <ChooseRideStyle />
+        {isSearchResultsMode ? (
+          <TransportSearchResultsBar
+            serviceLabel={resultsBarServiceLabel}
+            summary={resultsBarSummary || undefined}
+            travellers={travellers}
+            vehicle={vehicle}
+            resultsCount={resultsBarCount}
+          />
+        ) : (
+          <>
+            <ChooseRideStyle />
 
-        <TransportServices />
+            <TransportServices />
 
-        <VehicleCategories />
+            <VehicleCategories />
+          </>
+        )}
 
-        {orderedInventorySections.map((section) => (
+        {visibleInventorySections.map((section) => (
           <Fragment key={section.key}>{section.node}</Fragment>
         ))}
 
-        <RouteExplorer
-          routes={routes}
-          allRoutes={allRoutes}
-          pickup={pickup}
-          destination={destination}
-          date={date}
-          travellers={travellers}
-          service={service}
-          journeyContext={journeyContext}
-          chauffeurVehicles={chauffeurVehicles}
-          fourByFourVehicles={fourByFourVehicles}
-          selfDriveVehicles={allSelfDriveVehicles}
-          bikeVehicles={allBikeVehicles}
-        />
+        {isSearchResultsMode ? null : (
+          <>
+            <RouteExplorer
+              routes={routes}
+              allRoutes={allRoutes}
+              pickup={pickup}
+              destination={destination}
+              date={date}
+              travellers={travellers}
+              service={service}
+              journeyContext={journeyContext}
+              chauffeurVehicles={chauffeurVehicles}
+              fourByFourVehicles={fourByFourVehicles}
+              selfDriveVehicles={allSelfDriveVehicles}
+              bikeVehicles={allBikeVehicles}
+            />
 
-        <VehicleRecommendation vehicles={[...chauffeurVehicles, ...fourByFourVehicles, ...allSelfDriveVehicles, ...allBikeVehicles]} />
+            <VehicleRecommendation vehicles={[...chauffeurVehicles, ...fourByFourVehicles, ...allSelfDriveVehicles, ...allBikeVehicles]} />
 
-        <WhyBookTransport />
+            <WhyBookTransport />
 
-        <HowTransportBookingWorks />
+            <HowTransportBookingWorks />
 
-        <TransportFAQ />
+            <TransportFAQ />
 
-        <TransportPartnerCTA />
+            <TransportPartnerCTA />
+          </>
+        )}
       </main>
     </TransportSearchProvider>
   );

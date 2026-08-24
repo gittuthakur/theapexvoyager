@@ -111,7 +111,7 @@ export default function TransportResults({
           <p className="mt-3 text-slate-600">
             Tell us what you need and our travel experts will arrange it for you.
           </p>
-          <NoInventoryActions onRequestCustomVehicle={handleCustomQuote} modifyHref="#vehicle-recommendation" modifyLabel="Modify Recommendation" />
+          <NoInventoryActions onRequestCustomVehicle={handleCustomQuote} />
         </div>
       )}
 

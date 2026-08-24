@@ -135,6 +135,11 @@ export default function TransportHeroSearch({ className, formId = 'transport-her
 
     if (tripPurpose) params.set('purpose', tripPurpose);
 
+    // Distinguishes an intentional search submission from a discovery-card click that
+    // merely updates the shared TransportSearchContext (see brief "SEARCH RESULTS MODE")
+    // — the page only ever enters the focused Search Results Mode when this is present.
+    params.set('searched', '1');
+
     const qs = params.toString();
     router.push(qs ? `/transport?${qs}` : '/transport');
     onSubmitted?.();

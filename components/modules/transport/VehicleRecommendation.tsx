@@ -101,7 +101,7 @@ export default function VehicleRecommendation({ vehicles }: VehicleRecommendatio
         <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">Get a quick recommendation</h2>
         <p className="mt-2 text-sm text-slate-500">Tell us about your trip and we&apos;ll suggest a suitable ride.</p>
         <div className="mt-6 grid gap-5 sm:grid-cols-2">
-          <CounterField label="Travellers" value={travellers} onChange={updateTravellers} min={1} max={30} />
+          <CounterField label="Travellers" value={travellers} onChange={updateTravellers} min={1} max={30} stepperLabel="Traveller" />
           <div><p className="mb-2 text-sm font-semibold text-slate-900">Trip type</p><div className="grid grid-cols-3 gap-2">
             {TRIP_TYPES.map((type) => <button key={type} type="button" onClick={() => updateTripType(type)} className={`cursor-hover rounded-lg px-3 py-3 text-xs font-semibold transition ${tripType === type ? 'bg-apex-500 text-white' : 'border border-apex-400 bg-apex-50 text-slate-900 hover:border-apex-600 hover:bg-apex-100'}`}>{type}</button>)}
           </div></div>
