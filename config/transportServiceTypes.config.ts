@@ -85,7 +85,7 @@ export interface ServiceTypeUiEntry {
 
 export const SERVICE_TYPE_UI: ServiceTypeUiEntry[] = [
   { value: 'Cab with Driver', label: 'Cab with Driver', urlSlug: 'cab', description: 'Relax while a local driver handles the route.' },
-  { value: 'Self-Drive Car', label: 'Self Drive', urlSlug: 'self-drive', description: 'Take the wheel and explore at your own pace.' },
+  { value: 'Self-Drive Car', label: 'Self-Drive', urlSlug: 'self-drive', description: 'Take the wheel and explore at your own pace.' },
   { value: 'Group Transport', label: 'Tempo / Group', urlSlug: 'group', description: 'Tempo Travellers, minibuses and coaches for larger groups.' },
   { value: '4x4 / Mountain Vehicle', label: '4x4', urlSlug: '4x4', description: 'For remote and demanding Himalayan routes.' },
   { value: 'Bike / Motorcycle', label: 'Bike Rental', urlSlug: 'bike', description: 'Flexible two-wheel rentals for independent travel.' },

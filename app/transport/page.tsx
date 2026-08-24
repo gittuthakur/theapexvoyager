@@ -1,3 +1,4 @@
+import { Fragment, type ReactNode } from 'react';
 import type { Metadata } from 'next';
 import InnerHeroBanner from '@/components/modules/InnerHeroBanner';
 import {
@@ -192,25 +193,20 @@ export default async function TransportPage({ searchParams }: TransportPageProps
   const selfDriveSummary = selfDriveSearchActive ? buildSearchSummary(pickup, undefined, date, returnDate) : '';
   const bikeSummary = bikeSearchActive ? buildSearchSummary(pickup, undefined, date, returnDate) : '';
 
-  return (
-    <TransportSearchProvider>
-      <InnerHeroBanner
-        eyebrow="TRAVEL TRANSPORT"
-        title="Move Through the"
-        highlite="Himalayas, Your Way."
-        subtitle="From airport pickups to mountain road journeys, find reliable transport designed around your trip."
-        bgImage={images.toursHero}
-      >
-        <TransportHeroSearch />
-      </InnerHeroBanner>
-
-      <main className="space-y-14 py-14">
-        <ChooseRideStyle />
-
-        <TransportServices />
-
-        <VehicleCategories />
-
+  // Each of the 5 inventory sections stays exactly as it renders today — this only
+  // reorders which one appears first, so a selected service's own inventory is never
+  // stuck behind unrelated sections. `active` mirrors each section's own existing
+  // `isActiveService`/`isLocalServiceActive` computation above (Local Mobility uses
+  // the plain service check here, not `localSearchActive`'s extra `hasActiveFilter`
+  // requirement, since picking Local Transport as a service should prioritize it
+  // immediately, independent of whether a destination was also searched). Since the
+  // default `service` is 'Cab with Driver' (line 94's fallback), a bare `/transport`
+  // visit keeps today's exact order — only an explicit selection reprioritizes.
+  const inventorySections: Array<{ key: string; active: boolean; node: ReactNode }> = [
+    {
+      key: 'cab-group',
+      active: service === 'Cab with Driver' || service === 'Group Transport' || service === 'Local Taxi',
+      node: (
         <TransportResults
           vehicles={chauffeurVehicles}
           pickup={pickup}
@@ -225,7 +221,12 @@ export default async function TransportPage({ searchParams }: TransportPageProps
           tripType={tripType}
           isActiveService={service === 'Cab with Driver' || service === 'Group Transport'}
         />
-
+      )
+    },
+    {
+      key: 'self-drive',
+      active: selfDriveIsActiveService,
+      node: (
         <SelfDriveRentals
           vehicles={selfDriveVehicles}
           pickup={selfDriveSearchActive ? pickup : undefined}
@@ -248,7 +249,12 @@ export default async function TransportPage({ searchParams }: TransportPageProps
           availableSeatCounts={selfDriveAvailableSeatCounts}
           vehicleCategory={selfDriveIsActiveService ? vehicle : undefined}
         />
-
+      )
+    },
+    {
+      key: '4x4',
+      active: service === '4x4 / Mountain Vehicle',
+      node: (
         <FourByFourVehicles
           vehicles={fourByFourVehicles}
           pickup={fourByFourSearchActive ? pickup : undefined}
@@ -262,7 +268,12 @@ export default async function TransportPage({ searchParams }: TransportPageProps
           searchSummary={fourByFourSummary || undefined}
           isActiveService={service === '4x4 / Mountain Vehicle'}
         />
-
+      )
+    },
+    {
+      key: 'bike',
+      active: bikeIsActiveService,
+      node: (
         <BikeRentals
           vehicles={bikeVehicles}
           pickup={bikeSearchActive ? pickup : undefined}
@@ -274,7 +285,12 @@ export default async function TransportPage({ searchParams }: TransportPageProps
           searchSummary={bikeSummary || undefined}
           isActiveService={bikeIsActiveService}
         />
-
+      )
+    },
+    {
+      key: 'local',
+      active: service === 'Local Mobility',
+      node: (
         <LocalMobility
           vehicles={localMobilityVehicles}
           destinationTitle={resolvedDestination?.title}
@@ -284,6 +300,33 @@ export default async function TransportPage({ searchParams }: TransportPageProps
           journeyContext={journeyContext}
           isLocalServiceActive={localSearchActive}
         />
+      )
+    }
+  ];
+  const orderedInventorySections = [...inventorySections.filter((s) => s.active), ...inventorySections.filter((s) => !s.active)];
+
+  return (
+    <TransportSearchProvider>
+      <InnerHeroBanner
+        eyebrow="TRAVEL TRANSPORT"
+        title="Move Through the"
+        highlite="Himalayas, Your Way."
+        subtitle="From airport pickups to mountain road journeys, find reliable transport designed around your trip."
+        bgImage={images.toursHero}
+      >
+        <TransportHeroSearch />
+      </InnerHeroBanner>
+
+      <main className="space-y-14 py-14">
+        <ChooseRideStyle />
+
+        <TransportServices />
+
+        <VehicleCategories />
+
+        {orderedInventorySections.map((section) => (
+          <Fragment key={section.key}>{section.node}</Fragment>
+        ))}
 
         <RouteExplorer
           routes={routes}
@@ -300,7 +343,7 @@ export default async function TransportPage({ searchParams }: TransportPageProps
           bikeVehicles={allBikeVehicles}
         />
 
-        <VehicleRecommendation vehicles={[...chauffeurVehicles, ...fourByFourVehicles]} />
+        <VehicleRecommendation vehicles={[...chauffeurVehicles, ...fourByFourVehicles, ...allSelfDriveVehicles, ...allBikeVehicles]} />
 
         <WhyBookTransport />
 

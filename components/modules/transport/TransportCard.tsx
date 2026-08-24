@@ -132,6 +132,7 @@ export default function TransportCard({
             <p className="text-3xl font-bold text-slate-900">
               {vehicle.estimatedFromPrice ? formatINR(vehicle.estimatedFromPrice) : 'Price on request'}
             </p>
+            {vehicle.estimatedFromPrice && vehicle.priceNote ? <p className="mt-1 text-xs text-slate-500">{vehicle.priceNote}</p> : null}
           </div>
           <button
             type="button"

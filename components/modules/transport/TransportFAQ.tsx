@@ -17,11 +17,11 @@ const FAQS = [
     answer: 'Yes, subject to route conditions and seasonal availability — routes like Spiti, Kinnaur and Lahaul are seasonal.'
   },
   {
-    question: 'What is included in Cab With Driver?',
+    question: 'What is included with Cab with Driver?',
     answer: 'Driver allowance and fuel are typically included within the stated service area — see each vehicle\'s inclusions/exclusions for specifics.'
   },
   {
-    question: 'How does Self Drive work?',
+    question: 'How does Self-Drive work?',
     answer: 'You pick up the vehicle, drive it yourself for the rented period and return it — fuel, deposit and included kilometres vary by vehicle and are shown on each listing.'
   },
   {
@@ -30,7 +30,7 @@ const FAQS = [
   },
   {
     question: 'Is fuel included?',
-    answer: 'It varies by vehicle — Cab With Driver typically includes fuel, while Self-Drive and rentals usually exclude it. Always check that vehicle\'s inclusions/exclusions.'
+    answer: 'It varies by vehicle — Cab with Driver typically includes fuel, while Self-Drive and rentals usually exclude it. Always check that vehicle\'s inclusions/exclusions.'
   },
   {
     question: 'Can I rent a bike?',
@@ -41,7 +41,7 @@ const FAQS = [
     answer: 'Yes — 4x4 vehicles are available for remote and demanding Himalayan routes, with or without a driver depending on availability.'
   },
   {
-    question: 'How does local transport work?',
+    question: 'How does Local Transport work?',
     answer: 'It\'s destination-specific. Where we have verified local partners, options are shown directly; otherwise, tell us your destination and dates and we\'ll arrange it for you.'
   },
   {

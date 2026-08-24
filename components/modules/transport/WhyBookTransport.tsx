@@ -9,8 +9,8 @@ interface ValueProp {
 const VALUE_PROPS: ValueProp[] = [
   {
     icon: ShieldCheck,
-    title: 'Verified Transport Partners',
-    description: 'Every partner is reviewed before their vehicles become visible to travellers.'
+    title: 'Curated Transport Options',
+    description: 'Every vehicle is checked by our travel team, with partner availability confirmed directly on request.'
   },
   {
     icon: Route,

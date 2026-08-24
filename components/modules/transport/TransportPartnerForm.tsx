@@ -142,7 +142,7 @@ export default function TransportPartnerForm() {
 
       <div className="flex flex-wrap gap-6 sm:col-span-2">
         <Checkbox label="With Driver" checked={withDriver} onChange={(event) => setWithDriver(event.target.checked)} />
-        <Checkbox label="Self Drive" checked={selfDrive} onChange={(event) => setSelfDrive(event.target.checked)} />
+        <Checkbox label="Self-Drive" checked={selfDrive} onChange={(event) => setSelfDrive(event.target.checked)} />
       </div>
 
       <Textarea
