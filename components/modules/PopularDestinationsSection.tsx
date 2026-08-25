@@ -60,6 +60,7 @@ export default function PopularDestinationsSection({ destinations }: PopularDest
               key={tab}
               type="button"
               onClick={() => setActiveRegion(tab)}
+              aria-pressed={activeRegion === tab}
               className={cn(
                 'cursor-hover rounded-full px-5 py-3 font-medium text-md transition',
                 activeRegion === tab

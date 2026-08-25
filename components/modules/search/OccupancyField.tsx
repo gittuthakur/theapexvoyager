@@ -39,7 +39,13 @@ export function OccupancyField({ value, onChange }: OccupancyFieldProps) {
         <Users size={18} className="shrink-0 text-apex-500" />
         <span className="min-w-0 flex-1">
           <span className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500">Travelers</span>
-          <button type="button" onClick={() => setOpen(true)} className="cursor-hover w-full truncate bg-transparent text-left text-sm text-slate-900 outline-none">
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            aria-haspopup="dialog"
+            aria-expanded={open}
+            className="cursor-hover w-full truncate bg-transparent text-left text-sm text-slate-900 outline-none"
+          >
             {summarizeOccupancy(value)}
           </button>
         </span>

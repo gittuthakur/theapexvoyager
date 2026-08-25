@@ -1,4 +1,5 @@
 import { connectDB } from '@/lib/mongodb';
+import { escapeRegExp } from '@/lib/regex';
 import { TransportPartner, type TransportPartnerDocument } from '@/models/TransportPartner';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
 import type { TransportPartner as TransportPartnerType } from '@/types/transportPartner';
@@ -37,7 +38,7 @@ export async function getVerifiedPartners(filter?: PartnerFilter): Promise<Trans
 
   const query: Record<string, unknown> = { status: { $in: ['verified', 'active'] } };
   if (filter?.serviceArea) {
-    query.serviceAreas = new RegExp(filter.serviceArea.trim(), 'i');
+    query.serviceAreas = new RegExp(escapeRegExp(filter.serviceArea.trim()), 'i');
   }
   if (filter?.regionId) {
     query.regionIds = filter.regionId;

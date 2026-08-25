@@ -481,6 +481,8 @@ export default function JourneysExplorer({
               <button
                 type="button"
                 onClick={() => setBudgetOpen((current) => !current)}
+                aria-haspopup="dialog"
+                aria-expanded={budgetOpen}
                 className={cn(
                   'cursor-hover rounded-lg px-2 py-1 text-sm font-medium transition-colors duration-300 ease-in-out',
                   isPriceNarrowed ? 'text-apex-600' : 'text-slate-700 hover:text-slate-900'
@@ -500,6 +502,8 @@ export default function JourneysExplorer({
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
+            aria-haspopup="dialog"
+            aria-expanded={drawerOpen}
             className={filterTriggerClass(activeFilterCount > 0)}
           >
             <SlidersHorizontal size={15} />

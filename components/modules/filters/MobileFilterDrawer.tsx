@@ -41,7 +41,13 @@ export default function MobileFilterDrawer({
   return (
     <div className="flex items-center justify-between gap-2 xl:hidden">
       <div ref={anchorRef} className="relative">
-        <button type="button" onClick={() => setOpen((current) => !current)} className={filterTriggerClass(activeFilterCount > 0)}>
+        <button
+          type="button"
+          onClick={() => setOpen((current) => !current)}
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          className={filterTriggerClass(activeFilterCount > 0)}
+        >
           <SlidersHorizontal size={16} />
           {triggerLabel}
           {activeFilterCount > 0 ? (

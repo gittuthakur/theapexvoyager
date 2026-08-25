@@ -124,11 +124,13 @@ export default function DestinationsExplorer({
     [priceRange, priceBounds]
   );
 
+  // A label that doesn't resolve to a canonical style (a stale/hand-edited `?style=`
+  // value) falls back to itself rather than being dropped — matchesStyle/getTravelStyleById
+  // safely treat an unrecognized id as "no destination has this style" (see lib/travelStyles.ts),
+  // so an unresolvable style still narrows results to genuinely zero instead of silently
+  // being ignored and falling back to the full unfiltered catalog.
   const activeStyleIds = useMemo(
-    () =>
-      activeStyles
-        .map((label) => resolveTravelStyleFromLabel(label)?.id)
-        .filter((id): id is DestinationStyleId => Boolean(id)),
+    () => activeStyles.map((label) => resolveTravelStyleFromLabel(label)?.id ?? (label as DestinationStyleId)),
     [activeStyles]
   );
   const activeSeasonIds = useMemo(
@@ -316,6 +318,8 @@ export default function DestinationsExplorer({
             <button
               type="button"
               onClick={() => setFiltersOpen((current) => !current)}
+              aria-haspopup="dialog"
+              aria-expanded={filtersOpen}
               className={filterTriggerClass(activeFilterCount > 0)}
             >
               <SlidersHorizontal size={16} />

@@ -46,6 +46,30 @@ function resolveDestinationSlug(value: string): string | undefined {
   return destinations.find((destination) => destination.title.toLowerCase() === trimmed)?.slug;
 }
 
+/** The Travel Experts tab's "Planning need" field (`planningNeeds`) is a different,
+ *  UI-facing vocabulary from `expert.travelStyles` (the real filter `/experts` matches
+ *  against — see app/experts/page.tsx's `matchesStyle`). Sending the raw label through
+ *  silently zero-outs the results for anything that isn't already a real style ("Custom
+ *  trip" isn't a style at all; "Honeymoon"/"Family trip" have a real equivalent under a
+ *  different name). Map the ones with a genuine equivalent, and drop the rest — same
+ *  "don't send a filter that can never match" approach as resolveDestinationSlug above. */
+function resolveExpertTravelStyle(need: string): string | undefined {
+  switch (need) {
+    case 'Honeymoon':
+      return 'Couple';
+    case 'Family trip':
+      return 'Family';
+    case 'Adventure':
+    case 'Luxury':
+    case 'Group':
+      return need;
+    // 'Custom trip', 'Offbeat', and anything else have no equivalent in
+    // expert.travelStyles — drop rather than send a filter that can never match.
+    default:
+      return undefined;
+  }
+}
+
 export interface GlobalSearchFilterProps {
   className?: string;
   /** Which tab is active on mount. Defaults to 'Stays' — the Home page's original behavior. */
@@ -259,7 +283,7 @@ export default function GlobalSearchFilter({
         // /experts reads `destination` (a real slug) and `travelStyle` (see
         // ExpertFilters/ExpertsHeroSearch) — not `where`/`need`, which it never read at
         // all, so every homepage Travel Experts search was previously silently ignored.
-        goTo('/experts', { destination: resolveDestinationSlug(destination), travelStyle });
+        goTo('/experts', { destination: resolveDestinationSlug(destination), travelStyle: resolveExpertTravelStyle(travelStyle) });
     }
   }
 

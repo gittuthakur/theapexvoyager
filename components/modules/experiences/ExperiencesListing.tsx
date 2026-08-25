@@ -282,6 +282,8 @@ export default function ExperiencesListing({
             <button
               type="button"
               onClick={() => setFiltersOpen(true)}
+              aria-haspopup="dialog"
+              aria-expanded={filtersOpen}
               className={filterTriggerClass(activeFilterCount > 0)}
             >
               <SlidersHorizontal size={16} />

@@ -121,6 +121,24 @@ export function FieldPopover({ open, onClose, anchorRef, children, width, align 
     };
   }, [open, onClose, anchorRef]);
 
+  // This is a non-modal popover (the anchor field stays interactive while it's
+  // open — e.g. DestinationField keeps typing into its input), so unlike Modal/
+  // FloatingOverlay it deliberately doesn't steal focus on open or trap Tab.
+  // It does still need to hand focus back to the trigger on close — otherwise
+  // Escape/an outside click/a "Done" button leaves focus on a node that's about
+  // to unmount (or nowhere at all) instead of the field that opened it.
+  useEffect(() => {
+    if (!open) return;
+    return () => {
+      const anchor = anchorRef.current;
+      if (!anchor || anchor.contains(document.activeElement)) return;
+      const focusable = anchor.querySelector<HTMLElement>(
+        'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      focusable?.focus();
+    };
+  }, [open, anchorRef]);
+
   if (typeof document === 'undefined' || !coords) return null;
 
   return createPortal(

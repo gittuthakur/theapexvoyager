@@ -165,7 +165,11 @@ export function filterPackages(packages: TravelPackage[], filter: PackageFilter,
     if (filter.region && !getPackageRegionIds(pkg, destinationsBySlug).includes(filter.region)) return false;
     if (filter.styles?.length && !filter.styles.some((styleId) => packageMatchesStyle(pkg, destinationsBySlug, styleId))) return false;
 
-    if (seasonLabels.length) {
+    // Gated on the caller's raw request (filter.seasons), not on how many of those ids
+    // actually resolved to a real label — a season id that fails to resolve (a stale or
+    // hand-edited `?season=` value) must still narrow results to zero, not silently
+    // behave as if no season filter were applied at all.
+    if (filter.seasons?.length) {
       const packageSeasons = getPackageSeasonLabels(pkg, destinationsBySlug);
       if (!seasonLabels.some((label) => packageSeasons.includes(label))) return false;
     }

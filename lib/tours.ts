@@ -1,4 +1,5 @@
 import { connectDB } from '@/lib/mongodb';
+import { escapeRegExp } from '@/lib/regex';
 import { Tour, type TourDocument } from '@/models/Tour';
 import { resolveLocalImage } from '@/lib/contentImage.server';
 import type { TourPackage } from '@/types';
@@ -49,11 +50,14 @@ export async function getTours(filter?: { destination?: string; category?: strin
 
   const clauses: Record<string, unknown>[] = [];
   if (filter?.destination) {
-    const pattern = new RegExp(filter.destination.trim(), 'i');
+    const pattern = new RegExp(escapeRegExp(filter.destination.trim()), 'i');
     clauses.push({ $or: [{ location: pattern }, { destinationSlug: pattern }, { title: pattern }] });
   }
   if (filter?.category) {
-    const term = CATEGORY_SEARCH_TERMS[filter.category] ?? filter.category;
+    // A known key maps to a trusted, hand-authored alternation pattern (real regex
+    // syntax, e.g. "luxury|premium|resort") — only escape the fallback, where an
+    // unrecognized (client-supplied) category value would otherwise reach RegExp raw.
+    const term = CATEGORY_SEARCH_TERMS[filter.category] ?? escapeRegExp(filter.category);
     const pattern = new RegExp(term, 'i');
     clauses.push({ $or: [{ category: pattern }, { title: pattern }, { description: pattern }] });
   }

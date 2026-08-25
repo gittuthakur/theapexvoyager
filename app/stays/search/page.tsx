@@ -105,8 +105,15 @@ async function StaySearchResults({ destination, checkIn, checkOut, guests, type,
   const category: HotelCategory | undefined = stayType?.category ?? stayMood?.category ?? (isHotelCategory(categoryParam) ? categoryParam : undefined);
   const isBoutiqueOnly = type === 'boutique-stays';
   const moodKeyword = stayMood?.keyword?.toLowerCase();
+  // A `type`/`mood` slug that was provided but doesn't resolve to anything real (a
+  // stale or hand-edited link) must never fall through to "no filter" below — that
+  // would silently show the whole unfiltered catalog instead of a genuine zero-result
+  // state for a stay type/mood that doesn't exist.
+  const typeRequestedButUnresolved = Boolean(type) && !stayType;
+  const moodRequestedButUnresolved = !stayType && Boolean(mood) && !stayMood;
+  const shouldForceEmpty = typeRequestedButUnresolved || moodRequestedButUnresolved;
 
-  const allHotels = await getHotels({ category, destination });
+  const allHotels = shouldForceEmpty ? [] : await getHotels({ category, destination });
 
   const scoped = allHotels.filter((hotel) => {
     if (isBoutiqueOnly && !hotel.featured) return false;

@@ -70,6 +70,8 @@ export function DateRangeField({
           <button
             type="button"
             onClick={() => setOpen(true)}
+            aria-haspopup="dialog"
+            aria-expanded={open}
             className="cursor-hover w-full truncate bg-transparent text-left text-sm text-slate-900 outline-none"
           >
             {summary || <span className="text-slate-500">{placeholder}</span>}

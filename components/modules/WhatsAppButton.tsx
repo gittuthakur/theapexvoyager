@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
 import { cn } from '@/lib/utils';
@@ -22,17 +23,44 @@ export default function WhatsAppButton({
   dates,
   className
 }: WhatsAppButtonProps) {
+  // Only the default usage (no className override) is the fixed bottom-right
+  // floater — callers like JourneyBookingSidebar override position to `static`
+  // and render it inline, where it never overlaps the footer.
+  const isFloating = !className;
+  const [nearFooter, setNearFooter] = useState(false);
+
+  useEffect(() => {
+    if (!isFloating) return;
+    const footer = document.querySelector('footer');
+    if (!footer) return;
+
+    // The floating button otherwise sits permanently on top of the Newsletter
+    // Subscribe button and the footer's legal links on narrow viewports, where
+    // that content stacks tall enough to reach the bottom-right corner. Fade it
+    // out slightly before the footer comes into view instead.
+    const observer = new IntersectionObserver(([entry]) => setNearFooter(entry.isIntersecting), {
+      rootMargin: '0px 0px 400px 0px'
+    });
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, [isFloating]);
+
   function openChat() {
     const url = buildWhatsAppLink({ phoneNumber, messageText, tripTitle, destination, dates });
     window.open(url, '_blank');
   }
 
+  const hidden = isFloating && nearFooter;
+
   return (
     <button
       type="button"
       onClick={openChat}
+      tabIndex={hidden ? -1 : 0}
+      aria-hidden={hidden || undefined}
       className={cn(
         'cursor-hover fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-4 font-semibold text-white shadow-2xl shadow-[#25D366]/20 transition-all duration-300 ease-in-out hover:scale-105 hover:bg-[#20ba5a]',
+        hidden ? 'pointer-events-none translate-y-4 opacity-0' : 'translate-y-0 opacity-100',
         className
       )}
     >

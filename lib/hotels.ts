@@ -1,4 +1,5 @@
 import { connectDB } from '@/lib/mongodb';
+import { escapeRegExp } from '@/lib/regex';
 import { resolveHotelImages } from '@/lib/hotelImages.server';
 import { Hotel, type HotelDocument } from '@/models/Hotel';
 import type { HotelCategory, HotelPackage } from '@/types';
@@ -35,7 +36,7 @@ export async function getHotels(filter?: { category?: HotelCategory; destination
     query.category = filter.category;
   }
   if (filter?.destination) {
-    query.location = new RegExp(filter.destination.trim(), 'i');
+    query.location = new RegExp(escapeRegExp(filter.destination.trim()), 'i');
   }
 
   const docs = await Hotel.find(query).sort({ featured: -1, createdAt: 1 }).lean<HotelDocument[]>();

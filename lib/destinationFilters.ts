@@ -31,7 +31,9 @@ export function filterDestinations(
     }
     if (region && destination.state !== region.name) return false;
     if (filter.styles?.length && !filter.styles.some((styleId) => matchesStyle(destination, styleId))) return false;
-    if (seasonLabels.length && !seasonLabels.some((label) => destination.seasons?.includes(label))) return false;
+    // Gated on the caller's raw request (filter.seasons), not on how many of those ids
+    // actually resolved to a real label — see the identical fix/comment in lib/packageFilters.ts.
+    if (filter.seasons?.length && !seasonLabels.some((label) => destination.seasons?.includes(label))) return false;
     if (filter.bestFor?.length && !filter.bestFor.some((value) => destination.bestFor?.includes(value))) return false;
 
     if (hasPriceFilter) {

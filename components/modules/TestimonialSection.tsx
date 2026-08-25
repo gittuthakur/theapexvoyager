@@ -245,6 +245,7 @@ export default function TestimonialSection({
               key={region}
               type="button"
               onClick={() => setActiveRegion(region)}
+              aria-pressed={activeRegion === region}
               className={cn(
                 'cursor-hover rounded-full px-5 py-2 text-sm font-semibold transition-colors duration-300 ease-in-out',
                 activeRegion === region ? 'bg-apex-500 text-white shadow-lg shadow-apex-500/30' : 'bg-slate-200 text-slate-600 hover:text-slate-900'
@@ -262,6 +263,7 @@ export default function TestimonialSection({
                 key={style}
                 type="button"
                 onClick={() => setActiveStyle(isActive ? null : style)}
+                aria-pressed={isActive}
                 className={cn(
                   'cursor-hover rounded-full border px-4 py-1.5 text-sm font-medium transition-colors duration-300 ease-in-out',
                   isActive ? 'border-apex-500 bg-apex-50 text-apex-700' : 'border-[#E3E8F0] bg-white text-slate-500 hover:text-slate-900'

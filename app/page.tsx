@@ -69,22 +69,33 @@ export default async function HomePage() {
   // destination's `isPopular`/`priority` fields in config/destinations.config.ts instead
   // of a hardcoded slug list. Price label is computed here (server-side) from the
   // journeys catalog, since the homepage can't take on a live Hotel/MongoDB read for it.
-  const popularDestinations = await Promise.all(
-    destinations
-      .filter((destination) => destination.isPopular)
-      .sort((a, b) => (a.priority ?? 999) - (b.priority ?? 999))
-      .slice(0, 8)
-      .map(async (destination) => {
-        const destinationPackages = await getPackagesByDestinationSlug(destination.slug);
-        const minPrice = destinationPackages.length > 0 ? Math.min(...destinationPackages.map((pkg) => pkg.price)) : undefined;
-        return {
-          ...destination,
-          priceLabel: minPrice !== undefined ? `${formatINR(minPrice)}` : undefined
-        };
-      })
-  );
+  //
+  // These five reads are independent of each other (only the *derived* values below —
+  // featuredJourneys, homepageStats, testimonials — depend on their resolved data, not
+  // on one another's fetch) so they run concurrently instead of as five sequential
+  // round-trips; connectDB()'s cached-connection-promise (lib/mongodb.ts) already makes
+  // concurrent callers safe, no separate connection is opened per query.
+  const [popularDestinations, allPackages, hotels, reviews, stateLinks] = await Promise.all([
+    Promise.all(
+      destinations
+        .filter((destination) => destination.isPopular)
+        .sort((a, b) => (a.priority ?? 999) - (b.priority ?? 999))
+        .slice(0, 8)
+        .map(async (destination) => {
+          const destinationPackages = await getPackagesByDestinationSlug(destination.slug);
+          const minPrice = destinationPackages.length > 0 ? Math.min(...destinationPackages.map((pkg) => pkg.price)) : undefined;
+          return {
+            ...destination,
+            priceLabel: minPrice !== undefined ? `${formatINR(minPrice)}` : undefined
+          };
+        })
+    ),
+    getAllPackages(),
+    getHotels(),
+    getReviewsForDestinationsPage(),
+    getHomeHeroRegions()
+  ]);
 
-  const allPackages = await getAllPackages();
   const featuredJourneys = FEATURED_JOURNEY_SLUGS.map((slug) => allPackages.find((pkg) => pkg.slug === slug)).filter(
     (pkg): pkg is (typeof allPackages)[number] => Boolean(pkg)
   );
@@ -92,7 +103,6 @@ export default async function HomePage() {
   // "Destinations", "Stays & Properties" and "Curated Journeys" are real catalog counts —
   // compute them from the same data sources the rest of the homepage uses instead of the
   // hardcoded placeholders in stats.config.ts.
-  const hotels = await getHotels();
   const homepageStats: StatItem[] = statsItems.map((item) => {
     if (item.label === 'Destinations') return { ...item, value: `${destinations.length}+` };
     if (item.label === 'Stays & Properties') return { ...item, value: `${hotels.length}+` };
@@ -102,12 +112,9 @@ export default async function HomePage() {
 
   // Real reviews only — sourced from the Review collection (see lib/reviews.ts). No
   // fallback/demo data: an empty collection means no testimonials render at all.
-  const reviews = await getReviewsForDestinationsPage();
   const testimonials = reviews.map((review) => reviewToTestimonial(review));
   const averageRating =
     testimonials.length > 0 ? Number((testimonials.reduce((sum, t) => sum + (t.rating ?? 0), 0) / testimonials.length).toFixed(1)) : undefined;
-
-  const stateLinks = await getHomeHeroRegions();
 
   const heroData: HeroSectionData = {
     badge: {

@@ -1,4 +1,5 @@
 import { connectDB } from '@/lib/mongodb';
+import { escapeRegExp } from '@/lib/regex';
 import { TransportVehicle, type TransportVehicleDocument } from '@/models/TransportVehicle';
 import { TransportRoute, type TransportRouteDocument } from '@/models/TransportRoute';
 import type { VehicleOption, TransportRoute as TransportRouteType } from '@/types/transport';
@@ -96,16 +97,16 @@ export async function getVehicles(filter?: VehicleFilter): Promise<VehicleOption
 
   const query: Record<string, unknown> = { active: true };
   if (filter?.category) {
-    query.category = new RegExp(`^${filter.category.trim()}$`, 'i');
+    query.category = new RegExp(`^${escapeRegExp(filter.category.trim())}$`, 'i');
   }
   if (filter?.minSeats) {
     query.seats = { $gte: filter.minSeats };
   }
   if (filter?.serviceArea) {
-    query.serviceAreas = new RegExp(filter.serviceArea.trim(), 'i');
+    query.serviceAreas = new RegExp(escapeRegExp(filter.serviceArea.trim()), 'i');
   }
   if (filter?.serviceType) {
-    query.serviceType = new RegExp(`^${filter.serviceType.trim()}$`, 'i');
+    query.serviceType = new RegExp(`^${escapeRegExp(filter.serviceType.trim())}$`, 'i');
   }
   if (filter?.serviceTypeIn) {
     query.serviceType = { $in: filter.serviceTypeIn };
@@ -114,7 +115,7 @@ export async function getVehicles(filter?: VehicleFilter): Promise<VehicleOption
     query.withDriver = filter.withDriver;
   }
   if (filter?.transmission) {
-    query.transmission = new RegExp(`^${filter.transmission.trim()}$`, 'i');
+    query.transmission = new RegExp(`^${escapeRegExp(filter.transmission.trim())}$`, 'i');
   }
   if (filter?.maxPrice !== undefined) {
     query.estimatedFromPrice = { $lte: filter.maxPrice };
@@ -147,10 +148,10 @@ export async function getRoutes(filter?: RouteFilter): Promise<TransportRouteTyp
 
   const clauses: Record<string, unknown>[] = [{ active: true }];
   if (filter?.origin) {
-    clauses.push({ origin: new RegExp(filter.origin.trim(), 'i') });
+    clauses.push({ origin: new RegExp(escapeRegExp(filter.origin.trim()), 'i') });
   }
   if (filter?.destination) {
-    clauses.push({ destination: new RegExp(filter.destination.trim(), 'i') });
+    clauses.push({ destination: new RegExp(escapeRegExp(filter.destination.trim()), 'i') });
   }
   const query = clauses.length > 1 ? { $and: clauses } : clauses[0];
 
