@@ -43,7 +43,7 @@ export default function PopularDestinationCard({ destination, priceLabel, priori
         ) : null}
         <SafeImage
           src={destination.image}
-          alt={`${destination.title} luxury expedition tours, Himachal Pradesh`}
+          alt={`${destination.title} luxury expedition tours${destination.state ? `, ${destination.state}` : ''}`}
           fill
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover transition duration-500 group-hover:scale-105"

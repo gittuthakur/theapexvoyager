@@ -18,7 +18,11 @@ export interface ExperienceBookingActionsProps {
 // the wizard opens already prefilled with this experience's destination/region. The
 // date/travellers/special-request fields below are left in place for the traveler's own
 // reference on this page, but — per the booking-context contract (identifiers only in
-// the URL) — their values aren't carried into the wizard. "WhatsApp to Book" is unchanged.
+// the URL) — their values aren't carried into the wizard. The WhatsApp quick-contact
+// button below creates no BookingRequest record (a plain wa.me deep link, same as
+// WhatsAppButton.tsx elsewhere) — relabelled "Chat on WhatsApp" to match that sibling
+// component's honest wording instead of the previous "WhatsApp to Book," which implied
+// a completed booking action this button doesn't actually perform.
 export default function ExperienceBookingActions({ experience }: ExperienceBookingActionsProps) {
   const { navigateToBooking } = useBookingNavigation();
   const [preferredDate, setPreferredDate] = useState('');
@@ -63,7 +67,7 @@ export default function ExperienceBookingActions({ experience }: ExperienceBooki
         className="cursor-hover inline-flex w-full items-center justify-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-6 py-3 text-sm font-semibold text-emerald-700 transition-colors duration-300 ease-in-out hover:bg-emerald-100"
       >
         <WhatsAppIcon className="h-4 w-4" />
-        WhatsApp to Book
+        Chat on WhatsApp
       </a>
     </div>
   );

@@ -52,7 +52,7 @@ export default function FinalCta({
             <ArrowRight size={16} />
           </Link>
           <a
-            href={`tel:${siteConfig.contactPhone}`}
+            href={siteConfig.contactPhoneHref}
             className="cursor-hover inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-8 py-3.5 text-sm font-semibold text-slate-900 transition-all duration-300 ease-in-out hover:bg-slate-100"
           >
             <Phone size={16} />

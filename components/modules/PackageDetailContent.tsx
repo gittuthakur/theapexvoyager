@@ -139,7 +139,7 @@ export default function PackageDetailContent({ pkg, autoOpenBooking = false, rel
 
             {/* Stay Options */}
             <JourneySection title="Stay Options">
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {pkg.stayOptions.map((option) => (
                   <div key={option.id} className="rounded-2xl border border-slate-300 bg-slate-100 p-5">
                     <p className="font-medium text-slate-500">{option.label}</p>
@@ -161,7 +161,7 @@ export default function PackageDetailContent({ pkg, autoOpenBooking = false, rel
 
             {/* Add-ons */}
             <JourneySection title="Add-ons">
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {pkg.addOns.map((addOn) => (
                   <div key={addOn.id} className="rounded-2xl border border-slate-300 bg-slate-100 p-5">
                     <p className="font-semibold text-slate-900">{addOn.label}</p>

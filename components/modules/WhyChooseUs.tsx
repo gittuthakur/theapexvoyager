@@ -35,13 +35,17 @@ const defaultItems: WhyChooseUsItem[] = [
   },
   {
     icon: Tag,
-    title: 'Best Price Promise',
+    title: 'Transparent Pricing',
     description: "Transparent, fair pricing on every itinerary — no hidden markups, no surprise add-ons."
   },
   {
     icon: Shield,
     title: 'Safe & Reliable',
-    description: 'Verified partners, trained guides and 24/7 monitoring keep every trip safe from start to finish.'
+    // Was "Verified partners, trained guides and 24/7 monitoring keep every trip safe
+    // from start to finish" — no verified-partner program, guide training records or
+    // monitoring system exists yet. This describes what actually happens: our team
+    // reviews and confirms every trip's arrangements before travel.
+    description: 'Routes, vehicles and stays are reviewed by our travel team, with every trip confirmed before you go.'
   },
   {
     icon: Heart,
@@ -51,7 +55,7 @@ const defaultItems: WhyChooseUsItem[] = [
   },
   {
     icon: Headphones,
-    title: '24/7 Assistance',
+    title: 'Travel Assistance',
     description:
       "We're with you, every step of the journey. Get dedicated support before, during, and after your trip."
   }
@@ -82,7 +86,7 @@ export default function WhyChooseUs({
               className="cursor-hover mt-8 inline-flex items-center gap-2 rounded-xl bg-apex-500 px-7 py-4 font-medium text-white shadow-lg shadow-apex-500/20 transition-all duration-300 ease-in-out hover:bg-apex-400"
             >
               {ctaLabel}
-              <ArrowRight size={24} />
+              <ArrowRight size={24} aria-hidden="true" />
             </Link>
           </motion.div>
 

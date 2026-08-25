@@ -100,7 +100,7 @@ export default function Footer({
         <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-8'>
           {columns.map((column) => (
             <nav key={column.heading} aria-label={column.heading}>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">{column.heading}</p>
+              <h2 className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">{column.heading}</h2>
               <ul className="mt-4 space-y-3">
                 {column.links.map((link) => (
                   <li key={`${link.href}-${link.label}`}>
@@ -114,11 +114,11 @@ export default function Footer({
           ))}
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Get In Touch</p>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Get In Touch</h2>
             <ul className="mt-4 space-y-3 text-sm text-slate-400">
               <li className="flex items-center gap-2">
                 <Phone size={15} className="text-apex-300" />
-                <a href={`tel:${siteConfig.contactPhone}`} className="cursor-hover transition-colors duration-300 ease-in-out hover:text-white">
+                <a href={siteConfig.contactPhoneHref} className="cursor-hover transition-colors duration-300 ease-in-out hover:text-white">
                   {siteConfig.contactPhone}
                 </a>
               </li>
@@ -135,7 +135,10 @@ export default function Footer({
               </li>
               <li className="flex flex-wrap items-center gap-2">
                 <Mail size={15} className="text-apex-300" />
-                <a href={`mailto:${siteConfig.contactEmail}`} className="cursor-hover flex flex-1 transition-colors duration-300 ease-in-out hover:text-white">
+                <a
+                  href={`mailto:${siteConfig.contactEmail}`}
+                  className="cursor-hover min-w-0 flex-1 break-words transition-colors duration-300 ease-in-out hover:text-white"
+                >
                   {siteConfig.contactEmail}
                 </a>
               </li>

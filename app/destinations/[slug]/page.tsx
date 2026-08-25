@@ -160,7 +160,7 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
           {destination.highlights.map((highlight) => <article key={highlight.title} className="rounded-[1.5rem] border border-slate-200 bg-white p-6"><Sparkles className="text-apex-500" size={20} /><h3 className="mt-4 text-lg font-semibold text-slate-900">{highlight.title}</h3><p className="mt-2 text-sm leading-6 text-slate-500">{highlight.description}</p></article>)}
         </div></section> : null}
 
-        {destination.places?.length ? <section id="places" className="py-8"><SectionHeading eyebrow="Go deeper" title="Places Worth Discovering" /><div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {destination.places?.length ? <section id="places" className="py-8"><SectionHeading eyebrow="Go deeper" title="Places Worth Discovering" /><div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {destination.places.map((place, index) => <article key={place.title} className="rounded-2xl border border-slate-300 bg-slate-100 p-6"><span className="text-sm font-semibold text-apex-500">0{index + 1}</span><h3 className="mt-3 text-xl font-semibold text-slate-900">{place.title}</h3><p className="mt-2 text-sm leading-6 text-slate-500">{place.description}</p></article>)}
         </div></section> : null}
 

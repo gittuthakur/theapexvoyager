@@ -1,7 +1,17 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import PackageDetailContent from '@/components/modules/PackageDetailContent';
 import { getAllPackages, getPackageBySlug } from '@/lib/packages';
+
+// This journey's slug was corrected from 'sikkim-mountain-escape' to
+// 'uttarakhand-explorer' (its content was always a Rishikesh/Haridwar/Mussoorie,
+// Uttarakhand journey — 'sikkim-mountain-escape' was a leftover, incorrect slug from
+// an earlier draft). Kept as a permanent redirect — same `next/navigation` mechanism
+// already used by app/packages/[slug]/page.tsx — so any existing bookmark/link to the
+// old slug keeps working instead of 404ing.
+const RENAMED_JOURNEY_SLUGS: Record<string, string> = {
+  'sikkim-mountain-escape': 'uttarakhand-explorer'
+};
 
 interface JourneyDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -22,6 +32,9 @@ export async function generateMetadata({ params }: JourneyDetailPageProps): Prom
 
 export default async function JourneyDetailPage({ params, searchParams }: JourneyDetailPageProps) {
   const { slug } = await params;
+  if (RENAMED_JOURNEY_SLUGS[slug]) {
+    permanentRedirect(`/journeys/${RENAMED_JOURNEY_SLUGS[slug]}`);
+  }
   const { book } = await searchParams;
   const pkg = await getPackageBySlug(slug);
 

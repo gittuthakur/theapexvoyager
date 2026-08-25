@@ -20,6 +20,7 @@ import { getAllPackages, getPackagesByDestinationSlug } from '@/lib/packages';
 import { getHotels } from '@/lib/hotels';
 import { formatINR } from '@/lib/pricing';
 import { destinations } from '@/config/destinations.config';
+import { travelStyles } from '@/config/travelStyles.config';
 import { statsItems } from '@/config/stats.config';
 import { getReviewsForDestinationsPage, reviewToTestimonial } from '@/lib/reviews';
 import { getHomeHeroRegions } from '@/services/regions/regionHub.service';
@@ -53,7 +54,7 @@ const BeyondTouristTrailSection = createLazyModule<import('@/components/modules/
 const FEATURED_JOURNEY_SLUGS = [
   'spiti-valley-adventure',
   'kashmir-signature-journey',
-  'sikkim-mountain-escape',
+  'uttarakhand-explorer',
   'dharamshala-dalhousie-escape',
   'himachal-himalayan-explorer'
 ];
@@ -140,7 +141,7 @@ export default async function HomePage() {
       <div className={homeHeroStyles.scope}>
       <HeroSection
         data={heroData}
-        searchBar={<GlobalSearchFilter />}
+        searchBar={<GlobalSearchFilter destinationStyles={travelStyles.map((style) => style.label)} />}
         sidePanel={
           <div className="w-full sm:max-w-sm rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5">
             <div className='flex gap-2 items-center'>

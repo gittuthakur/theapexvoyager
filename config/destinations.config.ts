@@ -415,7 +415,11 @@ export const destinations: Destination[] = [
     category: 'Scenic',
     description: 'Alpine meadows and snow-capped peaks in Kashmir, home to one of the world’s highest gondola rides.',
     toursCount: 9,
-    image: images.destinations.kinnaur,
+    // No dedicated Jammu & Kashmir photography exists yet (see config/images.config.ts) —
+    // this used to reuse Kinnaur's real Himachal Pradesh photo, mislabeling a specific
+    // Himachal place as Gulmarg. Same honest generic fallback the "Jammu & Kashmir"
+    // region card already uses in config/experiences.config.ts.
+    image: images.experiences.mountainDusk,
     region: 'Baramulla District',
     state: 'Jammu & Kashmir',
     editorialDescription: 'Gulmarg is Kashmir at its most cinematic: a meadow ringed by pine and fir, riding one of the world’s highest cable cars up to Apharwat’s snowline. Come for the skiing in winter, the wildflower meadow in summer — either way, the mountain does the talking.',
@@ -472,7 +476,11 @@ export const destinations: Destination[] = [
     category: 'Spiritual',
     description: 'Uttarakhand’s yoga capital, with Ganga aartis, ashrams, and Himalayan white-water rafting.',
     toursCount: 14,
-    image: images.destinations.dharamshala,
+    // No dedicated Uttarakhand photography exists yet (see config/images.config.ts) —
+    // this used to reuse Dharamshala's real Himachal Pradesh photo, mislabeling a
+    // specific Himachal place as Rishikesh. Same honest generic fallback the
+    // "Uttarakhand" region card already uses in config/experiences.config.ts.
+    image: images.experiences.himalayanVista,
     region: 'Dehradun District',
     state: 'Uttarakhand',
     editorialDescription: 'Rishikesh sits where the Ganges leaves the mountains — ashrams and yoga halls along one bank, white-water rapids the next valley over. It’s a rare mix of stillness and adrenaline, all within a short walk of the riverfront.',
@@ -589,7 +597,10 @@ export const destinations: Destination[] = [
     category: 'Spiritual',
     description: 'One of Hinduism’s seven holiest cities in Uttarakhand, anchored by the sacred Har Ki Pauri ghat.',
     toursCount: 10,
-    image: images.destinations.shimla,
+    // No dedicated Uttarakhand photography exists yet (see config/images.config.ts) —
+    // this used to reuse Shimla's real Himachal Pradesh photo, mislabeling a specific
+    // Himachal place as Haridwar. Same honest generic fallback used for Rishikesh above.
+    image: images.experiences.valleyGeneric,
     region: 'Haridwar District',
     state: 'Uttarakhand',
     editorialDescription: 'Haridwar is where the Ganges first reaches the plains — one of Hinduism’s seven holiest cities, built around the ghats at Har Ki Pauri. The evening aarti here is one of the great shared rituals of North India.',
@@ -646,7 +657,10 @@ export const destinations: Destination[] = [
     category: 'Offbeat',
     description: 'A quiet hill town beneath the Panchachuli peaks, gateway to Uttarakhand’s remote Johar Valley.',
     toursCount: 4,
-    image: images.destinations.kinnaur,
+    // No dedicated Uttarakhand photography exists yet (see config/images.config.ts) —
+    // this used to reuse Kinnaur's real Himachal Pradesh photo, mislabeling a specific
+    // Himachal place as Munsiyari. Same honest generic fallback used for Rishikesh above.
+    image: images.experiences.mountainDusk,
     region: 'Johar Valley',
     state: 'Uttarakhand',
     editorialDescription: 'Munsiyari sits far enough off the main Uttarakhand circuit that it barely features on most itineraries — a small town looking straight at the five snow peaks of Panchachuli, with trailheads into some of the Kumaon Himalaya’s quietest valleys.',
@@ -668,3 +682,13 @@ export const destinations: Destination[] = [
     seo: { title: 'Munsiyari Travel Guide & Experiences | The Apex Voyager', description: 'Discover Munsiyari — Panchachuli views and Uttarakhand’s quietest Himalayan valley.' }
   }
 ];
+
+/** Resolves a curated Destination slug to its human-readable title — used where a
+ *  caller only has a slug (e.g. a Tour's `destinationSlug`) but needs to build a
+ *  `/journeys?destination=` link, since that page's free-text filter matches against
+ *  real destination names, not slugs. Returns undefined for a slug with no curated
+ *  match (some Tour destinationSlugs — e.g. 'narkanda' — don't correspond to a
+ *  curated Destination) rather than guessing a title. */
+export function getDestinationTitleBySlug(slug: string): string | undefined {
+  return destinations.find((destination) => destination.slug === slug)?.title;
+}

@@ -353,11 +353,18 @@ export const packages: TravelPackage[] = [
     featured: true
   },
   {
-    slug: 'sikkim-mountain-escape',
+    // Was 'sikkim-mountain-escape' — every other field on this record (name,
+    // destination, destinationSlugs, itinerary) is a Rishikesh/Haridwar/Mussoorie
+    // (Uttarakhand) journey; the old slug named a state this business doesn't even
+    // operate in. Corrected to match the record's own real content — the matching
+    // MongoDB document was renamed in place (same _id, see scripts/seed.ts's
+    // slug-matched upsert) before this config change, so this reseeds in place
+    // rather than creating a duplicate.
+    slug: 'uttarakhand-explorer',
     name: 'Uttarakhand Explorer',
     destination: 'Rishikesh, Haridwar & Mussoorie, Uttarakhand',
     destinationSlugs: ['rishikesh', 'haridwar'],
-    image: images.packages.sikkimMountainEscape,
+    image: images.packages.uttarakhandExplorer,
     duration: '6 Days / 5 Nights',
     price: 20999,
     category: 'Spiritual',

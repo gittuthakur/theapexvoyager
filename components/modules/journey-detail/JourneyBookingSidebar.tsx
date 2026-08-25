@@ -73,7 +73,7 @@ export default function JourneyBookingSidebar({ pkg, onCustomize }: JourneyBooki
               onClick={onCustomize}
               className="cursor-hover inline-flex items-center justify-center gap-2 rounded-full bg-apex-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-apex-500/20 transition-all duration-300 ease-in-out hover:bg-apex-400"
             >
-              Customize This Journey <ArrowRight size={16} />
+              Plan This Journey <ArrowRight size={16} />
             </button>
             <WhatsAppButton
               tripTitle={pkg.name}
@@ -105,7 +105,7 @@ export default function JourneyBookingSidebar({ pkg, onCustomize }: JourneyBooki
             onClick={onCustomize}
             className="cursor-hover inline-flex items-center justify-center gap-2 rounded-full bg-apex-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-apex-500/20 transition-all duration-300 ease-in-out hover:bg-apex-400"
           >
-            Customize
+            Plan
           </button>
         </div>
       </div>

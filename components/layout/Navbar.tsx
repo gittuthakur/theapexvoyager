@@ -309,12 +309,20 @@ export default function Navbar() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [searchOpen]);
 
-  // Closes whichever nav dropdown is open on an outside click or Escape, same
-  // pattern used by GlobalSearch's own dismiss handling elsewhere in the navbar.
+  // Closes whichever nav dropdown is open on an outside click, Escape, or focus
+  // leaving the trigger/panel (e.g. tabbing past it) — without the focusin check,
+  // a menu opened via keyboard stays visually stuck open once focus moves on to
+  // a later nav control, since the panel itself has no close-on-blur otherwise.
   useEffect(() => {
     if (!openMenuKey) return;
 
     const handlePointerDown = (event: MouseEvent) => {
+      const container = menuRefs.current[openMenuKey];
+      if (container && !container.contains(event.target as Node)) {
+        setOpenMenuKey(null);
+      }
+    };
+    const handleFocusIn = (event: FocusEvent) => {
       const container = menuRefs.current[openMenuKey];
       if (container && !container.contains(event.target as Node)) {
         setOpenMenuKey(null);
@@ -325,12 +333,31 @@ export default function Navbar() {
     };
 
     document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('focusin', handleFocusIn);
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('focusin', handleFocusIn);
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [openMenuKey]);
+
+  // Same conditionally-mounted Escape pattern as the dropdown effect above, kept as
+  // its own effect since `open` (the mobile hamburger menu) and `openMenuKey` (a
+  // desktop dropdown) are independent pieces of state — only one listener is ever
+  // mounted at a time per state, so this doesn't add a second always-on listener.
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open]);
 
   useEffect(() => {
     setOpenMenuKey(null);
@@ -393,9 +420,20 @@ export default function Navbar() {
           : [hasHero ? 'fixed' : 'sticky', 'bg-white/70 backdrop-blur-md shadow-sm shadow-slate-900/5']
       )}
     >
-      <div className="mx-auto grid max-w-8xl grid-cols-[auto_1fr_auto] items-center gap-6 px-6 py-4 lg:px-8">
-        <Link href="/" className="cursor-hover flex items-center gap-3">
-          <LogoMark className={cn('w-auto transition-all duration-300 ease-out', isTransparent ? 'h-[60px]' : 'h-[55px]')} />
+      <div className="mx-auto grid max-w-8xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-4 sm:gap-6 sm:px-6 lg:px-8">
+        <Link href="/" aria-label={siteConfig.name} className="cursor-hover flex min-w-0 items-center gap-3">
+          {/* Below `sm`, only this logo and the icon cluster are real grid items (the
+              nav/desktop-cluster columns are `hidden` and drop out of grid placement
+              entirely), so both land in non-shrinkable `auto` tracks — the logo's fixed
+              height at this wide 4.53:1 aspect ratio otherwise overflows a 320-430px
+              viewport regardless of padding/gap. Shrinking it below `sm` is the only
+              lever that actually removes the overflow; `sm:` restores the original size. */}
+          <LogoMark
+            className={cn(
+              'w-auto shrink-0 transition-all duration-300 ease-out',
+              isTransparent ? 'h-[34px] sm:h-[60px]' : 'h-[34px] sm:h-[55px]'
+            )}
+          />
         </Link>
 
         <nav className="hidden items-center justify-center gap-6 xl:flex">
@@ -492,7 +530,7 @@ export default function Navbar() {
             <Search size={18} />
           </button>
           <a
-            href={`tel:${siteConfig.contactPhone}`}
+            href={siteConfig.contactPhoneHref}
             aria-label={`Call ${siteConfig.contactPhone}`}
             title={siteConfig.contactPhone}
             className={cn(
@@ -521,8 +559,10 @@ export default function Navbar() {
             <Search size={20} />
           </button>
           <a
-          href={`tel:${siteConfig.contactPhone}`}
+          href={siteConfig.contactPhoneHref}
           onClick={() => setOpen(false)}
+          aria-label={`Call ${siteConfig.contactPhone}`}
+          title={siteConfig.contactPhone}
           className="cursor-hover rounded-full p-2 text-slate-500 transition-all duration-300 ease-in-out hover:bg-slate-100 hover:text-slate-900"
         >
           <Phone size={20} />

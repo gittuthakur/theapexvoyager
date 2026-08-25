@@ -670,8 +670,12 @@ export const experiences: Experience[] = [
     shortDescription: 'A rare multi-day stay in one of Kashmir\'s most remote, least-visited valleys.',
     description:
       'Gurez sits close to the Line of Control and only opened to regular tourism in recent years — this multi-day village stay is run through a newly onboarded local partner, so expect a genuinely offbeat, still-developing experience rather than a polished tourist trail.',
-    image: images.experiences.kinnaurTrek,
-    gallery: [images.experiences.kinnaurTrek, images.experiences.mountainDusk],
+    // No dedicated Jammu & Kashmir photography exists yet (see config/images.config.ts)
+    // — this used to reuse a real, named Himachal Pradesh photo (Kinnaur-Rampur trek),
+    // mislabeling a specific Himachal place as Gurez Valley. Same honest generic
+    // fallback used by this catalog's other Jammu & Kashmir experiences.
+    image: images.experiences.valleyGeneric,
+    gallery: [images.experiences.valleyGeneric, images.experiences.mountainDusk],
     duration: '2 Days / 1 Night',
     durationBand: 'multi-day',
     groupSize: 'Small Group (up to 6)',

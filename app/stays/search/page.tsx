@@ -28,11 +28,17 @@ interface StaySearchPageProps {
     priceMax?: string;
     amenity?: string;
     mood?: string;
+    /** Raw HotelCategory value (e.g. "Homestay") — the homepage Global Search's Stays
+     *  tab sends this directly instead of a /stays/[slug]-style `type` slug. Only used
+     *  as a fallback when `type`/`mood` aren't set, and intentionally left out of
+     *  StayFilters' `currentParams` so the sidebar's own type/mood vocabulary takes
+     *  over cleanly the moment the visitor interacts with it. */
+    category?: string;
   }>;
 }
 
 export default async function StaySearchPage({ searchParams }: StaySearchPageProps) {
-  const { destination, checkIn, checkOut, guests, type, priceMax, amenity, mood } = await searchParams;
+  const { destination, checkIn, checkOut, guests, type, priceMax, amenity, mood, category } = await searchParams;
 
   return (
     <main className="px-6 py-10 sm:px-10 lg:px-16">
@@ -56,7 +62,7 @@ export default async function StaySearchPage({ searchParams }: StaySearchPagePro
         </div>
 
         <Suspense
-          key={`${destination ?? ''}:${type ?? ''}:${priceMax ?? ''}:${amenity ?? ''}:${mood ?? ''}`}
+          key={`${destination ?? ''}:${type ?? ''}:${priceMax ?? ''}:${amenity ?? ''}:${mood ?? ''}:${category ?? ''}`}
           fallback={<SkeletonGrid count={4} className="xl:grid-cols-2" />}
         >
           <StaySearchResults
@@ -68,6 +74,7 @@ export default async function StaySearchPage({ searchParams }: StaySearchPagePro
             priceMax={priceMax}
             amenity={amenity}
             mood={mood}
+            category={category}
           />
         </Suspense>
       </section>
@@ -84,12 +91,18 @@ interface StaySearchResultsProps {
   priceMax?: string;
   amenity?: string;
   mood?: string;
+  category?: string;
 }
 
-async function StaySearchResults({ destination, checkIn, checkOut, guests, type, priceMax, amenity, mood }: StaySearchResultsProps) {
+const HOTEL_CATEGORIES: HotelCategory[] = ['Hotel', 'Homestay', 'Resort', 'Villa', 'Camp', 'Treehouse', 'Farmstay', 'Hostel', 'Heritage', 'GuestHouse'];
+function isHotelCategory(value?: string): value is HotelCategory {
+  return Boolean(value) && HOTEL_CATEGORIES.includes(value as HotelCategory);
+}
+
+async function StaySearchResults({ destination, checkIn, checkOut, guests, type, priceMax, amenity, mood, category: categoryParam }: StaySearchResultsProps) {
   const stayType = type ? findStayTypeBySlug(type) : undefined;
   const stayMood = !stayType && mood ? findStayMoodBySlug(mood) : undefined;
-  const category: HotelCategory | undefined = stayType?.category ?? stayMood?.category;
+  const category: HotelCategory | undefined = stayType?.category ?? stayMood?.category ?? (isHotelCategory(categoryParam) ? categoryParam : undefined);
   const isBoutiqueOnly = type === 'boutique-stays';
   const moodKeyword = stayMood?.keyword?.toLowerCase();
 

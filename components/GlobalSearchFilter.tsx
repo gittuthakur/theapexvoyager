@@ -27,10 +27,24 @@ import {
 } from '@/config/search.config';
 import { experienceTypes } from '@/config/experiences.config';
 import { vehicleOptions } from '@/config/transport.config';
+import { destinations } from '@/config/destinations.config';
 import { cn } from '@/lib/utils';
 import type { DateRange, OccupancyDetails } from '@/types';
 
 const VEHICLE_NAMES = vehicleOptions.map((vehicle) => vehicle.name);
+
+/** /experts filters on the real destination slug (expert.destinationSlugs), not the
+ *  free-text place name this shared "where" field collects — resolves a typed place
+ *  to its real slug via the same curated catalog /destinations itself uses, so the
+ *  Travel Experts tab's search actually reaches a destination the page can match
+ *  instead of silently filtering nothing. Unresolved text (a place outside the
+ *  curated catalog) is simply left off rather than sent as a filter that can never
+ *  match a slug. */
+function resolveDestinationSlug(value: string): string | undefined {
+  const trimmed = value.trim().toLowerCase();
+  if (!trimmed) return undefined;
+  return destinations.find((destination) => destination.title.toLowerCase() === trimmed)?.slug;
+}
 
 export interface GlobalSearchFilterProps {
   className?: string;
@@ -226,25 +240,33 @@ export default function GlobalSearchFilter({
         return;
 
       case 'Transport':
+        // A real form submission (as opposed to a Popular Searches shortcut, see
+        // handlePopularSearch below) is an intentional Transport search — flag it so
+        // /transport opens in focused Search Results Mode instead of the full
+        // Discovery page (see app/transport/page.tsx's `searched` param).
         goTo('/transport', {
           pickup,
           destination: drop,
           date,
           time,
           travellers: String(passengers),
-          vehicle: travelStyle
+          vehicle: travelStyle,
+          searched: '1'
         });
         return;
 
       case 'Travel Experts':
-        goTo('/experts', { where: destination, need: travelStyle });
+        // /experts reads `destination` (a real slug) and `travelStyle` (see
+        // ExpertFilters/ExpertsHeroSearch) — not `where`/`need`, which it never read at
+        // all, so every homepage Travel Experts search was previously silently ignored.
+        goTo('/experts', { destination: resolveDestinationSlug(destination), travelStyle });
     }
   }
 
   function handlePopularSearch(place: string) {
     setDestination(place);
     if (activeTab === 'Travel Experts') {
-      goTo('/experts', { where: place });
+      goTo('/experts', { destination: resolveDestinationSlug(place) });
       return;
     }
     if (activeTab === 'Transport') {

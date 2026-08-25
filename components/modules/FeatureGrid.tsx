@@ -21,6 +21,7 @@ import { SafeImage } from '@/components/ui/SafeImage';
 import { cn } from '@/lib/utils';
 import { fadeInUp, viewportOnce } from '@/lib/motion';
 import { buildBookingHref } from '@/lib/bookingNavigation';
+import { getDestinationTitleBySlug } from '@/config/destinations.config';
 import type { TourPackage } from '@/types';
 
 export interface FeatureGridProps {
@@ -78,6 +79,11 @@ function TourCard({ tour, size, isActive, onSelect }: TourCardProps) {
     : [];
 
   const currentKey = getTourKey(tour);
+  // `destinationSlug` (e.g. 'spiti-valley') isn't itself a value the Journeys page's
+  // free-text destination filter can match — it matches against real destination
+  // names. Resolves to undefined (falls back to the unfiltered listing) for the Tour
+  // destinationSlugs with no curated Destination match.
+  const destinationTitle = tour.destinationSlug ? getDestinationTitleBySlug(tour.destinationSlug) : undefined;
 
   if (isLarge) {
     return (
@@ -184,7 +190,11 @@ function TourCard({ tour, size, isActive, onSelect }: TourCardProps) {
             </div>
             <div className="flex shrink-0 items-center gap-4">
               <Link
-                href={tour.destinationSlug ? `/journeys?destination=${tour.destinationSlug}` : '/journeys'}
+                href={
+                  destinationTitle
+                    ? `/journeys?destination=${encodeURIComponent(destinationTitle)}`
+                    : '/journeys'
+                }
                 className="cursor-hover text-md font-semibold text-white underline-offset-4 transition hover:underline"
               >
                 View Details
@@ -194,7 +204,7 @@ function TourCard({ tour, size, isActive, onSelect }: TourCardProps) {
                 size="lg"
                 className="cursor-hover rounded-xl shrink-0"
               >
-                Book Now
+                Plan This Escape
                 <ArrowRight size={22} />
               </ButtonLink>
             </div>
@@ -348,7 +358,7 @@ export default function FeatureGrid({
         </motion.div>
 
         {activeTour ? (
-          <div className="mt-8 grid gap-6 lg:grid-cols-[1.25fr_1fr] lg:items-stretch">
+          <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[1.25fr_1fr] lg:items-stretch">
             {/* Left Large Card wrapped properly with AnimatePresence */}
             <div className="h-full">
               <AnimatePresence mode="wait">

@@ -46,6 +46,10 @@ const DEFAULT_TRAVEL_STYLES = ['Adventure', 'Family', 'Honeymoon', 'Cultural', '
 // Honest, non-customer content shown only until real reviews exist — no invented
 // names, ratings, review counts or "Verified" claims (rating/verified/source are all
 // intentionally omitted so the card design's existing conditionals hide those elements).
+// `region` is set because it's a plain fact already stated in each preview's own text
+// (Manali/Himachal/Kinnaur-Spiti are all Himachal Pradesh) — without it, the region
+// tabs above always emptied the list for every region except "All", since these
+// preview objects otherwise carry no region metadata at all.
 const FALLBACK_EXPERIENCE_PREVIEWS: Testimonial[] = [
   {
     id: 'preview-couple-escape-manali',
@@ -54,6 +58,7 @@ const FALLBACK_EXPERIENCE_PREVIEWS: Testimonial[] = [
     quote:
       'Wake up to mountain views, explore at your own pace, drive through Atal Tunnel and spend time in Sissu without turning the journey into a rushed sightseeing checklist.',
     category: 'Couple Escape',
+    region: 'Himachal Pradesh',
     verified: false,
     featured: true
   },
@@ -64,6 +69,7 @@ const FALLBACK_EXPERIENCE_PREVIEWS: Testimonial[] = [
     quote:
       'Comfortable stays, private transport and a balanced itinerary designed to give families enough time to explore, relax and enjoy the mountains together.',
     category: 'Family Journey',
+    region: 'Himachal Pradesh',
     verified: false
   },
   {
@@ -73,6 +79,7 @@ const FALLBACK_EXPERIENCE_PREVIEWS: Testimonial[] = [
     quote:
       'Travel deeper into Kinnaur and Spiti through mountain roads, remote valleys, local villages and landscapes beyond ordinary tourist routes.',
     category: 'Adventure Journey',
+    region: 'Himachal Pradesh',
     verified: false
   }
 ];

@@ -16,11 +16,15 @@ export interface TrustBadgesProps {
   className?: string;
 }
 
+// "Best Price Promise"/"we won't be beaten on price" and "24/7 Support" were absolute
+// claims with no price-match policy or staffed round-the-clock support behind them —
+// reworded to what's actually true: transparent, no-markup pricing and real, reachable
+// contact channels (WhatsApp/phone/email — see config/site.config.ts).
 const defaultBadges: TrustBadge[] = [
   { icon: Sparkles, title: 'Curated Destinations', description: 'Handpicked places' },
-  { icon: ShieldCheck, title: 'Best Price Promise', description: "We won't be beaten on price" },
+  { icon: ShieldCheck, title: 'Transparent Pricing', description: 'Clear pricing, no hidden markups' },
   { icon: MapPin, title: 'Trusted Local Experts', description: 'On-ground knowledge' },
-  { icon: Headphones, title: '24/7 Support', description: "We're here to help" }
+  { icon: Headphones, title: 'Travel Support', description: "We're here to help" }
 ];
 
 export default function TrustBadges({ items = defaultBadges, className }: TrustBadgesProps) {

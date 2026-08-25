@@ -6,6 +6,7 @@ import { ArrowRight, Check, Clock, Eye, Heart, MapPin, Star } from 'lucide-react
 import { formatINR } from '@/lib/pricing';
 import { formatDurationShort, getPackageInclusionTags } from '@/lib/packageFilters';
 import { cn } from '@/lib/utils';
+import { SafeImage } from '@/components/ui/SafeImage';
 import type { TravelPackage } from '@/types/package';
 
 export interface PackageCardProps {
@@ -57,10 +58,12 @@ export default function PackageCard({ pkg, rating, regionLabel, isComparing = fa
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg transition-all duration-300 ease-in-out motion-safe:hover:-translate-y-1.5 hover:shadow-2xl">
       <div className="relative h-56 overflow-hidden bg-slate-100">
-        <img
+        <SafeImage
           src={pkg.image}
           alt={pkg.name}
-          className="h-full w-full object-cover transition duration-700 ease-in-out motion-safe:group-hover:scale-110"
+          fill
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+          className="object-cover transition duration-700 ease-in-out motion-safe:group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 

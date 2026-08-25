@@ -87,11 +87,11 @@ export default function PopularDestinationsSection({ destinations }: PopularDest
           <p className="mt-10 text-center text-slate-500">No popular destinations in this region yet — check back soon.</p>
         ) : null}
 
-        <div className="mt-10 flex items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-white p-5 text-center shadow-xl sm:p-7">
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-apex-100 text-apex-700">
+        <div className="mt-10 flex flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-white p-5 text-center shadow-xl sm:flex-row sm:justify-between sm:p-7">
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-apex-100 text-apex-700">
             <Sparkles size={24} />
           </span>
-          <div className='flex flex-1 flex-col text-start gap-2'>
+          <div className='flex min-w-0 flex-1 flex-col gap-2 text-center sm:text-start'>
             <h3 className="text-xl font-bold text-slate-900">Not sure where to go?</h3>
             <p className="text-sm text-slate-600">
               Tell us what you love — adventure, nature, luxury, quiet or slow travel — and we'll match you to your ideal
@@ -101,7 +101,7 @@ export default function PopularDestinationsSection({ destinations }: PopularDest
           <button
             type="button"
             onClick={() => setMatchModalOpen(true)}
-            className="cursor-hover inline-flex items-center gap-2 rounded-lg bg-apex-500 px-7 py-4 font-mediu text-white shadow-lg shadow-apex-500/20 transition-all duration-300 ease-in-out hover:bg-apex-400"
+            className="cursor-hover inline-flex shrink-0 items-center gap-2 rounded-lg bg-apex-500 px-7 py-4 font-mediu text-white shadow-lg shadow-apex-500/20 transition-all duration-300 ease-in-out hover:bg-apex-400"
           >
             Discover Your Match <ArrowRight size={24} />
           </button>

@@ -31,7 +31,12 @@ export const images = {
     spitiValleyAdventure: '/images/destination-spiti.jpg',
     himachalHimalayanExplorer: '/images/feature-tour-hero.jpg',
     dharamshalaDalhousieEscape: '/images/destination-dharamshala.jpg',
-    sikkimMountainEscape: '/images/cta-real-himachal.jpg'
+    // This package's actual content (itinerary, destinationSlugs) is Rishikesh/Haridwar/
+    // Mussoorie in Uttarakhand — the old key name and its Himachal-branded CTA-banner
+    // image ('/images/cta-real-himachal.jpg') were leftover from an earlier, unrelated
+    // "Sikkim" draft. Same honest generic fallback used for Uttarakhand elsewhere
+    // (config/images.config.ts's experiences.himalayanVista).
+    uttarakhandExplorer: '/images/img-hero-hero.jpg'
   },
   // Every photo in public/images/ today is Himachal Pradesh-specific or a generic
   // mountain hero shot — there is no dedicated Jammu & Kashmir or Uttarakhand

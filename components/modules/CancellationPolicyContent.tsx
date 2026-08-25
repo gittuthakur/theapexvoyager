@@ -137,7 +137,7 @@ export default function CancellationPolicyContent() {
               </p>
               <div className="flex flex-wrap gap-4 pt-2 text-sm">
                 <a
-                  href={`tel:${siteConfig.contactPhone}`}
+                  href={siteConfig.contactPhoneHref}
                   className="cursor-hover inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 font-semibold text-slate-900 transition hover:bg-slate-100"
                 >
                   <Phone size={15} /> {siteConfig.contactPhone}

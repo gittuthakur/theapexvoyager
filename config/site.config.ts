@@ -8,6 +8,11 @@ export const siteConfig = {
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '917307521100',
   contactEmail: 'hello@theapexvoyager.com',
   contactPhone: '+91 7307521100',
+  // Machine-safe tel: URI — a raw `tel:${contactPhone}` embeds the display string's
+  // space, which is invalid in a tel URI. Kept as its own field so every consumer's
+  // visible text (contactPhone) stays exactly as designed while every href switches
+  // to this instead.
+  contactPhoneHref: 'tel:+917307521100',
   signInHref: '/sign-in',
   bookNowHref: '/plan-my-journey'
 } as const;
