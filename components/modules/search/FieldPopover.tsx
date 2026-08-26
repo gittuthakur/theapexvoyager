@@ -130,12 +130,20 @@ export function FieldPopover({ open, onClose, anchorRef, children, width, align 
   useEffect(() => {
     if (!open) return;
     return () => {
-      const anchor = anchorRef.current;
-      if (!anchor || anchor.contains(document.activeElement)) return;
-      const focusable = anchor.querySelector<HTMLElement>(
-        'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      );
-      focusable?.focus();
+      // Deferred a frame: an outside mousedown closes the popover (flipping `open`
+      // to false) before the browser's own default action blurs the just-clicked-
+      // away-from trigger to document.body — checking activeElement synchronously
+      // here would see the trigger as "still focused" and skip restoring it, then
+      // the browser's blur lands a moment later with nothing to catch it, leaving
+      // focus on body. Waiting a frame lets that blur (if any) settle first.
+      requestAnimationFrame(() => {
+        const anchor = anchorRef.current;
+        if (!anchor || anchor.contains(document.activeElement)) return;
+        const focusable = anchor.querySelector<HTMLElement>(
+          'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        focusable?.focus();
+      });
     };
   }, [open, anchorRef]);
 

@@ -166,8 +166,17 @@ export default function DestinationsExplorer({
     (activeRegion !== 'all' ? 1 : 0) + activeStyles.length + activeSeasons.length + (isPriceNarrowed ? 1 : 0) + activeBestFor.length;
 
   // Any change to what's being shown should land the reader back on page 1 —
-  // otherwise a narrower filter can strand them on a now-nonexistent page.
+  // otherwise a narrower filter can strand them on a now-nonexistent page. Skipped
+  // on the initial mount — otherwise this fires immediately after `page` was just
+  // seeded from `initialPage` (e.g. a `?page=2` deep link or an explorerKey remount
+  // from the URL-sync effect below) and stomps it straight back to 1, making any
+  // page beyond 1 unreachable.
+  const skipNextPageReset = useRef(true);
   useEffect(() => {
+    if (skipNextPageReset.current) {
+      skipNextPageReset.current = false;
+      return;
+    }
     setPage(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, activeRegion, activeStyles.join(','), activeSeasons.join(','), isPriceNarrowed, displayedPriceRange.join(','), activeBestFor.join(','), sortBy]);
