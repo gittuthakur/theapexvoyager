@@ -12,9 +12,12 @@ import { STAY_TYPES, STAY_TYPE_LABELS, type Stay, type StayType } from '@/types/
 
 export interface StaysGridProps {
   location: string;
+  /** The destination's real state (e.g. "Jammu & Kashmir") — forwarded to the stays API so
+   *  it never falls back to the Himachal Pradesh-only default for a non-Himachal destination. */
+  state?: string;
 }
 
-export default function StaysGrid({ location }: StaysGridProps) {
+export default function StaysGrid({ location, state }: StaysGridProps) {
   const [stays, setStays] = useState<Stay[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [activeType, setActiveType] = useState<StayType | 'all'>('all');
@@ -23,7 +26,8 @@ export default function StaysGrid({ location }: StaysGridProps) {
     let cancelled = false;
     setStatus('loading');
 
-    fetch(`/api/destinations?type=stays&location=${encodeURIComponent(location)}`)
+    const stateParam = state ? `&state=${encodeURIComponent(state)}` : '';
+    fetch(`/api/destinations?type=stays&location=${encodeURIComponent(location)}${stateParam}`)
       .then((res) => {
         if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
         return res.json();
@@ -41,7 +45,7 @@ export default function StaysGrid({ location }: StaysGridProps) {
     return () => {
       cancelled = true;
     };
-  }, [location]);
+  }, [location, state]);
 
   const visibleStays = activeType === 'all' ? stays : stays.filter((stay) => stay.stayType === activeType);
   const availableTypes = STAY_TYPES.filter((stayType) => stays.some((stay) => stay.stayType === stayType));

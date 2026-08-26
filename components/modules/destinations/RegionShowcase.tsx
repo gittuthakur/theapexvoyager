@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { regions } from '@/config/regions.config';
+import { getRegionHubSlug } from '@/lib/regions';
 import { fadeInUp, staggerContainer, viewportOnce } from '@/lib/motion';
 import type { Destination } from '@/types';
 
@@ -35,7 +36,7 @@ export default function RegionShowcase({ destinations }: RegionShowcaseProps) {
             return (
               <motion.div key={region.id} variants={fadeInUp}>
                 <Link
-                  href={`/regions/${region.id}`}
+                  href={`/regions/${getRegionHubSlug(region.id)}`}
                   className="group relative block h-80 overflow-hidden rounded-[24px] border border-slate-200 shadow-glow transition-shadow duration-300 hover:shadow-apex-500/20"
                 >
                   <SafeImage

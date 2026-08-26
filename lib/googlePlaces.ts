@@ -81,16 +81,23 @@ const STAY_TYPE_QUERIES: Record<StayType, string> = {
   treehouse: 'treehouse stays'
 };
 
-export function searchStays(location: string, stayType: StayType, apiKey: string): Promise<RawGooglePlace[]> {
+// `state` defaults to Himachal Pradesh so every pre-existing caller that doesn't pass
+// one (e.g. enrichHotelsWithPlaces, whose curated Hotel catalog is Himachal-only today)
+// keeps behaving exactly as before. A caller that knows the real destination state
+// (lib/stays.ts's getStaysForDestination, threaded from a Destination's own `state`
+// field) should always pass it — otherwise a Jammu & Kashmir/Uttarakhand search like
+// "hotels in Gulmarg" silently becomes "hotels in Gulmarg, Himachal Pradesh", which can
+// make Google resolve the wrong place entirely.
+export function searchStays(location: string, stayType: StayType, apiKey: string, state = 'Himachal Pradesh'): Promise<RawGooglePlace[]> {
   if (isLocalDevelopment()) {
     console.info(`[dev] Serving mock Places data for "${stayType}" stays in "${location}" — no Google Places credits spent.`);
     // Every stay type shares the same mock location data, so the place `id`s must be
     // namespaced per stayType here — otherwise all 6 categories resolve to identical
     // ids and StaysGrid's `key={stay.placeId}` collides once results are combined.
-    const mockPlaces = getMockPlaces(location).map((place) => ({ ...place, id: `${place.id}_${stayType}` }));
+    const mockPlaces = getMockPlaces(location, state).map((place) => ({ ...place, id: `${place.id}_${stayType}` }));
     return Promise.resolve(mockPlaces);
   }
-  return searchPlaces(`${STAY_TYPE_QUERIES[stayType]} in ${location}, Himachal Pradesh`, apiKey);
+  return searchPlaces(`${STAY_TYPE_QUERIES[stayType]} in ${location}, ${state}`, apiKey);
 }
 
 // Points at our own proxy (app/api/places/photo/route.ts), never at Google directly —

@@ -94,7 +94,7 @@ export default function HotelCard({ hotel, checkIn, checkOut, guests }: HotelCar
               ₹{(hotel.places?.customPrice ?? hotel.pricePerNight).toLocaleString('en-IN')}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <WhatsAppEnquireButton
               selection={{ name: hotel.title, type: 'stay', stayType: CATEGORY_TO_STAY_TYPE[hotel.category], slug: hotel.slug }}
             />

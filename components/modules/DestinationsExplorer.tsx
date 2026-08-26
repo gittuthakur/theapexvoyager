@@ -133,11 +133,11 @@ export default function DestinationsExplorer({
     () => activeStyles.map((label) => resolveTravelStyleFromLabel(label)?.id ?? (label as DestinationStyleId)),
     [activeStyles]
   );
+  // Same fallback-to-itself shape as activeStyleIds above — an unresolvable season label
+  // must still reach filterDestinations as a non-empty request (so it narrows to zero),
+  // not be silently dropped into an empty array that behaves as "no season filter".
   const activeSeasonIds = useMemo(
-    () =>
-      activeSeasons
-        .map((label) => seasonOptions.find((season) => season.label === label)?.id)
-        .filter((id): id is SeasonId => Boolean(id)),
+    () => activeSeasons.map((label) => seasonOptions.find((season) => season.label === label)?.id ?? (label as SeasonId)),
     [activeSeasons]
   );
 

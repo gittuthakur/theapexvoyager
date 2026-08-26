@@ -63,6 +63,16 @@ export default async function DestinationsPage({ searchParams }: DestinationsPag
     testimonials.length > 0 ? Number((testimonials.reduce((sum, t) => sum + (t.rating ?? 0), 0) / testimonials.length).toFixed(1)) : undefined;
   const beyondTheTrail = destinations.filter((item) => BEYOND_THE_TRAIL_SLUGS.includes(item.slug));
 
+  // PopularDestinationsRegion and DestinationStyleGrid both navigate here with new
+  // ?region=/?style= query params from *outside* DestinationsExplorer, but the explorer
+  // only seeds its filter state from these props on mount (useState(initialX)) — a later
+  // prop change alone wouldn't reach already-mounted state, leaving the results grid
+  // showing the previous (or unfiltered) set while the URL and page's own region/style
+  // tabs already claim the new filter is active. Keying on the full query string forces a
+  // fresh, correctly-seeded instance whenever an external link changes it — same fix as
+  // app/experiences/page.tsx's `listingKey`.
+  const explorerKey = JSON.stringify({ destination, style, season, region, priceMin, priceMax, bestFor, sort, page, view });
+
   return (
     <>
       <InnerHeroBanner
@@ -85,6 +95,7 @@ export default async function DestinationsPage({ searchParams }: DestinationsPag
       <main className="py-14 lg:py-16">
         <section className="mx-auto max-w-[1440px] px-6">
           <DestinationsExplorer
+            key={explorerKey}
             destinations={destinations}
             stats={stats}
             initialQuery={destination}

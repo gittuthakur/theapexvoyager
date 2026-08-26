@@ -19,7 +19,7 @@ import { getExperiencesByDestination } from '@/lib/experiences';
 import { getExpertsByDestinationSlug } from '@/lib/experts';
 import { getRoutes } from '@/lib/transport';
 import { getDestinationRatingsMap } from '@/lib/reviews';
-import { getRegionForState } from '@/lib/regions';
+import { getRegionForState, getRegionHubSlug } from '@/lib/regions';
 import { formatINR } from '@/lib/pricing';
 import type { DestinationMatchScores } from '@/types/destination';
 
@@ -111,7 +111,7 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
 
   return (
     <DetailPageContainer>
-      <BackButton fallbackHref={parentRegion ? `/regions/${parentRegion.id}` : '/destinations'} label="Back to Destinations" />
+      <BackButton fallbackHref={parentRegion ? `/regions/${getRegionHubSlug(parentRegion.id)}` : '/destinations'} label="Back to Destinations" />
 
       <DestinationHero destination={destination} rating={destinationRating} />
 
@@ -192,7 +192,11 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
             <div className="mt-6 flex flex-wrap gap-3">
               {destination.experiences.map((experience) => <span key={experience} className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-5 py-3 text-sm font-medium text-slate-700"><Compass size={15} className="text-apex-300" />{experience}</span>)}
             </div>
-          ) : null}
+          ) : (
+            <p className="mt-6 rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500">
+              No bookable experiences in {destination.title} yet — our team can still tailor one for you.
+            </p>
+          )}
         </section>
 
         <section id="tours" className="py-8">
@@ -258,7 +262,7 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
               {localExperts.map((expert) => <ExpertCard key={expert.slug} expert={expert} />)}
             </div>
           ) : (
-            <div className="mt-6 flex items-center justify-between gap-4 rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-8">
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-8">
               <p className="text-sm text-slate-500">
                 <Users size={16} className="mr-2 inline text-apex-300" />
                 No dedicated {destination.title} specialist yet — our broader team can still help you plan.
@@ -284,7 +288,7 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
             </Link>
           </div>
           <div className="mt-6">
-            <StaysGrid location={destination.title} />
+            <StaysGrid location={destination.title} state={destination.state} />
           </div>
         </div>
 

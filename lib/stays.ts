@@ -33,9 +33,10 @@ async function fetchAndCacheStayType(
   destinationSlug: string,
   location: string,
   stayType: StayType,
-  apiKey: string
+  apiKey: string,
+  state?: string
 ): Promise<Stay[]> {
-  const rawPlaces = await searchStays(location, stayType, apiKey);
+  const rawPlaces = await searchStays(location, stayType, apiKey, state);
 
   const docs = rawPlaces.map((place: RawGooglePlace) => ({
     placeId: place.id,
@@ -66,7 +67,8 @@ async function fetchAndCacheStayType(
 export async function getStaysForDestination(
   destinationSlug: string,
   location: string,
-  stayTypes: StayType[] = STAY_TYPES
+  stayTypes: StayType[] = STAY_TYPES,
+  state?: string
 ): Promise<Stay[]> {
   await connectDB();
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
@@ -85,7 +87,7 @@ export async function getStaysForDestination(
       if (isRecentFailure(failureKey)) return [];
 
       try {
-        return await fetchAndCacheStayType(destinationSlug, location, stayType, apiKey);
+        return await fetchAndCacheStayType(destinationSlug, location, stayType, apiKey, state);
       } catch (error) {
         console.error(`Failed to fetch "${stayType}" stays for "${location}" from Google Places`, error);
         markFailure(failureKey);

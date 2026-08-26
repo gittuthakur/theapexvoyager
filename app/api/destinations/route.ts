@@ -15,6 +15,7 @@ const CACHE_HEADERS = {
 // GET /api/destinations?location=Manali                     -> destinations for a single location
 // GET /api/destinations?type=stays&location=Manali          -> every stay category (hotel, homestay, cottage, resort, camp, treehouse) for a location
 // GET /api/destinations?type=stays&location=Manali&stayType=treehouse -> just one stay category
+// GET /api/destinations?type=stays&location=Gulmarg&state=Jammu%20%26%20Kashmir -> stays scoped to the real destination state (defaults to Himachal Pradesh when omitted)
 //
 // GET /api/destinations?isPopular=true                       -> the curated homepage "Popular Destinations" set
 // GET /api/destinations?region=Himachal%20Pradesh&style=Adventure&season=Summer -> curated catalog, filtered
@@ -25,6 +26,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const type = searchParams.get('type');
   const location = searchParams.get('location') ?? undefined;
+  const state = searchParams.get('state') ?? undefined;
 
   const isPopularParam = searchParams.get('isPopular');
   const regionParam = searchParams.get('region');
@@ -40,7 +42,7 @@ export async function GET(request: Request) {
 
       const stayTypeParam = searchParams.get('stayType') as StayType | null;
       const stayTypes = stayTypeParam && STAY_TYPES.includes(stayTypeParam) ? [stayTypeParam] : STAY_TYPES;
-      const stays = await getStaysForDestination(slugify(location), location, stayTypes);
+      const stays = await getStaysForDestination(slugify(location), location, stayTypes, state);
       return NextResponse.json({ stays }, { status: 200, headers: CACHE_HEADERS });
     }
 

@@ -166,12 +166,17 @@ export const mockPlacesByLocation: Record<string, RawGooglePlace[]> = {
 
 const DEFAULT_MOCK_PLACES = mockPlacesByLocation.manali;
 
-// Best-effort match against the known mock locations above — any other location string
-// (a typo, a location we haven't authored mock data for, a stay-type query) still gets
-// *something* realistic back rather than an empty grid, since this only ever runs in
-// local development.
-export function getMockPlaces(location: string): RawGooglePlace[] {
+// Best-effort match against the known mock locations above — any other Himachal
+// location string (a typo, a location we haven't authored mock data for, a stay-type
+// query) still gets *something* realistic back rather than an empty grid, since this
+// only ever runs in local development. Gated on `state`, though: every authored entry
+// above is a Himachal Pradesh place, so silently handing that same Manali/Shimla/etc.
+// data back for a Jammu & Kashmir or Uttarakhand location (e.g. "Gulmarg", "Munsiyari")
+// would misrepresent a real destination as belonging to the wrong state — an honest
+// empty result is correct there instead.
+export function getMockPlaces(location: string, state = 'Himachal Pradesh'): RawGooglePlace[] {
   const normalized = location.toLowerCase();
   const key = Object.keys(mockPlacesByLocation).find((candidate) => normalized.includes(candidate));
-  return key ? mockPlacesByLocation[key] : DEFAULT_MOCK_PLACES;
+  if (key) return mockPlacesByLocation[key];
+  return state === 'Himachal Pradesh' ? DEFAULT_MOCK_PLACES : [];
 }

@@ -29,7 +29,11 @@ export function filterDestinations(
     if (query && !destination.title.toLowerCase().includes(query) && !destination.description.toLowerCase().includes(query)) {
       return false;
     }
-    if (region && destination.state !== region.name) return false;
+    // Gated on the caller's raw request (filter.region), not on whether it resolved to a
+    // real region — an unresolvable region id (a stale/hand-edited `?region=` value) must
+    // still narrow results to zero, not silently behave as if no region filter were
+    // applied at all. Same fix shape as the styles/seasons handling below.
+    if (filter.region && (!region || destination.state !== region.name)) return false;
     if (filter.styles?.length && !filter.styles.some((styleId) => matchesStyle(destination, styleId))) return false;
     // Gated on the caller's raw request (filter.seasons), not on how many of those ids
     // actually resolved to a real label — see the identical fix/comment in lib/packageFilters.ts.

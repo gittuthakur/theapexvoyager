@@ -6,13 +6,19 @@ import TrustBadges from '@/components/modules/TrustBadges';
 // Icon components (functions) can't cross the Server→Client boundary as props — so
 // this whole badges list is defined and consumed here, inside the client boundary,
 // rather than being built in the (server) page and passed into TrustBadges as `items`.
+//
+// "Best Price Promise"/"we won't be beaten on price" and "24/7 Assistance" were the
+// same absolute, unsupported claims already caught and reworded on the homepage (see
+// components/modules/TrustBadges.tsx's own defaultBadges) — this page-specific badge
+// list was missed at the time. Reusing that exact already-accepted wording here rather
+// than inventing new copy.
 const WHY_THE_APEX_BADGES = [
   { icon: Sparkles, title: 'Curated With Care', description: 'Every destination handpicked by our team' },
   { icon: MapPin, title: 'Local Expertise', description: 'On-ground knowledge you can trust' },
-  { icon: Wallet, title: 'Best Price Promise', description: "We won't be beaten on price" },
+  { icon: Wallet, title: 'Transparent Pricing', description: 'Clear pricing, no hidden markups' },
   { icon: ShieldCheck, title: 'Safe & Reliable', description: 'Vetted stays, journeys and experts' },
   { icon: Sparkles, title: 'Personalized Trips', description: 'Built around how you like to travel' },
-  { icon: Headphones, title: '24/7 Assistance', description: "We're here for the whole journey" }
+  { icon: Headphones, title: 'Travel Support', description: "We're here to help" }
 ];
 
 export default function WhyTheApexSection() {

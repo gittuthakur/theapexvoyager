@@ -50,7 +50,7 @@ export default function DestinationCard({ destination, stats, className, priorit
         ) : null}
         <SafeImage
           src={destination.image}
-          alt={`${destination.title} luxury expedition tours, Himachal Pradesh`}
+          alt={`${destination.title} luxury expedition tours${destination.state ? `, ${destination.state}` : ''}`}
           fill
           sizes="w-100 h-100"
           className="object-cover transition duration-500 group-hover:scale-105"
