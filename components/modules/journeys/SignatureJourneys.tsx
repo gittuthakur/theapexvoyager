@@ -42,7 +42,7 @@ export default function SignatureJourneys({ packages }: SignatureJourneysProps) 
         </p>
       </div>
 
-      <div className="mt-10 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+      <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-[1.4fr_1fr]">
         <article className="group flex flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-glow relative">
           <div className="relative h-full overflow-hidden bg-slate-900">
             <SafeImage

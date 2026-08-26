@@ -42,6 +42,7 @@ export async function generateMetadata({ params }: RegionHubPageProps): Promise<
     openGraph: {
       title,
       description,
+      url: `/regions/${region.slug}`,
       images: region.seo.image ? [{ url: region.seo.image, alt: region.name }] : undefined
     }
   };

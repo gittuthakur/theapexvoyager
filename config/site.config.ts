@@ -4,7 +4,7 @@ export const siteConfig = {
   name: 'The Apex Voyager',
   tagline: 'Beyond Destinations Into Experience',
   description: 'Luxury expedition travel experiences across the Himalayas.',
-  url: 'https://theapexvoyager.com',
+  url: 'https://www.theapexvoyager.in',
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '917307521100',
   contactEmail: 'hello@theapexvoyager.com',
   contactPhone: '+91 7307521100',

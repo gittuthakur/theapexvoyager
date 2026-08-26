@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: DestinationDetailPageProps): 
     title,
     description,
     alternates: { canonical: `/destinations/${destination.slug}` },
-    openGraph: { title, description, images: [{ url: destination.image, alt: destination.title }] }
+    openGraph: { title, description, url: `/destinations/${destination.slug}`, images: [{ url: destination.image, alt: destination.title }] }
   };
 }
 

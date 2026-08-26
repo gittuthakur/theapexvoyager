@@ -19,10 +19,24 @@ import type { RegionId } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
+const title = 'Explore the Himalayas | The Apex Voyager';
+const description =
+  'Discover handpicked destinations across Himachal Pradesh, Jammu & Kashmir and Uttarakhand — from iconic valleys to places most travelers never find.';
+
+// Previously missing entirely, which left this page's canonical unset and its OG
+// tags silently inheriting the root layout's generic homepage defaults (title "The
+// Apex Voyager", the homepage description/URL) — anyone sharing a /destinations link
+// got a homepage-branded preview card instead of this page's own identity. A single
+// static export (not generateMetadata) is correct here since the page's own title/
+// description never vary by query string — every `?region=`/`?style=`/`?page=` filter
+// combination intentionally canonicalizes back to this one URL rather than each
+// getting its own indexable canonical, matching how DestinationsExplorer already
+// treats filters as client-only view state, not distinct crawlable pages.
 export const metadata: Metadata = {
-  title: 'Explore the Himalayas | The Apex Voyager',
-  description:
-    'Discover handpicked destinations across Himachal Pradesh, Jammu & Kashmir and Uttarakhand — from iconic valleys to places most travelers never find.'
+  title,
+  description,
+  alternates: { canonical: '/destinations' },
+  openGraph: { title, description, url: '/destinations', images: [{ url: images.destinationsHero, alt: 'Explore Himalayan destinations' }] }
 };
 
 // The editorial "beyond the trail" picks — deliberately a fixed, curated slug list
