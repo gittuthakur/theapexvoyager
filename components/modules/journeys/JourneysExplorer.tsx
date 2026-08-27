@@ -143,8 +143,14 @@ export default function JourneysExplorer({
     [priceRange, priceBounds]
   );
 
+  // Gated on the caller's raw request (activeSeasons), not on how many of those labels
+  // actually resolved to a real season id — an unresolvable/mis-cased label (a stale or
+  // hand-edited `?season=` value) must still reach filterPackages as a non-empty request
+  // (falling back to the raw label itself, same shape as DestinationsExplorer's identical
+  // activeSeasonIds/activeStyleIds), so it narrows results to genuinely zero instead of
+  // being silently dropped into an empty array that filterPackages treats as "no filter".
   const activeSeasonIds = useMemo(
-    () => activeSeasons.map((label) => seasonOptions.find((season) => season.label === label)?.id).filter((id): id is SeasonId => Boolean(id)),
+    () => activeSeasons.map((label) => seasonOptions.find((season) => season.label === label)?.id ?? (label as SeasonId)),
     [activeSeasons]
   );
 

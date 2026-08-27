@@ -178,7 +178,12 @@ export function filterPackages(packages: TravelPackage[], filter: PackageFilter,
 
     if (filter.accommodation && !packageHasAccommodationTier(pkg, filter.accommodation)) return false;
 
-    if (bucket) {
+    // Gated on the caller's raw request (filter.duration), not on whether it resolved to
+    // a real bucket — a duration id that fails to resolve (a stale or hand-edited
+    // `?duration=` value) must still narrow results to zero, not silently behave as if no
+    // duration filter were applied at all. Same fix shape as the season handling above.
+    if (filter.duration) {
+      if (!bucket) return false;
       const days = parsePackageDurationDays(pkg.duration);
       if (days === undefined) return false;
       if (bucket.minDays !== undefined && days < bucket.minDays) return false;
