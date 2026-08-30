@@ -20,7 +20,8 @@ export const FILTER_LABEL_CLASS = 'text-xs font-semibold uppercase tracking-[0.2
 export const FILTER_SECTION_CLASS = 'border-t border-slate-100 pt-4 first:border-t-0 first:pt-0';
 
 export const FILTER_PILL_BASE_CLASS = 'cursor-hover rounded-full px-3.5 py-1.5 text-sm font-medium transition-all duration-300 ease-in-out';
-export const FILTER_PILL_ACTIVE_CLASS = 'bg-apex-500 text-white shadow-lg shadow-apex-500/30';
+export const FILTER_PILL_ACTIVE_CLASS =
+  "bg-apex-500 text-white shadow-lg shadow-apex-500/30 before:mr-1 before:font-bold before:content-['✓']";
 export const FILTER_PILL_INACTIVE_CLASS = 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900';
 
 /** The single toggle-pill className used for every filter option/chip-style radio button across the portal. */

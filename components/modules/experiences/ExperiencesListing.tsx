@@ -430,7 +430,7 @@ function FilterGroup({ title, children }: { title: string; children: ReactNode }
 
 function FilterPill({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
   return (
-    <button type="button" onClick={onClick} className={filterPillClass(active)}>
+    <button type="button" aria-pressed={active} onClick={onClick} className={filterPillClass(active)}>
       {children}
     </button>
   );

@@ -183,13 +183,13 @@ export default function StayFilters({
       <div className={FILTER_SECTION_CLASS}>
         <p className={FILTER_LABEL_CLASS}>Stay Type</p>
         <div className="mt-3 flex flex-wrap gap-2">
-          <Link href={buildHref(currentParams, { type: undefined })} className={filterPillClass(!activeType)}>
+          <Link aria-current={!activeType ? 'true' : undefined} href={buildHref(currentParams, { type: undefined })} className={filterPillClass(!activeType)}>
             Any
           </Link>
           {stayTypes.map((type) => {
             const isActive = activeType === type.slug;
             return (
-              <Link key={type.slug} href={buildHref(currentParams, { type: isActive ? undefined : type.slug })} className={filterPillClass(isActive)}>
+              <Link aria-current={isActive ? 'true' : undefined} key={type.slug} href={buildHref(currentParams, { type: isActive ? undefined : type.slug })} className={filterPillClass(isActive)}>
                 {type.label}
               </Link>
             );
@@ -203,7 +203,7 @@ export default function StayFilters({
           {priceOptions.map((option) => {
             const isActive = (activePriceMax ?? undefined) === option.value;
             return (
-              <Link key={option.label} href={buildHref(currentParams, { priceMax: option.value })} className={filterPillClass(isActive)}>
+              <Link aria-current={isActive ? 'true' : undefined} key={option.label} href={buildHref(currentParams, { priceMax: option.value })} className={filterPillClass(isActive)}>
                 {option.label}
               </Link>
             );
@@ -215,13 +215,13 @@ export default function StayFilters({
         <div className={FILTER_SECTION_CLASS}>
           <p className={FILTER_LABEL_CLASS}>Amenities</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            <Link href={buildHref(currentParams, { amenity: undefined })} className={filterPillClass(!activeAmenity)}>
+            <Link aria-current={!activeAmenity ? 'true' : undefined} href={buildHref(currentParams, { amenity: undefined })} className={filterPillClass(!activeAmenity)}>
               Any
             </Link>
             {amenityOptions.map((amenity) => {
               const isActive = activeAmenity === amenity;
               return (
-                <Link key={amenity} href={buildHref(currentParams, { amenity: isActive ? undefined : amenity })} className={filterPillClass(isActive)}>
+                <Link aria-current={isActive ? 'true' : undefined} key={amenity} href={buildHref(currentParams, { amenity: isActive ? undefined : amenity })} className={filterPillClass(isActive)}>
                   {amenity}
                 </Link>
               );

@@ -674,7 +674,12 @@ function FilterPill({
   children: ReactNode;
 }) {
   return (
-    <button type="button" onClick={onClick} className={filterPillClass(active, 'inline-flex items-center gap-1.5 whitespace-nowrap')}>
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={filterPillClass(active, 'inline-flex items-center gap-1.5 whitespace-nowrap')}
+    >
       {children}
     </button>
   );
