@@ -48,6 +48,15 @@ function parseISODateLocal(iso: string): Date {
   return new Date(year, month - 1, day);
 }
 
+/** The pace option with no price adjustment (the "itinerary as designed" baseline) —
+ *  not necessarily array index 0, since pace arrays are authored as
+ *  [relaxed, standard, immersive], falling back to index 0 only if no such option
+ *  exists (e.g. every option has been given a non-1 multiplier). */
+function defaultPaceId(pace?: TravelPackage['pace']): string {
+  if (!pace?.length) return '';
+  return (pace.find((option) => option.priceMultiplier === 1) ?? pace[0]).id;
+}
+
 function buildBookingMessage(args: {
   reference: string;
   pkg: TravelPackage;
@@ -200,7 +209,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
   const [children, setChildren] = useState(0);
   const [stayOptionId, setStayOptionId] = useState(pkg.stayOptions?.[0]?.id ?? '');
   const [transportOptionId, setTransportOptionId] = useState(pkg.transportOptions?.[0]?.id ?? '');
-  const [paceId, setPaceId] = useState(pkg.pace?.[0]?.id ?? '');
+  const [paceId, setPaceId] = useState(defaultPaceId(pkg.pace));
   const [addOnIds, setAddOnIds] = useState<string[]>([]);
   const [customer, setCustomer] = useState<CustomerDetails>(EMPTY_CUSTOMER);
   const [customerErrors, setCustomerErrors] = useState<Partial<Record<keyof CustomerDetails, string>>>({});
@@ -227,7 +236,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
     setChildren(0);
     setStayOptionId(pkg.stayOptions?.[0]?.id ?? '');
     setTransportOptionId(pkg.transportOptions?.[0]?.id ?? '');
-    setPaceId(pkg.pace?.[0]?.id ?? '');
+    setPaceId(defaultPaceId(pkg.pace));
     setAddOnIds([]);
     setCustomer(EMPTY_CUSTOMER);
     setCustomerErrors({});
@@ -249,6 +258,12 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
   function handleContinueFromConfig() {
     if (!travelDate) {
       setConfigError('Please select a travel date to continue.');
+      return;
+    }
+    // The native <input type="date"> `min` only blocks picking a past date from the
+    // calendar widget — a typed value bypasses it, so this re-checks the same minDate.
+    if (minDate && travelDate < minDate) {
+      setConfigError('Please select a date from today onwards.');
       return;
     }
     setConfigError(null);
@@ -344,8 +359,15 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
                   min={minDate}
                   value={travelDate}
                   onChange={(event) => setTravelDate(event.target.value)}
+                  aria-describedby={configError ? 'travel-date-error' : undefined}
+                  aria-invalid={configError ? true : undefined}
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-apex-400"
                 />
+                {configError ? (
+                  <p id="travel-date-error" role="alert" className="mt-2 text-sm text-rose-400">
+                    {configError}
+                  </p>
+                ) : null}
               </div>
 
               <div className="space-y-2">
@@ -363,6 +385,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
                         key={option.id}
                         type="button"
                         onClick={() => setStayOptionId(option.id)}
+                        aria-pressed={stayOptionId === option.id}
                         className={cn(
                           'cursor-hover rounded-xl border px-4 py-3 text-left text-sm transition',
                           stayOptionId === option.id
@@ -392,6 +415,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
                         key={option.id}
                         type="button"
                         onClick={() => setTransportOptionId(option.id)}
+                        aria-pressed={transportOptionId === option.id}
                         className={cn(
                           'cursor-hover rounded-xl border px-4 py-3 text-left text-sm transition',
                           transportOptionId === option.id
@@ -421,6 +445,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
                         key={option.id}
                         type="button"
                         onClick={() => setPaceId(option.id)}
+                        aria-pressed={paceId === option.id}
                         className={cn(
                           'cursor-hover rounded-xl border px-4 py-3 text-left text-sm transition',
                           paceId === option.id
@@ -450,6 +475,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
                           key={addOn.id}
                           type="button"
                           onClick={() => toggleAddOn(addOn.id)}
+                          aria-pressed={selected}
                           className={cn(
                             'cursor-hover rounded-xl border px-4 py-3 text-left text-sm transition',
                             selected
@@ -468,8 +494,6 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
                   </div>
                 </div>
               ) : null}
-
-              {configError ? <p className="text-sm text-rose-400">{configError}</p> : null}
             </div>
 
             <PriceBreakdownPanel pkg={pkg} breakdown={breakdown} />
