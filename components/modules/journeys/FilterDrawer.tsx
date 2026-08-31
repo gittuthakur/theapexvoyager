@@ -24,7 +24,7 @@ export default function FilterDrawer({ open, onClose, children, resultCount, onC
       onClose={onClose}
       label="Filter journeys"
       overlayClassName="items-end justify-center p-0 sm:items-stretch sm:justify-end"
-      panelClassName="flex w-full max-w-none flex-col border border-slate-200 bg-white sm:h-[100% + 24px] sm:max-w-md -m-4 sm:-m-6"
+      panelClassName="flex h-[100dvh] w-full max-w-none flex-col border border-slate-200 bg-white sm:h-auto sm:max-w-md -m-4 sm:-m-6"
     >
       <div className="flex shrink-0 items-center justify-between gap-4 border-b border-slate-100 px-6 py-5">
         <h3 className="text-lg font-bold text-slate-900">Filter by</h3>
