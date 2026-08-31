@@ -58,6 +58,18 @@ export interface BookingConfirmationEmailInput {
  */
 let hasWarnedNotConfigured = false;
 
+/** Every value below comes from a customer-typed field (name, itemName, etc.) and is
+ *  interpolated directly into an HTML email body — escape it the same way JSX would,
+ *  since this template has no other protection against `<`/`&`/quote injection. */
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export async function sendBookingConfirmationEmails(input: BookingConfirmationEmailInput): Promise<void> {
   if (!isConfigured) {
     if (!hasWarnedNotConfigured) {
@@ -78,14 +90,15 @@ export async function sendBookingConfirmationEmails(input: BookingConfirmationEm
     input.email ? ['Email', input.email] : null
   ].filter((row): row is [string, string] => row !== null);
 
-  const detailHtml = detailRows.map(([label, value]) => `<p><strong>${label}:</strong> ${value}</p>`).join('\n');
+  const detailHtml = detailRows.map(([label, value]) => `<p><strong>${label}:</strong> ${escapeHtml(value)}</p>`).join('\n');
+  const safeName = escapeHtml(input.name);
 
   const sends: Promise<unknown>[] = [
     transporter.sendMail({
       from: `${siteConfig.name} <${SMTP_USER}>`,
       to: ADMIN_EMAIL,
       subject: `New ${input.type} booking request — ${input.itemName} (${input.referenceId})`,
-      html: `<h2>New booking request</h2><p><strong>Name:</strong> ${input.name}</p>${detailHtml}`
+      html: `<h2>New booking request</h2><p><strong>Name:</strong> ${safeName}</p>${detailHtml}`
     })
   ];
 
@@ -96,7 +109,7 @@ export async function sendBookingConfirmationEmails(input: BookingConfirmationEm
         to: input.email,
         subject: `Your ${siteConfig.name} booking request (${input.referenceId})`,
         html: `
-          <p>Hi ${input.name},</p>
+          <p>Hi ${safeName},</p>
           <p>Thanks for booking with ${siteConfig.name}! We've received your request and our team will confirm availability shortly.</p>
           ${detailHtml}
           <p>Keep this reference handy: <strong>${input.referenceId}</strong></p>

@@ -105,6 +105,8 @@ function buildBookingMessage(args: {
     '',
     'WhatsApp:',
     customer.whatsapp,
+    ...(customer.pickupLocation ? ['', 'Pickup Location:', customer.pickupLocation] : []),
+    ...(customer.specialRequest ? ['', 'Special Request:', customer.specialRequest] : []),
     '',
     'Please confirm availability and final pricing.',
     '',
@@ -299,6 +301,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
         dates: travelDateLabel,
         travelers: travelerLabel,
         details: {
+          slug: pkg.slug,
           stayLabel: breakdown.stayLabel,
           transportLabel: breakdown.transportLabel,
           paceLabel: breakdown.paceLabel,
@@ -518,12 +521,19 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
             <input
               id="full-name"
               type="text"
+              autoComplete="name"
               value={customer.fullName}
               onChange={(event) => setCustomer((prev) => ({ ...prev, fullName: event.target.value }))}
+              aria-describedby={customerErrors.fullName ? 'full-name-error' : undefined}
+              aria-invalid={customerErrors.fullName ? true : undefined}
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-apex-400"
               placeholder="Rahul Sharma"
             />
-            {customerErrors.fullName ? <p className="mt-1 text-xs text-rose-500">{customerErrors.fullName}</p> : null}
+            {customerErrors.fullName ? (
+              <p id="full-name-error" role="alert" className="mt-1 text-xs text-rose-500">
+                {customerErrors.fullName}
+              </p>
+            ) : null}
           </div>
 
           <div>
@@ -533,12 +543,19 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
             <input
               id="whatsapp-number"
               type="tel"
+              autoComplete="tel"
               value={customer.whatsapp}
               onChange={(event) => setCustomer((prev) => ({ ...prev, whatsapp: event.target.value }))}
+              aria-describedby={customerErrors.whatsapp ? 'whatsapp-number-error' : undefined}
+              aria-invalid={customerErrors.whatsapp ? true : undefined}
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-apex-400"
               placeholder="+91 98765 43210"
             />
-            {customerErrors.whatsapp ? <p className="mt-1 text-xs text-rose-500">{customerErrors.whatsapp}</p> : null}
+            {customerErrors.whatsapp ? (
+              <p id="whatsapp-number-error" role="alert" className="mt-1 text-xs text-rose-500">
+                {customerErrors.whatsapp}
+              </p>
+            ) : null}
           </div>
 
           <div>
@@ -548,6 +565,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
             <input
               id="email"
               type="email"
+              autoComplete="email"
               value={customer.email}
               onChange={(event) => setCustomer((prev) => ({ ...prev, email: event.target.value }))}
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-apex-400"
@@ -622,6 +640,18 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
                 <dt>Stay</dt>
                 <dd className="text-slate-900">{breakdown.stayLabel}</dd>
               </div>
+              {breakdown.transportLabel ? (
+                <div className="flex items-center justify-between">
+                  <dt>Transport</dt>
+                  <dd className="text-slate-900">{breakdown.transportLabel}</dd>
+                </div>
+              ) : null}
+              {breakdown.paceLabel ? (
+                <div className="flex items-center justify-between">
+                  <dt>Pace</dt>
+                  <dd className="text-slate-900">{breakdown.paceLabel}</dd>
+                </div>
+              ) : null}
               {breakdown.addOnLines.length > 0 ? (
                 <div className="flex items-start justify-between gap-4">
                   <dt>Add-ons</dt>
@@ -632,6 +662,32 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
                       </span>
                     ))}
                   </dd>
+                </div>
+              ) : null}
+            </dl>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <h4 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Your Details</h4>
+            <dl className="mt-3 space-y-2 text-sm text-slate-600">
+              <div className="flex items-center justify-between">
+                <dt>Name</dt>
+                <dd className="text-slate-900">{customer.fullName}</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt>WhatsApp</dt>
+                <dd className="text-slate-900">{customer.whatsapp}</dd>
+              </div>
+              {customer.email ? (
+                <div className="flex items-center justify-between">
+                  <dt>Email</dt>
+                  <dd className="text-slate-900">{customer.email}</dd>
+                </div>
+              ) : null}
+              {customer.specialRequest ? (
+                <div className="flex items-start justify-between gap-4">
+                  <dt>Special Request</dt>
+                  <dd className="text-right text-slate-900">{customer.specialRequest}</dd>
                 </div>
               ) : null}
             </dl>
