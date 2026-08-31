@@ -71,7 +71,7 @@ export const destinations: Destination[] = [
     slug: 'kinnaur',
     title: 'Kinnaur',
     category: 'Most Popular',
-    description: 'Snow peaks, river valleys, and adventure sports.',
+    description: 'Ancient villages, apple orchards and dramatic valleys along the historic Hindustan–Tibet Road.',
     toursCount: 24,
     image: images.destinations.kinnaur,
     region: 'Kinnaur Valley',

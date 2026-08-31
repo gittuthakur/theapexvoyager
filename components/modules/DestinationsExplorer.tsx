@@ -391,14 +391,16 @@ export default function DestinationsExplorer({
               type="button"
               onClick={() => setView('map')}
               aria-pressed={view === 'map'}
+              title="Map view — coming soon"
               className={cn(
                 'cursor-hover inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-all duration-300 ease-in-out',
-                view === 'map' ? 'bg-apex-500 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                view === 'map' ? 'bg-slate-300 text-slate-700' : 'text-slate-500 hover:text-slate-900'
               )}
             >
               <MapIcon size={14} />
               Map
-            </button> 
+              <span className="rounded-full bg-white/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-500">Soon</span>
+            </button>
           </div>
         </div>
 
@@ -472,14 +474,16 @@ export default function DestinationsExplorer({
               type="button"
               onClick={() => setView('map')}
               aria-pressed={view === 'map'}
+              title="Map view — coming soon"
               className={cn(
                 'cursor-hover inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-300 ease-in-out',
-                view === 'map' ? 'bg-apex-500 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                view === 'map' ? 'bg-slate-300 text-slate-700' : 'text-slate-500 hover:text-slate-900'
               )}
             >
               <MapIcon size={18} />
               Map
-            </button> 
+              <span className="rounded-full bg-white/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-500">Soon</span>
+            </button>
           </div>
         </div>
 
