@@ -154,7 +154,10 @@ export function getPackageRating(
  * simply won't match a region/season filter (there's nothing real to join against).
  */
 export function filterPackages(packages: TravelPackage[], filter: PackageFilter, destinationsBySlug: Map<string, Destination>): TravelPackage[] {
-  const query = filter.query?.trim().toLowerCase() ?? '';
+  // Collapsed to a single space between words (not just trimmed at the ends) so a query
+  // like "Manali   Premium" — extra spacebar taps, or a paste artifact — still substring-
+  // matches "Manali Premium Escape" instead of silently finding nothing.
+  const query = (filter.query?.trim().toLowerCase() ?? '').replace(/\s+/g, ' ');
   const seasonLabels = filter.seasons?.map((id) => getSeasonById(id)?.label).filter((label): label is string => Boolean(label)) ?? [];
   const bucket = filter.duration ? DURATION_BUCKETS.find((candidate) => candidate.id === filter.duration) : undefined;
   const hasPriceFilter = filter.priceMin !== undefined && filter.priceMax !== undefined;

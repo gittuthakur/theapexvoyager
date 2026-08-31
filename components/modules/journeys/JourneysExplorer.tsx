@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpDown, MapPin, RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react';
@@ -600,6 +601,20 @@ export default function JourneysExplorer({
               })}
             </AnimatePresence>
           </motion.div>
+        ) : packages.length === 0 ? (
+          // Genuinely nothing in the catalog (vs. a filter narrowing it to zero, below) —
+          // "match your filters" / "Clear All Filters" is nonsensical here since there are
+          // no filters to clear and clearing them wouldn't produce any results either.
+          <div className={cn(FILTER_EMPTY_STATE_CLASS, 'mt-10')}>
+            <p className="text-lg font-semibold text-slate-900">Journeys aren&apos;t available right now.</p>
+            <p className="mt-3">Please check back soon, or explore our destinations in the meantime.</p>
+            <Link
+              href="/destinations"
+              className="cursor-hover mt-5 inline-flex items-center gap-2 rounded-full bg-apex-500 px-6 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400"
+            >
+              Explore Destinations
+            </Link>
+          </div>
         ) : (
           <div className={cn(FILTER_EMPTY_STATE_CLASS, 'mt-10')}>
             <p className="text-lg font-semibold text-slate-900">No journeys match your filters.</p>
