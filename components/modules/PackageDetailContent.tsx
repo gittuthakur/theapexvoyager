@@ -41,16 +41,18 @@ export default function PackageDetailContent({ pkg, autoOpenBooking = false, rel
       <div className="grid gap-6 lg:grid-cols-[1fr_340px] lg:gap-8">
           <div className="space-y-6">
             {/* Highlights */}
-            <JourneySection title="Highlights">
-              <div className="grid gap-3 sm:grid-cols-2">
-                {pkg.highlights.map((highlight) => (
-                  <div key={highlight} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <Check size={18} className="mt-0.5 shrink-0 text-apex-300" />
-                    <span className="text-sm text-slate-700">{highlight}</span>
-                  </div>
-                ))}
-              </div>
-            </JourneySection>
+            {pkg.highlights?.length ? (
+              <JourneySection title="Highlights">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {pkg.highlights.map((highlight) => (
+                    <div key={highlight} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                      <Check size={18} className="mt-0.5 shrink-0 text-apex-300" />
+                      <span className="text-sm text-slate-700">{highlight}</span>
+                    </div>
+                  ))}
+                </div>
+              </JourneySection>
+            ) : null}
 
             {/* Apex Picks */}
             {pkg.apexPicks ? (
@@ -81,21 +83,23 @@ export default function PackageDetailContent({ pkg, autoOpenBooking = false, rel
             ) : null}
 
             {/* Itinerary */}
-            <JourneySection title="Itinerary">
-              <div className="space-y-4">
-                {pkg.itinerary.map((day) => (
-                  <div key={day.day} className="flex gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-apex-50 text-sm font-bold text-apex-600">
-                      {day.day}
-                    </span>
-                    <div>
-                      <h3 className="text-base font-semibold text-slate-900">{day.title}</h3>
-                      <p className="mt-1 text-sm text-slate-600">{day.description}</p>
+            {pkg.itinerary?.length ? (
+              <JourneySection title="Itinerary">
+                <div className="space-y-4">
+                  {pkg.itinerary.map((day) => (
+                    <div key={day.day} className="flex gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-apex-50 text-sm font-bold text-apex-600">
+                        {day.day}
+                      </span>
+                      <div>
+                        <h3 className="text-base font-semibold text-slate-900">{day.title}</h3>
+                        <p className="mt-1 text-sm text-slate-600">{day.description}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </JourneySection>
+                  ))}
+                </div>
+              </JourneySection>
+            ) : null}
 
             {/* Signature Moments */}
             {pkg.signatureMoments?.length ? (
@@ -117,59 +121,67 @@ export default function PackageDetailContent({ pkg, autoOpenBooking = false, rel
 
             {/* Included / Not Included */}
             <div className="grid gap-6 sm:grid-cols-2">
-              <JourneySection title="Included" className="sm:p-8">
-                <ul className="space-y-3">
-                  {pkg.inclusions.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-slate-600">
-                      <Check size={16} className="mt-0.5 shrink-0 text-emerald-500" /> {item}
-                    </li>
-                  ))}
-                </ul>
-              </JourneySection>
-              <JourneySection title="Not Included" className="sm:p-8">
-                <ul className="space-y-3">
-                  {pkg.exclusions.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-slate-600">
-                      <XIcon size={16} className="mt-0.5 shrink-0 text-rose-500" /> {item}
-                    </li>
-                  ))}
-                </ul>
-              </JourneySection>
+              {pkg.inclusions?.length ? (
+                <JourneySection title="Included" className="sm:p-8">
+                  <ul className="space-y-3">
+                    {pkg.inclusions.map((item) => (
+                      <li key={item} className="flex items-start gap-2 text-sm text-slate-600">
+                        <Check size={16} className="mt-0.5 shrink-0 text-emerald-500" /> {item}
+                      </li>
+                    ))}
+                  </ul>
+                </JourneySection>
+              ) : null}
+              {pkg.exclusions?.length ? (
+                <JourneySection title="Not Included" className="sm:p-8">
+                  <ul className="space-y-3">
+                    {pkg.exclusions.map((item) => (
+                      <li key={item} className="flex items-start gap-2 text-sm text-slate-600">
+                        <XIcon size={16} className="mt-0.5 shrink-0 text-rose-500" /> {item}
+                      </li>
+                    ))}
+                  </ul>
+                </JourneySection>
+              ) : null}
             </div>
 
             {/* Stay Options */}
-            <JourneySection title="Stay Options">
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {pkg.stayOptions.map((option) => (
-                  <div key={option.id} className="rounded-2xl border border-slate-300 bg-slate-100 p-5">
-                    <p className="font-medium text-slate-500">{option.label}</p>
-                    <p
-                      className={`mt-1 text-apex-500 ${
-                        option.extraPrice > 0
-                          ? 'text-2xl font-bold'
-                          : 'text-base font-normal'
-                      }`}
-                    >
-                      {option.extraPrice > 0
-                        ? `+${formatINR(option.extraPrice)}`
-                        : 'Included'}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </JourneySection>
+            {pkg.stayOptions?.length ? (
+              <JourneySection title="Stay Options">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {pkg.stayOptions.map((option) => (
+                    <div key={option.id} className="rounded-2xl border border-slate-300 bg-slate-100 p-5">
+                      <p className="font-medium text-slate-500">{option.label}</p>
+                      <p
+                        className={`mt-1 text-apex-500 ${
+                          option.extraPrice > 0
+                            ? 'text-2xl font-bold'
+                            : 'text-base font-normal'
+                        }`}
+                      >
+                        {option.extraPrice > 0
+                          ? `+${formatINR(option.extraPrice)}`
+                          : 'Included'}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </JourneySection>
+            ) : null}
 
             {/* Add-ons */}
-            <JourneySection title="Add-ons">
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {pkg.addOns.map((addOn) => (
-                  <div key={addOn.id} className="rounded-2xl border border-slate-300 bg-slate-100 p-5">
-                    <p className="font-semibold text-slate-900">{addOn.label}</p>
-                    <p className="mt-2 text-2xl font-bold text-apex-500">+{formatINR(addOn.price)}</p>
-                  </div>
-                ))}
-              </div>
-            </JourneySection>
+            {pkg.addOns?.length ? (
+              <JourneySection title="Add-ons">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {pkg.addOns.map((addOn) => (
+                    <div key={addOn.id} className="rounded-2xl border border-slate-300 bg-slate-100 p-5">
+                      <p className="font-semibold text-slate-900">{addOn.label}</p>
+                      <p className="mt-2 text-2xl font-bold text-apex-500">+{formatINR(addOn.price)}</p>
+                    </div>
+                  ))}
+                </div>
+              </JourneySection>
+            ) : null}
 
             {/* Transport Options */}
             {pkg.transportOptions?.length ? (

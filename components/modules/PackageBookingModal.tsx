@@ -198,7 +198,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
   const [travelDate, setTravelDate] = useState('');
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
-  const [stayOptionId, setStayOptionId] = useState(pkg.stayOptions[0]?.id ?? '');
+  const [stayOptionId, setStayOptionId] = useState(pkg.stayOptions?.[0]?.id ?? '');
   const [transportOptionId, setTransportOptionId] = useState(pkg.transportOptions?.[0]?.id ?? '');
   const [paceId, setPaceId] = useState(pkg.pace?.[0]?.id ?? '');
   const [addOnIds, setAddOnIds] = useState<string[]>([]);
@@ -225,7 +225,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
     setTravelDate('');
     setAdults(1);
     setChildren(0);
-    setStayOptionId(pkg.stayOptions[0]?.id ?? '');
+    setStayOptionId(pkg.stayOptions?.[0]?.id ?? '');
     setTransportOptionId(pkg.transportOptions?.[0]?.id ?? '');
     setPaceId(pkg.pace?.[0]?.id ?? '');
     setAddOnIds([]);
@@ -354,32 +354,34 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
                 <Stepper label="Children" value={children} min={0} onChange={setChildren} />
               </div>
 
-              <div className="space-y-2">
-                <p className="text-sm font-semibold text-slate-900">Stay</p>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {pkg.stayOptions.map((option) => (
-                    <button
-                      key={option.id}
-                      type="button"
-                      onClick={() => setStayOptionId(option.id)}
-                      className={cn(
-                        'cursor-hover rounded-xl border px-4 py-3 text-left text-sm transition',
-                        stayOptionId === option.id
-                          ? 'border-apex-400 bg-apex-50 text-slate-900'
-                          : 'border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300'
-                      )}
-                    >
-                      <span className="flex items-center justify-between font-semibold">
-                        {option.label}
-                        {stayOptionId === option.id ? <Check size={14} className="text-apex-600" /> : null}
-                      </span>
-                      <span className="text-xs text-slate-500">
-                        {option.extraPrice > 0 ? `+${formatINR(option.extraPrice)}` : 'Included'}
-                      </span>
-                    </button>
-                  ))}
+              {pkg.stayOptions?.length ? (
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold text-slate-900">Stay</p>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {pkg.stayOptions.map((option) => (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => setStayOptionId(option.id)}
+                        className={cn(
+                          'cursor-hover rounded-xl border px-4 py-3 text-left text-sm transition',
+                          stayOptionId === option.id
+                            ? 'border-apex-400 bg-apex-50 text-slate-900'
+                            : 'border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300'
+                        )}
+                      >
+                        <span className="flex items-center justify-between font-semibold">
+                          {option.label}
+                          {stayOptionId === option.id ? <Check size={14} className="text-apex-600" /> : null}
+                        </span>
+                        <span className="text-xs text-slate-500">
+                          {option.extraPrice > 0 ? `+${formatINR(option.extraPrice)}` : 'Included'}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : null}
 
               {pkg.transportOptions?.length ? (
                 <div className="space-y-2">
@@ -437,7 +439,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
                 </div>
               ) : null}
 
-              {pkg.addOns.length > 0 ? (
+              {pkg.addOns?.length ? (
                 <div className="space-y-2">
                   <p className="text-sm font-semibold text-slate-900">Add-ons</p>
                   <div className="grid gap-2 sm:grid-cols-2">

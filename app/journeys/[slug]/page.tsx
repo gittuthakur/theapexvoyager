@@ -1,17 +1,18 @@
 import type { Metadata } from 'next';
-import { notFound, permanentRedirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import PackageDetailContent from '@/components/modules/PackageDetailContent';
 import { getAllPackages, getPackageBySlug } from '@/lib/packages';
 
-// This journey's slug was corrected from 'sikkim-mountain-escape' to
-// 'uttarakhand-explorer' (its content was always a Rishikesh/Haridwar/Mussoorie,
-// Uttarakhand journey — 'sikkim-mountain-escape' was a leftover, incorrect slug from
-// an earlier draft). Kept as a permanent redirect — same `next/navigation` mechanism
-// already used by app/packages/[slug]/page.tsx — so any existing bookmark/link to the
-// old slug keeps working instead of 404ing.
-const RENAMED_JOURNEY_SLUGS: Record<string, string> = {
-  'sikkim-mountain-escape': 'uttarakhand-explorer'
-};
+// The 'sikkim-mountain-escape' → 'uttarakhand-explorer' legacy-slug redirect (this
+// journey's content was always Rishikesh/Haridwar/Mussoorie, Uttarakhand —
+// 'sikkim-mountain-escape' was a leftover, incorrect slug from an earlier draft) now
+// lives in next.config.mjs's redirects(), not here. This route has a loading.tsx, so
+// an in-component permanentRedirect() — even one called before any await — was
+// observed returning HTTP 200 on the wire: the framework started streaming that
+// loading shell before the async page render reached the redirect check. A
+// next.config.mjs redirect is resolved by Next's routing layer before this route ever
+// renders, so it isn't subject to that race, and it correctly forwards a `?book=1`
+// query string that a hand-built old link might still carry.
 
 interface JourneyDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -24,17 +25,25 @@ export async function generateMetadata({ params }: JourneyDetailPageProps): Prom
   const { slug } = await params;
   const pkg = await getPackageBySlug(slug);
   if (!pkg) return {};
+  // Previously only title/description were set, so canonical and every Open Graph tag
+  // silently inherited the root layout's generic homepage defaults (title "The Apex
+  // Voyager", the homepage description/URL, no image) — sharing any specific journey's
+  // link produced a homepage-branded preview card instead of that journey's own.
+  // `alternates.canonical` is relative and carries no query string, so a `?book=1`
+  // variant of this same URL canonicalizes back to the bare journey URL automatically.
+  const title = `${pkg.name} | The Apex Voyager`;
+  const description = pkg.shortDescription;
+  const canonicalPath = `/journeys/${pkg.slug}`;
   return {
-    title: `${pkg.name} | The Apex Voyager`,
-    description: pkg.shortDescription
+    title,
+    description,
+    alternates: { canonical: canonicalPath },
+    openGraph: { title, description, url: canonicalPath, images: [{ url: pkg.image, alt: pkg.name }] }
   };
 }
 
 export default async function JourneyDetailPage({ params, searchParams }: JourneyDetailPageProps) {
   const { slug } = await params;
-  if (RENAMED_JOURNEY_SLUGS[slug]) {
-    permanentRedirect(`/journeys/${RENAMED_JOURNEY_SLUGS[slug]}`);
-  }
   const { book } = await searchParams;
   const pkg = await getPackageBySlug(slug);
 

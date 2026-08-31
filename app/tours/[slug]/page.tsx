@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 import { getTourBySlug } from '@/lib/tours';
 import { getDestinationTitleBySlug } from '@/config/destinations.config';
 
@@ -19,5 +19,8 @@ export default async function TourDetailRedirect({ params }: TourDetailRedirectP
   const { slug } = await params;
   const tour = await getTourBySlug(slug);
   const destinationTitle = tour?.destinationSlug ? getDestinationTitleBySlug(tour.destinationSlug) : undefined;
-  redirect(destinationTitle ? `/journeys?destination=${encodeURIComponent(destinationTitle)}` : '/journeys');
+  // permanentRedirect (308), not redirect (307) — matches this route's own "permanent
+  // redirect" comment above; no loading.tsx on this route, so nothing streams before
+  // this fires despite the async lookup.
+  permanentRedirect(destinationTitle ? `/journeys?destination=${encodeURIComponent(destinationTitle)}` : '/journeys');
 }

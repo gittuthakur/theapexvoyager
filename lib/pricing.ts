@@ -53,10 +53,10 @@ export function calculateBookingPrice(pkg: TravelPackage, config: BookingConfig)
   const { price: perPersonPrice, label: seasonLabel } = getSeasonalRate(pkg, config.travelDate);
   const basePrice = perPersonPrice * travellerCount;
 
-  const stayOption = pkg.stayOptions.find((option) => option.id === config.stayOptionId) ?? pkg.stayOptions[0];
+  const stayOption = pkg.stayOptions?.find((option) => option.id === config.stayOptionId) ?? pkg.stayOptions?.[0];
   const stayUpgrade = stayOption?.extraPrice ?? 0;
 
-  const addOnLines: AddOnLine[] = pkg.addOns
+  const addOnLines: AddOnLine[] = (pkg.addOns ?? [])
     .filter((addOn) => config.addOnIds.includes(addOn.id))
     .map((addOn) => ({ id: addOn.id, label: addOn.label, price: addOn.price }));
   const addOnsTotal = addOnLines.reduce((sum, line) => sum + line.price, 0);
