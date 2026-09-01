@@ -1,7 +1,7 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { FormEvent, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
 import { DestinationField, TravelStyleField, DateRangeField, OccupancyField, SEARCH_PANEL_CLASS } from '@/components/modules/search';
@@ -31,10 +31,25 @@ const DESTINATION_TITLES = curatedDestinations.map((destination) => destination.
  */
 export default function JourneysHeroSearch({ categories, className }: JourneysHeroSearchProps) {
   const router = useRouter();
-  const [destination, setDestination] = useState('');
-  const [travelStyle, setTravelStyle] = useState('');
+  const searchParams = useSearchParams();
+  const [destination, setDestination] = useState(() => searchParams.get('destination') ?? '');
+  const [travelStyle, setTravelStyle] = useState(() => searchParams.get('category') ?? '');
   const [dateRange, setDateRange] = useState<DateRange>({ checkIn: null, checkOut: null });
   const [occupancy, setOccupancy] = useState<OccupancyDetails>({ adults: 2, children: 0, rooms: 1, pets: false });
+
+  // Reconciles the hero's destination/style with the URL on every navigation that
+  // changes it — JourneysExplorer's own filters, a shared /journeys?destination=...
+  // link, or the browser's Back/Forward buttons — not just on first mount. Unlike
+  // JourneysExplorer's own analogous effect, this one always re-syncs rather than
+  // skipping a "previously self-pushed" query string: with only two plain fields and
+  // no debounce, there's no interim value to protect, and skipping would leave the
+  // input stale after Forward navigates back to a query this component pushed before.
+  const searchParamsString = searchParams.toString();
+  useEffect(() => {
+    const params = new URLSearchParams(searchParamsString);
+    setDestination(params.get('destination') ?? '');
+    setTravelStyle(params.get('category') ?? '');
+  }, [searchParamsString]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

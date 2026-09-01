@@ -68,7 +68,18 @@ export function DestinationField({
           <span className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500">{label}</span>
           <input
             value={open ? query : value}
-            onFocus={() => setOpen(true)}
+            // Deliberately not onFocus: FieldPopover restores focus to this input
+            // whenever the popover closes for *any* reason (picking an option
+            // included, since the clicked option unmounts and focus would
+            // otherwise fall through to nowhere) — opening on focus would make
+            // that restoration immediately reopen the dropdown it just closed.
+            onClick={() => setOpen(true)}
+            onKeyDown={(event) => {
+              if (!open && (event.key === 'ArrowDown' || event.key === 'Enter')) {
+                event.preventDefault();
+                setOpen(true);
+              }
+            }}
             onChange={(event) => {
               setQuery(event.target.value);
               setOpen(true);
