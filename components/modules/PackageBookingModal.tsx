@@ -26,6 +26,15 @@ const STEP_TITLES: Record<Step, string> = {
   done: 'Booking Request Sent'
 };
 
+// Matches lib/bookingId.ts's generateBookingId() output ("TAP-" + digits — normally
+// 5, or 10 in its astronomically-rare collision-fallback case, hence `\d+` rather than
+// a fixed count). Guards against a malformed/unexpected API response shape (missing,
+// non-string, blank, or an object/array that would otherwise render as
+// "[object Object]" or "undefined") being treated as a successful booking.
+function isValidReferenceId(value: unknown): value is string {
+  return typeof value === 'string' && /^TAP-\d+$/.test(value.trim());
+}
+
 interface CustomerDetails {
   fullName: string;
   whatsapp: string;
@@ -309,7 +318,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
     const travelerLabel = `${adults} Adult${adults !== 1 ? 's' : ''}${children > 0 ? ` + ${children} Child${children !== 1 ? 'ren' : ''}` : ''}`;
 
     try {
-      const { referenceId } = await postJSON<{ referenceId: string }>('/api/booking-requests', {
+      const { referenceId } = await postJSON<{ referenceId: unknown }>('/api/booking-requests', {
         type: 'journey',
         name: customer.fullName,
         phone: customer.whatsapp,
@@ -329,6 +338,14 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
           specialRequest: customer.specialRequest || undefined
         }
       });
+
+      // A 2xx response with no usable reference (a malformed/unexpected response shape —
+      // missing, blank, or a non-string that would render as "undefined" or
+      // "[object Object]") must not be treated as success — otherwise the customer's own
+      // WhatsApp message and the "done" screen both go out with a broken reference.
+      if (!isValidReferenceId(referenceId)) {
+        throw new Error('Booking request succeeded but returned no usable reference ID');
+      }
 
       setBookingReference(referenceId);
 
