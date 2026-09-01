@@ -45,8 +45,11 @@ export default function JourneyBookingSidebar({ pkg, onCustomize }: JourneyBooki
 
   return (
     <>
-      {/* Desktop sidebar */}
-      <aside className="hidden lg:sticky lg:top-28 lg:block lg:self-start">
+      {/* Desktop sidebar — a plain div, not an `aside`/complementary landmark: this
+          panel is the primary booking CTA tightly bound to the main content, not
+          tangential related-info, so nesting it inside <main> would otherwise trip
+          the "complementary landmark must be top-level" accessibility rule. */}
+      <div className="hidden lg:sticky lg:top-28 lg:block lg:self-start">
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
           <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">Starting from</p>
           <p className="mt-1 text-3xl font-extrabold text-slate-900">
@@ -83,7 +86,7 @@ export default function JourneyBookingSidebar({ pkg, onCustomize }: JourneyBooki
           </div>
           <p className="mt-4 text-center text-xs text-slate-500">No payment required to enquire</p>
         </div>
-      </aside>
+      </div>
 
       {/* Mobile sticky bottom bar */}
       <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 border-t border-slate-200 bg-white/95 p-4 backdrop-blur-sm lg:hidden">

@@ -335,6 +335,7 @@ export default function JourneysExplorer({
           <select
             value={activeRegion}
             onChange={(event) => setActiveRegion(event.target.value as RegionId | 'all')}
+            aria-label="Filter by region"
             className="cursor-hover w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 outline-none"
           >
             <option value="all">All Destinations</option>
@@ -413,6 +414,10 @@ export default function JourneysExplorer({
       <JourneyCategoryGrid packages={packages} activeCategory={activeCategory} onSelect={setActiveCategory} />
 
       <div id="journeys-listing" className="scroll-mt-24">
+        {/* Visually hidden — the visible page identity is the hero's own h1, but the
+            journey cards below render as h3 (PackageCard), which without this would
+            skip straight from h1 to h3 with no h2 in the document outline. */}
+        <h2 className="sr-only">Browse Journeys</h2>
         {/* Compact filter toolbar — quick access to the most-used facets; everything
             (including these same facets) is also reachable from the "+ More Filters" drawer. */}
         <div className={cn(FILTER_PANEL_CLASS, 'flex flex-wrap items-center gap-3 px-4 py-3.5 sm:gap-4')}>
@@ -447,6 +452,7 @@ export default function JourneysExplorer({
               <select
                 value={activeRegion}
                 onChange={(event) => setActiveRegion(event.target.value as RegionId | 'all')}
+                aria-label="Filter by region"
                 className="cursor-hover rounded-lg border-none bg-transparent py-1 text-sm font-medium text-slate-700 outline-none"
               >
                 <option value="all">All Destinations</option>
@@ -461,6 +467,7 @@ export default function JourneysExplorer({
             <select
               value={activeCategory === 'all' ? '' : activeCategory}
               onChange={(event) => setActiveCategory(event.target.value || 'all')}
+              aria-label="Filter by travel style"
               className="cursor-hover rounded-lg border-none bg-transparent py-1 text-sm font-medium text-slate-700 outline-none"
             >
               <option value="">Travel Style</option>
@@ -474,6 +481,7 @@ export default function JourneysExplorer({
             <select
               value={activeDuration}
               onChange={(event) => setActiveDuration(event.target.value)}
+              aria-label="Filter by duration"
               className="cursor-hover rounded-lg border-none bg-transparent py-1 text-sm font-medium text-slate-700 outline-none"
             >
               <option value="">Duration</option>
@@ -527,6 +535,7 @@ export default function JourneysExplorer({
             <select
               value={sortBy}
               onChange={(event) => setSortBy(event.target.value as PackageSortOption)}
+              aria-label="Sort journeys"
               className="cursor-hover rounded-lg border-none bg-transparent py-1 text-sm font-medium text-slate-700 outline-none"
             >
               {(Object.keys(SORT_LABELS) as PackageSortOption[]).map((option) => (
@@ -605,7 +614,7 @@ export default function JourneysExplorer({
           // Genuinely nothing in the catalog (vs. a filter narrowing it to zero, below) —
           // "match your filters" / "Clear All Filters" is nonsensical here since there are
           // no filters to clear and clearing them wouldn't produce any results either.
-          <div className={cn(FILTER_EMPTY_STATE_CLASS, 'mt-10')}>
+          <div role="status" aria-live="polite" className={cn(FILTER_EMPTY_STATE_CLASS, 'mt-10')}>
             <p className="text-lg font-semibold text-slate-900">Journeys aren&apos;t available right now.</p>
             <p className="mt-3">Please check back soon, or explore our destinations in the meantime.</p>
             <Link
@@ -616,7 +625,7 @@ export default function JourneysExplorer({
             </Link>
           </div>
         ) : (
-          <div className={cn(FILTER_EMPTY_STATE_CLASS, 'mt-10')}>
+          <div role="status" aria-live="polite" className={cn(FILTER_EMPTY_STATE_CLASS, 'mt-10')}>
             <p className="text-lg font-semibold text-slate-900">No journeys match your filters.</p>
             <p className="mt-3">Try changing your destination, budget or travel style.</p>
             <button

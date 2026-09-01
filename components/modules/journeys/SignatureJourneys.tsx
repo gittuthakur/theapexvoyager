@@ -105,7 +105,7 @@ export default function SignatureJourneys({ packages }: SignatureJourneysProps) 
                   <MapPin size={16} />
                   {pkg.destination}
                 </p>
-                <h4 className="truncate text-base font-bold text-slate-900 sm:text-xl">{pkg.name}</h4>
+                <h3 className="truncate text-base font-bold text-slate-900 sm:text-xl">{pkg.name}</h3>
                 <JourneyMeta pkg={pkg} />
                 <p className="mt-auto text-3xl font-bold text-slate-900">
                   {formatINR(pkg.price)} <span className="text-sm font-normal text-slate-500">/ person</span>

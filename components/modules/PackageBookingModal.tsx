@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { format } from 'date-fns';
 import { ArrowRight, Check, Minus, Plus } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
@@ -18,6 +18,13 @@ export interface PackageBookingModalProps {
 }
 
 type Step = 'config' | 'details' | 'summary' | 'done';
+
+const STEP_TITLES: Record<Step, string> = {
+  config: 'Configure Your Trip',
+  details: 'Your Details',
+  summary: 'Booking Summary',
+  done: 'Booking Request Sent'
+};
 
 interface CustomerDetails {
   fullName: string;
@@ -221,6 +228,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [, setIsMounted] = useState(false);
   const [minDate, setMinDate] = useState<string | undefined>(undefined);
+  const stepContainerRef = useRef<HTMLDivElement>(null);
 
   // `todayISO()` reads the local clock/timezone, which can differ from the server's
   // — deferring it to a client-only effect keeps the SSR and hydrated markup identical.
@@ -247,6 +255,16 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
     setIsSubmitting(false);
     setSubmitError(null);
   }, [open, pkg]);
+
+  // Switching steps (Back/Continue) unmounts the previously-focused button along with
+  // the old step's content, which otherwise drops focus to <body> with no indication
+  // the user is still inside the dialog. This only fires on same-`open` step changes —
+  // the initial open is instead handled by FloatingOverlay's own effect, which runs a
+  // frame later and correctly wins by focusing the new step's first real control.
+  useEffect(() => {
+    if (!open) return;
+    stepContainerRef.current?.focus();
+  }, [step, open]);
 
   const breakdown = useMemo(
     () => calculateBookingPrice(pkg, { adults, children, stayOptionId, addOnIds, travelDate, transportOptionId, paceId }),
@@ -339,17 +357,10 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
     }
   }
 
-  const stepTitles: Record<Step, string> = {
-    config: 'Configure Your Trip',
-    details: 'Your Details',
-    summary: 'Booking Summary',
-    done: 'Booking Request Sent'
-  };
-
   return (
-    <Modal open={open} onClose={onClose} title={stepTitles[step]} className="max-w-4xl">
+    <Modal open={open} onClose={onClose} title={STEP_TITLES[step]} className="max-w-4xl">
       {step === 'config' ? (
-        <div className="space-y-6">
+        <div ref={stepContainerRef} tabIndex={-1} aria-label={STEP_TITLES.config} className="space-y-6 outline-none">
           <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr] relative">
             <div className="space-y-5">
               <div>
@@ -513,7 +524,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
       ) : null}
 
       {step === 'details' ? (
-        <div className="space-y-5">
+        <div ref={stepContainerRef} tabIndex={-1} aria-label={STEP_TITLES.details} className="space-y-5 outline-none">
           <div>
             <label htmlFor="full-name" className="mb-2 block text-sm font-semibold text-slate-900">
               Full Name *
@@ -621,7 +632,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
       ) : null}
 
       {step === 'summary' ? (
-        <div className="space-y-6">
+        <div ref={stepContainerRef} tabIndex={-1} aria-label={STEP_TITLES.summary} className="space-y-6 outline-none">
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
             <h4 className="text-lg font-semibold text-slate-900">{pkg.name}</h4>
             <dl className="mt-3 space-y-2 text-sm text-slate-600">
@@ -695,7 +706,11 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
 
           <PriceBreakdownPanel pkg={pkg} breakdown={breakdown} />
 
-          {submitError ? <p className="text-sm text-rose-500">{submitError}</p> : null}
+          {submitError ? (
+            <p role="alert" className="text-sm text-rose-500">
+              {submitError}
+            </p>
+          ) : null}
 
           <div className="flex gap-3">
             <button
@@ -719,7 +734,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
       ) : null}
 
       {step === 'done' ? (
-        <div className="space-y-5 text-center">
+        <div ref={stepContainerRef} tabIndex={-1} aria-label={STEP_TITLES.done} className="space-y-5 text-center outline-none">
           <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
             <Check size={28} />
           </span>

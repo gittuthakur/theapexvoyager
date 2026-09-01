@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Poppins } from 'next/font/google';
+import { MotionConfig } from 'framer-motion';
 import { CustomCursor } from '@/components/ui';
 import BackToTopButton from '@/components/ui/BackToTopButton';
 import { Navbar, Footer, SmoothScroll } from '@/components/layout';
@@ -47,17 +48,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-sans">
         <NavigationTracker />
-        <WhatsAppInquiryProvider>
-          <BookingRequestProvider>
-            <SmoothScroll>
-              <Navbar />
-              {children}
-              <Footer />
-            </SmoothScroll>
-            <CustomCursor />
-            <BackToTopButton />
-          </BookingRequestProvider>
-        </WhatsAppInquiryProvider>
+        {/* `reducedMotion="user"` makes every framer-motion `motion.*` component sitewide
+            automatically honor the OS-level `prefers-reduced-motion` setting (disabling
+            transform/scale/opacity entrance animations) with no per-component changes —
+            the codebase had no reduced-motion handling at all before this. */}
+        <MotionConfig reducedMotion="user">
+          <WhatsAppInquiryProvider>
+            <BookingRequestProvider>
+              <SmoothScroll>
+                <Navbar />
+                {children}
+                <Footer />
+              </SmoothScroll>
+              <CustomCursor />
+              <BackToTopButton />
+            </BookingRequestProvider>
+          </WhatsAppInquiryProvider>
+        </MotionConfig>
       </body>
     </html>
   );

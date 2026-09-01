@@ -2,7 +2,7 @@
 
 import { type ComponentType } from 'react';
 import { motion } from 'framer-motion';
-import { Compass, Heart, Landmark, Mountain, Sparkles, Users } from 'lucide-react';
+import { Check, Compass, Heart, Landmark, Mountain, Sparkles, Users } from 'lucide-react';
 import { getPackageCategoriesWithCounts } from '@/lib/packageFilters';
 import { fadeInUp, staggerContainer, viewportOnce } from '@/lib/motion';
 import { cn } from '@/lib/utils';
@@ -48,6 +48,7 @@ export default function JourneyCategoryGrid({ packages, activeCategory, onSelect
           type="button"
           variants={fadeInUp}
           onClick={() => onSelect('all')}
+          aria-pressed={activeCategory === 'all'}
           className={cn(
             'cursor-hover flex h-full flex-col items-start gap-2 rounded-2xl border p-4 text-left shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-1',
             activeCategory === 'all' ? 'border-apex-500 bg-apex-50' : 'border-slate-200 bg-white hover:border-apex-400/50'
@@ -61,7 +62,10 @@ export default function JourneyCategoryGrid({ packages, activeCategory, onSelect
           >
             <Compass size={20} strokeWidth={1.5} />
           </span>
-          <span className="text-sm font-semibold text-slate-900">All Journeys</span>
+          <span className="flex w-full items-center justify-between gap-2">
+            <span className="text-sm font-semibold text-slate-900">All Journeys</span>
+            {activeCategory === 'all' ? <Check size={16} className="shrink-0 text-apex-600" aria-hidden="true" /> : null}
+          </span>
           <span className="text-xs leading-5 text-slate-500">Every curated Himalayan journey we offer.</span>
           <span className="mt-auto text-xs font-semibold text-apex-600">{packages.length} journeys</span>
         </motion.button>
@@ -75,6 +79,7 @@ export default function JourneyCategoryGrid({ packages, activeCategory, onSelect
               key={category}
               variants={fadeInUp}
               onClick={() => onSelect(category)}
+              aria-pressed={active}
               className={cn(
                 'cursor-hover flex h-full flex-col items-start gap-2 rounded-2xl border p-4 text-left shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-1',
                 active ? 'border-apex-500 bg-apex-50' : 'border-slate-200 bg-white hover:border-apex-400/50'
@@ -83,7 +88,10 @@ export default function JourneyCategoryGrid({ packages, activeCategory, onSelect
               <span className={cn('flex h-10 w-10 items-center justify-center rounded-full', active ? 'bg-apex-500 text-white' : 'bg-apex-50 text-apex-600')}>
                 <Icon size={20} strokeWidth={1.5} />
               </span>
-              <span className="text-sm font-semibold text-slate-900">{category}</span>
+              <span className="flex w-full items-center justify-between gap-2">
+                <span className="text-sm font-semibold text-slate-900">{category}</span>
+                {active ? <Check size={16} className="shrink-0 text-apex-600" aria-hidden="true" /> : null}
+              </span>
               <span className="text-xs leading-5 text-slate-500">{description}</span>
               <span className="mt-auto text-xs font-semibold text-apex-600">
                 {count} journey{count === 1 ? '' : 's'}
