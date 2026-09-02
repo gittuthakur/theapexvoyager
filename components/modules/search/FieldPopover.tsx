@@ -15,6 +15,23 @@ export interface FieldPopoverProps {
   width?: number;
   align?: 'left' | 'right';
   className?: string;
+  /** Opt-in id/role/label for the portalled panel — all omitted by default, so
+   *  every existing consumer is unaffected. Pass `role="dialog"` for a panel
+   *  whose content is genuinely dialog-like (a titled settings/filter panel),
+   *  together with `ariaLabelledBy` pointing at that title's own id — WAI-ARIA
+   *  requires a `role="dialog"` to have an accessible name. */
+  id?: string;
+  role?: 'dialog';
+  ariaLabelledBy?: string;
+  /** Opt-in, off by default. Escalates the `role="dialog"` panel to a genuine
+   *  modal: `aria-modal="true"`, initial focus moves to the panel's own first
+   *  focusable control on open, Tab/Shift+Tab are contained within the panel,
+   *  and every other direct child of `document.body` is marked `inert` +
+   *  `aria-hidden` while open (restored on close) so background content is
+   *  reachable by neither keyboard nor pointer nor screen reader. Every other
+   *  consumer stays exactly as before — this only changes behavior for a
+   *  caller that explicitly opts in. */
+  modal?: boolean;
 }
 
 /** Walks up from the anchor to whichever ancestor sits directly inside a <form> —
@@ -39,7 +56,10 @@ function getRowBoundary(anchor: HTMLElement): DOMRect | null {
  * grew taller than the remaining hero space below. Portaling to body sidesteps that
  * entirely, the same way Airbnb/Booking.com-style widgets do.
  */
-export function FieldPopover({ open, onClose, anchorRef, children, width, align = 'left', className }: FieldPopoverProps) {
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+export function FieldPopover({ open, onClose, anchorRef, children, width, align = 'left', className, id, role, ariaLabelledBy, modal }: FieldPopoverProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const [coords, setCoords] = useState<{
     top?: number;
@@ -109,8 +129,34 @@ export function FieldPopover({ open, onClose, anchorRef, children, width, align 
       if (panelRef.current?.contains(target) || anchorRef.current?.contains(target)) return;
       onClose();
     }
+    // In modal mode this Tab handling is what "Tab/Shift+Tab remain inside the
+    // drawer" means in practice: wrap at the panel's own first/last focusable
+    // control instead of letting focus continue into whatever's next/previous in
+    // real DOM order (which, portalled to the end of body, would otherwise be
+    // background content). Non-modal popovers never trap Tab, unchanged.
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (!modal || event.key !== 'Tab' || !panelRef.current) return;
+      const focusable = Array.from(panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+        (el) => el.offsetParent !== null
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+      const insidePanel = active instanceof Node && panelRef.current.contains(active);
+      if (event.shiftKey) {
+        if (!insidePanel || active === first) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else if (!insidePanel || active === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
 
     document.addEventListener('mousedown', handlePointerDown);
@@ -119,12 +165,90 @@ export function FieldPopover({ open, onClose, anchorRef, children, width, align 
       document.removeEventListener('mousedown', handlePointerDown);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [open, onClose, anchorRef]);
+  }, [open, onClose, anchorRef, modal]);
 
-  // This is a non-modal popover (the anchor field stays interactive while it's
-  // open — e.g. DestinationField keeps typing into its input), so unlike Modal/
-  // FloatingOverlay it deliberately doesn't steal focus on open or trap Tab.
-  // It does still need to hand focus back to the trigger on close — otherwise
+  // Modal-only: moves focus inside the panel once (per open cycle) as soon as it
+  // has actually mounted (`coords` flips from null once the position effect
+  // above runs) — prefers the panel's own first focusable control, which for
+  // every current modal consumer is the visible Close button. Non-modal popovers
+  // never do this (see the restore-only effect below), matching the existing,
+  // deliberate "doesn't steal focus on open" behavior for e.g. DestinationField.
+  const focusedThisOpenRef = useRef(false);
+  useEffect(() => {
+    if (!open) {
+      focusedThisOpenRef.current = false;
+      return;
+    }
+    if (!modal || focusedThisOpenRef.current || !panelRef.current) return;
+    const focusable = panelRef.current.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+    focusable?.focus();
+    focusedThisOpenRef.current = true;
+  }, [open, modal, coords]);
+
+  // Modal-only: while open, every other direct child of <body> (the app root,
+  // and any other portal already mounted there) is excluded from keyboard,
+  // pointer and screen-reader interaction — this panel is the only reachable
+  // surface, matching what "aria-modal" claims rather than leaving it dishonest.
+  // Explicitly excludes this panel's own node (`panelRef.current`) rather than
+  // relying on it not existing as a body child yet: `coords` (below) isn't
+  // reset when the popover closes, so on every open *after* the first the
+  // panel already carries its last-known position and portals in on the very
+  // same commit as `open` flipping true — by the time this effect runs, its
+  // own node is already a body child, and without the explicit exclusion it
+  // would self-inert, making the whole panel unreachable until the page
+  // reloads.
+  //
+  // A body child isn't only whatever's already there when this effect runs —
+  // something else (a toast, another portal) can mount straight onto <body>
+  // while this modal is still open, and without watching for that it would be
+  // fully interactive behind the modal. A single `MutationObserver` on body's
+  // own childList (one per open cycle, torn down with everything else below)
+  // isolates any such newcomer — except this panel itself — the moment it
+  // arrives, using the same per-element capture/restore shape as the initial
+  // pass so both share one `state` map and one cleanup. A node removed again
+  // before close (e.g. a toast that auto-dismisses) is simply dropped from the
+  // map — nothing left to restore, and removing attributes from a detached
+  // element is safe regardless.
+  useEffect(() => {
+    if (!open || !modal) return;
+    const state = new Map<Element, { hadInert: boolean; ariaHidden: string | null }>();
+
+    function isolate(el: Element) {
+      if (el === panelRef.current || state.has(el)) return;
+      state.set(el, { hadInert: el.hasAttribute('inert'), ariaHidden: el.getAttribute('aria-hidden') });
+      el.setAttribute('inert', '');
+      el.setAttribute('aria-hidden', 'true');
+    }
+
+    Array.from(document.body.children).forEach(isolate);
+
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        mutation.addedNodes.forEach((node) => {
+          if (node instanceof Element && node.parentElement === document.body) isolate(node);
+        });
+        mutation.removedNodes.forEach((node) => {
+          if (node instanceof Element) state.delete(node);
+        });
+      }
+    });
+    observer.observe(document.body, { childList: true });
+
+    return () => {
+      observer.disconnect();
+      state.forEach(({ hadInert, ariaHidden }, el) => {
+        if (!hadInert) el.removeAttribute('inert');
+        if (ariaHidden === null) el.removeAttribute('aria-hidden');
+        else el.setAttribute('aria-hidden', ariaHidden);
+      });
+    };
+  }, [open, modal]);
+
+  // By default this is a non-modal popover (the anchor field stays interactive
+  // while it's open — e.g. DestinationField keeps typing into its input), so
+  // unlike Modal/FloatingOverlay it deliberately doesn't steal focus on open or
+  // trap Tab unless a caller opts into `modal` above. Every consumer — modal or
+  // not — still needs focus handed back to the trigger on close: otherwise
   // Escape/an outside click/a "Done" button leaves focus on a node that's about
   // to unmount (or nowhere at all) instead of the field that opened it.
   useEffect(() => {
@@ -139,9 +263,7 @@ export function FieldPopover({ open, onClose, anchorRef, children, width, align 
       requestAnimationFrame(() => {
         const anchor = anchorRef.current;
         if (!anchor || anchor.contains(document.activeElement)) return;
-        const focusable = anchor.querySelector<HTMLElement>(
-          'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        );
+        const focusable = anchor.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
         focusable?.focus();
       });
     };
@@ -155,6 +277,10 @@ export function FieldPopover({ open, onClose, anchorRef, children, width, align 
         <motion.div
           key="field-popover"
           ref={panelRef}
+          id={id}
+          role={role}
+          aria-modal={role && modal ? 'true' : undefined}
+          aria-labelledby={role ? ariaLabelledBy : undefined}
           initial={{ opacity: 0, y: -6, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -6, scale: 0.98 }}
