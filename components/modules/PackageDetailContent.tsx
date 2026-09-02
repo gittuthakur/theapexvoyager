@@ -18,9 +18,16 @@ export interface PackageDetailContentProps {
   autoOpenBooking?: boolean;
   /** Same-catalog journeys to surface at the bottom of the page — real data only, see app/journeys/[slug]/page.tsx. */
   relatedJourneys?: TravelPackage[];
+  /** Region badge per related journey slug (same derivation as /journeys' own PackageCard) — see app/journeys/[slug]/page.tsx. */
+  relatedJourneyRegionLabels?: Record<string, string>;
 }
 
-export default function PackageDetailContent({ pkg, autoOpenBooking = false, relatedJourneys = [] }: PackageDetailContentProps) {
+export default function PackageDetailContent({
+  pkg,
+  autoOpenBooking = false,
+  relatedJourneys = [],
+  relatedJourneyRegionLabels
+}: PackageDetailContentProps) {
   // Never true on the initial render (server or first client paint) — the modal's
   // FloatingOverlay bails out to `null` during SSR (no `document`), so starting this
   // `true` from ?book=1 makes the server and client render different trees on the
@@ -247,7 +254,7 @@ export default function PackageDetailContent({ pkg, autoOpenBooking = false, rel
               </JourneySection>
             ) : null}
 
-            <RelatedJourneys journeys={relatedJourneys} />
+            <RelatedJourneys journeys={relatedJourneys} regionLabelsBySlug={relatedJourneyRegionLabels} />
           </div>
 
           <JourneyBookingSidebar pkg={pkg} onCustomize={() => setBookingOpen(true)} />

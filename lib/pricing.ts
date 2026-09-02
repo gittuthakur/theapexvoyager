@@ -90,6 +90,21 @@ export function formatINR(amount: number): string {
   return `₹${Math.round(amount).toLocaleString('en-IN')}`;
 }
 
+/** A price fit to show as-is — excludes 0/negative (nothing "starts from" free) and
+ *  non-finite (NaN/Infinity, e.g. a missing DB field coerced by bad input upstream). */
+export function isValidPrice(price: number | null | undefined): price is number {
+  return typeof price === 'number' && Number.isFinite(price) && price > 0;
+}
+
+export const CUSTOM_QUOTE_LABEL = 'Get Your Custom Quote';
+
+/** The base-price display used everywhere a package's own `price` field is rendered —
+ *  never a fabricated number for a zero/missing/invalid price, only the approved
+ *  custom-quote copy. */
+export function formatPriceOrQuote(price: number | null | undefined): string {
+  return isValidPrice(price) ? formatINR(price) : CUSTOM_QUOTE_LABEL;
+}
+
 /** Every real transport vehicle's `priceNote` (config/transport.config.ts,
  *  config/transportRentals.config.ts) leads with the actual configured pricing basis —
  *  "per day", "per trip", etc. — followed by descriptive detail. This pulls that real

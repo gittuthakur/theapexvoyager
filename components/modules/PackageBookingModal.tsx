@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { ArrowRight, Check, Minus, Plus } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
-import { calculateBookingPrice, formatINR, type PriceBreakdown } from '@/lib/pricing';
+import { calculateBookingPrice, CUSTOM_QUOTE_LABEL, formatINR, isValidPrice, type PriceBreakdown } from '@/lib/pricing';
 import { postJSON } from '@/lib/api';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
 import { cn } from '@/lib/utils';
@@ -114,7 +114,7 @@ function buildBookingMessage(args: {
     addOnLabels.length > 0 ? addOnLabels.join('\n') : 'None',
     '',
     'Estimated Trip Price:',
-    formatINR(total),
+    isValidPrice(pkg.price) ? formatINR(total) : CUSTOM_QUOTE_LABEL,
     '',
     'Customer Name:',
     customer.fullName,
@@ -172,16 +172,21 @@ function Stepper({
 }
 
 function PriceBreakdownPanel({ pkg, breakdown }: { pkg: TravelPackage; breakdown: PriceBreakdown }) {
+  // A zero/missing/non-finite `pkg.price` makes every downstream figure in `breakdown`
+  // (which is derived from it) equally unreliable — showing the approved custom-quote
+  // copy for both lines is safer than a fabricated ₹0/NaN total, or a total that
+  // silently omits the (invalid) base contribution.
+  const hasValidBasePrice = isValidPrice(pkg.price);
   return (
     <div className="rounded-2xl border border-apex-200 bg-apex-50 p-5 static top-0">
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-apex-600">Live Trip Price</p>
       <div className="mt-3 space-y-2 text-sm text-slate-700">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <span>
             Base Package
             {breakdown.seasonLabel ? <span className="text-slate-500"> ({breakdown.seasonLabel})</span> : null}
           </span>
-          <span>{formatINR(breakdown.basePrice)}</span>
+          <span className="text-right">{hasValidBasePrice ? formatINR(breakdown.basePrice) : CUSTOM_QUOTE_LABEL}</span>
         </div>
         {breakdown.stayUpgrade > 0 ? (
           <div className="flex items-center justify-between text-slate-600">
@@ -208,9 +213,11 @@ function PriceBreakdownPanel({ pkg, breakdown }: { pkg: TravelPackage; breakdown
           </div>
         ) : null}
       </div>
-      <div className="mt-4 flex items-center justify-between border-t border-apex-200 pt-4">
-        <span className="text-sm font-semibold uppercase tracking-wide text-slate-900">Total</span>
-        <span className="text-2xl font-bold text-slate-900">{formatINR(breakdown.total)}</span>
+      <div className="mt-4 flex items-center justify-between gap-3 border-t border-apex-200 pt-4">
+        <span className="shrink-0 text-sm font-semibold uppercase tracking-wide text-slate-900">Total</span>
+        <span className="text-right text-2xl font-bold text-slate-900">
+          {hasValidBasePrice ? formatINR(breakdown.total) : CUSTOM_QUOTE_LABEL}
+        </span>
       </div>
       <p className="mt-3 text-xs text-slate-500">
         This is dynamic pricing based on our configured package data for {pkg.name} — not external hotel/flight API

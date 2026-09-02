@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import PackageDetailContent from '@/components/modules/PackageDetailContent';
 import { getAllPackages, getPackageBySlug } from '@/lib/packages';
+import { getCuratedDestinations } from '@/lib/destinations';
+import { getPackageRegionIds } from '@/lib/packageFilters';
+import { getAllRegions } from '@/lib/regions';
 
 // The 'sikkim-mountain-escape' → 'uttarakhand-explorer' legacy-slug redirect (this
 // journey's content was always Rishikesh/Haridwar/Mussoorie, Uttarakhand —
@@ -62,5 +65,25 @@ export default async function JourneyDetailPage({ params, searchParams }: Journe
     RELATED_JOURNEYS_LIMIT
   );
 
-  return <PackageDetailContent pkg={pkg} autoOpenBooking={book === '1'} relatedJourneys={relatedJourneys} />;
+  // Same region-derivation the /journeys listing already uses for its own PackageCard
+  // (getPackageRegionIds → regions.find().shortName) — reused here rather than a second
+  // mapping system, so related-journey cards on this page carry the same region badge.
+  const destinations = await getCuratedDestinations();
+  const destinationsBySlug = new Map(destinations.map((destination) => [destination.slug, destination]));
+  const regions = getAllRegions();
+  const relatedJourneyRegionLabels: Record<string, string> = {};
+  for (const journey of relatedJourneys) {
+    const regionId = getPackageRegionIds(journey, destinationsBySlug)[0];
+    const label = regionId ? regions.find((region) => region.id === regionId)?.shortName : undefined;
+    if (label) relatedJourneyRegionLabels[journey.slug] = label;
+  }
+
+  return (
+    <PackageDetailContent
+      pkg={pkg}
+      autoOpenBooking={book === '1'}
+      relatedJourneys={relatedJourneys}
+      relatedJourneyRegionLabels={relatedJourneyRegionLabels}
+    />
+  );
 }

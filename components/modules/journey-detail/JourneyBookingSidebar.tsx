@@ -6,7 +6,7 @@ import WhatsAppButton from '@/components/modules/WhatsAppButton';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 import { registerBottomOverlay } from '@/lib/bottomOverlay';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
-import { formatINR } from '@/lib/pricing';
+import { formatPriceOrQuote, isValidPrice } from '@/lib/pricing';
 import type { TravelPackage } from '@/types/package';
 
 export interface JourneyBookingSidebarProps {
@@ -53,7 +53,13 @@ export default function JourneyBookingSidebar({ pkg, onCustomize }: JourneyBooki
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
           <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">Starting from</p>
           <p className="mt-1 text-3xl font-extrabold text-slate-900">
-            {formatINR(pkg.price)} <span className="text-sm font-normal text-slate-500">/ person</span>
+            {isValidPrice(pkg.price) ? (
+              <>
+                {formatPriceOrQuote(pkg.price)} <span className="text-sm font-normal text-slate-500">/ person</span>
+              </>
+            ) : (
+              formatPriceOrQuote(pkg.price)
+            )}
           </p>
           {pkg.seasonalPricing?.length ? (
             <p className="mt-1 inline-flex gap-1.5 text-xs text-slate-500">
@@ -92,7 +98,7 @@ export default function JourneyBookingSidebar({ pkg, onCustomize }: JourneyBooki
       <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 border-t border-slate-200 bg-white/95 p-4 backdrop-blur-sm lg:hidden">
         <div>
           <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500">From</p>
-          <p className="text-lg font-bold text-slate-900">{formatINR(pkg.price)}</p>
+          <p className="text-lg font-bold text-slate-900">{formatPriceOrQuote(pkg.price)}</p>
         </div>
         <div className="flex items-center gap-2">
           <button

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Check, Clock, Eye, Heart, MapPin, Star } from 'lucide-react';
-import { formatINR } from '@/lib/pricing';
+import { formatPriceOrQuote, isValidPrice } from '@/lib/pricing';
 import { formatDurationShort, getPackageInclusionTags } from '@/lib/packageFilters';
 import { cn } from '@/lib/utils';
 import { SafeImage } from '@/components/ui/SafeImage';
@@ -146,8 +146,14 @@ export default function PackageCard({ pkg, rating, regionLabel, isComparing = fa
         <div className="border-t border-slate-100 pt-4">
           <p className="text-xs uppercase tracking-[0.1em] text-slate-500">From</p>
           <p className="text-2xl font-extrabold text-slate-900 lg:text-3xl">
-            {formatINR(pkg.price)}
-            <span className="ml-1 text-xs font-normal text-slate-500">/ person</span>
+            {isValidPrice(pkg.price) ? (
+              <>
+                {formatPriceOrQuote(pkg.price)}
+                <span className="ml-1 text-xs font-normal text-slate-500">/ person</span>
+              </>
+            ) : (
+              formatPriceOrQuote(pkg.price)
+            )}
           </p>
         </div>
 
