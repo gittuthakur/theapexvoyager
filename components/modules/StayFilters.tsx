@@ -16,6 +16,8 @@ import MobileFilterDrawer from '@/components/modules/filters/MobileFilterDrawer'
 import { FilterAccordion } from '@/components/modules/destinations/FilterAccordion';
 import { cn } from '@/lib/utils';
 import { stayTypes, findStayTypeBySlug } from '@/config/stayTypes.config';
+import { findStayMoodBySlug } from '@/config/stayMoods.config';
+import { parseValidPriceMax } from '@/components/modules/filters/priceMax';
 
 const priceOptions: Array<{ label: string; value?: string }> = [
   { label: 'Any price' },
@@ -89,10 +91,28 @@ export default function StayFilters({
 }: StayFiltersProps) {
   const activeStayType = activeType ? findStayTypeBySlug(activeType) : undefined;
   const activePriceOption = priceOptions.find((option) => option.value === activePriceMax);
-  const activeFilterCount = [activeType, activePriceMax, activeAmenity].filter(Boolean).length;
-  const clearHref = buildHref(currentParams, { type: undefined, priceMax: undefined, amenity: undefined });
+  // `mood` (set only via a StayMoodCard link on /stays) isn't one of this panel's own
+  // controls, but it's a real active filter on the current result set — without
+  // accounting for it here it had no chip, wasn't counted, and "Clear" left it behind.
+  const activeMoodSlug = currentParams.mood;
+  const activeMood = activeMoodSlug ? findStayMoodBySlug(activeMoodSlug) : undefined;
+  const activeFilterCount = [activeType, activePriceMax, activeAmenity, activeMoodSlug].filter(Boolean).length;
+  const clearHref = buildHref(currentParams, { type: undefined, priceMax: undefined, amenity: undefined, mood: undefined });
   const resultCountLabel = `${resultCount} stay${resultCount === 1 ? '' : 's'} found`;
-  const activePriceLabel = activePriceMax ? `Up to ₹${Number(activePriceMax).toLocaleString('en-IN')}` : activePriceOption?.value ? activePriceOption.label : undefined;
+  const activePriceMaxNumber = parseValidPriceMax(activePriceMax);
+  // A priceMax that's present but doesn't parse to a real, non-negative number (a
+  // hand-edited `?priceMax=-100` or `?priceMax=abc`) is never displayed as a price —
+  // same "still active, but honestly not a real value" treatment mood/type already get
+  // for an unresolved slug — and remains removable through the exact same chip.
+  const priceValueInvalid = Boolean(activePriceMax) && activePriceMaxNumber === undefined;
+  const activePriceLabel =
+    activePriceMaxNumber !== undefined
+      ? `Up to ₹${activePriceMaxNumber.toLocaleString('en-IN')}`
+      : priceValueInvalid
+        ? 'Invalid price filter'
+        : activePriceOption?.value
+          ? activePriceOption.label
+          : undefined;
 
   const activeChips =
     activeFilterCount > 0 ? (
@@ -121,6 +141,14 @@ export default function StayFilters({
             </Link>
           </span>
         ) : null}
+        {activeMoodSlug ? (
+          <span key="mood" className={FILTER_CHIP_CLASS}>
+            {activeMood?.label ?? activeMoodSlug}
+            <Link href={buildHref(currentParams, { mood: undefined })} aria-label={`Remove ${activeMood?.label ?? activeMoodSlug} filter`} className={FILTER_CHIP_REMOVE_CLASS}>
+              <X size={13} />
+            </Link>
+          </span>
+        ) : null}
       </div>
     ) : null;
 
@@ -139,7 +167,7 @@ export default function StayFilters({
             <PriceMaxSlider
               min={priceBounds.min}
               max={priceBounds.max}
-              value={activePriceMax ? Number(activePriceMax) : undefined}
+              value={activePriceMaxNumber}
               buildHref={(nextPriceMax) => buildHref(currentParams, { priceMax: nextPriceMax !== undefined ? String(nextPriceMax) : undefined })}
             />
           ) : (

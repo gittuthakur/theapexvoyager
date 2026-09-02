@@ -12,7 +12,7 @@ export default function HomeError({ error, reset }: { error: Error & { digest?: 
     <main className="flex min-h-[60vh] items-center justify-center px-6 py-14 sm:px-10 lg:px-16">
       <div className="w-full max-w-md rounded-[2rem] border border-slate-200 bg-white p-10 text-center shadow-glow">
         <p className="text-lg font-semibold text-slate-900">We couldn&apos;t load this page right now.</p>
-        <p className="mt-3 text-sm text-slate-600">Something went wrong loading the homepage. Please try again in a moment.</p>
+        <p className="mt-3 text-sm text-slate-600">Something went wrong loading this page. Please try again in a moment.</p>
         <button
           type="button"
           onClick={reset}

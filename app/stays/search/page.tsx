@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import Link from 'next/link';
 import type { Metadata } from 'next';
 import StaySearch from '@/components/modules/StaySearch';
 import StayFilters from '@/components/modules/StayFilters';
@@ -9,13 +10,23 @@ import { cn } from '@/lib/utils';
 import { getHotels } from '@/lib/hotels';
 import { findStayTypeBySlug } from '@/config/stayTypes.config';
 import { findStayMoodBySlug } from '@/config/stayMoods.config';
+import { parseValidPriceMax } from '@/components/modules/filters/priceMax';
+import { images } from '@/config/images.config';
 import type { HotelCategory, HotelPackage } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
+// A static canonical/OG pair, not per-filter-combination — same pattern as
+// app/journeys/page.tsx: every filter combination on this listing canonicalizes
+// back to this one URL rather than indexing a separate page per query string.
+const title = 'Search Stays | Apex Stays — The Apex Voyager';
+const description = 'Search Himalayan hotels, resorts, homestays and unique stays by destination, dates and stay type.';
+
 export const metadata: Metadata = {
-  title: 'Search Stays | Apex Stays — The Apex Voyager',
-  description: 'Search Himalayan hotels, resorts, homestays and unique stays by destination, dates and stay type.'
+  title,
+  description,
+  alternates: { canonical: '/stays/search' },
+  openGraph: { title, description, url: '/stays/search', images: [{ url: images.experiences.riversideCamp, alt: 'Himalayan mountain-view stay overlooking a river valley' }] }
 };
 
 interface StaySearchPageProps {
@@ -61,9 +72,14 @@ export default async function StaySearchPage({ searchParams }: StaySearchPagePro
           />
         </div>
 
+        {/* Visually hidden — the visible heading is the h1 above; this just gives the
+            filters/results region its own place in the h1→h2→h3 (card title) outline
+            without adding a second visible heading the approved design didn't call for. */}
+        <h2 className="sr-only">Browse Stays</h2>
+
         <Suspense
           key={`${destination ?? ''}:${type ?? ''}:${priceMax ?? ''}:${amenity ?? ''}:${mood ?? ''}:${category ?? ''}`}
-          fallback={<SkeletonGrid count={4} className="xl:grid-cols-2" />}
+          fallback={<SkeletonGrid count={4} className="md:grid-cols-2 lg:grid-cols-3" />}
         >
           <StaySearchResults
             destination={destination}
@@ -105,13 +121,17 @@ async function StaySearchResults({ destination, checkIn, checkOut, guests, type,
   const category: HotelCategory | undefined = stayType?.category ?? stayMood?.category ?? (isHotelCategory(categoryParam) ? categoryParam : undefined);
   const isBoutiqueOnly = type === 'boutique-stays';
   const moodKeyword = stayMood?.keyword?.toLowerCase();
-  // A `type`/`mood` slug that was provided but doesn't resolve to anything real (a
-  // stale or hand-edited link) must never fall through to "no filter" below — that
+  const priceMaxValue = parseValidPriceMax(priceMax);
+  // A `type`/`mood`/`priceMax` value that was provided but doesn't resolve to anything
+  // real (a stale or hand-edited link — an unknown type slug, or a priceMax that isn't
+  // a real non-negative number) must never fall through to "no filter" below — that
   // would silently show the whole unfiltered catalog instead of a genuine zero-result
-  // state for a stay type/mood that doesn't exist.
+  // state for a filter that doesn't exist. A negative/NaN/Infinite priceMax isn't a
+  // real price ceiling any more than an unresolved type slug is a real stay type.
   const typeRequestedButUnresolved = Boolean(type) && !stayType;
   const moodRequestedButUnresolved = !stayType && Boolean(mood) && !stayMood;
-  const shouldForceEmpty = typeRequestedButUnresolved || moodRequestedButUnresolved;
+  const priceRequestedButInvalid = Boolean(priceMax) && priceMaxValue === undefined;
+  const shouldForceEmpty = typeRequestedButUnresolved || moodRequestedButUnresolved || priceRequestedButInvalid;
 
   const allHotels = shouldForceEmpty ? [] : await getHotels({ category, destination });
 
@@ -135,10 +155,9 @@ async function StaySearchResults({ destination, checkIn, checkOut, guests, type,
       ? { min: Math.min(...scopedPrices), max: Math.max(...scopedPrices) }
       : null;
 
-  const priceMaxValue = priceMax ? Number(priceMax) : undefined;
   const hotels: HotelPackage[] = scoped.filter((hotel) => {
     const price = hotel.places?.customPrice ?? hotel.pricePerNight;
-    if (priceMaxValue !== undefined && Number.isFinite(priceMaxValue) && price > priceMaxValue) return false;
+    if (priceMaxValue !== undefined && price > priceMaxValue) return false;
     if (amenity && !hotel.amenities?.includes(amenity)) return false;
     return true;
   });
@@ -158,12 +177,33 @@ async function StaySearchResults({ destination, checkIn, checkOut, guests, type,
   );
 
   if (hotels.length === 0) {
+    // Whether *anything* the visitor chose narrowed the result set — if not, an empty
+    // result means the catalog itself has nothing right now, not that their destination/
+    // type/price/amenity/mood choice was too narrow. Blaming a search that was never
+    // made would be dishonest, so this needs its own message rather than reusing the
+    // filtered-empty copy below.
+    const hasActiveFilters = Boolean(destination || type || priceMax || amenity || mood || categoryParam);
     return (
       <div className="flex flex-col gap-5 xl:flex-row xl:items-start">
         {filters}
         <div className={cn(FILTER_EMPTY_STATE_CLASS, 'flex-1')}>
-          <p className="text-lg font-semibold text-slate-900">No stays match your search.</p>
-          <p className="mt-3 text-slate-600">Try a different destination, stay type, or price range.</p>
+          {hasActiveFilters ? (
+            <>
+              <p className="text-lg font-semibold text-slate-900">No stays match your search.</p>
+              <p className="mt-3 text-slate-600">Try a different destination, stay type, or price range.</p>
+            </>
+          ) : (
+            <>
+              <p className="text-lg font-semibold text-slate-900">Stays aren&apos;t available right now.</p>
+              <p className="mt-3 text-slate-600">Check back soon, or explore our curated Journeys in the meantime.</p>
+              <Link
+                href="/journeys"
+                className="cursor-hover mt-6 inline-flex items-center gap-2 rounded-full bg-apex-500 px-6 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400"
+              >
+                Explore Journeys
+              </Link>
+            </>
+          )}
         </div>
       </div>
     );

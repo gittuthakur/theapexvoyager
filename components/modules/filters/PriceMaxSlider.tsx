@@ -32,7 +32,12 @@ function formatINR(amount: number): string {
  */
 export default function PriceMaxSlider({ min, max, value, buildHref }: PriceMaxSliderProps) {
   const router = useRouter();
-  const effectiveValue = value ?? max;
+  // `value` comes straight from a URL query param — an invalid/hand-edited one
+  // (`?priceMax=abc` or `?priceMax=-100`) parses to NaN or a negative number, neither
+  // of which `??` catches (only null/undefined). A negative ceiling is never a real
+  // price any more than NaN is, so both are treated the same as "no ceiling" — parked
+  // at the slider's own max, never fed to the range input as an out-of-domain value.
+  const effectiveValue = value !== undefined && Number.isFinite(value) && value >= 0 ? value : max;
   const [liveValue, setLiveValue] = useState(effectiveValue);
 
   useEffect(() => setLiveValue(effectiveValue), [effectiveValue]);
