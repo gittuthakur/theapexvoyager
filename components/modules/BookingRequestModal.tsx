@@ -8,6 +8,16 @@ import type { BookingRequestType } from '@/models/BookingRequest';
 import { FloatingOverlay } from '@/components/ui/FloatingOverlay';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 
+// Matches lib/bookingId.ts's generateBookingId() output ("TAP-" + digits) across every
+// booking type this shared modal serves (Journeys/Trip Planner, Transport, Experts, …).
+// Guards against a malformed/unexpected API response shape (missing, non-string, blank,
+// or an object/array) being treated as a successful booking — without this, a 2xx
+// response with no usable reference renders a "Request received" success screen with a
+// literal "reference undefined"/"reference null" baked into the WhatsApp message text.
+function isValidReferenceId(value: unknown): value is string {
+  return typeof value === 'string' && /^TAP-\d+$/.test(value.trim());
+}
+
 export interface BookingRequestInput {
   type: BookingRequestType;
   /** What's being booked/enquired about — a hotel name, package name, vehicle type, expert name, etc. */
@@ -89,7 +99,7 @@ export function BookingRequestProvider({ children }: { children: ReactNode }) {
     setErrorMessage('');
 
     try {
-      const { referenceId: newReferenceId } = await postJSON<{ referenceId: string }>('/api/booking-requests', {
+      const { referenceId: newReferenceId } = await postJSON<{ referenceId: unknown }>('/api/booking-requests', {
         type: input.type,
         name: name.trim(),
         phone: phone.trim(),
@@ -100,6 +110,10 @@ export function BookingRequestProvider({ children }: { children: ReactNode }) {
         travelers: input.travelers,
         details: input.details
       });
+
+      if (!isValidReferenceId(newReferenceId)) {
+        throw new Error('Booking request succeeded but returned no usable reference ID');
+      }
 
       const messageText = input.buildWhatsAppMessage
         ? input.buildWhatsAppMessage(newReferenceId)
@@ -212,7 +226,11 @@ export function BookingRequestProvider({ children }: { children: ReactNode }) {
                 ) : null}
               </div>
 
-              {errorMessage ? <p className="text-sm text-red-500">{errorMessage}</p> : null}
+              {errorMessage ? (
+                <p role="alert" className="text-sm text-red-500">
+                  {errorMessage}
+                </p>
+              ) : null}
 
               <div className="flex gap-3">
                 <button
@@ -273,7 +291,11 @@ export function BookingRequestProvider({ children }: { children: ReactNode }) {
                 />
               </div>
 
-              {errorMessage ? <p className="text-sm text-red-500">{errorMessage}</p> : null}
+              {errorMessage ? (
+                <p role="alert" className="text-sm text-red-500">
+                  {errorMessage}
+                </p>
+              ) : null}
 
               <button
                 type="submit"
