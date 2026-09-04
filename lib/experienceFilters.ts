@@ -29,14 +29,19 @@ export interface ExperienceFilters {
   difficulties?: ExperienceDifficulty[];
 }
 
+/** Collapses runs of whitespace to a single space so multi-space/tab input matches single-spaced catalog data (and vice versa). */
+function normalizeSearchText(value: string): string {
+  return value.trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
 /** Single source of truth for narrowing the catalog — shared by the listing UI and, if needed, any future server-rendered fallback. */
 export function filterExperiences(source: Experience[], filters: ExperienceFilters): Experience[] {
-  const needle = filters.query?.trim().toLowerCase();
+  const needle = filters.query ? normalizeSearchText(filters.query) : undefined;
   const activeBudgetBands = filters.budgets?.length ? budgetBands.filter((band) => filters.budgets!.includes(band.id)) : null;
 
   return source.filter((experience) => {
     if (needle) {
-      const haystack = `${experience.title} ${experience.location} ${experience.category} ${experience.subCategory}`.toLowerCase();
+      const haystack = normalizeSearchText(`${experience.title} ${experience.location} ${experience.category} ${experience.subCategory}`);
       if (!haystack.includes(needle)) return false;
     }
     if (filters.region && experience.region !== filters.region) return false;
