@@ -27,7 +27,13 @@ const RELATED_JOURNEYS_LIMIT = 3;
 export async function generateMetadata({ params }: JourneyDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const pkg = await getPackageBySlug(slug);
-  if (!pkg) return {};
+  // The page body's own notFound() call (below) determines the actual HTTP status —
+  // this can't call notFound() itself (metadata resolution and the page body are
+  // independent; tested directly, having generateMetadata also call notFound() here
+  // doesn't change the response's HTTP status, a framework streaming characteristic
+  // this fix doesn't attempt to correct). What this can honestly do is keep an invalid
+  // slug's page out of the index even while its status stays 200 on the wire.
+  if (!pkg) return { robots: { index: false, follow: false } };
   // Previously only title/description were set, so canonical and every Open Graph tag
   // silently inherited the root layout's generic homepage defaults (title "The Apex
   // Voyager", the homepage description/URL, no image) — sharing any specific journey's
@@ -41,7 +47,7 @@ export async function generateMetadata({ params }: JourneyDetailPageProps): Prom
     title,
     description,
     alternates: { canonical: canonicalPath },
-    openGraph: { title, description, url: canonicalPath, images: [{ url: pkg.image, alt: pkg.name }] }
+    openGraph: { type: 'website', title, description, url: canonicalPath, images: [{ url: pkg.image, alt: pkg.name }] }
   };
 }
 

@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: '/journeys' },
-  openGraph: { title, description, url: '/journeys', images: [{ url: images.toursHero, alt: 'Curated Himalayan travel journeys' }] }
+  openGraph: { type: 'website', title, description, url: '/journeys', images: [{ url: images.toursHero, alt: 'Curated Himalayan travel journeys' }] }
 };
 
 const journeysHeroData: HeroSectionData = {
