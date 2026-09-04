@@ -154,7 +154,7 @@ export const packages: TravelPackage[] = [
     shortDescription: 'Cross high-altitude passes to ancient monasteries and lunar landscapes in remote Spiti.',
     highlights: [
       'Key Monastery & Kaza sightseeing',
-      'Chandratal Lake camping (seasonal)',
+      'Chandratal Lake excursion (seasonal, weather and road conditions permitting)',
       "Hikkim — world's highest post office",
       'Langza fossil village'
     ],
@@ -206,8 +206,7 @@ export const packages: TravelPackage[] = [
     signatureMoments: [
       { title: "Tabo's thousand-year-old monastery", description: 'Mud-walled halls holding some of the oldest Buddhist murals in the Himalayas.', time: 'Day 3' },
       { title: 'Sunrise at Key Monastery', description: 'The valley wakes up below one of the Himalaya’s oldest monasteries.', time: 'Day 4, Dawn' },
-      { title: "Hikkim's highest post office", description: "Sending a postcard from the world's highest functioning post office.", time: 'Day 5' },
-      { title: 'The Milky Way over Chandratal', description: 'Some of the darkest, clearest skies in India, above the moon lake.', time: 'Day 6, Night' }
+      { title: "Hikkim's highest post office", description: "Sending a postcard from the world's highest functioning post office.", time: 'Day 5' }
     ],
     apexPicks: {
       view: { title: 'Chandratal at dusk', description: 'The moon lake under a sky that shifts from gold to indigo.' },
@@ -371,7 +370,7 @@ export const packages: TravelPackage[] = [
     shortDescription: 'Ganga aartis, Himalayan foothill views, and white-water rafting across Uttarakhand’s holiest towns.',
     highlights: [
       'Ganga Aarti at Har Ki Pauri, Haridwar',
-      'White-water rafting in Rishikesh',
+      'White-water rafting in Rishikesh (seasonal, river conditions permitting)',
       'Mussoorie hill-station views',
       'Ashram yoga & meditation session'
     ],
@@ -379,7 +378,7 @@ export const packages: TravelPackage[] = [
       { day: 1, title: 'Arrival in Haridwar', description: 'Transfer in, evening Ganga Aarti at Har Ki Pauri.' },
       { day: 2, title: 'Haridwar Local Sightseeing', description: 'Visit Mansa Devi Temple, Chandi Devi Temple, and local markets.' },
       { day: 3, title: 'Haridwar to Rishikesh', description: 'Short drive to Rishikesh, evening at Laxman Jhula and Ram Jhula.' },
-      { day: 4, title: 'Rishikesh Adventure Day', description: 'Morning white-water rafting on the Ganges, afternoon ashram visit.' },
+      { day: 4, title: 'Rishikesh Adventure Day', description: 'Morning white-water rafting on the Ganges (river conditions permitting), afternoon ashram visit.' },
       { day: 5, title: 'Mussoorie Day Trip', description: 'Scenic drive up to Mussoorie for Kempty Falls and Mall Road views.' },
       { day: 6, title: 'Departure', description: 'Transfer back to Dehradun/Haridwar for onward journey.' }
     ],
