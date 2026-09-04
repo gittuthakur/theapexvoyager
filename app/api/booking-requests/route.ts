@@ -5,8 +5,23 @@ import { generateBookingId } from '@/lib/bookingId';
 import { sendBookingConfirmationEmails, type BookingConfirmationEmailInput } from '@/lib/mailer';
 import { getPackageBySlug } from '@/lib/packages';
 import { calculateBookingPrice, type BookingConfig } from '@/lib/pricing';
+import { priceJourney } from '@/lib/tripPlannerPricing';
+import { STAY_TYPE_OPTIONS, TRANSPORT_MODES, EXPERIENCE_OPTIONS } from '@/config/tripPlanner.config';
+import type { JourneyParams, StayTypeId, TransportModeId, ExperienceId } from '@/types/tripPlanner';
 
 const VALID_TYPES: BookingRequestType[] = ['stay', 'journey', 'tour', 'experience', 'transport', 'expert'];
+
+// A `type: 'journey'` request means one of two structurally different things — a
+// catalog Journey Detail booking (PackageBookingModal.tsx, tied to a real Journey
+// document via `details.slug`) or a Trip Planner-generated request (ChoiceCard.tsx,
+// a client-composed tier with no catalog document behind it at all). Explicit and
+// default-deny: an unrecognized `details.source` is rejected outright, and an absent
+// one keeps the original, fully-hardened catalog behavior — only an exact
+// `'trip-planner'` value opts into the separate (still server-priced) path below. This
+// is deliberately the opposite of inferring the source from payload shape (e.g.
+// "missing slug => trip planner"), which would let a catalog-shaped attack simply drop
+// `slug` to escape the catalog path's authority checks.
+const JOURNEY_SOURCES = new Set(['catalog', 'trip-planner']);
 
 // Every real caller (PackageBookingModal, HotelBookingModal, the shared
 // BookingRequestModal used by Journeys/Transport/Experts) sends a flat-ish `details`
@@ -204,87 +219,167 @@ export async function POST(request: Request) {
     let emailExtras: Partial<BookingConfirmationEmailInput> = {};
 
     if (type === 'journey') {
-      const slug = typeof details?.slug === 'string' ? details.slug : undefined;
-      if (!slug) {
-        return NextResponse.json({ error: 'details.slug is required for journey bookings' }, { status: 400 });
+      const rawSource = typeof details?.source === 'string' ? details.source : undefined;
+      if (rawSource !== undefined && !JOURNEY_SOURCES.has(rawSource)) {
+        return NextResponse.json({ error: `details.source must be one of: ${[...JOURNEY_SOURCES].join(', ')}` }, { status: 400 });
       }
+      const journeySource = rawSource === 'trip-planner' ? 'trip-planner' : 'catalog';
 
-      const pkg = await getPackageBySlug(slug);
-      if (!pkg) {
-        return NextResponse.json({ error: 'Journey not found' }, { status: 404 });
+      if (journeySource === 'trip-planner') {
+        // Trip Planner requests (ChoiceCard.tsx) aren't tied to any catalog Journey
+        // document — there's no slug, no stay/transport/pace *options list* to validate
+        // an id against. What they DO have is `details.params`, the same flat primitive
+        // shape lib/tripPlannerPricing.ts's priceJourney() already prices client-side —
+        // so the server re-runs that exact pure function against server-normalized
+        // inputs, the same authority principle as the catalog branch below, just against
+        // a different (non-DB) source of truth.
+        const rawParams = details?.params;
+        if (!rawParams || typeof rawParams !== 'object' || Array.isArray(rawParams)) {
+          return NextResponse.json({ error: 'details.params is required for trip-planner journey requests' }, { status: 400 });
+        }
+        const p = rawParams as Record<string, unknown>;
+
+        const requestedStayTypeId = typeof p.stayTypeId === 'string' ? p.stayTypeId : undefined;
+        const stayTypeId = (
+          STAY_TYPE_OPTIONS.some((option) => option.id === requestedStayTypeId) ? requestedStayTypeId : STAY_TYPE_OPTIONS[0].id
+        ) as StayTypeId;
+
+        const requestedTransportModeId = typeof p.transportModeId === 'string' ? p.transportModeId : undefined;
+        const transportModeId = (
+          TRANSPORT_MODES.some((option) => option.id === requestedTransportModeId) ? requestedTransportModeId : TRANSPORT_MODES[0].id
+        ) as TransportModeId;
+
+        const requestedExperienceIds = Array.isArray(p.experienceIds)
+          ? p.experienceIds.filter((id: unknown): id is string => typeof id === 'string')
+          : [];
+        const experienceIds = requestedExperienceIds.filter((id: string) =>
+          EXPERIENCE_OPTIONS.some((option) => option.id === id)
+        ) as ExperienceId[];
+
+        const nightsRaw = Number(p.nights);
+        const travellerCountRaw = Number(p.travellerCount);
+        const roomsRaw = Number(p.rooms);
+
+        const normalizedParams: JourneyParams = {
+          nights: Number.isFinite(nightsRaw) && nightsRaw > 0 ? Math.floor(nightsRaw) : 1,
+          travellerCount: Number.isFinite(travellerCountRaw) && travellerCountRaw > 0 ? Math.floor(travellerCountRaw) : 1,
+          rooms: Number.isFinite(roomsRaw) && roomsRaw > 0 ? Math.floor(roomsRaw) : 1,
+          stayTypeId,
+          transportModeId,
+          experienceIds,
+          guideIncluded: p.guideIncluded === true,
+          mealsIncluded: p.mealsIncluded === true
+        };
+
+        const priced = priceJourney(normalizedParams);
+        const tier = typeof details?.tier === 'string' ? details.tier.slice(0, 100) : undefined;
+
+        // No resolvedItemName/resolvedDestination re-derivation here — unlike catalog,
+        // there is no authoritative document to derive them from. itemName/destination
+        // stay exactly what the client sent (already required, non-empty strings by the
+        // checks above); only the price-bearing fields below are server-recalculated.
+        journeyDetails = {
+          ...details,
+          source: 'trip-planner',
+          tier,
+          params: normalizedParams,
+          breakdown: priced.breakdown,
+          total: priced.total,
+          perPerson: priced.perPerson
+        };
+
+        emailExtras = {
+          stayLabel: STAY_TYPE_OPTIONS.find((option) => option.id === stayTypeId)?.label,
+          transportLabel: TRANSPORT_MODES.find((option) => option.id === transportModeId)?.label,
+          addOns: experienceIds.map((id) => EXPERIENCE_OPTIONS.find((option) => option.id === id)?.label ?? id),
+          total: priced.total
+        };
+      } else {
+        const slug = typeof details?.slug === 'string' ? details.slug : undefined;
+        if (!slug) {
+          return NextResponse.json({ error: 'details.slug is required for journey bookings' }, { status: 400 });
+        }
+
+        const pkg = await getPackageBySlug(slug);
+        if (!pkg) {
+          return NextResponse.json({ error: 'Journey not found' }, { status: 404 });
+        }
+
+        // Validated before anything is persisted — a missing/malformed/impossible/past date
+        // must reject with no BookingRequest.create(), no reference, and no email, same as
+        // every other pre-persistence validation failure above.
+        const travelDateRaw = typeof details?.travelDate === 'string' ? details.travelDate.trim() : '';
+        if (!travelDateRaw || !isValidCalendarDateISO(travelDateRaw)) {
+          return NextResponse.json({ error: 'travelDate must be a valid date (YYYY-MM-DD)' }, { status: 400 });
+        }
+        if (travelDateRaw < todayISOInIST()) {
+          return NextResponse.json({ error: 'travelDate cannot be in the past' }, { status: 400 });
+        }
+
+        const adultsRaw = Number(details?.adults);
+        const childrenRaw = Number(details?.children);
+        const requestedStayId = typeof details?.stayOptionId === 'string' ? details.stayOptionId : undefined;
+        const requestedTransportId = typeof details?.transportOptionId === 'string' ? details.transportOptionId : undefined;
+        const requestedPaceId = typeof details?.paceId === 'string' ? details.paceId : undefined;
+        const requestedAddOnIds = Array.isArray(details?.addOnIds)
+          ? details.addOnIds.filter((id: unknown): id is string => typeof id === 'string')
+          : [];
+
+        const config: BookingConfig = {
+          adults: Number.isFinite(adultsRaw) && adultsRaw > 0 ? Math.floor(adultsRaw) : 1,
+          children: Number.isFinite(childrenRaw) && childrenRaw > 0 ? Math.floor(childrenRaw) : 0,
+          travelDate: travelDateRaw,
+          // Only a stay/transport/pace/add-on id that actually belongs to THIS journey is
+          // honored — anything else (missing, or copied from a different journey) falls
+          // back to the same "first option" default calculateBookingPrice() itself already
+          // uses when a config field doesn't match, never a client-invented option.
+          stayOptionId: pkg.stayOptions?.some((option) => option.id === requestedStayId)
+            ? (requestedStayId as string)
+            : (pkg.stayOptions?.[0]?.id ?? ''),
+          transportOptionId: pkg.transportOptions?.some((option) => option.id === requestedTransportId)
+            ? requestedTransportId
+            : undefined,
+          paceId: pkg.pace?.some((option) => option.id === requestedPaceId) ? requestedPaceId : undefined,
+          addOnIds: requestedAddOnIds.filter((id: string) => pkg.addOns?.some((option) => option.id === id))
+        };
+
+        const breakdown = calculateBookingPrice(pkg, config);
+
+        resolvedItemName = pkg.name;
+        resolvedDestination = pkg.destination;
+        journeyDetails = {
+          ...details,
+          source: 'catalog',
+          slug: pkg.slug,
+          adults: config.adults,
+          children: config.children,
+          stayOptionId: config.stayOptionId,
+          transportOptionId: config.transportOptionId,
+          paceId: config.paceId,
+          addOnIds: config.addOnIds,
+          stayLabel: pkg.stayOptions?.find((option) => option.id === config.stayOptionId)?.label,
+          transportLabel: pkg.transportOptions?.find((option) => option.id === config.transportOptionId)?.label,
+          paceLabel: pkg.pace?.find((option) => option.id === config.paceId)?.label,
+          addOns: pkg.addOns?.filter((option) => config.addOnIds.includes(option.id)).map((option) => option.label),
+          total: breakdown.total
+        };
+
+        // Same authority principle as the persisted record above — the email reflects the
+        // server-recalculated breakdown, never the client-computed values the request
+        // arrived with. pickupLocation/specialRequest have no authoritative re-derivation
+        // (free text, not price/identity data); journeyDetails passes both through from
+        // `details` unchanged (see the spread above), so reading them straight off `details`
+        // gives the identical value that ends up persisted.
+        emailExtras = {
+          stayLabel: breakdown.stayLabel,
+          transportLabel: breakdown.transportLabel,
+          paceLabel: breakdown.paceLabel,
+          addOns: breakdown.addOnLines.map((line) => line.label),
+          total: breakdown.total,
+          pickupLocation: typeof details?.pickupLocation === 'string' ? details.pickupLocation : undefined,
+          specialRequest: typeof details?.specialRequest === 'string' ? details.specialRequest : undefined
+        };
       }
-
-      // Validated before anything is persisted — a missing/malformed/impossible/past date
-      // must reject with no BookingRequest.create(), no reference, and no email, same as
-      // every other pre-persistence validation failure above.
-      const travelDateRaw = typeof details?.travelDate === 'string' ? details.travelDate.trim() : '';
-      if (!travelDateRaw || !isValidCalendarDateISO(travelDateRaw)) {
-        return NextResponse.json({ error: 'travelDate must be a valid date (YYYY-MM-DD)' }, { status: 400 });
-      }
-      if (travelDateRaw < todayISOInIST()) {
-        return NextResponse.json({ error: 'travelDate cannot be in the past' }, { status: 400 });
-      }
-
-      const adultsRaw = Number(details?.adults);
-      const childrenRaw = Number(details?.children);
-      const requestedStayId = typeof details?.stayOptionId === 'string' ? details.stayOptionId : undefined;
-      const requestedTransportId = typeof details?.transportOptionId === 'string' ? details.transportOptionId : undefined;
-      const requestedPaceId = typeof details?.paceId === 'string' ? details.paceId : undefined;
-      const requestedAddOnIds = Array.isArray(details?.addOnIds)
-        ? details.addOnIds.filter((id: unknown): id is string => typeof id === 'string')
-        : [];
-
-      const config: BookingConfig = {
-        adults: Number.isFinite(adultsRaw) && adultsRaw > 0 ? Math.floor(adultsRaw) : 1,
-        children: Number.isFinite(childrenRaw) && childrenRaw > 0 ? Math.floor(childrenRaw) : 0,
-        travelDate: travelDateRaw,
-        // Only a stay/transport/pace/add-on id that actually belongs to THIS journey is
-        // honored — anything else (missing, or copied from a different journey) falls
-        // back to the same "first option" default calculateBookingPrice() itself already
-        // uses when a config field doesn't match, never a client-invented option.
-        stayOptionId: pkg.stayOptions?.some((option) => option.id === requestedStayId)
-          ? (requestedStayId as string)
-          : (pkg.stayOptions?.[0]?.id ?? ''),
-        transportOptionId: pkg.transportOptions?.some((option) => option.id === requestedTransportId)
-          ? requestedTransportId
-          : undefined,
-        paceId: pkg.pace?.some((option) => option.id === requestedPaceId) ? requestedPaceId : undefined,
-        addOnIds: requestedAddOnIds.filter((id: string) => pkg.addOns?.some((option) => option.id === id))
-      };
-
-      const breakdown = calculateBookingPrice(pkg, config);
-
-      resolvedItemName = pkg.name;
-      resolvedDestination = pkg.destination;
-      journeyDetails = {
-        ...details,
-        slug: pkg.slug,
-        stayOptionId: config.stayOptionId,
-        transportOptionId: config.transportOptionId,
-        paceId: config.paceId,
-        addOnIds: config.addOnIds,
-        stayLabel: pkg.stayOptions?.find((option) => option.id === config.stayOptionId)?.label,
-        transportLabel: pkg.transportOptions?.find((option) => option.id === config.transportOptionId)?.label,
-        paceLabel: pkg.pace?.find((option) => option.id === config.paceId)?.label,
-        addOns: pkg.addOns?.filter((option) => config.addOnIds.includes(option.id)).map((option) => option.label),
-        total: breakdown.total
-      };
-
-      // Same authority principle as the persisted record above — the email reflects the
-      // server-recalculated breakdown, never the client-computed values the request
-      // arrived with. pickupLocation/specialRequest have no authoritative re-derivation
-      // (free text, not price/identity data); journeyDetails passes both through from
-      // `details` unchanged (see the spread above), so reading them straight off `details`
-      // gives the identical value that ends up persisted.
-      emailExtras = {
-        stayLabel: breakdown.stayLabel,
-        transportLabel: breakdown.transportLabel,
-        paceLabel: breakdown.paceLabel,
-        addOns: breakdown.addOnLines.map((line) => line.label),
-        total: breakdown.total,
-        pickupLocation: typeof details?.pickupLocation === 'string' ? details.pickupLocation : undefined,
-        specialRequest: typeof details?.specialRequest === 'string' ? details.specialRequest : undefined
-      };
     }
 
     await connectDB();

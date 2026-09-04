@@ -43,6 +43,7 @@ export function ChoiceCard({ rank, choice, recommended, onParamsChange, journeyC
       dates: journeyContext.dates,
       travelers: journeyContext.travelers,
       details: {
+        source: 'trip-planner',
         tier: choice.id,
         params: choice.params,
         breakdown: choice.price.breakdown,

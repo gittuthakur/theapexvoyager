@@ -335,6 +335,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
         dates: travelDateLabel,
         travelers: travelerLabel,
         details: {
+          source: 'catalog',
           slug: pkg.slug,
           // Raw selection — the server re-derives price/labels from these against the
           // Journey's own MongoDB document rather than trusting the client-computed
