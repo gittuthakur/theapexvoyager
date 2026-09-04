@@ -336,6 +336,19 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
         travelers: travelerLabel,
         details: {
           slug: pkg.slug,
+          // Raw selection — the server re-derives price/labels from these against the
+          // Journey's own MongoDB document rather than trusting the client-computed
+          // values below directly (see app/api/booking-requests/route.ts). Sent
+          // alongside the display labels/total so a legitimate request still carries
+          // a complete, human-readable record even though the server's own
+          // recalculation is authoritative.
+          adults,
+          children,
+          travelDate,
+          stayOptionId,
+          transportOptionId,
+          paceId,
+          addOnIds,
           stayLabel: breakdown.stayLabel,
           transportLabel: breakdown.transportLabel,
           paceLabel: breakdown.paceLabel,

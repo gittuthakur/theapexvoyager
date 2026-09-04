@@ -2,7 +2,9 @@ import { NextResponse, after } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { BookingRequest, type BookingRequestType } from '@/models/BookingRequest';
 import { generateBookingId } from '@/lib/bookingId';
-import { sendBookingConfirmationEmails } from '@/lib/mailer';
+import { sendBookingConfirmationEmails, type BookingConfirmationEmailInput } from '@/lib/mailer';
+import { getPackageBySlug } from '@/lib/packages';
+import { calculateBookingPrice, type BookingConfig } from '@/lib/pricing';
 
 const VALID_TYPES: BookingRequestType[] = ['stay', 'journey', 'tour', 'experience', 'transport', 'expert'];
 
@@ -47,6 +49,30 @@ function isSafeDetailsShape(value: unknown, depth: number): boolean {
   }
   // Functions/symbols/undefined can't arrive via JSON.parse, but reject on principle.
   return false;
+}
+
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+
+/** The business's own "today", independent of the server host's OS timezone (Vercel runs
+ *  UTC) — this site only serves India-based travel, so IST is the one timezone every
+ *  travelDate should be judged against, using the same ISO YYYY-MM-DD string-comparison
+ *  convention lib/pricing.ts already uses for seasonal pricing windows. IST has no DST,
+ *  so a fixed +5:30 offset is exact, not an approximation. */
+function todayISOInIST(): string {
+  return new Date(Date.now() + IST_OFFSET_MS).toISOString().slice(0, 10);
+}
+
+/** Rejects a structurally-plausible but impossible date (e.g. "2026-02-30", which
+ *  `new Date(...)` would otherwise silently roll over to March 2) by round-tripping the
+ *  parsed value back through its UTC fields. */
+function isValidCalendarDateISO(value: string): boolean {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return false;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 }
 
 const MAX_BODY_BYTES = 100_000;
@@ -164,13 +190,110 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'details payload is too large or deeply nested' }, { status: 400 });
     }
 
+    // A journey booking's price/name/option labels are entirely client-computed (see
+    // PackageBookingModal.tsx's calculateBookingPrice() call) — none of that is
+    // trustworthy on its own, since a client can send any total, any itemName, any
+    // slug. Re-derive every one of those from the Journey's own MongoDB document and
+    // the SAME calculateBookingPrice() formula the client used, so what's actually
+    // persisted always reflects the authoritative catalogue rather than whatever the
+    // request claimed. Scoped to `type === 'journey'` only — every other booking type
+    // (stay/tour/experience/transport/expert) keeps its existing, unchanged behavior.
+    let resolvedItemName = itemName;
+    let resolvedDestination = destination;
+    let journeyDetails: Record<string, unknown> | undefined = details;
+    let emailExtras: Partial<BookingConfirmationEmailInput> = {};
+
+    if (type === 'journey') {
+      const slug = typeof details?.slug === 'string' ? details.slug : undefined;
+      if (!slug) {
+        return NextResponse.json({ error: 'details.slug is required for journey bookings' }, { status: 400 });
+      }
+
+      const pkg = await getPackageBySlug(slug);
+      if (!pkg) {
+        return NextResponse.json({ error: 'Journey not found' }, { status: 404 });
+      }
+
+      // Validated before anything is persisted — a missing/malformed/impossible/past date
+      // must reject with no BookingRequest.create(), no reference, and no email, same as
+      // every other pre-persistence validation failure above.
+      const travelDateRaw = typeof details?.travelDate === 'string' ? details.travelDate.trim() : '';
+      if (!travelDateRaw || !isValidCalendarDateISO(travelDateRaw)) {
+        return NextResponse.json({ error: 'travelDate must be a valid date (YYYY-MM-DD)' }, { status: 400 });
+      }
+      if (travelDateRaw < todayISOInIST()) {
+        return NextResponse.json({ error: 'travelDate cannot be in the past' }, { status: 400 });
+      }
+
+      const adultsRaw = Number(details?.adults);
+      const childrenRaw = Number(details?.children);
+      const requestedStayId = typeof details?.stayOptionId === 'string' ? details.stayOptionId : undefined;
+      const requestedTransportId = typeof details?.transportOptionId === 'string' ? details.transportOptionId : undefined;
+      const requestedPaceId = typeof details?.paceId === 'string' ? details.paceId : undefined;
+      const requestedAddOnIds = Array.isArray(details?.addOnIds)
+        ? details.addOnIds.filter((id: unknown): id is string => typeof id === 'string')
+        : [];
+
+      const config: BookingConfig = {
+        adults: Number.isFinite(adultsRaw) && adultsRaw > 0 ? Math.floor(adultsRaw) : 1,
+        children: Number.isFinite(childrenRaw) && childrenRaw > 0 ? Math.floor(childrenRaw) : 0,
+        travelDate: travelDateRaw,
+        // Only a stay/transport/pace/add-on id that actually belongs to THIS journey is
+        // honored — anything else (missing, or copied from a different journey) falls
+        // back to the same "first option" default calculateBookingPrice() itself already
+        // uses when a config field doesn't match, never a client-invented option.
+        stayOptionId: pkg.stayOptions?.some((option) => option.id === requestedStayId)
+          ? (requestedStayId as string)
+          : (pkg.stayOptions?.[0]?.id ?? ''),
+        transportOptionId: pkg.transportOptions?.some((option) => option.id === requestedTransportId)
+          ? requestedTransportId
+          : undefined,
+        paceId: pkg.pace?.some((option) => option.id === requestedPaceId) ? requestedPaceId : undefined,
+        addOnIds: requestedAddOnIds.filter((id: string) => pkg.addOns?.some((option) => option.id === id))
+      };
+
+      const breakdown = calculateBookingPrice(pkg, config);
+
+      resolvedItemName = pkg.name;
+      resolvedDestination = pkg.destination;
+      journeyDetails = {
+        ...details,
+        slug: pkg.slug,
+        stayOptionId: config.stayOptionId,
+        transportOptionId: config.transportOptionId,
+        paceId: config.paceId,
+        addOnIds: config.addOnIds,
+        stayLabel: pkg.stayOptions?.find((option) => option.id === config.stayOptionId)?.label,
+        transportLabel: pkg.transportOptions?.find((option) => option.id === config.transportOptionId)?.label,
+        paceLabel: pkg.pace?.find((option) => option.id === config.paceId)?.label,
+        addOns: pkg.addOns?.filter((option) => config.addOnIds.includes(option.id)).map((option) => option.label),
+        total: breakdown.total
+      };
+
+      // Same authority principle as the persisted record above — the email reflects the
+      // server-recalculated breakdown, never the client-computed values the request
+      // arrived with. pickupLocation/specialRequest have no authoritative re-derivation
+      // (free text, not price/identity data); journeyDetails passes both through from
+      // `details` unchanged (see the spread above), so reading them straight off `details`
+      // gives the identical value that ends up persisted.
+      emailExtras = {
+        stayLabel: breakdown.stayLabel,
+        transportLabel: breakdown.transportLabel,
+        paceLabel: breakdown.paceLabel,
+        addOns: breakdown.addOnLines.map((line) => line.label),
+        total: breakdown.total,
+        pickupLocation: typeof details?.pickupLocation === 'string' ? details.pickupLocation : undefined,
+        specialRequest: typeof details?.specialRequest === 'string' ? details.specialRequest : undefined
+      };
+    }
+
     await connectDB();
     const referenceId = await generateBookingId();
 
     // See models/BookingRequest.ts for the `details.transportStatus` convention this
     // seeds — a future internal tool can advance it through a richer lifecycle without
     // this shared model's own `status` needing to fork per domain.
-    const enrichedDetails = type === 'transport' ? { ...details, transportStatus: 'REQUESTED' } : details;
+    const enrichedDetails = type === 'transport' ? { ...journeyDetails, transportStatus: 'REQUESTED' } : journeyDetails;
 
     const bookingRequest = await BookingRequest.create({
       referenceId,
@@ -178,8 +301,8 @@ export async function POST(request: Request) {
       name: name.slice(0, 200),
       phone: phone.slice(0, 30),
       email: email?.slice(0, 200),
-      itemName: itemName.slice(0, 200),
-      destination: destination?.slice(0, 200),
+      itemName: resolvedItemName.slice(0, 200),
+      destination: resolvedDestination?.slice(0, 200),
       dates: dates?.slice(0, 100),
       travelers: travelers?.slice(0, 100),
       details: enrichedDetails
@@ -199,7 +322,8 @@ export async function POST(request: Request) {
         itemName: bookingRequest.itemName,
         destination: bookingRequest.destination,
         dates: bookingRequest.dates,
-        travelers: bookingRequest.travelers
+        travelers: bookingRequest.travelers,
+        ...emailExtras
       })
     );
 

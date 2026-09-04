@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import { siteConfig } from '@/config/site.config';
+import { formatPriceOrQuote } from '@/lib/pricing';
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? siteConfig.contactEmail;
 const SMTP_HOST = process.env.SMTP_HOST;
@@ -44,6 +45,13 @@ export interface BookingConfirmationEmailInput {
   destination?: string;
   dates?: string;
   travelers?: string;
+  stayLabel?: string;
+  transportLabel?: string;
+  paceLabel?: string;
+  addOns?: string[];
+  total?: number;
+  pickupLocation?: string;
+  specialRequest?: string;
 }
 
 /**
@@ -86,6 +94,13 @@ export async function sendBookingConfirmationEmails(input: BookingConfirmationEm
     input.destination ? ['Destination', input.destination] : null,
     input.dates ? ['Dates', input.dates] : null,
     input.travelers ? ['Travelers', input.travelers] : null,
+    input.stayLabel ? ['Stay', input.stayLabel] : null,
+    input.transportLabel ? ['Transport', input.transportLabel] : null,
+    input.paceLabel ? ['Pace', input.paceLabel] : null,
+    input.addOns && input.addOns.length > 0 ? ['Add-ons', input.addOns.join(', ')] : null,
+    input.total !== undefined ? ['Total', formatPriceOrQuote(input.total)] : null,
+    input.pickupLocation ? ['Pickup Location', input.pickupLocation] : null,
+    input.specialRequest ? ['Special Request', input.specialRequest] : null,
     ['Phone', input.phone],
     input.email ? ['Email', input.email] : null
   ].filter((row): row is [string, string] => row !== null);
