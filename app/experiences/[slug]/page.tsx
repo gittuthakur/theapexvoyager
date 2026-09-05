@@ -149,9 +149,9 @@ export default async function ExperienceDetailPage({ params }: ExperienceDetailP
 
             {experience.importantInfo?.length ? (
               <div className="rounded-[2rem] border border-amber-200 bg-amber-50 p-8">
-                <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-amber-700">
+                <h2 className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-amber-700">
                   <Info size={15} /> Important Information
-                </p>
+                </h2>
                 <ul className="mt-4 space-y-2">
                   {experience.importantInfo.map((item) => (
                     <li key={item} className="text-sm leading-6 text-amber-900">
@@ -163,7 +163,7 @@ export default async function ExperienceDetailPage({ params }: ExperienceDetailP
             ) : null}
           </div>
 
-          <aside className="space-y-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-xl xl:sticky xl:top-24 xl:self-start">
+          <aside className="space-y-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-xl xl:sticky xl:top-24 xl:mr-8 xl:self-start">
             <div>
               <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Starting from</p>
               <p className="text-3xl font-bold text-slate-900">
@@ -199,7 +199,7 @@ function StatTile({ icon: Icon, label, value }: { icon: typeof Clock; label: str
 function ContentBlock({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
-      <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">{title}</p>
+      <h2 className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">{title}</h2>
       <div className="mt-4">{children}</div>
     </div>
   );
