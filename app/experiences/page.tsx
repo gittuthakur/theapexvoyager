@@ -6,11 +6,27 @@ import FeaturedExperiences from '@/components/modules/experiences/FeaturedExperi
 import LocalStories from '@/components/modules/experiences/LocalStories';
 import RegionShowcase from '@/components/modules/experiences/RegionShowcase';
 import { getAllExperiences } from '@/lib/experiences';
+import { images } from '@/config/images.config';
 import type { Metadata } from 'next';
 
+// Previously missing entirely, which left this page's canonical unset and its OG tags
+// silently inheriting the root layout's generic homepage defaults (title "The Apex
+// Voyager", the homepage description/URL, no image) — anyone sharing an /experiences
+// link got a homepage-branded preview card instead of this page's own identity. A
+// single static export (not generateMetadata) is correct here, matching
+// app/journeys/page.tsx and app/destinations/page.tsx: this page's own title/
+// description never vary by query string, since every filter combination
+// canonicalizes back to this one URL. `images.hero` is reused as-is rather than
+// invented — it's the same image ExperiencesHero already renders atop this exact page.
+const title = 'Curated Himalayan Experiences | The Apex Voyager';
+const description =
+  'Bookable Himalayan experiences — treks, village stays, food, wellness and offbeat adventures across Himachal Pradesh, Jammu & Kashmir and Uttarakhand.';
+
 export const metadata: Metadata = {
-  title: 'Curated Himalayan Experiences | The Apex Voyager',
-  description: 'Bookable Himalayan experiences — treks, village stays, food, wellness and offbeat adventures across Himachal Pradesh, Jammu & Kashmir and Uttarakhand.'
+  title,
+  description,
+  alternates: { canonical: '/experiences' },
+  openGraph: { type: 'website', title, description, url: '/experiences', images: [{ url: images.hero, alt: 'Himalayan peaks at first light' }] }
 };
 
 interface ExperiencesPageProps {

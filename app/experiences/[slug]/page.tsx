@@ -28,9 +28,22 @@ export async function generateMetadata({ params }: ExperienceDetailPageProps): P
   const { slug } = await params;
   const experience = await getExperienceBySlug(slug);
   if (!experience) return { title: 'Experience Not Found | The Apex Voyager' };
+  // Previously only title/description were set, so canonical and every Open Graph tag
+  // silently inherited the root layout's generic homepage defaults (title "The Apex
+  // Voyager", the homepage description/URL, no image) — sharing any specific
+  // experience's link produced a homepage-branded preview card instead of that
+  // experience's own. `alternates.canonical` is relative and carries no query string,
+  // so any future query-string variant of this same URL canonicalizes back to the bare
+  // experience URL automatically (matching app/journeys/[slug]/page.tsx's `?book=1`
+  // precedent).
+  const title = `${experience.title} | The Apex Voyager`;
+  const description = experience.shortDescription;
+  const canonicalPath = `/experiences/${experience.slug}`;
   return {
-    title: `${experience.title} | The Apex Voyager`,
-    description: experience.shortDescription
+    title,
+    description,
+    alternates: { canonical: canonicalPath },
+    openGraph: { type: 'website', title, description, url: canonicalPath, images: [{ url: experience.image, alt: experience.title }] }
   };
 }
 
