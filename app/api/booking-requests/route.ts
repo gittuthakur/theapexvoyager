@@ -4,7 +4,8 @@ import { BookingRequest, type BookingRequestType } from '@/models/BookingRequest
 import { generateBookingId } from '@/lib/bookingId';
 import { sendBookingConfirmationEmails, type BookingConfirmationEmailInput } from '@/lib/mailer';
 import { getPackageBySlug } from '@/lib/packages';
-import { calculateBookingPrice, type BookingConfig } from '@/lib/pricing';
+import { getExperienceBySlug } from '@/lib/experiences';
+import { calculateBookingPrice, isValidPrice, type BookingConfig } from '@/lib/pricing';
 import { priceJourney } from '@/lib/tripPlannerPricing';
 import { STAY_TYPE_OPTIONS, TRANSPORT_MODES, EXPERIENCE_OPTIONS } from '@/config/tripPlanner.config';
 import type { JourneyParams, StayTypeId, TransportModeId, ExperienceId } from '@/types/tripPlanner';
@@ -380,6 +381,40 @@ export async function POST(request: Request) {
           specialRequest: typeof details?.specialRequest === 'string' ? details.specialRequest : undefined
         };
       }
+    } else if (type === 'experience') {
+      // Same authority principle as the journey/catalog branch above — a client can
+      // send any slug/title/location/price, so none of that is trustworthy on its own.
+      // Re-derive identity from the Experience's own MongoDB document; a missing or
+      // unresolvable slug rejects outright rather than persisting a client-fabricated
+      // "experience" booking. There is no established per-request "total" semantics for
+      // an Experience (no traveller count is collected/validated here, unlike journey's
+      // adults/children), so this deliberately does not invent one — only the
+      // authoritative per-person `price` already shown on the detail page is carried
+      // through, and only when it's genuinely valid.
+      const slug = typeof details?.slug === 'string' ? details.slug.trim() : '';
+      if (!slug) {
+        return NextResponse.json({ error: 'Experience slug is required' }, { status: 400 });
+      }
+
+      const experience = await getExperienceBySlug(slug);
+      if (!experience) {
+        return NextResponse.json({ error: 'Experience not found' }, { status: 404 });
+      }
+
+      resolvedItemName = experience.title;
+      resolvedDestination = experience.location;
+      // Built entirely from server-resolved fields rather than spreading the client's
+      // `details` — Experience has no established customer-choice sub-fields (unlike
+      // journey's stayOptionId/transportOptionId/addOnIds) worth preserving, so this is
+      // the smallest surface that guarantees no client-supplied key of any name can
+      // survive into the persisted record as if it were authoritative.
+      journeyDetails = {
+        source: 'experience',
+        slug: experience.slug,
+        title: experience.title,
+        location: experience.location,
+        price: isValidPrice(experience.price) ? experience.price : undefined
+      };
     }
 
     await connectDB();
