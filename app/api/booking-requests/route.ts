@@ -5,6 +5,7 @@ import { generateBookingId } from '@/lib/bookingId';
 import { sendBookingConfirmationEmails, type BookingConfirmationEmailInput } from '@/lib/mailer';
 import { getPackageBySlug } from '@/lib/packages';
 import { getExperienceBySlug } from '@/lib/experiences';
+import { getExpertBySlug } from '@/lib/experts';
 import { calculateBookingPrice, isValidPrice, type BookingConfig } from '@/lib/pricing';
 import { priceJourney } from '@/lib/tripPlannerPricing';
 import { STAY_TYPE_OPTIONS, TRANSPORT_MODES, EXPERIENCE_OPTIONS } from '@/config/tripPlanner.config';
@@ -212,8 +213,9 @@ export async function POST(request: Request) {
     // slug. Re-derive every one of those from the Journey's own MongoDB document and
     // the SAME calculateBookingPrice() formula the client used, so what's actually
     // persisted always reflects the authoritative catalogue rather than whatever the
-    // request claimed. Scoped to `type === 'journey'` only — every other booking type
-    // (stay/tour/experience/transport/expert) keeps its existing, unchanged behavior.
+    // request claimed. Scoped to `type === 'journey'` only — `experience` and `expert`
+    // below have their own equivalent hardening; only `stay`/`tour`/`transport` still
+    // keep their original, unchanged (client-trusting) behavior.
     let resolvedItemName = itemName;
     let resolvedDestination = destination;
     let journeyDetails: Record<string, unknown> | undefined = details;
@@ -414,6 +416,54 @@ export async function POST(request: Request) {
         title: experience.title,
         location: experience.location,
         price: isValidPrice(experience.price) ? experience.price : undefined
+      };
+    } else if (type === 'expert') {
+      // Same authority principle as the experience branch above — a client can send any
+      // itemName/destination/expertise claiming to be "an expert," and previously nothing
+      // here checked whether that expert existed, was active, or was even meant to be
+      // publicly visible at all (Travel Experts Phase 1 finding F1). `details.slug` is now
+      // required and resolved against getExpertBySlug(), which itself enforces
+      // `active && publiclyListed` (see lib/experts.ts) — so a hidden/placeholder/removed
+      // Expert's old slug 404s here exactly like an unknown one, never silently
+      // resurrecting a non-public profile through the booking flow.
+      const slug = typeof details?.slug === 'string' ? details.slug.trim() : '';
+      if (!slug) {
+        return NextResponse.json({ error: 'Expert slug is required' }, { status: 400 });
+      }
+
+      const expert = await getExpertBySlug(slug);
+      if (!expert) {
+        return NextResponse.json({ error: 'Expert not found' }, { status: 404 });
+      }
+
+      resolvedItemName = expert.name;
+      resolvedDestination = destination;
+      // Expert identity (name/role/travelStyles/expertise) is always server-derived from
+      // the resolved document, never taken from the client's `details` — the same
+      // "smallest surface that guarantees no client-supplied key can survive as if it
+      // were authoritative" principle as the experience branch above. `destination` stays
+      // client-supplied: unlike Experience (one fixed `location`), an Expert can cover
+      // several destinations, and the customer picked which one they actually asked
+      // about — that's genuine customer input, not a claim about the expert's identity.
+      // The handful of trip-planner preference fields below are similarly genuine
+      // customer input (what THEY want), not anything about the expert, so they're
+      // allowlisted through by name/type rather than spreading `details` wholesale.
+      const allowedCustomerField = (key: string): string | undefined => {
+        const value = (details as Record<string, unknown> | undefined)?.[key];
+        return typeof value === 'string' ? value.slice(0, MAX_DETAILS_STRING_LENGTH) : undefined;
+      };
+      journeyDetails = {
+        source: 'expert',
+        slug: expert.slug,
+        name: expert.name,
+        role: expert.role,
+        travelStyles: expert.travelStyles,
+        expertise: expert.expertise,
+        travellerType: allowedCustomerField('travellerType'),
+        tripType: allowedCustomerField('tripType'),
+        budget: allowedCustomerField('budget'),
+        needHelpWith: allowedCustomerField('needHelpWith'),
+        requirements: allowedCustomerField('requirements')
       };
     }
 

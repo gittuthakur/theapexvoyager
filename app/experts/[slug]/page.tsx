@@ -19,9 +19,25 @@ interface ExpertDetailPageProps {
 export async function generateMetadata({ params }: ExpertDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const expert = await getExpertBySlug(slug);
+  // getExpertBySlug already requires publiclyListed:true (lib/experts.ts) — an old
+  // fictional-persona slug (or any non-public Expert) resolves to `undefined` here just
+  // like a genuinely unknown slug, so it can never advertise a non-public profile's
+  // identity through metadata. Matches app/journeys/[slug]/page.tsx's invalid-slug
+  // pattern: keep the page out of the index even while its own notFound() call
+  // determines the actual HTTP status.
+  if (!expert) return { title: 'Travel Experts | The Apex Voyager', robots: { index: false, follow: false } };
+
+  // Previously only title/description were set, so canonical and every Open Graph tag
+  // silently inherited the root layout's generic homepage defaults — sharing a specific
+  // expert's link produced a homepage-branded preview card instead of that expert's own.
+  const title = `${expert.name} | Travel Experts | The Apex Voyager`;
+  const description = expert.bio.slice(0, 155);
+  const canonicalPath = `/experts/${expert.slug}`;
   return {
-    title: expert ? `${expert.name} | Travel Experts | The Apex Voyager` : 'Travel Experts | The Apex Voyager',
-    description: expert ? `${expert.bio.slice(0, 155)}` : undefined
+    title,
+    description,
+    alternates: { canonical: canonicalPath },
+    openGraph: { type: 'website', title, description, url: canonicalPath, images: [{ url: expert.profileImage, alt: expert.name }] }
   };
 }
 

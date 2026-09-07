@@ -10,13 +10,26 @@ import ExpertTravelSupport from '@/components/modules/ExpertTravelSupport';
 import TalkToTravelTeamButton from '@/components/modules/TalkToTravelTeamButton';
 import { PackageCard, FinalCta } from '@/components/modules';
 import { images } from '@/config/images.config';
-import { getAllExperts, getExpertFacets } from '@/lib/experts';
+import { getAllExperts, getExpertFacets, matchesExpertQuery } from '@/lib/experts';
 import { getPackageBySlug } from '@/lib/packages';
 
+// Previously missing entirely, which left this page's canonical unset and its OG tags
+// silently inheriting the root layout's generic homepage defaults — anyone sharing an
+// /experts link got a homepage-branded preview card instead of this page's own identity.
+// A single static export (not generateMetadata) is correct here, matching
+// app/journeys/page.tsx and app/experiences/page.tsx: this page's own title/description
+// never vary by query string, since every filter combination canonicalizes back to this
+// one URL. `images.hero` is reused as-is rather than invented — it's the same image this
+// page's own InnerHeroBanner already renders (see `bgImage={images.hero}` below).
+const title = 'Travel Experts & Custom Trip Planning | The Apex Voyager';
+const description =
+  'Connect with The Apex Voyager travel experts for personalised Himalayan journeys, transport, stays, experiences and custom trip planning.';
+
 export const metadata: Metadata = {
-  title: 'Travel Experts & Custom Trip Planning | The Apex Voyager',
-  description:
-    'Connect with The Apex Voyager travel experts for personalised Himalayan journeys, transport, stays, experiences and custom trip planning.'
+  title,
+  description,
+  alternates: { canonical: '/experts' },
+  openGraph: { type: 'website', title, description, url: '/experts', images: [{ url: images.hero, alt: 'Himalayan peaks at first light' }] }
 };
 
 const expertFaqs = [
@@ -43,12 +56,11 @@ export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
 
   const [allExperts, facets] = await Promise.all([getAllExperts(), getExpertFacets()]);
 
-  const normalizedQuery = q?.trim().toLowerCase();
   const experts = allExperts.filter((expert) => {
     const matchesDestination = !destination || expert.destinationSlugs.includes(destination);
     const matchesStyle = !travelStyle || expert.travelStyles.includes(travelStyle);
     const matchesExpertise = !expertise || expert.expertise.includes(expertise);
-    const matchesQuery = !normalizedQuery || expert.name.toLowerCase().includes(normalizedQuery) || expert.bio.toLowerCase().includes(normalizedQuery);
+    const matchesQuery = !q || matchesExpertQuery(expert, q);
     return matchesDestination && matchesStyle && matchesExpertise && matchesQuery;
   });
 

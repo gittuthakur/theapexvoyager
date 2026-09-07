@@ -2,9 +2,9 @@ import { images } from '@/config/images.config';
 import type { TravelExpert } from '@/types/expert';
 
 /**
- * Static fallback catalog for the Travel Experts directory — used by lib/experts.ts
- * when the database is unreachable or the `Expert` collection hasn't been seeded yet
- * (same role as config/packages.config.ts for Journeys). These are illustrative
+ * Seed source for scripts/seed.ts's `Expert` collection (the only actual consumer —
+ * lib/experts.ts itself has no runtime fallback to this file; an earlier version of
+ * this comment claimed otherwise, which was never accurate). These are illustrative
  * portfolio profiles with invented, generic names; `profileImage` reuses an existing
  * destination photo from config/images.config.ts as a region banner (there is no
  * dedicated headshot photography in this project), not a fabricated likeness of a
@@ -12,6 +12,14 @@ import type { TravelExpert } from '@/types/expert';
  * config/destinations.config.ts and config/packages.config.ts — no invented places
  * or trips. Deliberately excludes rating/review/years-of-experience fields, since
  * none of that data is real (see AGENTS.md: never show fabricated trust signals).
+ *
+ * Travel Experts Phase 1 remediation (F2): these six are illustrative placeholders,
+ * not real staff or partners, so none of them may be publicly presented as a real,
+ * named, contactable specialist. models/Expert.ts's `publiclyListed` field defaults to
+ * `false` on every newly-created document (including a future reseed from this exact
+ * file), which is what actually keeps them out of /experts, sitemap.xml, and the
+ * booking API — not anything here. A genuine future employee/partner profile must be
+ * created with `publiclyListed: true` explicitly set before it appears anywhere public.
  */
 export const travelExperts: TravelExpert[] = [
   {

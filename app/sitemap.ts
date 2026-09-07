@@ -4,6 +4,7 @@ import { Destination } from '@/models/Destination';
 import { Region } from '@/models/Region';
 import { Journey } from '@/models/Journey';
 import { Experience } from '@/models/Experience';
+import { Expert } from '@/models/Expert';
 import { siteConfig } from '@/config/site.config';
 
 interface SlugRecord {
@@ -29,21 +30,31 @@ interface SlugRecord {
 // models/Experience.ts has no status/published/active field either, and every other
 // Experience consumer (lib/experiences.ts's getAllExperiences()/getExperienceBySlug())
 // already queries it unfiltered, so every document here is the live public catalogue.
+//
+// Expert coverage added later still (Travel Experts Phase 1 remediation) — different
+// from every catalogue above: `active` alone is NOT the public-visibility gate here.
+// See models/Expert.ts's `publiclyListed` field comment — the six current Expert
+// documents are illustrative placeholder personas, not real staff, and must not be
+// publicly discoverable (including via this sitemap) until a genuine profile
+// explicitly opts in. Mirrors the exact `{active:true, publiclyListed:true}` filter
+// lib/experts.ts's getAllExperts()/getExpertBySlug() already enforce.
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   await connectDB();
 
-  const [destinations, regions, journeys, experiences] = await Promise.all([
+  const [destinations, regions, journeys, experiences, experts] = await Promise.all([
     Destination.find().select('slug updatedAt').lean<SlugRecord[]>(),
     Region.find({ status: 'published' }).select('slug updatedAt').lean<SlugRecord[]>(),
     Journey.find().select('slug updatedAt').lean<SlugRecord[]>(),
-    Experience.find().select('slug updatedAt').lean<SlugRecord[]>()
+    Experience.find().select('slug updatedAt').lean<SlugRecord[]>(),
+    Expert.find({ active: true, publiclyListed: true }).select('slug updatedAt').lean<SlugRecord[]>()
   ]);
 
   const staticEntries: MetadataRoute.Sitemap = [
     { url: siteConfig.url, changeFrequency: 'weekly', priority: 1 },
     { url: `${siteConfig.url}/destinations`, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${siteConfig.url}/journeys`, changeFrequency: 'weekly', priority: 0.9 },
-    { url: `${siteConfig.url}/experiences`, changeFrequency: 'weekly', priority: 0.9 }
+    { url: `${siteConfig.url}/experiences`, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${siteConfig.url}/experts`, changeFrequency: 'weekly', priority: 0.9 }
   ];
 
   const destinationEntries: MetadataRoute.Sitemap = destinations.map((destination) => ({
@@ -74,5 +85,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8
   }));
 
-  return [...staticEntries, ...regionEntries, ...destinationEntries, ...journeyEntries, ...experienceEntries];
+  const expertEntries: MetadataRoute.Sitemap = experts.map((expert) => ({
+    url: `${siteConfig.url}/experts/${expert.slug}`,
+    lastModified: expert.updatedAt,
+    changeFrequency: 'weekly',
+    priority: 0.8
+  }));
+
+  return [...staticEntries, ...regionEntries, ...destinationEntries, ...journeyEntries, ...experienceEntries, ...expertEntries];
 }

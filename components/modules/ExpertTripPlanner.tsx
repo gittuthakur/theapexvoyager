@@ -86,7 +86,10 @@ export default function ExpertTripPlanner({ initialNeedHelpWith }: ExpertTripPla
       destination: selectedDestination?.title,
       dates: travelDate || undefined,
       travelers: travelers || undefined,
-      details: { travellerType, tripType, budget, needHelpWith, requirements },
+      // `slug` is what /api/booking-requests's `type:'expert'` branch actually trusts to
+      // resolve identity server-side; the rest are genuine customer-chosen preferences
+      // the server allowlists through by name (see that branch), not expert identity.
+      details: { slug: matchedExpert.slug, travellerType, tripType, budget, needHelpWith, requirements },
       buildWhatsAppMessage: (referenceId) =>
         buildExpertRequestMessage({
           referenceId,

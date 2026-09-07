@@ -59,9 +59,16 @@ export default async function ExpertCard({ expert }: ExpertCardProps) {
 
         <div className="flex-1" />
 
-        <div className="flex flex-wrap items-center gap-3 pt-2">
+        {/* `flex-col sm:flex-row` (not flex-wrap) so the two CTAs always stack full-width
+            below the `sm` breakpoint and always sit side-by-side at/above it — a fixed
+            breakpoint rather than the browser's own content-driven wrap decision, which
+            previously wrapped inconsistently by card depending on how long that specific
+            expert's name/label happened to be (e.g. "Talk to Priya" wrapped to 3 lines
+            at 320px while every longer label on other cards didn't). */}
+        <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
           <Link
             href={`/experts/${expert.slug}`}
+            aria-label={`View ${expert.name}'s profile`}
             className="cursor-hover inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-apex-500 px-5 py-3 text-center text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:scale-105 hover:bg-apex-400"
           >
             <Eye size={20} />

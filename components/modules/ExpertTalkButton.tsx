@@ -42,7 +42,10 @@ export default function ExpertTalkButton({ expert, className }: ExpertTalkButton
           type: 'expert',
           itemName: expert.name,
           destination: destination || undefined,
-          details: { travelStyles: expert.travelStyles, expertise: expert.expertise }
+          // `slug` is what /api/booking-requests's `type:'expert'` branch actually trusts —
+          // it re-resolves and overwrites name/role/travelStyles/expertise server-side, so
+          // sending them here is just for the review screen's own display, not authoritative.
+          details: { slug: expert.slug, travelStyles: expert.travelStyles, expertise: expert.expertise }
         })
       }
     >

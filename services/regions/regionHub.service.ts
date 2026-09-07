@@ -73,7 +73,11 @@ export async function getRegionHubData(slug: string): Promise<RegionHubData | nu
       Experience.find({ regionId: regionObjectId }).sort({ featured: -1 }).lean<ExperienceDocument[]>(),
       TransportRoute.find({ regionId: regionObjectId, active: true }).sort({ featured: -1, createdAt: 1 }).lean<TransportRouteDocument[]>(),
       TransportVehicle.find({ regionIds: regionObjectId, active: true }).sort({ featured: -1, createdAt: 1 }).lean<TransportVehicleDocument[]>(),
-      Expert.find({ regionIds: regionObjectId, active: true }).sort({ featured: -1, createdAt: 1 }).lean<ExpertDocument[]>(),
+      // `publiclyListed: true` required alongside `active` — see models/Expert.ts's field
+      // comment (Travel Experts Phase 1 remediation, F2). Without it this query bypassed
+      // lib/experts.ts's getAllExperts() gate entirely and kept surfacing the six
+      // illustrative placeholder personas on every Region Hub page.
+      Expert.find({ regionIds: regionObjectId, active: true, publiclyListed: true }).sort({ featured: -1, createdAt: 1 }).lean<ExpertDocument[]>(),
       getRegionAttractions({ name: region.name }),
       getRegionAccommodations(region.slug)
     ]);
