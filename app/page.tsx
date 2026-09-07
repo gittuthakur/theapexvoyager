@@ -1,12 +1,16 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { ArrowRight, Compass, Mountain, MountainSnow } from 'lucide-react';
 import HeroSection, { type HeroSectionData } from '@/components/modules/HeroSection';
 import homeHeroStyles from '@/components/modules/home/HomeHeroMobileFix.module.css';
+import HomeExperiencesPreview from '@/components/modules/home/HomeExperiencesPreview';
+import HomeTransportPreview from '@/components/modules/home/HomeTransportPreview';
 import GlobalSearchFilter from '@/components/GlobalSearchFilter';
 import TrustBadges from '@/components/modules/TrustBadges';
 import StatsBar from '@/components/modules/StatsBar';
 import WhyChooseUs from '@/components/modules/WhyChooseUs';
+import FinalCta from '@/components/modules/FinalCta';
 import NewsletterBanner from '@/components/modules/NewsletterBanner';
 import { createLazyModule } from '@/components/layout';
 import WhatsAppButton from '@/components/modules/WhatsAppButton';
@@ -18,6 +22,7 @@ import { buildTouristTripSchema } from '@/lib/schema';
 import { getTours } from '@/lib/tours';
 import { getAllPackages, getPackagesByDestinationSlug } from '@/lib/packages';
 import { getHotels } from '@/lib/hotels';
+import { getFeaturedExperiences } from '@/lib/experiences';
 import { formatINR } from '@/lib/pricing';
 import { destinations } from '@/config/destinations.config';
 import { travelStyles } from '@/config/travelStyles.config';
@@ -28,6 +33,24 @@ import type { StatItem } from '@/types';
 
 // Tours now come live from MongoDB, so this page can't be statically prerendered at build time.
 export const dynamic = 'force-dynamic';
+
+// Previously absent entirely (this page had no metadata/generateMetadata export at
+// all), so Home silently inherited the root layout's generic site-wide defaults —
+// no canonical, no OG image, and a title/description that named neither the regions
+// nor the verticals this is the entry point to. Static (not generateMetadata) since
+// none of this varies by request — Home's own content is server-rendered fresh per
+// request regardless (see `dynamic = 'force-dynamic'` above), but its metadata is not.
+const title = 'The Apex Voyager | Himalayan Journeys & Travel Planning';
+const description =
+  'Plan curated journeys, stays, experiences and transport across Himachal Pradesh, Jammu & Kashmir and Uttarakhand with The Apex Voyager.';
+
+export const metadata: Metadata = {
+  title,
+  description,
+  alternates: { canonical: '/' },
+  openGraph: { type: 'website', title, description, url: '/', images: [{ url: images.hero, alt: 'Himalayan peaks at first light' }] },
+  twitter: { card: 'summary_large_image', title, description, images: [images.hero] }
+};
 
 const PopularDestinationsSection = createLazyModule<import('@/components/modules/PopularDestinationsSection').PopularDestinationsSectionProps>(
   () => import('@/components/modules/PopularDestinationsSection')
@@ -75,7 +98,7 @@ export default async function HomePage() {
   // on one another's fetch) so they run concurrently instead of as five sequential
   // round-trips; connectDB()'s cached-connection-promise (lib/mongodb.ts) already makes
   // concurrent callers safe, no separate connection is opened per query.
-  const [popularDestinations, allPackages, hotels, reviews, stateLinks] = await Promise.all([
+  const [popularDestinations, allPackages, hotels, reviews, stateLinks, featuredExperiences] = await Promise.all([
     Promise.all(
       destinations
         .filter((destination) => destination.isPopular)
@@ -93,7 +116,8 @@ export default async function HomePage() {
     getAllPackages(),
     getHotels(),
     getReviewsForDestinationsPage(),
-    getHomeHeroRegions()
+    getHomeHeroRegions(),
+    getFeaturedExperiences()
   ]);
 
   const featuredJourneys = FEATURED_JOURNEY_SLUGS.map((slug) => allPackages.find((pkg) => pkg.slug === slug)).filter(
@@ -121,11 +145,11 @@ export default async function HomePage() {
       icon: <Compass size={16} className="text-apex-600" />,
       text: 'Real Himalayas. Rarely Found.'
     },
-    titleTop: 'Escape to the Quiet ',
-    titleBottomPrefix: 'Side of ',
-    titleHighlight: 'the Mountains',
+    titleTop: 'Himalayan Journeys, ',
+    titleBottomPrefix: 'Beyond the ',
+    titleHighlight: 'Guidebook.',
     subtitle:
-      'Handpicked homestays, remote valleys, and slow mountain living — the Himachal that most travelers never discover.',
+      'Handpicked stays, remote valleys and thoughtfully planned journeys across Himachal Pradesh, Jammu & Kashmir and Uttarakhand — for travelers who want to see more than the usual route.',
     media: {
       src: images.hero,
       alt: 'Luxury Himalayan expedition trek through Spiti Valley and Manali tour packages, Himachal Pradesh, at dusk'
@@ -191,36 +215,55 @@ export default async function HomePage() {
       <main>
         <PopularDestinationsSection destinations={popularDestinations} />
         <BeyondTouristTrailSection destinations={popularDestinations} />
+        <PackageSection
+          packages={featuredJourneys}
+          eyebrow="Handpicked for you"
+          title="The"
+          highlight="Journey Edit"
+          subtitle="Thoughtfully planned Himalayan itineraries with the route, pace and essential details already mapped out."
+          viewAllLabel="Explore All Journeys"
+        />
         {/* Tours come from MongoDB (and, on a miss, an internal fallback fetch) — this
             Suspense boundary keeps that lookup from delaying everything above it
-            (hero, destinations grid), which is all static/synchronous data. */}
+            (hero, destinations grid), which is all static/synchronous data. A distinct,
+            shorter, category-tagged catalog from the Journey Edit above it — see
+            FeatureGrid's own default copy for why these two sections are deliberately
+            differentiated rather than merged (Tours vs Journeys comparison in the
+            implementation report). */}
         <Suspense fallback={<SkeletonGrid count={6} className="mx-auto max-w-7xl px-6 py-16 sm:px-10 lg:px-16 xl:grid-cols-3" />}>
           <FeaturedToursSection />
         </Suspense>
-        <PackageSection
-          packages={featuredJourneys}
-          eyebrow="Curated Journeys"
-          title="The"
-          highlight="Journey Edit"
-          subtitle="Curated itineraries for unforgettable Himalayan escapes."
-          viewAllLabel="View All Journeys"
-        />
         <ExploreStays
           eyebrow = "APEX STAYS"
           title="Stay Somewhere "
           highlight="Worth Remembering"
-          subtitle="From mountain resorts and local homestays to hidden cabins and unforgettable treehouses, discover stays that make the Himalayas part of the experience."
-          viewAllLabel="View All Stays"
+          subtitle="From mountain resorts and local homestays to hillside cabins and treehouses — places chosen to complement the journey, not just fill the night."
+          viewAllLabel="Explore All Stays"
           viewAllHref="/stays"
         />
+        <HomeExperiencesPreview experiences={featuredExperiences} />
+        <HomeTransportPreview />
         <WhyChooseUs />
+        <FinalCta
+          eyebrow="Need help planning?"
+          title="Not Sure "
+          highlight="Where to Start?"
+          subtitle="Tell us your dates, interests and travel style, and our travel team can help shape a journey around what matters to you."
+          primaryLabel="Plan My Journey"
+          primaryHref="/plan-my-journey"
+          secondaryLabel="Talk to Our Travel Team"
+        />
         <TestimonialSection
           testimonials={testimonials}
           ratingLabel={testimonials.length > 0 ? `${averageRating}/5 Rating` : undefined}
           reviewCountLabel={testimonials.length > 0 ? `${testimonials.length} Review${testimonials.length === 1 ? '' : 's'}` : undefined}
+          emptyStateEyebrow="How we plan"
+          emptyStateTitle="Every Trip, "
+          emptyStateHighlight="Planned With Care"
+          emptyStateSubtitle="We're building our collection of traveler stories. In the meantime, here's a look at how we approach a few common kinds of journeys."
         />
         <div className="">
-          <NewsletterBanner />
+          <NewsletterBanner subtitle="Travel guides, Himalayan trip ideas and practical planning inspiration, straight to your inbox." />
         </div>
         <WhatsAppButton destination="the Himalayas" />
       </main>

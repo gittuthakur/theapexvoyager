@@ -34,6 +34,18 @@ export interface TestimonialSectionProps {
   viewAllLabel?: string;
   regions?: string[];
   travelStyles?: string[];
+  /**
+   * Overrides eyebrow/title/highlight/subtitle only while `testimonials` is empty (i.e.
+   * only FALLBACK_EXPERIENCE_PREVIEWS is showing) — lets a caller frame the section
+   * honestly for that state ("this is how we plan trips," not "real reviews") without
+   * changing anything once genuine reviews exist. Omit to keep the existing eyebrow/
+   * title/subtitle in both states (this is the default for every caller that doesn't
+   * pass these — e.g. app/destinations/page.tsx's own TestimonialSection usage).
+   */
+  emptyStateEyebrow?: string;
+  emptyStateTitle?: string;
+  emptyStateHighlight?: string;
+  emptyStateSubtitle?: string;
 }
 
 const DESKTOP_SLIDES_PER_VIEW = 3;
@@ -161,14 +173,23 @@ export default function TestimonialSection({
   viewAllHref = '/journeys',
   viewAllLabel = 'Explore All Journeys',
   regions = DEFAULT_REGIONS,
-  travelStyles = DEFAULT_TRAVEL_STYLES
+  travelStyles = DEFAULT_TRAVEL_STYLES,
+  emptyStateEyebrow,
+  emptyStateTitle,
+  emptyStateHighlight,
+  emptyStateSubtitle
 }: TestimonialSectionProps) {
   const swiperRef = useRef<SwiperInstance | null>(null);
   const [isLocked, setIsLocked] = useState(false);
   const [activeRegion, setActiveRegion] = useState('All');
   const [activeStyle, setActiveStyle] = useState<string | null>(null);
 
-  const sourceTestimonials = testimonials.length > 0 ? testimonials : FALLBACK_EXPERIENCE_PREVIEWS;
+  const isFallback = testimonials.length === 0;
+  const sourceTestimonials = isFallback ? FALLBACK_EXPERIENCE_PREVIEWS : testimonials;
+  const effectiveEyebrow = isFallback && emptyStateEyebrow ? emptyStateEyebrow : eyebrow;
+  const effectiveTitle = isFallback && emptyStateTitle ? emptyStateTitle : title;
+  const effectiveHighlight = isFallback && emptyStateHighlight ? emptyStateHighlight : highlight;
+  const effectiveSubtitle = isFallback && emptyStateSubtitle ? emptyStateSubtitle : subtitle;
   const items = sourceTestimonials.filter(
     (testimonial) =>
       (activeRegion === 'All' || testimonial.region === activeRegion) &&
@@ -210,12 +231,12 @@ export default function TestimonialSection({
           className="flex flex-col items-center text-center"
         >
           <span className="inline-flex items-center gap-2 rounded-full border border-[#E3E8F0] bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-apex-600 shadow-sm">
-            {eyebrow}
+            {effectiveEyebrow}
           </span>
           <h2 className="mt-4 text-3xl font-bold text-slate-900 sm:text-4xl">
-            {title} <span className="bg-gradient-to-r from-apex-500 via-apex-600 to-apex-700 bg-clip-text text-transparent">{highlight}</span>
+            {effectiveTitle} <span className="bg-gradient-to-r from-apex-500 via-apex-600 to-apex-700 bg-clip-text text-transparent">{effectiveHighlight}</span>
           </h2>
-          <p className="mt-3 max-w-xl text-slate-600">{subtitle}</p>
+          <p className="mt-3 max-w-xl text-slate-600">{effectiveSubtitle}</p>
 
           {ratingLabel || reviewCountLabel ? (
             <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm font-semibold text-slate-700 sm:gap-x-4">

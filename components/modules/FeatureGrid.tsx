@@ -148,7 +148,8 @@ function TourCard({ tour, size, isActive, onSelect }: TourCardProps) {
             ) : null}
           </div>
 
-          {/* Highlights Tag Array Container with fallback & explicit TS types */}
+          {/* Only ever rendered from the tour's own real data — no invented inclusion
+              claims (e.g. "Stay Included"/"Meals Included") when a tour has none. */}
           {tourHighlights.length > 0 ? (
             <div className="flex flex-wrap gap-2 pt-1">
               {tourHighlights.map((highlight: string, index: number) => {
@@ -164,23 +165,7 @@ function TourCard({ tour, size, isActive, onSelect }: TourCardProps) {
                 );
               })}
             </div>
-          ) : (
-            /* Fallback tags if no tags found in any property */
-            <div className="flex flex-wrap gap-2 pt-1">
-              {['Stay Included', 'Meals Included'].map((highlight: string, index: number) => {
-                const Icon = highlightIcon(highlight);
-                return (
-                  <span
-                    key={`${currentKey}-default-lg-tag-${index}`}
-                    className="flex items-center gap-1.5 rounded-full bg-[#3B82F6]/20 border border-[#3B82F6]/50 px-3 py-1.5 text-xs font-medium text-slate-200 backdrop-blur-sm"
-                  >
-                    <Icon size={14} className="text-apex-200 shrink-0" />
-                    {highlight}
-                  </span>
-                );
-              })}
-            </div>
-          )}
+          ) : null}
 
           <div className="mt-2 flex items-center justify-between gap-4 pt-3">
             <div>
@@ -214,9 +199,9 @@ function TourCard({ tour, size, isActive, onSelect }: TourCardProps) {
     );
   }
 
-  // Small List Card Item
-  const displayHighlights: string[] =
-    tourHighlights.length > 0 ? tourHighlights : ['Stay Included', 'Meals'];
+  // Small List Card Item — only ever the tour's own real data, never an invented
+  // inclusion claim when none exists.
+  const displayHighlights: string[] = tourHighlights;
 
   return (
     <div
@@ -244,7 +229,11 @@ function TourCard({ tour, size, isActive, onSelect }: TourCardProps) {
         <div className="space-y-1.5">
           <div className="flex items-center justify-between gap-2">
             <div className="flex gap-3">
-              <h3 className="truncate text-base font-bold text-slate-900">{tour.title}</h3>
+              {/* A `<p>`, not a heading — this list repeats every tour's title, including
+                  the one already shown as the large card's own <h3> above, so marking each
+                  one a heading too would put the same title in the heading outline twice
+                  in a row for a screen-reader user. */}
+              <p className="truncate text-base font-bold text-slate-900">{tour.title}</p>
               {tour.badge ? (
                 <span className="rounded-full bg-apex-100 px-2 py-1 text-xs font-medium text-apex-600">
                   {tour.badge}
@@ -311,10 +300,13 @@ function TourCard({ tour, size, isActive, onSelect }: TourCardProps) {
 }
 
 export default function FeatureGrid({
-  title = 'Signature',
-  highlight = 'Escapes',
-  eyebrow = 'Handpicked for you',
-  subtitle = 'Ready-to-go Himalayan trips, thoughtfully designed for effortless travel.',
+  title = 'Trips by',
+  highlight = 'Travel Style',
+  eyebrow = 'Ready-to-book trips',
+  // Deliberately distinct in purpose from the Journey Edit section (PackageSection) —
+  // this is a shorter, category-tagged catalog (Adventure/Wellness/Cultural/...), not
+  // another list of the same signature itineraries. See app/page.tsx's section ordering.
+  subtitle = 'Shorter, themed getaways — adventure, wellness, culture and more — for when you know the mood but not yet the exact itinerary.',
   tours = [],
   viewAllHref = '/journeys'
 }: FeatureGridProps) {

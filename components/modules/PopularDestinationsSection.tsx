@@ -49,8 +49,7 @@ export default function PopularDestinationsSection({ destinations }: PopularDest
             Popular <span className="bg-gradient-to-r from-apex-500 via-apex-600 to-apex-700 bg-clip-text text-transparent">Destinations</span>
           </h2>
           <p className="mx-auto max-w-2xl text-slate-600">
-            The valleys, meadows and riverfronts travelers keep coming back to — curated by our team and ranked by what actually
-            makes each one worth the journey.
+            The valleys, mountain towns and landscapes travelers return to — curated by our team across the Indian Himalayas.
           </p>
         </motion.div>
 
