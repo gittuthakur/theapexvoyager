@@ -29,10 +29,11 @@ const DEFAULT_STATE: TripPlannerWizardState = {
   dates: { start: null, end: null, flexible: false },
   travellers: { companionType: 'couple', adults: 2, children: 0, rooms: 1 },
   travelStyleIds: [],
-  stay: { typeIds: [], minBudgetPerNight: 2000, maxBudgetPerNight: 8000, amenities: [] },
+  stay: { typeIds: [], amenities: [] },
   experienceIds: [],
   transport: { modeId: null, pickup: '', drop: '' },
-  budget: { mode: 'total', bracketId: null }
+  budget: { mode: 'total', bracketId: null },
+  notes: ''
 };
 
 // A CTA anywhere on the site can link here with ?source=<journey|destination|stay|
@@ -206,7 +207,14 @@ export default function PlanMyJourneyWizard({ bookingContext = null, hadBookingP
             {step === 7 ? (
               <TransportStep value={state.transport} onChange={(transport) => setState((current) => ({ ...current, transport }))} />
             ) : null}
-            {step === 8 ? <BudgetStep value={state.budget} onChange={(budget) => setState((current) => ({ ...current, budget }))} /> : null}
+            {step === 8 ? (
+              <BudgetStep
+                value={state.budget}
+                onChange={(budget) => setState((current) => ({ ...current, budget }))}
+                notes={state.notes}
+                onNotesChange={(notes) => setState((current) => ({ ...current, notes }))}
+              />
+            ) : null}
           </div>
 
           {/* Desktop navigation */}

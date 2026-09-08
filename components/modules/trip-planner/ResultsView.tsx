@@ -72,7 +72,8 @@ export function ResultsView({ state, choices, onEditAnswers }: ResultsViewProps)
     destinations: destinationsLabel(state),
     dates: datesLabel(state),
     travelers: travellersLabel(state),
-    budget: budgetLabel(state)
+    budget: budgetLabel(state),
+    notes: state.notes.trim() || undefined
   };
 
   return (
@@ -89,7 +90,7 @@ export function ResultsView({ state, choices, onEditAnswers }: ResultsViewProps)
         <Sparkles size={18} />
         <p className="text-sm font-semibold uppercase tracking-[0.28em]">Curated for you</p>
       </div>
-      <h1 className="mt-2 text-3xl font-bold text-slate-900 sm:text-4xl">Your Himalayan Journey</h1>
+      <h2 className="mt-2 text-3xl font-bold text-slate-900 sm:text-4xl">Your Himalayan Journey</h2>
       <p className="mt-3 max-w-2xl text-sm text-slate-600 sm:text-base">
         {journeyContext.destinations} · {journeyContext.dates} · {journeyContext.travelers}
       </p>

@@ -322,6 +322,9 @@ export interface JourneyRequestMessageParams {
   budgetLabel: string;
   estimatedTotal: string;
   perPerson: string;
+  pickup?: string;
+  drop?: string;
+  notes?: string;
 }
 
 export interface ExpertRequestMessageParams {
@@ -376,20 +379,28 @@ export function buildJourneyRequestMessage({
   experiences,
   budgetLabel,
   estimatedTotal,
-  perPerson
+  perPerson,
+  pickup,
+  drop,
+  notes
 }: JourneyRequestMessageParams) {
-  return [
+  const lines = [
     `Hi! I'd like to book my Himalayan journey — reference ${referenceId}.`,
     `*Journey:* ${tierTitle}`,
     `*Destination(s):* ${destinations}`,
     `*Dates:* ${dates}`,
     `*Travellers:* ${travelers}`,
     `*Stay:* ${stayLabel}`,
-    `*Transport:* ${transportLabel}`,
+    `*Transport:* ${transportLabel}`
+  ];
+  if (pickup) lines.push(`*Pickup:* ${pickup}`);
+  if (drop) lines.push(`*Drop:* ${drop}`);
+  lines.push(
     `*Experiences:* ${experiences}`,
     `*Budget:* ${budgetLabel}`,
-    `*Estimated Cost:* ${estimatedTotal} (${perPerson} per person)`,
-    '',
-    'Please confirm availability and next steps.'
-  ].join('\n');
+    `*Estimated Cost:* ${estimatedTotal} (${perPerson} per person)`
+  );
+  if (notes) lines.push(`*Notes:* ${notes}`);
+  lines.push('', 'Please confirm availability and next steps.');
+  return lines.join('\n');
 }

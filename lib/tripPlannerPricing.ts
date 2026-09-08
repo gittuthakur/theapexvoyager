@@ -13,12 +13,17 @@ const SERVICE_FEE_RATE = 0.07;
 const MEALS_PER_PERSON_PER_NIGHT = 900;
 const GUIDE_FLAT_PER_NIGHT = 2500;
 const DEFAULT_NIGHTS = 5;
+// No planner-specific maximum existed before this — chosen from the longest duration
+// The Apex Voyager already sells (config/tours.config.ts's longest itinerary is
+// "10 Days / 9 Nights"), not invented from scratch. Enforced both here (client-side
+// preview pricing) and again in app/api/booking-requests/route.ts (server-authoritative).
+export const MAX_NIGHTS = 9;
 
 /** Single source of truth for turning a component selection into a transparent, line-itemized total — every tier card and the customize panel call this instead of computing their own numbers. */
 export function priceJourney(params: JourneyParams): JourneyPriceResult {
   const stay = STAY_TYPE_OPTIONS.find((option) => option.id === params.stayTypeId) ?? STAY_TYPE_OPTIONS[0];
   const transport = TRANSPORT_MODES.find((option) => option.id === params.transportModeId) ?? TRANSPORT_MODES[0];
-  const nights = Math.max(1, params.nights);
+  const nights = Math.min(MAX_NIGHTS, Math.max(1, params.nights));
   const travellers = Math.max(1, params.travellerCount);
   const rooms = Math.max(1, params.rooms);
 
@@ -131,6 +136,9 @@ export function computeJourneyChoices(state: TripPlannerWizardState): JourneyCho
     .map((option) => option.id);
   const signatureExperiences = [...selectedExperiences, ...bonusExperiences];
 
+  const pickup = state.transport.pickup.trim() || undefined;
+  const drop = state.transport.drop.trim() || undefined;
+
   const smartParams: JourneyParams = {
     nights,
     travellerCount,
@@ -139,7 +147,9 @@ export function computeJourneyChoices(state: TripPlannerWizardState): JourneyCho
     transportModeId: smartTransport,
     experienceIds: selectedExperiences,
     guideIncluded: false,
-    mealsIncluded: true
+    mealsIncluded: true,
+    pickup,
+    drop
   };
   const comfortParams: JourneyParams = {
     ...smartParams,

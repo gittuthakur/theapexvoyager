@@ -56,8 +56,6 @@ export interface WizardTravellersState {
 
 export interface WizardStayState {
   typeIds: StayTypeId[];
-  minBudgetPerNight: number;
-  maxBudgetPerNight: number;
   amenities: string[];
 }
 
@@ -81,6 +79,8 @@ export interface TripPlannerWizardState {
   experienceIds: ExperienceId[];
   transport: WizardTransportState;
   budget: WizardBudgetState;
+  /** Optional free text — "Anything else we should know?" — informational only, never priced. */
+  notes: string;
 }
 
 export interface JourneyPriceLine {
@@ -97,6 +97,9 @@ export interface JourneyParams {
   experienceIds: ExperienceId[];
   guideIncluded: boolean;
   mealsIncluded: boolean;
+  /** Informational planning fields only — never read by priceJourney(), never affect price. */
+  pickup?: string;
+  drop?: string;
 }
 
 export interface JourneyPriceResult {

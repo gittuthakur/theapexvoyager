@@ -13,8 +13,8 @@ export interface TravellersStepProps {
 export function TravellersStep({ value, onChange }: TravellersStepProps) {
   return (
     <div className="space-y-8">
-      <div>
-        <p className="text-sm font-semibold text-slate-900">Who&apos;s travelling?</p>
+      <fieldset className="m-0 border-0 p-0">
+        <legend className="mb-0 w-full p-0 text-sm font-semibold text-slate-900">Who&apos;s travelling?</legend>
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {COMPANION_TYPES.map((companion) => (
             <SelectCard
@@ -27,7 +27,7 @@ export function TravellersStep({ value, onChange }: TravellersStepProps) {
             />
           ))}
         </div>
-      </div>
+      </fieldset>
 
       <div className="divide-y divide-slate-200 rounded-2xl border border-slate-200 bg-white px-5">
         <StepperRow

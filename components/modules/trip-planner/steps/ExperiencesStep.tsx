@@ -15,17 +15,20 @@ export function ExperiencesStep({ value, onChange }: ExperiencesStepProps) {
   }
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      {EXPERIENCE_OPTIONS.map((experience) => (
-        <SelectCard
-          key={experience.id}
-          label={experience.label}
-          description={experience.description}
-          icon={experience.icon}
-          selected={value.includes(experience.id)}
-          onClick={() => toggle(experience.id)}
-        />
-      ))}
-    </div>
+    <fieldset className="m-0 border-0 p-0">
+      <legend className="sr-only">What do you want to actually do while you are there?</legend>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {EXPERIENCE_OPTIONS.map((experience) => (
+          <SelectCard
+            key={experience.id}
+            label={experience.label}
+            description={experience.description}
+            icon={experience.icon}
+            selected={value.includes(experience.id)}
+            onClick={() => toggle(experience.id)}
+          />
+        ))}
+      </div>
+    </fieldset>
   );
 }

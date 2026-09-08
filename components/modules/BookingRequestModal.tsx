@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, type FormEvent, type ReactNode } from 'react';
+import Link from 'next/link';
 import { CheckCircle2, X } from 'lucide-react';
 import { postJSON } from '@/lib/api';
 import { buildBookingMessage, buildWhatsAppLink } from '@/lib/whatsapp';
@@ -296,6 +297,14 @@ export function BookingRequestProvider({ children }: { children: ReactNode }) {
                   {errorMessage}
                 </p>
               ) : null}
+
+              <p className="text-xs text-slate-400">
+                By submitting, you agree that our travel team may contact you about this trip. See our{' '}
+                <Link href="/privacy" className="underline hover:text-slate-600">
+                  Privacy Policy
+                </Link>
+                .
+              </p>
 
               <button
                 type="submit"

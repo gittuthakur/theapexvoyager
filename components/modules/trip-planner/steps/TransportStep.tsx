@@ -15,8 +15,8 @@ const inputStyles =
 export function TransportStep({ value, onChange }: TransportStepProps) {
   return (
     <div className="space-y-8">
-      <div>
-        <p className="text-sm font-semibold text-slate-900">How would you like to get around?</p>
+      <fieldset className="m-0 border-0 p-0">
+        <legend className="mb-0 w-full p-0 text-sm font-semibold text-slate-900">How would you like to get around?</legend>
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           {TRANSPORT_MODES.map((mode) => (
             <SelectCard
@@ -29,7 +29,7 @@ export function TransportStep({ value, onChange }: TransportStepProps) {
             />
           ))}
         </div>
-      </div>
+      </fieldset>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>

@@ -51,7 +51,10 @@ export interface BookingConfirmationEmailInput {
   addOns?: string[];
   total?: number;
   pickupLocation?: string;
+  dropLocation?: string;
   specialRequest?: string;
+  /** Free-text "anything else we should know?" — admin email only, see the customer send below. */
+  notes?: string;
 }
 
 /**
@@ -100,12 +103,16 @@ export async function sendBookingConfirmationEmails(input: BookingConfirmationEm
     input.addOns && input.addOns.length > 0 ? ['Add-ons', input.addOns.join(', ')] : null,
     input.total !== undefined ? ['Total', formatPriceOrQuote(input.total)] : null,
     input.pickupLocation ? ['Pickup Location', input.pickupLocation] : null,
+    input.dropLocation ? ['Drop Location', input.dropLocation] : null,
     input.specialRequest ? ['Special Request', input.specialRequest] : null,
     ['Phone', input.phone],
     input.email ? ['Email', input.email] : null
   ].filter((row): row is [string, string] => row !== null);
 
   const detailHtml = detailRows.map(([label, value]) => `<p><strong>${label}:</strong> ${escapeHtml(value)}</p>`).join('\n');
+  // Notes may contain sensitive free text (dietary/accessibility/celebration details) —
+  // kept out of detailHtml (shared by both sends) and appended to the admin email only.
+  const notesHtml = input.notes ? `<p><strong>Special Notes:</strong> ${escapeHtml(input.notes)}</p>` : '';
   const safeName = escapeHtml(input.name);
 
   const sends: Promise<unknown>[] = [
@@ -113,7 +120,7 @@ export async function sendBookingConfirmationEmails(input: BookingConfirmationEm
       from: `${siteConfig.name} <${SMTP_USER}>`,
       to: ADMIN_EMAIL,
       subject: `New ${input.type} booking request — ${input.itemName} (${input.referenceId})`,
-      html: `<h2>New booking request</h2><p><strong>Name:</strong> ${safeName}</p>${detailHtml}`
+      html: `<h2>New booking request</h2><p><strong>Name:</strong> ${safeName}</p>${detailHtml}${notesHtml}`
     })
   ];
 
@@ -122,10 +129,11 @@ export async function sendBookingConfirmationEmails(input: BookingConfirmationEm
       transporter.sendMail({
         from: `${siteConfig.name} <${SMTP_USER}>`,
         to: input.email,
-        subject: `Your ${siteConfig.name} booking request (${input.referenceId})`,
+        subject: `Your ${siteConfig.name} travel request (${input.referenceId})`,
         html: `
           <p>Hi ${safeName},</p>
-          <p>Thanks for booking with ${siteConfig.name}! We've received your request and our team will confirm availability shortly.</p>
+          <p>Thank you for planning your journey with ${siteConfig.name}. We've received your travel request.</p>
+          <p>Our team will review the details and help confirm availability, pricing and next steps.</p>
           ${detailHtml}
           <p>Keep this reference handy: <strong>${input.referenceId}</strong></p>
           <p>— The ${siteConfig.name} Team</p>

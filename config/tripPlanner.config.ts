@@ -47,9 +47,13 @@ export interface PlannerRegion {
 // Same three primary regions as config/search.config.ts's regionCategories, but with a
 // stable `id` (search.config.ts only carries the display name) so wizard state can
 // persist a region selection independently of any future label changes.
+// `id: 'kashmir'` is kept exactly as-is — it's the internal bridge key consumed by
+// REGION_ID_TO_PLANNER_REGION_ID below and by lib/bookingContext.ts region deep-links.
+// Only the customer-facing `name` was aligned to the site's canonical taxonomy
+// (config/regions.config.ts), which calls this region "Jammu & Kashmir".
 export const PLANNER_REGIONS: PlannerRegion[] = [
   { id: 'himachal-pradesh', name: 'Himachal Pradesh', description: 'Manali, Shimla & Spiti Valley', icon: Mountain },
-  { id: 'kashmir', name: 'Kashmir', description: 'Gulmarg, Srinagar & alpine valleys', icon: Snowflake },
+  { id: 'kashmir', name: 'Jammu & Kashmir', description: 'Gulmarg, Srinagar & alpine valleys', icon: Snowflake },
   { id: 'uttarakhand', name: 'Uttarakhand', description: 'Rishikesh, Haridwar & the Himalayas', icon: Trees }
 ];
 
@@ -146,8 +150,6 @@ export const STAY_AMENITIES: string[] = [
   'Riverside',
   'Bathtub'
 ];
-
-export const STAY_BUDGET_RANGE = { min: 1000, max: 20000, step: 500 };
 
 export interface PlannerExperience {
   id: ExperienceId;

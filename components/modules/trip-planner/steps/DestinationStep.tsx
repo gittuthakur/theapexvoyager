@@ -38,8 +38,8 @@ export function DestinationStep({ value, onChange }: DestinationStepProps) {
 
   return (
     <div className="space-y-8">
-      <div>
-        <p className="text-sm font-semibold text-slate-900">Choose one or more regions</p>
+      <fieldset className="m-0 border-0 p-0">
+        <legend className="mb-0 w-full p-0 text-sm font-semibold text-slate-900">Choose one or more regions</legend>
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           {PLANNER_REGIONS.map((region) => (
             <SelectCard
@@ -52,13 +52,16 @@ export function DestinationStep({ value, onChange }: DestinationStepProps) {
             />
           ))}
         </div>
-      </div>
+      </fieldset>
 
       <div>
-        <p className="text-sm font-semibold text-slate-900">Add specific valleys or towns (optional)</p>
+        <label htmlFor="planner-destination-search" className="text-sm font-semibold text-slate-900">
+          Add specific valleys or towns (optional)
+        </label>
         <div className="relative mt-3">
           <MapPin size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-apex-500" />
           <input
+            id="planner-destination-search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={(event) => {

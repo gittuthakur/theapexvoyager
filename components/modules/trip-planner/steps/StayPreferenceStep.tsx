@@ -1,7 +1,6 @@
 'use client';
 
-import { STAY_AMENITIES, STAY_BUDGET_RANGE, STAY_TYPE_OPTIONS } from '@/config/tripPlanner.config';
-import { formatINR } from '@/lib/pricing';
+import { STAY_AMENITIES, STAY_TYPE_OPTIONS } from '@/config/tripPlanner.config';
 import { cn } from '@/lib/utils';
 import { SelectCard } from '../SelectCard';
 import type { StayTypeId, WizardStayState } from '@/types/tripPlanner';
@@ -28,8 +27,8 @@ export function StayPreferenceStep({ value, onChange }: StayPreferenceStepProps)
 
   return (
     <div className="space-y-8">
-      <div>
-        <p className="text-sm font-semibold text-slate-900">What kind of stay do you prefer?</p>
+      <fieldset className="m-0 border-0 p-0">
+        <legend className="mb-0 w-full p-0 text-sm font-semibold text-slate-900">What kind of stay do you prefer?</legend>
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {STAY_TYPE_OPTIONS.map((stay) => (
             <SelectCard
@@ -41,50 +40,10 @@ export function StayPreferenceStep({ value, onChange }: StayPreferenceStepProps)
             />
           ))}
         </div>
-      </div>
+      </fieldset>
 
-      <div>
-        <p className="text-sm font-semibold text-slate-900">Budget per night</p>
-        <div className="mt-3 grid gap-5 sm:grid-cols-2">
-          <div>
-            <div className="flex items-center justify-between text-xs text-slate-500">
-              <span>Minimum</span>
-              <span className="font-semibold text-slate-900">{formatINR(value.minBudgetPerNight)}</span>
-            </div>
-            <input
-              type="range"
-              min={STAY_BUDGET_RANGE.min}
-              max={STAY_BUDGET_RANGE.max}
-              step={STAY_BUDGET_RANGE.step}
-              value={value.minBudgetPerNight}
-              onChange={(event) =>
-                onChange({ ...value, minBudgetPerNight: Math.min(Number(event.target.value), value.maxBudgetPerNight - STAY_BUDGET_RANGE.step) })
-              }
-              className="mt-2 h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200 accent-apex-500"
-            />
-          </div>
-          <div>
-            <div className="flex items-center justify-between text-xs text-slate-500">
-              <span>Maximum</span>
-              <span className="font-semibold text-slate-900">{formatINR(value.maxBudgetPerNight)}</span>
-            </div>
-            <input
-              type="range"
-              min={STAY_BUDGET_RANGE.min}
-              max={STAY_BUDGET_RANGE.max}
-              step={STAY_BUDGET_RANGE.step}
-              value={value.maxBudgetPerNight}
-              onChange={(event) =>
-                onChange({ ...value, maxBudgetPerNight: Math.max(Number(event.target.value), value.minBudgetPerNight + STAY_BUDGET_RANGE.step) })
-              }
-              className="mt-2 h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200 accent-apex-500"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <p className="text-sm font-semibold text-slate-900">Amenities you&apos;d love</p>
+      <fieldset className="m-0 border-0 p-0">
+        <legend className="mb-0 w-full p-0 text-sm font-semibold text-slate-900">Amenities you&apos;d love</legend>
         <div className="mt-3 flex flex-wrap gap-2">
           {STAY_AMENITIES.map((amenity) => {
             const selected = value.amenities.includes(amenity);
@@ -104,7 +63,7 @@ export function StayPreferenceStep({ value, onChange }: StayPreferenceStepProps)
             );
           })}
         </div>
-      </div>
+      </fieldset>
     </div>
   );
 }

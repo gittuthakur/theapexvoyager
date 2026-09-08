@@ -15,6 +15,7 @@ export interface JourneyContext {
   dates: string;
   travelers: string;
   budget: string;
+  notes?: string;
 }
 
 export interface ChoiceCardProps {
@@ -47,7 +48,8 @@ export function ChoiceCard({ rank, choice, recommended, onParamsChange, journeyC
         tier: choice.id,
         params: choice.params,
         breakdown: choice.price.breakdown,
-        total: choice.price.total
+        total: choice.price.total,
+        notes: journeyContext.notes
       },
       buildWhatsAppMessage: (referenceId) =>
         buildJourneyRequestMessage({
@@ -61,7 +63,10 @@ export function ChoiceCard({ rank, choice, recommended, onParamsChange, journeyC
           experiences,
           budgetLabel: journeyContext.budget,
           estimatedTotal: formatINR(choice.price.total),
-          perPerson: formatINR(choice.price.perPerson)
+          perPerson: formatINR(choice.price.perPerson),
+          pickup: choice.params.pickup,
+          drop: choice.params.drop,
+          notes: journeyContext.notes
         })
     });
   }

@@ -2,6 +2,7 @@
 
 import { Minus, Plus } from 'lucide-react';
 import { STAY_TYPE_OPTIONS, TRANSPORT_MODES } from '@/config/tripPlanner.config';
+import { MAX_NIGHTS } from '@/lib/tripPlannerPricing';
 import { cn } from '@/lib/utils';
 import type { JourneyParams, StayTypeId, TransportModeId } from '@/types/tripPlanner';
 
@@ -19,7 +20,7 @@ export function CustomizePanel({ params, onChange }: CustomizePanelProps) {
     onChange({ ...params, transportModeId });
   }
   function setNights(nights: number) {
-    onChange({ ...params, nights: Math.max(1, nights) });
+    onChange({ ...params, nights: Math.min(MAX_NIGHTS, Math.max(1, nights)) });
   }
 
   return (
@@ -84,8 +85,9 @@ export function CustomizePanel({ params, onChange }: CustomizePanelProps) {
           <button
             type="button"
             aria-label="Increase nights"
+            disabled={params.nights >= MAX_NIGHTS}
             onClick={() => setNights(params.nights + 1)}
-            className="cursor-hover flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 text-slate-600 transition-colors duration-300 ease-in-out hover:border-apex-400/60 hover:text-slate-900"
+            className="cursor-hover flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 text-slate-600 transition-colors duration-300 ease-in-out hover:border-apex-400/60 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-30"
           >
             <Plus size={14} />
           </button>

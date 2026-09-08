@@ -7,9 +7,8 @@ import { getPackageBySlug } from '@/lib/packages';
 import { getExperienceBySlug } from '@/lib/experiences';
 import { getExpertBySlug } from '@/lib/experts';
 import { calculateBookingPrice, isValidPrice, type BookingConfig } from '@/lib/pricing';
-import { priceJourney } from '@/lib/tripPlannerPricing';
+import { normalizeTripPlannerJourney } from '@/lib/tripPlannerRequest';
 import { STAY_TYPE_OPTIONS, TRANSPORT_MODES, EXPERIENCE_OPTIONS } from '@/config/tripPlanner.config';
-import type { JourneyParams, StayTypeId, TransportModeId, ExperienceId } from '@/types/tripPlanner';
 
 const VALID_TYPES: BookingRequestType[] = ['stay', 'journey', 'tour', 'experience', 'transport', 'expert'];
 
@@ -240,42 +239,16 @@ export async function POST(request: Request) {
         if (!rawParams || typeof rawParams !== 'object' || Array.isArray(rawParams)) {
           return NextResponse.json({ error: 'details.params is required for trip-planner journey requests' }, { status: 400 });
         }
-        const p = rawParams as Record<string, unknown>;
 
-        const requestedStayTypeId = typeof p.stayTypeId === 'string' ? p.stayTypeId : undefined;
-        const stayTypeId = (
-          STAY_TYPE_OPTIONS.some((option) => option.id === requestedStayTypeId) ? requestedStayTypeId : STAY_TYPE_OPTIONS[0].id
-        ) as StayTypeId;
-
-        const requestedTransportModeId = typeof p.transportModeId === 'string' ? p.transportModeId : undefined;
-        const transportModeId = (
-          TRANSPORT_MODES.some((option) => option.id === requestedTransportModeId) ? requestedTransportModeId : TRANSPORT_MODES[0].id
-        ) as TransportModeId;
-
-        const requestedExperienceIds = Array.isArray(p.experienceIds)
-          ? p.experienceIds.filter((id: unknown): id is string => typeof id === 'string')
-          : [];
-        const experienceIds = requestedExperienceIds.filter((id: string) =>
-          EXPERIENCE_OPTIONS.some((option) => option.id === id)
-        ) as ExperienceId[];
-
-        const nightsRaw = Number(p.nights);
-        const travellerCountRaw = Number(p.travellerCount);
-        const roomsRaw = Number(p.rooms);
-
-        const normalizedParams: JourneyParams = {
-          nights: Number.isFinite(nightsRaw) && nightsRaw > 0 ? Math.floor(nightsRaw) : 1,
-          travellerCount: Number.isFinite(travellerCountRaw) && travellerCountRaw > 0 ? Math.floor(travellerCountRaw) : 1,
-          rooms: Number.isFinite(roomsRaw) && roomsRaw > 0 ? Math.floor(roomsRaw) : 1,
-          stayTypeId,
-          transportModeId,
-          experienceIds,
-          guideIncluded: p.guideIncluded === true,
-          mealsIncluded: p.mealsIncluded === true
-        };
-
-        const priced = priceJourney(normalizedParams);
-        const tier = typeof details?.tier === 'string' ? details.tier.slice(0, 100) : undefined;
+        // See lib/tripPlannerRequest.ts for the full normalization contract — every
+        // stay/transport/experience id is allow-listed, every count is clamped, price is
+        // always re-derived via priceJourney(), and pickup/drop/notes are bounded,
+        // informational-only strings that never affect price.
+        const { params: normalizedParams, tier, notes, priced } = normalizeTripPlannerJourney(
+          rawParams as Record<string, unknown>,
+          details?.tier,
+          details?.notes
+        );
 
         // No resolvedItemName/resolvedDestination re-derivation here — unlike catalog,
         // there is no authoritative document to derive them from. itemName/destination
@@ -288,14 +261,18 @@ export async function POST(request: Request) {
           params: normalizedParams,
           breakdown: priced.breakdown,
           total: priced.total,
-          perPerson: priced.perPerson
+          perPerson: priced.perPerson,
+          notes
         };
 
         emailExtras = {
-          stayLabel: STAY_TYPE_OPTIONS.find((option) => option.id === stayTypeId)?.label,
-          transportLabel: TRANSPORT_MODES.find((option) => option.id === transportModeId)?.label,
-          addOns: experienceIds.map((id) => EXPERIENCE_OPTIONS.find((option) => option.id === id)?.label ?? id),
-          total: priced.total
+          stayLabel: STAY_TYPE_OPTIONS.find((option) => option.id === normalizedParams.stayTypeId)?.label,
+          transportLabel: TRANSPORT_MODES.find((option) => option.id === normalizedParams.transportModeId)?.label,
+          addOns: normalizedParams.experienceIds.map((id) => EXPERIENCE_OPTIONS.find((option) => option.id === id)?.label ?? id),
+          total: priced.total,
+          pickupLocation: normalizedParams.pickup,
+          dropLocation: normalizedParams.drop,
+          notes
         };
       } else {
         const slug = typeof details?.slug === 'string' ? details.slug : undefined;

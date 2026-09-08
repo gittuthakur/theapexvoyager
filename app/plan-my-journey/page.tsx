@@ -4,11 +4,23 @@ import BackButton from '@/components/ui/BackButton';
 import PlanMyJourneyWizard from '@/components/modules/trip-planner';
 import { resolveBookingContext } from '@/lib/bookingContext';
 import { siteConfig } from '@/config/site.config';
+import { images } from '@/config/images.config';
+
+const title = `Plan My Journey | ${siteConfig.name}`;
+const description =
+  "Answer a few quick questions and we'll build three tailored Himalayan itineraries — Smart, Comfort and Signature — with transparent, estimated pricing.";
 
 export const metadata: Metadata = {
-  title: `Plan My Journey | ${siteConfig.name}`,
-  description:
-    "Answer a few quick questions and we'll build three tailored Himalayan itineraries — Smart, Comfort and Signature — with transparent, real-time pricing."
+  title,
+  description,
+  alternates: { canonical: '/plan-my-journey' },
+  openGraph: {
+    title,
+    description,
+    url: '/plan-my-journey',
+    images: [{ url: images.hero, alt: 'Plan your Himalayan journey with The Apex Voyager' }]
+  },
+  twitter: { card: 'summary_large_image', title, description, images: [images.hero] }
 };
 
 interface PlanMyJourneyPageProps {
@@ -45,7 +57,8 @@ export default async function PlanMyJourneyPage({ searchParams }: PlanMyJourneyP
         <div>
           <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">Plan My <span className="bg-gradient-to-r from-apex-500 via-apex-600 to-apex-700 bg-clip-text text-transparent">Journey</span></h1>
           <p className="mt-2 max-w-2xl text-base text-slate-600">
-            Destination, dates, style, stay and transport — one guided flow, three ready-to-book itineraries.
+            Tell us where you want to go, how you like to travel and what matters most — we&apos;ll shape three Himalayan journey options around
+            your plans.
           </p>
         </div>
 

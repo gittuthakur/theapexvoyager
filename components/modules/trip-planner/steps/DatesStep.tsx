@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { addMonths, format, isBefore, startOfDay, startOfMonth } from 'date-fns';
+import { addMonths, format, isBefore, isSameDay, startOfDay, startOfMonth } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { MonthGrid } from '@/components/modules/search/MonthGrid';
 import { cn } from '@/lib/utils';
@@ -22,8 +22,12 @@ export function DatesStep({ value, onChange }: DatesStepProps) {
       onChange({ ...value, start: day, end: null });
       return;
     }
-    if (isBefore(day, value.start)) {
-      onChange({ ...value, start: day, end: value.start });
+    // A same-day (or earlier) second click restarts the selection at the new day rather
+    // than silently accepting a 0-night "end === start" range — computeNights() would
+    // otherwise fall back to a 5-night default with no visible indication the picked
+    // range was ignored (Phase 1 finding).
+    if (isBefore(day, value.start) || isSameDay(day, value.start)) {
+      onChange({ ...value, start: day, end: null });
     } else {
       onChange({ ...value, end: day });
     }
@@ -33,7 +37,7 @@ export function DatesStep({ value, onChange }: DatesStepProps) {
     value.start && value.end
       ? `${format(value.start, 'MMM d')} – ${format(value.end, 'MMM d, yyyy')}`
       : value.start
-        ? `${format(value.start, 'MMM d')} – add your return date`
+        ? `${format(value.start, 'MMM d')} – pick a return date after this`
         : 'Pick your travel dates below';
 
   return (
