@@ -34,7 +34,10 @@ export default function BackButton({ fallbackHref, label, className }: BackButto
       type="button"
       onClick={handleClick}
       className={cn(
-        'inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors duration-300 ease-in-out hover:text-slate-900',
+        // py-3 -my-3 (and the horizontal equivalent) pad the actual click/tap target out
+        // to a 44px-tall hit area without shifting the visible text — the negative margin
+        // cancels the padding's effect on surrounding layout spacing.
+        'inline-flex min-h-11 -my-3 -mx-2 items-center gap-2 px-2 py-3 text-sm font-medium text-slate-600 transition-colors duration-300 ease-in-out hover:text-slate-900',
         className
       )}
     >

@@ -6,6 +6,7 @@ import StayFilters from '@/components/modules/StayFilters';
 import PropertyCard from '@/components/modules/PropertyCard';
 import { FILTER_EMPTY_STATE_CLASS } from '@/components/modules/filters/filterStyles';
 import { SkeletonGrid } from '@/components/ui/Skeleton';
+import BackButton from '@/components/ui/BackButton';
 import { cn } from '@/lib/utils';
 import { getHotels } from '@/lib/hotels';
 import { findStayTypeBySlug } from '@/config/stayTypes.config';
@@ -54,6 +55,8 @@ export default async function StaySearchPage({ searchParams }: StaySearchPagePro
   return (
     <main className="px-6 py-10 sm:px-10 lg:px-16">
       <section className="mx-auto max-w-[1440px] space-y-6">
+        <BackButton fallbackHref="/stays" label="Back to Apex Stays" />
+
         <div className="">
           <p className="text-md font-semibold uppercase tracking-[0.16em] text-apex-600">Apex Stays</p>
           <h1 className="mt-3 text-2xl font-bold text-slate-900 sm:text-3xl">

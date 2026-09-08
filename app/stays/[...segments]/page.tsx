@@ -141,6 +141,8 @@ function StayListing({ eyebrow, title, subtitle, hotels }: { eyebrow: string; ti
   return (
     <main className="px-6 py-10 sm:px-10 lg:px-16">
       <section className="mx-auto max-w-[1440px] space-y-5">
+        <BackButton fallbackHref="/stays" label="Back to Apex Stays" />
+
         <div className="">
           <p className="text-md font-semibold uppercase tracking-[0.16em] text-apex-600">{eyebrow}</p>
           <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">{title}</h1>
