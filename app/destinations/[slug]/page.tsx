@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArrowRight, Car, Clock, Compass, Eye, Gem, Mountain, Sparkles, Map, MapPin, Users } from 'lucide-react';
+import { ArrowRight, Car, Clock, Compass, Gem, Mountain, Sparkles, Map, MapPin, Users } from 'lucide-react';
 import StaysGrid from '@/components/modules/StaysGrid';
 import DestinationCard from '@/components/modules/DestinationCard';
 import PackageCard from '@/components/modules/PackageCard';
@@ -200,7 +200,11 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
         </section>
 
         <section id="tours" className="py-8">
-          <SectionHeading eyebrow="Ready to book" title={`Featured Tours in ${destination.title}`} />
+          <SectionHeading
+            eyebrow="Ready to book"
+            title={`Featured Tours in ${destination.title}`}
+            subtitle="Fixed-departure tours with a set itinerary and date — pick one and book it as-is."
+          />
           {tours.length ? (
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {tours.map((tour) => (
@@ -227,7 +231,11 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
           )}
         </section>
 
-        <section id="packages" className="py-8"><SectionHeading eyebrow="Curated journeys" title={`Journeys Through ${destination.title}`} />
+        <section id="packages" className="py-8"><SectionHeading
+            eyebrow="Curated journeys"
+            title={`Journeys Through ${destination.title}`}
+            subtitle="Starting itineraries our team tailors to your dates, group and pace."
+          />
           {journeys.length ? <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">{journeys.map((pkg) => <PackageCard key={pkg.slug} pkg={pkg} />)}</div> : <p className="mt-6 rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500">New journeys through {destination.title} are being curated. Explore the destination story now and check back soon.</p>}
         </section>
 
@@ -268,7 +276,7 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
                 No dedicated {destination.title} specialist yet — our broader team can still help you plan.
               </p>
               <Link href="/experts" className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-apex-600 hover:text-apex-700">
-                Browse all Travel Experts <ArrowRight size={16} />
+                Explore all Travel Experts <ArrowRight size={16} />
               </Link>
             </div>
           )}
@@ -284,7 +292,7 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
               href={`/stays/${destination.slug}`}
               className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-apex-500 px-5 py-3 text-sm font-medium text-white transition-all duration-300 ease-in-out hover:bg-apex-400"
             >
-              <Eye size={18} /> View bookable stays
+              <Compass size={18} /> Explore bookable stays
             </Link>
           </div>
           <div className="mt-6">
@@ -346,6 +354,12 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
   );
 }
 
-function SectionHeading({ eyebrow, title }: { eyebrow: string; title: string }) {
-  return <div><p className="text-sm font-semibold uppercase tracking-[0.28em] text-apex-500">{eyebrow}</p><h2 className="mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">{title}</h2></div>;
+function SectionHeading({ eyebrow, title, subtitle }: { eyebrow: string; title: string; subtitle?: string }) {
+  return (
+    <div>
+      <p className="text-sm font-semibold uppercase tracking-[0.28em] text-apex-500">{eyebrow}</p>
+      <h2 className="mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">{title}</h2>
+      {subtitle ? <p className="mt-2 text-sm text-slate-500">{subtitle}</p> : null}
+    </div>
+  );
 }

@@ -23,6 +23,7 @@ export default function SeasonalDiscovery({ destinations }: SeasonalDiscoveryPro
   const activeSeason = seasons.find((season) => season.id === activeSeasonId);
   const matches = activeSeason ? destinations.filter((destination) => destination.seasons?.includes(activeSeason.label)) : [];
   const shown = matches.slice(0, DISPLAY_COUNT);
+  const activeSeasonLabel = activeSeason?.label;
 
   return (
     <section className="bg-slate-100 py-12 lg:py-16">
@@ -62,7 +63,7 @@ export default function SeasonalDiscovery({ destinations }: SeasonalDiscoveryPro
             className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
           >
             {shown.map((destination) => (
-              <SeasonalDestinationCard key={destination.slug} destination={destination} />
+              <SeasonalDestinationCard key={destination.slug} destination={destination} seasonLabel={activeSeasonLabel} />
             ))}
           </motion.div>
         ) : (
@@ -75,7 +76,11 @@ export default function SeasonalDiscovery({ destinations }: SeasonalDiscoveryPro
   );
 }
 
-function SeasonalDestinationCard({ destination }: { destination: Destination }) {
+function SeasonalDestinationCard({ destination, seasonLabel }: { destination: Destination; seasonLabel?: string }) {
+  // Only ever surfaces a destination's own real seasonalNotes copy (config/destinations.config.ts)
+  // for the season actually selected — never a generic or invented rationale.
+  const rationale = seasonLabel ? destination.seasonalNotes?.[seasonLabel] : undefined;
+
   return (
     <Link
       href={`/destinations/${destination.slug}`}
@@ -87,6 +92,7 @@ function SeasonalDestinationCard({ destination }: { destination: Destination }) 
       <div className="min-w-0">
         <p className="font-semibold text-slate-900">{destination.title}</p>
         <p className="truncate text-xs text-slate-500">{[destination.region, destination.state].filter(Boolean).join(', ')}</p>
+        {rationale ? <p className="mt-1 line-clamp-2 text-xs text-slate-600">{rationale}</p> : null}
       </div>
     </Link>
   );

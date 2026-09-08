@@ -27,7 +27,7 @@ export default function RegionExperts({ travelExperts, regionName }: RegionExper
             No dedicated {regionName} specialist yet — our broader team can still help you plan.
           </p>
           <Link href="/experts" className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-apex-600 hover:text-apex-700">
-            Browse all Travel Experts <ArrowRight size={16} />
+            Explore all Travel Experts <ArrowRight size={16} />
           </Link>
         </div>
       )}

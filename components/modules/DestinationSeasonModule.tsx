@@ -40,7 +40,9 @@ export default function DestinationSeasonModule({ destinationTitle, seasons, sea
           <p className="text-base leading-7 text-slate-600">{note}</p>
         </div>
       ) : (
-        <p className="mt-5 text-sm text-slate-500">{destinationTitle} is a good visit in {activeSeason.toLowerCase()} — check the At a Glance section above for the fuller picture.</p>
+        <p className="mt-5 text-sm text-slate-500">
+          {destinationTitle} is listed as a good visit in {activeSeason.toLowerCase()} — we don’t have a specific note for this season yet, but our team can share more if you get in touch.
+        </p>
       )}
     </div>
   );

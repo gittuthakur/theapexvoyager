@@ -58,15 +58,23 @@ export default function WhatsAppButton({
       onClick={openChat}
       tabIndex={hidden ? -1 : 0}
       aria-hidden={hidden || undefined}
+      aria-label="Chat on WhatsApp"
       className={cn(
-        'cursor-hover fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-4 font-semibold text-white shadow-2xl shadow-[#25D366]/20 transition-all duration-300 ease-in-out hover:scale-105 hover:bg-[#20ba5a]',
+        'cursor-hover fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 rounded-full bg-[#25D366] font-semibold text-white shadow-2xl shadow-[#25D366]/20 transition-all duration-300 ease-in-out hover:scale-105 hover:bg-[#20ba5a]',
+        // Floating usage only (Home hero, Region Hub): a compact icon-only circle
+        // below `sm` keeps the button's footprint small enough that it can't sit on
+        // top of nearby heading/body text on short mobile viewports — the full pill
+        // (254px wide) was measured overlapping the Region Hub's "About" heading at
+        // 390px. `className`-overridden usages (e.g. JourneyBookingSidebar's static,
+        // full-width sidebar button) opt out via twMerge, same as `isFloating` itself.
+        isFloating ? 'h-14 w-14 justify-center sm:h-auto sm:w-auto sm:justify-start sm:px-5 sm:py-4' : 'px-5 py-4',
         hidden ? 'pointer-events-none translate-y-4 opacity-0' : 'translate-y-0 opacity-100',
         className
       )}
     >
       <WhatsAppIcon size={22} />
-      Chat on WhatsApp
-      <ArrowRight size={22} />
+      <span className={isFloating ? 'hidden sm:inline' : undefined}>Chat on WhatsApp</span>
+      <ArrowRight size={22} className={isFloating ? 'hidden sm:inline' : undefined} />
     </button>
   );
 }

@@ -25,7 +25,10 @@ export default function InnerHeroBanner({ title, highlite, subtitle, eyebrow, bg
   return (
     <section className={cn('relative isolate flex min-h-[380px] items-end overflow-hidden bg-slate-100 sm:min-h-[520px]', className)}>
       <div className="absolute inset-0">
-        <SafeImage src={bgImage} alt={title} fill priority sizes="100vw" className={cn('object-cover', imageClassName)} />
+        {/* Decorative: the H1 right below already carries this hero's actual content
+            (previously alt={title} silently dropped `highlite`, e.g. rendering as the
+            truncated "Places Worth" on /destinations instead of the full heading). */}
+        <SafeImage src={bgImage} alt="" fill priority sizes="100vw" className={cn('object-cover', imageClassName)} />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-white/50 to-white/80" />
       </div>
 

@@ -25,7 +25,7 @@ export default function RegionStays({ curatedStays, bookingContext, regionName }
           href="/stays"
           className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-apex-500 px-5 py-3 text-sm font-medium text-white transition-all duration-300 ease-in-out hover:bg-apex-400"
         >
-          View all stays
+          Explore all stays
         </Link>
       </div>
 

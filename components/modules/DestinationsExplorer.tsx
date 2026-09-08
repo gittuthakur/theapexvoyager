@@ -227,6 +227,7 @@ export default function DestinationsExplorer({
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search destinations…"
+          aria-label="Search destinations"
           className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-9 text-sm text-slate-900 outline-none transition-colors duration-300 ease-in-out focus:border-apex-400 focus:bg-white"
         />
         {query ? (
@@ -409,7 +410,7 @@ export default function DestinationsExplorer({
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {activeRegion !== 'all' ? (
               <FilterChip
-                label={regions.find((region) => region.id === activeRegion)?.shortName ?? activeRegion}
+                label={regions.find((region) => region.id === activeRegion)?.name ?? activeRegion}
                 onRemove={() => setActiveRegion('all')}
               />
             ) : null}
@@ -456,8 +457,11 @@ export default function DestinationsExplorer({
               ))}
             </select>
           </label>
-          <div className="ml-auto inline-flex items-center rounded-full bg-white shadow-sm shadow-slate-200">
-            {/* Cards Button */} 
+          {/* Desktop-only Cards/Map toggle — the xl:hidden block above already renders
+              this control on mobile/tablet; without this guard both were visible
+              simultaneously below xl. */}
+          <div className="ml-auto hidden items-center rounded-full bg-white shadow-sm shadow-slate-200 xl:inline-flex">
+            {/* Cards Button */}
             <button
               type="button"
               onClick={() => setView('cards')}
