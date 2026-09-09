@@ -11,6 +11,7 @@ import DestinationHero from '@/components/modules/destinations/DestinationHero';
 import DetailPageContainer from '@/components/modules/detail/DetailPageContainer';
 import DetailSectionNav from '@/components/modules/detail/DetailSectionNav';
 import CurrentOfficialInfoSection from '@/components/modules/detail/CurrentOfficialInfoSection';
+import AccessJourney from '@/components/modules/detail/AccessJourney';
 import BackButton from '@/components/ui/BackButton';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
@@ -167,6 +168,15 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
         {destination.highlights?.length ? <section className="py-8"><SectionHeading eyebrow="Why visit" title={`Why You’ll Love ${destination.title}`} /><div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {destination.highlights.map((highlight) => <article key={highlight.title} className="rounded-[1.5rem] border border-slate-200 bg-white p-6"><Sparkles className="text-apex-500" size={20} /><h3 className="mt-4 text-lg font-semibold text-slate-900">{highlight.title}</h3><p className="mt-2 text-sm leading-6 text-slate-500">{highlight.description}</p></article>)}
         </div></section> : null}
+
+        {destination.accessJourney?.stages?.length ? (
+          <section id="access-journey" className="py-8">
+            <SectionHeading eyebrow="Plan the approach" title={`How To Reach ${destination.title}`} />
+            <div className="mt-6">
+              <AccessJourney stages={destination.accessJourney.stages} />
+            </div>
+          </section>
+        ) : null}
 
         {destination.places?.length ? <section id="places" className="py-8"><SectionHeading eyebrow="Go deeper" title="Places Worth Discovering" /><div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {destination.places.map((place, index) => <article key={place.title} className="rounded-2xl border border-slate-300 bg-slate-100 p-6"><span className="text-sm font-semibold text-apex-500">0{index + 1}</span><h3 className="mt-3 text-xl font-semibold text-slate-900">{place.title}</h3><p className="mt-2 text-sm leading-6 text-slate-500">{place.description}</p></article>)}

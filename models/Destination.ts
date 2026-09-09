@@ -31,6 +31,17 @@ export interface DestinationRegistrationInfo {
   note?: string;
 }
 
+export interface DestinationAccessJourneyStage {
+  title: string;
+  description?: string;
+  note?: string;
+}
+
+export interface DestinationAccessJourney {
+  heading?: string;
+  stages: DestinationAccessJourneyStage[];
+}
+
 export interface DestinationDocument extends Document {
   id?: string;
   slug: string;
@@ -70,6 +81,7 @@ export interface DestinationDocument extends Document {
   accessType?: DestinationAccessType;
   registrationInfo?: DestinationRegistrationInfo;
   officialAdvisoryUrl?: string;
+  accessJourney?: DestinationAccessJourney;
   // Google Places enrichment (see types/destination.ts's GooglePlaceEnrichment) —
   // mirrored here so a curated Destination can carry it, never used for the
   // Google-Places-backed live search path in lib/destinations.ts, which stays config-only.
@@ -140,6 +152,10 @@ const DestinationSchema = new Schema<DestinationDocument>(
       note: String
     },
     officialAdvisoryUrl: { type: String },
+    accessJourney: {
+      heading: String,
+      stages: [{ title: String, description: String, note: String }]
+    },
     placeId: { type: String },
     formattedAddress: { type: String },
     photos: { type: [String] },

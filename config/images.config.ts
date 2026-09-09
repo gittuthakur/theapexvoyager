@@ -42,7 +42,9 @@ export const images = {
     kausani: '/images/destination-kausani.jpg',
     ranikhet: '/images/destination-ranikhet.jpg',
     badrinath: '/images/destination-badrinath.jpg',
-    gangotri: '/images/destination-gangotri.jpg'
+    gangotri: '/images/destination-gangotri.jpg',
+    kedarnath: '/images/destination-kedarnath.jpg',
+    yamunotri: '/images/destination-yamunotri.jpg'
   },
   tours: {
     spitiCircuit: '/images/spiti-circuit.jpg',

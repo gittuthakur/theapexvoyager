@@ -48,6 +48,24 @@ export interface DestinationRegistrationInfo {
   note?: string;
 }
 
+/** One stage in a destination's staged access sequence — same shape as
+ *  components/modules/detail/AccessJourney's `AccessJourneyStage` prop, so this is a direct
+ *  data source for that component, not a parallel schema needing its own translation. */
+export interface DestinationAccessJourneyStage {
+  title: string;
+  description?: string;
+  note?: string;
+}
+
+/** Present only when a destination's access is genuinely staged (e.g. a road head short of
+ *  a trek-gated shrine) — generic across any future staged-access destination (Hemkund Sahib
+ *  included), never named after one place. Absent for the ordinary drive-straight-there
+ *  majority of the catalogue. */
+export interface DestinationAccessJourney {
+  heading?: string;
+  stages: DestinationAccessJourneyStage[];
+}
+
 export interface Destination extends Partial<GooglePlaceEnrichment> {
   id?: string;
   slug: string;
@@ -104,4 +122,7 @@ export interface Destination extends Partial<GooglePlaceEnrichment> {
   /** A single outbound link to the relevant official advisory authority (road/weather/permit
    *  status). Presence of this URL is never itself a status claim — see components/modules/detail/OfficialLinkCallout. */
   officialAdvisoryUrl?: string;
+  /** Staged access sequence for a trek-gated (or otherwise multi-leg) destination — see
+   *  DestinationAccessJourney. Absent for the ordinary single-hop majority of the catalogue. */
+  accessJourney?: DestinationAccessJourney;
 }

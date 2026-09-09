@@ -1694,6 +1694,125 @@ export const destinations: Destination[] = [
       Summer: 'June–August is the main yatra season; monsoon rain can affect the Uttarkashi–Gangotri road.',
       Autumn: 'September–October is generally clearer before the temple closes for winter, again on a date fixed annually.'
     }
+  },
+  {
+    slug: 'kedarnath',
+    title: 'Kedarnath',
+    category: 'Pilgrimage',
+    description: 'A trek-gated Char Dham shrine at 3,583 m — the road ends at Gaurikund, and the final distance is on foot or by seasonal helicopter.',
+    toursCount: 5,
+    image: images.destinations.kedarnath,
+    region: 'Rudraprayag District',
+    state: 'Uttarakhand',
+    accessType: 'trek-and-helicopter',
+    editorialDescription: 'Kedarnath sits at 3,583 metres at the head of the Mandakini valley, one of the twelve Jyotirlingas and the most physically demanding of the Uttarakhand Char Dham. No road reaches the shrine: the drive ends at Gaurikund, reached via a short regulated local transfer from Sonprayag, and from there the temple is a further trek of around 16 km on foot — or, seasonally, a helicopter transfer from one of three helipads in Rudraprayag district. Most travelers treat the journey itself, not just the darshan, as the point of the trip, staying a night at Guptkashi or Sonprayag before the final push.',
+    bestTime: 'May – October',
+    idealDuration: '2–3 Days',
+    altitude: '3,583 m',
+    travelStyles: ['Pilgrimage', 'Adventure'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Solo Travelers', 'Families'],
+    highlights: [
+      { title: 'Kedarnath Temple', description: 'One of the twelve Jyotirlingas, at the head of the Mandakini valley — the highest of the Char Dham shrines.' },
+      { title: 'The Gaurikund trek', description: 'An approximately 16 km trek from the road head, the defining final stretch of the journey.' },
+      { title: 'A seasonal helicopter option', description: 'IRCTC\'s official HeliYatra service connects district helipads to Kedarnath in season, as an alternative to trekking.' }
+    ],
+    places: [
+      { title: 'Sonprayag', description: 'The last point most private vehicles can drive to; a short, regulated local shuttle continues to Gaurikund.' },
+      { title: 'Gaurikund', description: 'The actual road head, where the motorable road ends and the trek to the shrine begins.' },
+      { title: 'Kedarnath Temple', description: 'Reached only by the ~16 km trek from Gaurikund, or a seasonal helicopter transfer — no vehicle reaches it directly.' }
+    ],
+    experiences: ['Kedarnath Temple darshan', 'Gaurikund–Kedarnath trek'],
+    relatedSlugs: ['rishikesh', 'badrinath', 'yamunotri'],
+    seo: {
+      title: 'Kedarnath Travel Guide | Uttarakhand Char Dham | The Apex Voyager',
+      description: 'Plan a Kedarnath trip — the trek-gated Char Dham shrine beyond Gaurikund, the seasonal helicopter option, and honest trip planning.'
+    },
+    travelTips: [
+      'The trek from Gaurikund is a genuine multi-hour, high-altitude walk — pace yourself, carry warm layers, and build in buffer days rather than a tight same-day plan.',
+      'If you\'re considering the seasonal helicopter option, book only through IRCTC\'s official HeliYatra portal — no other site or agent can sell or guarantee a seat.',
+      'Registration for Char Dham Yatra is required and free through the official Uttarakhand Tourism portal — never pay a third party for it.',
+      'Travelers with health or mobility concerns should speak to a doctor before attempting the high-altitude trek — it is not suitable for everyone, and no operator can guarantee a safe outcome regardless of arrangements made.'
+    ],
+    registrationInfo: {
+      required: true,
+      url: 'https://registrationandtouristcare.uk.gov.in/',
+      note: 'Official Uttarakhand Char Dham Yatra registration portal — registration is required and free; it is never collected by The Apex Voyager or any third party.'
+    },
+    accessJourney: {
+      stages: [
+        { title: 'Gateway', description: 'Most journeys begin from Rishikesh or Haridwar, the last major cities before the mountain roads.' },
+        { title: 'Regional base — Rudraprayag / Guptkashi', description: 'The road continues through Rudraprayag district toward Guptkashi, a common overnight base before the final approach.' },
+        { title: 'Sonprayag', description: 'The last point most private vehicles can drive to.', note: 'A short, regulated local shuttle covers the remaining distance to Gaurikund.' },
+        { title: 'Gaurikund — road head', description: 'Where the motorable road actually ends and the trek to the shrine begins.' },
+        { title: 'Kedarnath Temple', description: 'Reached by an approximately 16 km trek from Gaurikund — or, seasonally, by helicopter from a district helipad.', note: 'No vehicle reaches the shrine directly; the final distance is on foot, by pony/palki, or by seasonal helicopter, subject to official availability and conditions.' }
+      ]
+    },
+    matchScores: { adventure: 55, nature: 50, luxury: 15, crowds: 70, slowTravel: 20 },
+    seasonalNotes: {
+      Spring: 'Late April/May sees the temple reopen for the season, on a date fixed annually — check the official portal rather than assuming a fixed calendar day.',
+      Summer: 'June–August is the main yatra season; monsoon rain can also disrupt the Rudraprayag–Sonprayag road, a corridor with a documented history of landslide risk — build buffer days into any monsoon-season plan.',
+      Autumn: 'September–October is generally clearer before the temple closes for winter, again on a date fixed annually.'
+    }
+  },
+  {
+    slug: 'yamunotri',
+    title: 'Yamunotri',
+    category: 'Pilgrimage',
+    description: 'A trek-gated Char Dham shrine above Janki Chatti, the source of the Yamuna in a narrow Himalayan gorge.',
+    toursCount: 5,
+    image: images.destinations.yamunotri,
+    region: 'Uttarkashi District',
+    state: 'Uttarakhand',
+    accessType: 'trek-gated',
+    editorialDescription: 'Yamunotri sits at 3,293 metres in a narrow gorge at the head of the Yamuna valley, the westernmost of the Uttarakhand Char Dham and, for most travelers, the shortest final trek of the four. The road climbs from Barkot to Janki Chatti, where the motorable road ends; from there the temple is a further trek of around 6 km on foot, pony, palki or doli. There is no helicopter service here — the trek, however you cover it, is the only way in. Kharsali, a quieter village near Janki Chatti and the winter seat of the goddess Yamuna, makes a good base or a stop on the way up.',
+    bestTime: 'May – October',
+    idealDuration: '1–2 Days',
+    altitude: '3,293 m',
+    travelStyles: ['Pilgrimage', 'Adventure'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Solo Travelers', 'Families'],
+    highlights: [
+      { title: 'Yamunotri Temple', description: 'The shrine dedicated to the goddess Yamuna, at the source of the Yamuna river in a narrow Himalayan gorge.' },
+      { title: 'The Janki Chatti trek', description: 'The final ~6 km stretch beyond the road head, covered on foot, pony, palki or doli.' },
+      { title: 'Kharsali', description: 'A quieter village near Janki Chatti and the winter seat of the goddess, with its own historic Shani temple.' }
+    ],
+    places: [
+      { title: 'Barkot', description: 'The gateway town on the highway, where the branch road into the Yamuna valley begins.' },
+      { title: 'Janki Chatti', description: 'The actual road head — motorable road ends here, and the final trek begins.' },
+      { title: 'Yamunotri Temple', description: 'Reached by an approximately 6 km trek, pony, palki or doli from Janki Chatti — no vehicle reaches it directly.' }
+    ],
+    experiences: ['Yamunotri Temple darshan', 'Janki Chatti–Yamunotri trek'],
+    relatedSlugs: ['rishikesh', 'gangotri', 'kedarnath'],
+    seo: {
+      title: 'Yamunotri Travel Guide | Uttarakhand Char Dham | The Apex Voyager',
+      description: 'Plan a Yamunotri trip — the trek-gated Char Dham shrine beyond Janki Chatti, Kharsali, and honest trip planning.'
+    },
+    travelTips: [
+      'Janki Chatti is the end of the motorable road — the final ~6 km to the temple is on foot, pony, palki or doli, arranged locally; rates change by season, so confirm current pricing on arrival.',
+      'Registration for Char Dham Yatra is required and free through the official Uttarakhand Tourism portal — never pay a third party for it.',
+      'The temple is open only for part of the year and the exact opening and closing dates change annually — confirm this year\'s dates on the official portal before booking travel.',
+      'Travelers with health or mobility concerns should speak to a doctor before attempting the trek or a pony/palki ascent — it is not suitable for everyone.'
+    ],
+    registrationInfo: {
+      required: true,
+      url: 'https://registrationandtouristcare.uk.gov.in/',
+      note: 'Official Uttarakhand Char Dham Yatra registration portal — registration is required and free; it is never collected by The Apex Voyager or any third party.'
+    },
+    accessJourney: {
+      stages: [
+        { title: 'Gateway', description: 'Most journeys begin from Rishikesh or Dehradun.' },
+        { title: 'Barkot', description: 'The gateway town on the highway where the branch road into the Yamuna valley begins.' },
+        { title: 'Janki Chatti — road head', description: 'Where the motorable road ends; private vehicles go no further.' },
+        { title: 'Yamunotri Temple', description: 'Reached by an approximately 6 km trek from Janki Chatti, on foot or by pony, palki or doli.', note: 'No vehicle reaches the shrine directly, and there is no helicopter service on this route.' }
+      ]
+    },
+    matchScores: { adventure: 35, nature: 45, luxury: 15, crowds: 55, slowTravel: 25 },
+    seasonalNotes: {
+      Spring: 'Late April/May sees the temple reopen for the season, on a date fixed annually — check the official portal rather than assuming a fixed calendar day.',
+      Summer: 'June–August is the main yatra season; monsoon rain can affect the Barkot–Janki Chatti road.',
+      Autumn: 'September–October is generally clearer before the temple closes for winter, again on a date fixed annually.'
+    }
   }
 ];
 

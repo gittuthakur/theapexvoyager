@@ -11,7 +11,7 @@ for web delivery, and re-encoded (stripping EXIF/ICC/XMP) — no content changes
 
 Date checked: 2026-09-09 (Gulmarg through Khajjiar, Phase 2B-2); 2026-09-09
 (Srinagar, Pahalgam, Sonamarg, Phase 2B-3B-A); 2026-09-10 (Badrinath, Gangotri,
-Phase 2B-3D-B).
+Phase 2B-3D-B); 2026-09-10 (Kedarnath, Yamunotri, Phase 2B-3D-C).
 
 ## Gulmarg
 
@@ -278,6 +278,26 @@ Phase 2B-3D-B).
 - License: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0)
 - Attribution required: Yes
 - Attribution text: "Gangotri temple" by Atarax42, CC BY-SA 3.0, via Wikimedia Commons
+
+## Kedarnath
+
+- Local file: `public/images/destination-kedarnath.jpg`
+- Source: Wikimedia Commons — `File:"KEDARNATH".jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:%E2%80%9CKEDARNATH%E2%80%9D.jpg
+- Creator: Sarika Shirbhate
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "KEDARNATH" by Sarika Shirbhate, CC BY-SA 4.0, via Wikimedia Commons
+
+## Yamunotri
+
+- Local file: `public/images/destination-yamunotri.jpg`
+- Source: Wikimedia Commons — `File:Yamunotri temple and ashram.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Yamunotri_temple_and_ashram.jpg
+- Creator: Atarax42
+- License: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0)
+- Attribution required: Yes
+- Attribution text: "Yamunotri temple and ashram" by Atarax42, CC BY-SA 3.0, via Wikimedia Commons
 
 ## On-site attribution
 

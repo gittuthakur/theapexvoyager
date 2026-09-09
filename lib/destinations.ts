@@ -47,6 +47,7 @@ export function toDestination(doc: DestinationDocument): Destination {
     accessType: doc.accessType,
     registrationInfo: doc.registrationInfo,
     officialAdvisoryUrl: doc.officialAdvisoryUrl,
+    accessJourney: doc.accessJourney,
     placeId: doc.placeId,
     formattedAddress: doc.formattedAddress,
     photos: doc.photos,
