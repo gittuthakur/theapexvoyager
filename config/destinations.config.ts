@@ -192,14 +192,53 @@ export const destinations: Destination[] = [
     slug: 'dharamshala',
     title: 'Dharamshala',
     category: 'Wellness',
-    description: 'Pine forests and sweeping Himalayan views, ideal for retreats and trekking.',
+    description: 'A Kangra Valley hill town below the Dhauladhar range, and gateway to McLeod Ganj above it.',
     toursCount: 15,
     image: images.destinations.dharamshala,
     region: 'Kangra Valley',
     state: 'Himachal Pradesh',
+    editorialDescription: 'Dharamshala and McLeod Ganj are often treated as one place, but they sit about 9 km and a real climb apart. Dharamshala itself is the lower Kangra Valley town — quieter, more local, with sweeping Dhauladhar views. McLeod Ganj, higher up, is where the Tibetan government-in-exile has been based since 1960 and where most travelers actually spend their time — monasteries, cafes and the Dalai Lama’s temple complex. Most trips use Dharamshala as the arrival point and McLeod Ganj as the base.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '3–4 Days',
     travelStyles: ['Wellness', 'Nature', 'Slow travel'],
     seasons: ['Spring', 'Summer', 'Autumn'],
-    bestFor: ['Solo Travelers', 'Couples']
+    bestFor: ['Solo Travelers', 'Couples'],
+    highlights: [
+      { title: 'McLeod Ganj and the Dalai Lama complex', description: 'The Tibetan government-in-exile’s base since 1960, with the Tsuglagkhang temple complex as its centre.' },
+      { title: 'Dhauladhar backdrop', description: 'The range’s peaks, including Hanuman Ka Tibba, rise directly behind the town.' },
+      { title: 'Triund day hike', description: 'A well-known ridge hike above McLeod Ganj, popular but genuinely rewarding on a clear day.' }
+    ],
+    places: [
+      { title: 'McLeod Ganj', description: 'The upper town, roughly 9 km and a steep climb above Dharamshala, and where most stays and cafes are.' },
+      { title: 'Tsuglagkhang Complex', description: 'The Dalai Lama’s temple and residence complex in McLeod Ganj.' },
+      { title: 'Bhagsu Nag', description: 'A village just beyond McLeod Ganj with a waterfall and temple.' },
+      { title: 'Norbulingka Institute', description: 'A Tibetan arts and culture institute in the valley below, quieter than McLeod Ganj itself.' }
+    ],
+    experiences: ['Monastery visits', 'Triund day hike', 'Tibetan cooking and culture', 'Café culture in McLeod Ganj'],
+    relatedSlugs: ['bir-billing', 'chamba'],
+    seo: { title: 'Dharamshala Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Dharamshala trip — McLeod Ganj’s Tibetan culture, Dhauladhar views, and the Triund day hike.' },
+    apexPicks: {
+      view: { title: 'Triund ridge at sunset', description: 'Dhauladhar peaks catching the last light, above the treeline.' },
+      stay: { title: 'McLeod Ganj hillside guesthouse', description: 'Simple rooms with valley or mountain views, a short walk from the main square.' },
+      experience: { title: 'Morning at the Tsuglagkhang Complex', description: 'The Dalai Lama’s temple complex before the day’s crowds arrive.' },
+      taste: { title: 'Tibetan momos and thukpa', description: 'McLeod Ganj’s café strip is built around this exact meal.' },
+      moment: { title: 'Prayer flags over the valley', description: 'The view from McLeod Ganj’s upper lanes on a clear morning.' }
+    },
+    hiddenGems: [
+      { title: 'Dharamkot', description: 'A quieter hillside hamlet above McLeod Ganj, popular with longer-staying travelers.' },
+      { title: 'Norbulingka Institute', description: 'A calm Tibetan arts campus in the valley, easy to miss if you never leave McLeod Ganj.' }
+    ],
+    travelTips: [
+      'Confirm whether your stay is in Dharamshala or McLeod Ganj — they are a real drive apart, not the same address.',
+      'The Triund trail can be crowded on weekends — a weekday or early start is quieter.',
+      'Pack layers even in summer — McLeod Ganj’s elevation keeps evenings cool.'
+    ],
+    matchScores: { adventure: 55, nature: 75, luxury: 40, crowds: 65, slowTravel: 55 },
+    seasonalNotes: {
+      Spring: 'March–May is clear and comfortable, good for the Triund hike before summer haze builds.',
+      Summer: 'June is warm in the valley but cooler in McLeod Ganj — a popular season to escape the plains’ heat.',
+      Autumn: 'September–November has the clearest Dhauladhar views of the year.'
+    }
   },
   {
     id: 'dest_shimla',
@@ -295,7 +334,25 @@ export const destinations: Destination[] = [
     hiddenGems: [
       { title: 'Chhoie Waterfall', description: 'A short forest walk to a waterfall just outside Gushaini, easy to miss on a map.' },
       { title: 'Bahu village', description: 'A quiet wooden-house hamlet across the river, rarely visited by day-trippers.' }
-    ]
+    ],
+    apexPicks: {
+      view: { title: 'Serolsar Lake from Jalori Pass', description: 'A forest walk from the pass to a quiet lake framed by cedar and oak.' },
+      stay: { title: 'Gushaini riverside cottage', description: 'Wooden rooms with the Tirthan running past the window.' },
+      experience: { title: 'Trout fishing on the Tirthan', description: 'A slow-paced riverside activity the valley is known for.' },
+      taste: { title: 'Home-cooked Himachali meals', description: 'Simple, seasonal food in family-run guesthouses.' },
+      moment: { title: 'Morning mist over the river', description: 'Gushaini at first light, before the valley wakes up.' }
+    },
+    travelTips: [
+      'Jalori Pass is only reliably open outside the winter months — check current road status before planning a day trip.',
+      'Mobile signal is patchy through the valley — let your stay know your arrival window in advance.',
+      'Riverside paths can be uneven — sturdy footwear helps more than sandals.'
+    ],
+    matchScores: { adventure: 45, nature: 88, luxury: 35, crowds: 20, slowTravel: 85 },
+    seasonalNotes: {
+      Spring: 'March–May brings clearer trails and fewer crowds before the summer season picks up.',
+      Summer: 'June is warm and green in the valley, with Jalori Pass fully open above.',
+      Autumn: 'September–November has cool, settled weather — a good window for riverside walks and Serolsar Lake.'
+    }
   },
   {
     slug: 'jibhi',
@@ -306,56 +363,172 @@ export const destinations: Destination[] = [
     image: images.destinations.kasol,
     region: 'Banjar Valley',
     state: 'Himachal Pradesh',
+    editorialDescription: 'Jibhi is a scatter of wooden guesthouses along a stream in the Banjar Valley, small enough to walk end to end in twenty minutes. It sits below Jalori Pass rather than on it, which keeps it quieter than the pass-road villages further up — most days here are built around a waterfall walk, a slow breakfast and not much else.',
+    bestTime: 'April – June, September – November',
+    idealDuration: '2–3 Days',
+    altitude: '2,250 m',
     travelStyles: ['Offbeat', 'Nature', 'Slow travel'],
     seasons: ['Spring', 'Summer', 'Autumn'],
     bestFor: ['Couples', 'Solo Travelers'],
+    highlights: [
+      { title: 'Walkable village scale', description: 'Cafes, cottages and the stream are all within a short stroll of each other.' },
+      { title: 'Kath Kuni architecture', description: 'Chehni Kothi’s timber-and-stone tower is a short, well-marked hike above the village.' },
+      { title: 'A base below Jalori Pass', description: 'Thirteen kilometres from the pass road, without being on it.' }
+    ],
+    places: [
+      { title: 'Jibhi Waterfall', description: 'A short, easy walk from the village lanes to a forest waterfall.' },
+      { title: 'Chehni Kothi', description: 'A centuries-old timber-and-stone watchtower in Chehni village, reached via a roughly hour-long walk from Bagi.' },
+      { title: 'Jalori Pass', description: 'A high pass around 3,120 m, about 13 km up the road — a nearby excursion, not a Jibhi sight in itself.' }
+    ],
+    experiences: ['Waterfall walks', 'Café mornings', 'Village photography', 'Day trip to Jalori Pass'],
+    relatedSlugs: ['tirthan-valley', 'sainj-valley'],
+    seo: { title: 'Jibhi Travel Guide & Experiences | The Apex Voyager', description: 'Discover Jibhi: a quiet Banjar Valley hamlet of wooden cottages, waterfall walks and easy access to Jalori Pass.' },
     hiddenGems: [
       { title: 'Jibhi Waterfall', description: 'A short, easy walk from the village lanes to a forest waterfall.' },
       { title: 'Chehni Kothi', description: 'A centuries-old timber-and-stone watchtower above the valley, rarely crowded.' }
-    ]
+    ],
+    travelTips: [
+      'Jalori Pass is a day trip from Jibhi, not a walk — plan a taxi or your own vehicle.',
+      'The pass road is unreliable in winter — confirm it’s open before building a day around it.',
+      'Most of the village has no house numbers — save your stay’s exact location before you arrive.'
+    ],
+    matchScores: { adventure: 30, nature: 82, luxury: 30, crowds: 20, slowTravel: 90 },
+    seasonalNotes: {
+      Spring: 'April brings clear skies and easy access to Jalori Pass as the winter snow clears.',
+      Summer: 'June is warm and green, with the pass road fully open for day trips.',
+      Autumn: 'September–November is cool and quiet, with good visibility for the walk to Chehni Kothi.'
+    }
   },
   {
     slug: 'chitkul',
     title: 'Chitkul',
     category: 'Adventure',
-    description: 'The last village on the Indo-Tibet border.',
+    description: 'The last inhabited village on the old Hindustan-Tibet trade route, deep in the Baspa Valley.',
     toursCount: 6,
     image: images.destinations.kinnaur,
     region: 'Kinnaur Valley',
     state: 'Himachal Pradesh',
+    editorialDescription: 'Chitkul sits at the road’s end in the Baspa Valley, past Sangla and past most itineraries. At close to 3,450 m it’s noticeably colder and starker than the valley below — fewer trees, wider skies, and a village that still runs on its own slow rhythm rather than a tourist one. It rewards travelers looking for the quiet, high end of a Kinnaur trip rather than a full itinerary in itself.',
+    bestTime: 'May – October',
+    idealDuration: '1–2 Days (as an extension of Sangla)',
+    altitude: '3,450 m',
     travelStyles: ['Adventure', 'Nature', 'Offbeat'],
     seasons: ['Summer', 'Autumn'],
     bestFor: ['Solo Travelers', 'Friends & Groups'],
+    highlights: [
+      { title: 'End-of-the-road village', description: 'Chitkul is the furthest point most travelers can reach on this stretch of the Baspa Valley.' },
+      { title: 'High-altitude Baspa views', description: 'Wide, treeless valley views the lower villages don’t have.' },
+      { title: 'A genuinely different pace', description: 'A small, working Kinnauri village rather than a built-up viewpoint.' }
+    ],
+    places: [
+      { title: 'Baspa riverbank', description: 'A short walk from the village to the river, with the valley opening out around it.' },
+      { title: 'Batseri village', description: 'A quieter orchard village on the way in from Sangla, often skipped entirely.' },
+      { title: 'Sangla', description: 'The larger town 24–25 km back down the valley — most Chitkul trips are based there.' }
+    ],
+    experiences: ['Riverside walks', 'Village photography', 'Baspa Valley road trip', 'Orchard-season visits'],
+    relatedSlugs: ['sangla-valley', 'kinnaur'],
+    seo: { title: 'Chitkul Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Chitkul trip — the Baspa Valley’s furthest village, best reached as an extension of Sangla.' },
     hiddenGems: [
       { title: 'Last Dhaba of India', description: 'A tin-roofed roadside dhaba at the literal end of the road — a rite of passage for Kinnaur travelers.' },
       { title: 'Batseri village', description: 'A quieter orchard village a short drive before Chitkul, often skipped entirely.' }
-    ]
+    ],
+    travelTips: [
+      'The road from Sangla can be rough in places — build in extra time, especially after rain.',
+      'Evenings turn cold fast even in summer — pack a proper layer, not just a light jacket.',
+      'Stay options are limited — book ahead in peak season rather than arriving without a plan.'
+    ],
+    matchScores: { adventure: 55, nature: 90, luxury: 15, crowds: 30, slowTravel: 75 },
+    seasonalNotes: {
+      Summer: 'June–August is the most reliable window for road access, though July–August can bring monsoon disruption.',
+      Autumn: 'September–October is clear and cool, generally the most stable time to visit before winter closes the road.'
+    }
   },
   {
     slug: 'sainj-valley',
     title: 'Sainj Valley',
     category: 'Riverside',
-    description: 'Unexplored beauty, waterfalls and wooden homes.',
+    description: 'A quiet valley on the Great Himalayan National Park buffer, built around meadow villages like Shangarh.',
     toursCount: 5,
     image: images.destinations.kasol,
     region: 'Kullu District',
     state: 'Himachal Pradesh',
+    editorialDescription: 'Sainj Valley runs into the buffer zone of the Great Himalayan National Park, and it shows — this is one of the quietest corners of the Kullu district, with far less infrastructure than Tirthan or Jibhi next door. Shangarh, its best-known village, is a wide meadow with a centuries-old temple rather than a tourist strip, reached by a narrow road that keeps the numbers down.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '2–3 Days',
+    altitude: '2,100 m (Shangarh)',
     travelStyles: ['Slow travel', 'Nature', 'Offbeat'],
     seasons: ['Spring', 'Summer', 'Monsoon'],
-    bestFor: ['Couples', 'Solo Travelers']
+    bestFor: ['Couples', 'Solo Travelers'],
+    highlights: [
+      { title: 'Shangarh meadow', description: 'An open meadow village inside the GHNP buffer zone, with a historic temple at its edge.' },
+      { title: 'National park buffer setting', description: 'Forested, undeveloped surroundings rather than a built-up hill-station feel.' },
+      { title: 'A quieter alternative to Tirthan', description: 'Fewer stays and visitors than the neighbouring valleys, by design more than by accident.' }
+    ],
+    places: [
+      { title: 'Shangarh village', description: 'The valley’s meadow hub, with traditional wooden homes and a temple.' },
+      { title: 'Sainj village', description: 'The lower gateway village on the way in from Aut.' }
+    ],
+    experiences: ['Meadow walks', 'Village stays', 'Birdwatching', 'Forest walks'],
+    relatedSlugs: ['tirthan-valley', 'jibhi'],
+    seo: { title: 'Sainj Valley Travel Guide & Experiences | The Apex Voyager', description: 'Discover Sainj Valley and Shangarh — a quiet meadow village on the Great Himalayan National Park buffer.' },
+    hiddenGems: [
+      { title: 'Shangarh meadow temple', description: 'A centuries-old wooden temple at the edge of the meadow, easy to miss without a local pointing it out.' }
+    ],
+    travelTips: [
+      'The final stretch to Shangarh is a narrow, high-clearance road — a suitable vehicle matters more than speed.',
+      'Very few shops or ATMs in the valley — carry cash and any essentials in from Aut or Sainj village.',
+      'This is genuinely quiet country — confirm your stay is open and reachable before setting out.'
+    ],
+    matchScores: { adventure: 40, nature: 92, luxury: 15, crowds: 10, slowTravel: 90 },
+    seasonalNotes: {
+      Spring: 'March–May brings clearer roads and fresh green meadows before the summer crowds elsewhere in Kullu build up.',
+      Summer: 'June is warm and accessible; July–August monsoon rain can make the final approach road difficult.'
+    }
   },
   {
     slug: 'bir-billing',
     title: 'Bir Billing',
     category: 'Adventure',
-    description: "India's paragliding capital, with wide valley views and a laid-back Tibetan-influenced village.",
+    description: "India's best-known paragliding site, paired with a slow-paced Tibetan settlement village.",
     toursCount: 9,
     image: images.destinations.manali,
     region: 'Kangra Valley',
     state: 'Himachal Pradesh',
+    editorialDescription: 'Bir and Billing are really two places. Bir, at around 1,525 m, is a Tibetan settlement village founded in the early 1960s — cafes, monasteries and landing-strip meadows at a gentle pace. Billing, 14 km up and over 800 m higher, is the actual paragliding takeoff point, with expansive Kangra Valley views on a clear day. Most visitors base themselves in Bir and treat Billing as a day trip up and back.',
+    bestTime: 'October – June',
+    idealDuration: '2–3 Days',
+    altitude: '1,525 m (Bir), 2,400 m (Billing takeoff)',
     travelStyles: ['Adventure', 'Nature'],
     seasons: ['Autumn', 'Winter', 'Spring'],
-    bestFor: ['Solo Travelers', 'Friends & Groups']
+    bestFor: ['Solo Travelers', 'Friends & Groups'],
+    highlights: [
+      { title: 'Paragliding at Billing', description: 'One of India’s best-regarded paragliding sites, weather and operator conditions permitting.' },
+      { title: 'Bir Tibetan Colony', description: 'Monasteries, prayer flags and a Tibetan-refugee settlement dating to the early 1960s.' },
+      { title: 'Café and slow-travel culture', description: 'A relaxed village pace between flights, built around small cafes rather than a busy bazaar.' }
+    ],
+    places: [
+      { title: 'Chowgan village', description: 'The paragliding landing site and hub for most stays, on the southern edge of Bir.' },
+      { title: 'Billing meadow', description: 'The takeoff point 14 km above Bir, reached by road.' },
+      { title: 'Bir Tibetan monasteries', description: 'Several monasteries within walking distance of the village centre.' }
+    ],
+    experiences: ['Paragliding (weather permitting)', 'Monastery visits', 'Café culture', 'Cycling routes'],
+    relatedSlugs: ['dharamshala'],
+    seo: { title: 'Bir Billing Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Bir Billing trip — paragliding at Billing, Tibetan culture in Bir, and a relaxed Kangra Valley base.' },
+    hiddenGems: [
+      { title: 'Bir Road Tea Estate', description: 'Working tea gardens on the approach to Bir, a quiet stop most travelers drive straight past.' },
+      { title: 'Chowgan back lanes', description: 'Quieter cafe lanes a short walk from the main landing field.' }
+    ],
+    travelTips: [
+      'Paragliding depends entirely on weather and operator judgment on the day — build in a buffer day rather than a fixed slot.',
+      'Book with a licensed, insured operator, and confirm safety equipment before booking.',
+      'Billing is noticeably colder and windier than Bir — carry a layer even on a clear day.'
+    ],
+    matchScores: { adventure: 90, nature: 60, luxury: 30, crowds: 40, slowTravel: 55 },
+    seasonalNotes: {
+      Autumn: 'October–November has some of the most reliable flying conditions of the year.',
+      Winter: 'December–February is cooler with fewer crowds; flying still runs on suitable-weather days.',
+      Spring: 'March–April brings clearer skies again as winter fog clears, ahead of the pre-monsoon haze.'
+    }
   },
   {
     slug: 'sangla-valley',
@@ -366,48 +539,162 @@ export const destinations: Destination[] = [
     image: images.destinations.kinnaur,
     region: 'Kinnaur Valley',
     state: 'Himachal Pradesh',
+    editorialDescription: 'Sangla is the Baspa Valley’s main town — the practical base for the whole valley, rather than a quiet extension of it. Orchards run down to the river on both sides, and Kamru Fort watches over the town from a hill just above it. Kinnaur itself is the wider district; Sangla is where most travelers actually stay, using it as the launch point for Chitkul further up the valley.',
+    bestTime: 'May – October',
+    idealDuration: '2–3 Days',
+    altitude: '2,700 m',
     travelStyles: ['Adventure', 'Nature', 'Slow travel'],
     seasons: ['Summer', 'Autumn'],
-    bestFor: ['Couples', 'Friends & Groups']
+    bestFor: ['Couples', 'Friends & Groups'],
+    highlights: [
+      { title: 'Kamru Fort', description: 'A 15th-century fortified temple complex on a hilltop above the town, with sweeping Baspa Valley views.' },
+      { title: 'Orchard-lined riverbanks', description: 'Apple and apricot orchards running along both sides of the Baspa.' },
+      { title: 'Base for the upper Baspa Valley', description: 'The practical stop before continuing on to Chitkul.' }
+    ],
+    places: [
+      { title: 'Kamru Fort', description: 'A short hike or drive above Sangla town, including the Badri Vishal temple complex.' },
+      { title: 'Sangla Bazaar', description: 'The town’s small main market, the valley’s only real shopping stop.' },
+      { title: 'Chitkul', description: 'A further, higher village around 25 km up the valley — an onward excursion rather than part of Sangla itself.' }
+    ],
+    experiences: ['Orchard walks', 'Kamru Fort visit', 'Baspa Valley road trip', 'Local market browsing'],
+    relatedSlugs: ['chitkul', 'kinnaur'],
+    seo: { title: 'Sangla Valley Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Sangla Valley trip — Kamru Fort, Baspa river orchards, and the gateway to Chitkul.' },
+    hiddenGems: [
+      { title: 'Kamru village lanes', description: 'The old village below the fort, quieter than the main bazaar.' },
+      { title: 'Rakcham village', description: 'A smaller orchard hamlet on the road between Sangla and Chitkul.' }
+    ],
+    travelTips: [
+      'Kamru Fort involves a short, steep climb — comfortable footwear helps.',
+      'Sangla is the last reliable place to withdraw cash before Chitkul — plan accordingly.',
+      'Roads beyond Sangla can close after heavy rain — check conditions before continuing up-valley.'
+    ],
+    matchScores: { adventure: 50, nature: 85, luxury: 30, crowds: 40, slowTravel: 65 },
+    seasonalNotes: {
+      Summer: 'June–August is green and accessible, though July–August monsoon rain can affect the roads.',
+      Autumn: 'September–October is the clearest, most stable window, coinciding with the apple harvest.'
+    }
   },
   {
     slug: 'chamba',
     title: 'Chamba',
     category: 'Colonial Charm',
-    description: 'Ancient temples and hillside palaces in one of Himachal’s oldest princely towns.',
+    description: 'A former Himalayan princely capital on the Ravi River, built around temples and a historic town square.',
     toursCount: 10,
     image: images.destinations.shimla,
     region: 'Chamba District',
     state: 'Himachal Pradesh',
+    editorialDescription: 'Chamba has been a town in its own right since around 920 CE, when Raja Sahil Varman moved his capital here and named it after his daughter. That history is still legible today: the Chaugan — the open ground at the town’s centre — the 10th-century Lakshmi Narayan temple complex, and a museum built specifically to hold the kingdom’s art. It sits low and warm on the Ravi River, a different register entirely from the cooler colonial hill stations further along this district.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '2–3 Days',
+    altitude: '1,006 m',
     travelStyles: ['Culture', 'Family'],
     seasons: ['Summer', 'Autumn'],
-    bestFor: ['Families', 'Couples']
+    bestFor: ['Families', 'Couples'],
+    highlights: [
+      { title: 'Lakshmi Narayan Temple complex', description: 'A cluster of 10th-century Shikhara-style temples in the town centre, still in active use.' },
+      { title: 'The Chaugan', description: 'A wide public ground that has been Chamba’s civic heart for centuries.' },
+      { title: 'Bhuri Singh Museum', description: 'A museum built in 1908 around the former royal court’s art, miniature paintings and manuscripts.' }
+    ],
+    places: [
+      { title: 'Lakshmi Narayan Temple', description: 'The town’s principal temple complex, dating to the 10th century.' },
+      { title: 'Bhuri Singh Museum', description: 'Housed a short walk from the Chaugan, covering Chamba’s painting and craft traditions.' },
+      { title: 'The Chaugan', description: 'The town’s central open ground, framed by the Ravi River on one side.' }
+    ],
+    experiences: ['Temple visits', 'Museum visit', 'Old-town walks', 'Riverside evenings on the Chaugan'],
+    relatedSlugs: ['dalhousie', 'khajjiar'],
+    seo: { title: 'Chamba Travel Guide & Experiences | The Apex Voyager', description: 'Discover Chamba — a 1,000-year-old Himalayan princely town of temples, museums and the Ravi River.' },
+    hiddenGems: [
+      { title: 'Rang Mahal', description: 'A former royal palace with distinctive Pahari-style painted interiors, quieter than the main temple complex.' }
+    ],
+    travelTips: [
+      'The Lakshmi Narayan complex is a working temple — dress modestly and expect to remove footwear.',
+      'The Bhuri Singh Museum is compact — an hour is usually enough to see it properly.',
+      'Chamba sits lower and warmer than Dalhousie — pack for milder weather than the hill stations above it.'
+    ],
+    matchScores: { adventure: 20, nature: 45, luxury: 30, crowds: 45, slowTravel: 60 },
+    seasonalNotes: {
+      Summer: 'April–June is comfortably warm and clear, before the monsoon arrives.',
+      Autumn: 'September–November is cool and dry, a good season for walking the old town.'
+    }
   },
   {
     slug: 'dalhousie',
     title: 'Dalhousie',
     category: 'Colonial Charm',
-    description: 'Colonial-era churches and pine-forest views strung across five interconnected hills.',
+    description: 'A colonial-era hill station spread across five hills, built by the British as a summer retreat in 1850.',
     toursCount: 11,
     image: images.destinations.shimla,
     region: 'Chamba District',
     state: 'Himachal Pradesh',
+    editorialDescription: 'Dalhousie was laid out by the British in 1850 across five hills — Kathlog, Potreyn, Terah, Bakrota and Bhangora — as a cooler alternative to the plains, and its ridge roads, colonial churches and pine forest still carry that character. At around 1,970 m it’s noticeably cooler than Chamba below it, and its walking routes between the hills make it a good slower base rather than a single-sight stop.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '2–3 Days',
+    altitude: '1,970 m',
     travelStyles: ['Culture', 'Family', 'Slow travel'],
     seasons: ['Summer', 'Monsoon', 'Autumn'],
-    bestFor: ['Families', 'Couples']
+    bestFor: ['Families', 'Couples'],
+    highlights: [
+      { title: 'Five interconnected hills', description: 'Ridge roads link Kathlog, Potreyn, Terah, Bakrota and Bhangora — good ground for unhurried walks.' },
+      { title: 'Colonial-era churches', description: 'St. Francis and St. John’s churches remain from Dalhousie’s time as a British summer station.' },
+      { title: 'Forest and viewpoint walks', description: 'Pine and deodar forest trails between the hills, with wide valley views.' }
+    ],
+    places: [
+      { title: 'Subhash Baoli', description: 'A forested viewpoint and spring on Bakrota Hill.' },
+      { title: 'St. John’s Church', description: 'A colonial-era church in the town centre, one of the oldest in Dalhousie.' },
+      { title: 'Khajjiar', description: 'A meadow and lake around 22 km away — a popular day trip, not part of Dalhousie itself.' }
+    ],
+    experiences: ['Ridge walks between hills', 'Colonial church visits', 'Forest photography', 'Day trip to Khajjiar'],
+    relatedSlugs: ['khajjiar', 'chamba'],
+    seo: { title: 'Dalhousie Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Dalhousie trip — colonial-era churches, five interconnected hills, and easy access to Khajjiar.' },
+    hiddenGems: [
+      { title: 'Panchpula', description: 'A quiet forest stream and memorial spot, a short walk from the main bazaar.' },
+      { title: 'Bakrota Hill walking loop', description: 'A circular forest walk with valley views, far less busy than the main mall road.' }
+    ],
+    travelTips: [
+      'Distances between the five hills are longer on foot than they look on a map — plan a full morning or afternoon, not a quick loop.',
+      'Evenings are cool even in summer — bring a proper layer.',
+      'Khajjiar is an easy half-day trip from here — no need to change base to see it.'
+    ],
+    matchScores: { adventure: 25, nature: 65, luxury: 45, crowds: 65, slowTravel: 55 },
+    seasonalNotes: {
+      Summer: 'April–June is Dalhousie’s classic season — cool relief from the plains’ heat.',
+      Autumn: 'September–November is clear and quiet, with good visibility on the ridge walks.'
+    }
   },
   {
     slug: 'khajjiar',
     title: 'Khajjiar',
     category: 'Offbeat',
-    description: 'A saucer-shaped meadow ringed by deodar forest, often called "Mini Switzerland."',
+    description: 'A small meadow and lake ringed by deodar forest, roughly midway between Dalhousie and Chamba.',
     toursCount: 6,
     image: images.destinations.dharamshala,
     region: 'Chamba District',
     state: 'Himachal Pradesh',
+    editorialDescription: 'Khajjiar is a stop, not a stay-a-week destination — a saucer-shaped meadow with a small lake at its centre, ringed by deodar forest at around 1,950 m. The 12th-century Khajji Nag temple sits at the meadow’s edge, and a short walk or pony ride covers most of what’s here. It works best as a half-day break between Dalhousie and Chamba rather than a base of its own.',
+    bestTime: 'March – June, September – November',
+    idealDuration: 'Half Day – 1 Day',
+    altitude: '1,950 m',
     travelStyles: ['Offbeat', 'Nature', 'Romantic'],
     seasons: ['Summer', 'Monsoon'],
-    bestFor: ['Couples', 'Families']
+    bestFor: ['Couples', 'Families'],
+    highlights: [
+      { title: 'Meadow and lake', description: 'An open grassy plateau with a small lake at its centre, framed by forest.' },
+      { title: 'Khajji Nag Temple', description: 'A 12th-century wooden temple at the edge of the meadow.' }
+    ],
+    places: [
+      { title: 'Khajjiar Lake', description: 'The small lake at the centre of the meadow.' },
+      { title: 'Khajji Nag Temple', description: 'A centuries-old wooden temple dedicated to the local serpent deity.' }
+    ],
+    experiences: ['Meadow walks', 'Temple visit', 'Photography stop'],
+    relatedSlugs: ['dalhousie', 'chamba'],
+    seo: { title: 'Khajjiar Travel Guide | The Apex Voyager', description: 'Plan a Khajjiar stop — meadow, lake and forest between Dalhousie and Chamba.' },
+    hiddenGems: [
+      { title: 'Khajjiar’s small golf course', description: 'A modest putting course beside the lake that most day-trippers walk straight past.' }
+    ],
+    travelTips: [
+      'An hour or two comfortably covers the meadow and temple — no need to add extra time.',
+      'It gets busy with day-trippers in peak season — an early visit is quieter.'
+    ]
   },
   {
     slug: 'gulmarg',
@@ -672,12 +959,29 @@ export const destinations: Destination[] = [
     bestFor: ['Solo Travelers', 'Friends & Groups'],
     highlights: [
       { title: 'Panchachuli views', description: 'Five snow peaks catch the first and last light directly above town.' },
-      { title: 'Johar Valley trailheads', description: 'A launch point for remote Kumaon treks most travelers never reach.' }
+      { title: 'Johar Valley trailheads', description: 'A launch point for remote Kumaon treks most travelers never reach.' },
+      { title: 'Gateway to Milam Glacier', description: 'The usual base camp town for the multi-day trek to Milam Glacier, for prepared trekkers.' }
     ],
+    places: [
+      { title: 'Khaliya Top', description: 'A high meadow above town with a 360-degree Panchachuli view.' },
+      { title: 'Birthi Falls', description: 'A roadside waterfall on the drive in from Munsiyari’s approach road.' },
+      { title: 'Nanda Devi Temple', description: 'A small local temple in the town itself.' }
+    ],
+    experiences: ['Panchachuli viewpoints', 'Khaliya Top day hike', 'Milam Glacier trek (multi-day, guided)', 'Local Kumaoni village visits'],
     hiddenGems: [
       { title: 'Khaliya Top', description: 'A high meadow trek with a 360-degree Panchachuli view, quiet even in season.' },
       { title: 'Birthi Falls', description: 'A roadside waterfall on the way in, most through-travelers just drive past.' }
     ],
+    travelTips: [
+      'The road in from Kathgodam is long — plan for a full day of travel, not a quick add-on.',
+      'The Milam Glacier trek needs a permit and a guide — this is not a casual day trek.',
+      'Panchachuli visibility is best at sunrise and sunset — plan viewpoint time around those windows.'
+    ],
+    matchScores: { adventure: 65, nature: 90, luxury: 25, crowds: 10, slowTravel: 65 },
+    seasonalNotes: {
+      Spring: 'April–June gives the clearest Panchachuli views before the monsoon haze sets in.',
+      Autumn: 'September–November is the other reliable window, with cool, settled weather for the Khaliya Top hike.'
+    },
     relatedSlugs: ['rishikesh'],
     seo: { title: 'Munsiyari Travel Guide & Experiences | The Apex Voyager', description: 'Discover Munsiyari — Panchachuli views and Uttarakhand’s quietest Himalayan valley.' }
   }
