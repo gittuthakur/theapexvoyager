@@ -723,7 +723,7 @@ export const destinations: Destination[] = [
       { title: 'St. Mary’s Church', description: 'A colonial-era church framed by deodar forest.' }
     ],
     experiences: ['Skiing & snowboarding', 'Gondola ride', 'Meadow walks', 'Golf (summer)', 'Photography'],
-    relatedSlugs: ['kinnaur', 'manali'],
+    relatedSlugs: ['srinagar', 'pahalgam', 'sonamarg'],
     seo: { title: 'Gulmarg Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Gulmarg escape — the Gondola, skiing, and Kashmir’s most cinematic alpine meadow.' },
     isPopular: true,
     priority: 5,
@@ -970,6 +970,164 @@ export const destinations: Destination[] = [
     },
     relatedSlugs: ['rishikesh'],
     seo: { title: 'Munsiyari Travel Guide & Experiences | The Apex Voyager', description: 'Discover Munsiyari — Panchachuli views and Uttarakhand’s quietest Himalayan valley.' }
+  },
+  {
+    slug: 'srinagar',
+    title: 'Srinagar',
+    category: 'Scenic',
+    description: 'Kashmir’s valley capital — Dal Lake, Mughal gardens and centuries of houseboat life.',
+    toursCount: 12,
+    image: images.destinations.srinagar,
+    region: 'Srinagar District',
+    state: 'Jammu & Kashmir',
+    editorialDescription: 'Srinagar is where the Kashmir Valley does its living — houseboats and shikaras along Dal Lake, terraced Mughal gardens climbing the hillsides above it, and an old city of wooden shopfronts and shrines that rewards a slow wander. It’s also the valley’s working hub: its airport and highways are how most Kashmir trips begin, so plan two or three days here rather than treating it as a stopover.',
+    bestTime: 'March – October',
+    idealDuration: '2–3 Days',
+    altitude: '1,600 m',
+    travelStyles: ['Nature', 'Family', 'Culture'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Families', 'Couples'],
+    highlights: [
+      { title: 'Dal Lake by shikara', description: 'Houseboats, floating gardens and quiet backwaters, best seen from a hand-paddled shikara at dawn.' },
+      { title: 'Mughal garden terraces', description: 'Shalimar Bagh and Nishat Bagh climb the hillside above the lake in formal, fountain-fed terraces.' },
+      { title: 'The old city', description: 'Wooden shopfronts, shrines and the Jhelum riverfront, away from the lake-facing tourist strip.' }
+    ],
+    places: [
+      { title: 'Dal Lake', description: 'The city’s defining lake, ringed by houseboats, floating gardens and the Mughal gardens above it.' },
+      { title: 'Shalimar Bagh', description: 'A terraced Mughal garden built for Emperor Jahangir in 1619, with fountains and chinar trees.' },
+      { title: 'Nishat Bagh', description: 'A larger, twelve-terraced garden looking across the lake toward the Zabarwan hills.' },
+      { title: 'Jama Masjid', description: 'A 14th-century mosque in the old city, rebuilt in Kashmiri wooden architecture after repeated fires.' }
+    ],
+    experiences: ['Shikara rides on Dal Lake', 'Mughal garden walks', 'Old city heritage walks', 'Kashmiri cuisine', 'Houseboat stays'],
+    relatedSlugs: ['gulmarg', 'pahalgam', 'sonamarg'],
+    seo: { title: 'Srinagar Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Srinagar trip — Dal Lake, Mughal gardens and the valley’s old city, Kashmir’s travel hub.' },
+    apexPicks: {
+      view: { title: 'Shalimar Bagh at golden hour', description: 'Terraced fountains and chinar trees catching the evening light.' },
+      stay: { title: 'A houseboat on Dal Lake', description: 'Carved-walnut interiors and a private deck a few oar-strokes from the shore.' },
+      experience: { title: 'A dawn shikara ride', description: 'The lake at its stillest, before the floating vegetable market gets busy.' },
+      taste: { title: 'Kahwa and a Wazwan feast', description: 'Saffron tea and Kashmir’s traditional multi-course meal.' },
+      moment: { title: 'Sunset over the Zabarwan hills', description: 'The lake turning gold as houseboats light their lamps.' }
+    },
+    hiddenGems: [
+      { title: 'Chashme Shahi', description: 'A small, spring-fed Mughal garden, quieter than Shalimar and Nishat.' },
+      { title: 'Downtown Srinagar', description: 'The old city’s lanes and shrines, a short walk from the lake but rarely visited.' }
+    ],
+    travelTips: [
+      'Agree a shikara/houseboat rate before boarding — most are unmetered.',
+      'Garden entry can involve a queue in peak season (April–June); an early visit is quieter.',
+      'Pack layers — evenings by the lake are cool even in summer.'
+    ],
+    matchScores: { adventure: 35, nature: 70, luxury: 65, crowds: 70, slowTravel: 55 },
+    seasonalNotes: {
+      Spring: 'March–May brings tulip season and the gardens at their fullest bloom.',
+      Summer: 'June–August is peak season — warm days, cool evenings by the lake.',
+      Autumn: 'September–October turns the chinar trees gold, with fewer crowds than summer.'
+    }
+  },
+  {
+    slug: 'pahalgam',
+    title: 'Pahalgam',
+    category: 'Adventure',
+    description: 'A Lidder Valley mountain base, and the Kashmir Valley’s classic multi-day retreat.',
+    toursCount: 10,
+    image: images.destinations.pahalgam,
+    region: 'Anantnag District',
+    state: 'Jammu & Kashmir',
+    editorialDescription: 'Pahalgam sits where the Lidder River opens into a wide, pine-lined valley — the kind of base that rewards staying a few nights rather than passing through. The town itself is unhurried; its real draw is the valley around it, from riverside meadows a short walk from your hotel to Aru and Betaab further up the road.',
+    bestTime: 'April – October',
+    idealDuration: '3–4 Days',
+    altitude: '2,200 m',
+    travelStyles: ['Nature', 'Family', 'Adventure'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Families', 'Couples'],
+    highlights: [
+      { title: 'The Lidder Valley', description: 'Pine forest, riverside meadows and the Lidder River running through the middle of town.' },
+      { title: 'A trekking gateway', description: 'The traditional start of the Amarnath Yatra route, and trailheads for Kolahoi Glacier and Tarsar-Marsar.' },
+      { title: 'Nearby valleys', description: 'Aru and Betaab Valley are both a short drive away, each with a distinct character from Pahalgam itself.' }
+    ],
+    places: [
+      { title: 'Pahalgam town', description: 'The valley base — hotels, the Lidder riverfront and the main market.' },
+      { title: 'Betaab Valley', description: 'A ticketed sightseeing stop about 15 km up the valley, named after the 1983 film shot there.' },
+      { title: 'Aru Valley', description: 'A quieter village 12 km on, and the trailhead for Kolahoi Glacier and Tarsar-Marsar treks.' },
+      { title: 'Chandanwari', description: 'A viewpoint further up the valley and the traditional starting point of the Amarnath Yatra.' }
+    ],
+    experiences: ['Riverside pony treks', 'Valley sightseeing (Aru, Betaab, Chandanwari)', 'Trekking toward Kolahoi Glacier', 'Fishing on the Lidder River'],
+    relatedSlugs: ['srinagar', 'gulmarg', 'sonamarg'],
+    seo: { title: 'Pahalgam Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Pahalgam trip — the Lidder Valley, Aru and Betaab, and Kashmir’s classic mountain base.' },
+    apexPicks: {
+      view: { title: 'The Lidder River valley at dawn', description: 'Mist over the pine forest before the day’s traffic reaches the valley road.' },
+      stay: { title: 'A riverside hotel on the Lidder', description: 'Rooms with a private view of the river, a short walk from town.' },
+      experience: { title: 'A pony trek through the meadows', description: 'An easy, guided ride along the riverside trail.' },
+      taste: { title: 'Kahwa by the river', description: 'Saffron tea at a riverside dhaba, valley views included.' },
+      moment: { title: 'Evening light over Betaab Valley', description: 'The valley empties out as day-trippers head back to Srinagar.' }
+    },
+    hiddenGems: [
+      { title: 'Baisaran meadow', description: 'A forested meadow above town, reached on foot or horseback, quieter than the main valley road.' },
+      { title: 'Aru Valley beyond the village', description: 'Most visitors turn back at the village; the trail onward toward Tarsar-Marsar sees far fewer people.' }
+    ],
+    travelTips: [
+      'Check current official travel advisories before finalizing your Pahalgam itinerary — conditions in the region can change, and local authorities are the best source for up-to-date guidance.',
+      'Agree on sightseeing-taxi and pony rates in advance — both are typically negotiated, not metered.',
+      'Aru, Betaab and Chandanwari are all half-day add-ons, not separate overnight stops — plan one valley-sightseeing day for all three.'
+    ],
+    matchScores: { adventure: 55, nature: 80, luxury: 55, crowds: 55, slowTravel: 60 },
+    seasonalNotes: {
+      Spring: 'April–May is quieter, with the valley turning green as the snow retreats.',
+      Summer: 'June–August is peak season for valley sightseeing and pony treks.',
+      Autumn: 'September–October brings clear skies and fewer crowds before the valley cools.'
+    }
+  },
+  {
+    slug: 'sonamarg',
+    title: 'Sonamarg',
+    category: 'Scenic',
+    description: 'A high-altitude valley on the Srinagar–Leh road, and gateway to Kashmir’s glacier and lake treks.',
+    toursCount: 7,
+    image: images.destinations.sonamarg,
+    region: 'Ganderbal District',
+    state: 'Jammu & Kashmir',
+    editorialDescription: 'Sonamarg — the “Meadow of Gold” — sits higher and wilder than Srinagar’s other valley towns, where the Sindh River braids across an open valley floor before the road climbs on toward Zojila Pass. It’s less a place to linger in town and more a base: for the walk toward Thajiwas, for high-altitude lakes reached on longer treks, and for travelers continuing on the Srinagar–Leh road.',
+    bestTime: 'May – September',
+    idealDuration: '1–2 Days',
+    altitude: '2,730 m',
+    travelStyles: ['Adventure', 'Nature'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Friends & Groups', 'Solo Travelers'],
+    highlights: [
+      { title: 'The Sindh Valley', description: 'A wide, high-altitude valley where the Sindh River threads through pine forest and open meadow.' },
+      { title: 'Thajiwas', description: 'A well-known walk or pony ride toward glacial terrain above the town, a common first taste of the high mountains.' },
+      { title: 'Gateway to the high lakes', description: 'Vishansar, Krishansar, Gangabal and Gadsar lakes lie beyond Sonamarg, reached on multi-day treks.' }
+    ],
+    places: [
+      { title: 'Sonamarg town', description: 'The valley base, mainly hotels and dhabas strung along the Srinagar–Leh road.' },
+      { title: 'Thajiwas', description: 'A meadow and glacial area above the town, reached on foot or pony.' },
+      { title: 'Baltal', description: 'A further staging point up the valley, used seasonally for the Amarnath Yatra.' }
+    ],
+    experiences: ['Trekking toward Thajiwas', 'Pony rides', 'High-altitude lake treks (multi-day)', 'Valley photography'],
+    relatedSlugs: ['srinagar', 'gulmarg', 'pahalgam'],
+    seo: { title: 'Sonamarg Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Sonamarg trip — the Sindh Valley, Thajiwas, and Kashmir’s gateway to the high mountains.' },
+    apexPicks: {
+      view: { title: 'The Sindh Valley floor', description: 'Braided river channels against a backdrop of pine and high ridgelines.' },
+      stay: { title: 'A valley-facing hotel on the Srinagar–Leh road', description: 'Simple, mountain-facing rooms a short walk from the river.' },
+      experience: { title: 'The walk toward Thajiwas', description: 'A half-day out toward the glacial terrain above town, conditions permitting.' },
+      taste: { title: 'A hot meal at a roadside dhaba', description: 'Simple, warming food built for travelers heading further into the mountains.' },
+      moment: { title: 'Morning mist over the Sindh River', description: 'The valley at its quietest, before the day’s traffic on the Leh road picks up.' }
+    },
+    hiddenGems: [
+      { title: 'Baltal', description: 'Quieter than Sonamarg itself, and the practical start point for Amarnath Yatra pilgrims in season.' },
+      { title: 'The upper Sindh Valley viewpoints', description: 'A short way beyond town, with far fewer visitors than the main Thajiwas walk.' }
+    ],
+    travelTips: [
+      'Road and trail conditions are genuinely seasonal here — confirm current access before you plan around Thajiwas or points further up the valley.',
+      'Don’t plan on glacier or high-lake access without checking conditions first — routes beyond Thajiwas require a guide and can close without notice.',
+      'Carry warm layers even in summer — evenings drop sharply at this altitude.'
+    ],
+    matchScores: { adventure: 65, nature: 80, luxury: 35, crowds: 45, slowTravel: 40 },
+    seasonalNotes: {
+      Spring: 'May–June opens the valley as snow retreats, though upper trails can still be closed.',
+      Summer: 'July–August is the most reliable season for the Thajiwas walk and valley access.',
+      Autumn: 'September brings clear, cool days before winter closes the road toward Zojila.'
+    }
   }
 ];
 

@@ -77,5 +77,53 @@ export const transportRoutes: TransportRoute[] = [
     seasonalStatus: 'Year-round',
     active: true,
     featured: true
+  },
+  {
+    origin: 'Srinagar Airport',
+    destination: 'Srinagar',
+    routeType: 'Airport Transfer',
+    estimatedDuration: '30-40 minutes',
+    distanceKm: 14,
+    supportedVehicleCategories: ['Comfort', 'SUV', 'Premium'],
+    startingFare: 1200,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Srinagar',
+    destination: 'Gulmarg',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '1.5-2 hours',
+    distanceKm: 51,
+    supportedVehicleCategories: ['Comfort', 'SUV', 'Premium'],
+    startingFare: 3500,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Srinagar',
+    destination: 'Pahalgam',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '2-3 hours',
+    distanceKm: 95,
+    supportedVehicleCategories: ['SUV', 'Premium', 'Tempo Traveller'],
+    startingFare: 4500,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Srinagar',
+    destination: 'Sonamarg',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '2-3 hours',
+    distanceKm: 80,
+    supportedVehicleCategories: ['SUV', 'Premium'],
+    startingFare: 4200,
+    seasonalStatus: 'Seasonal (Apr-Nov)',
+    active: true,
+    featured: true
   }
 ];

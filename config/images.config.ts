@@ -26,7 +26,10 @@ export const images = {
     chitkul: '/images/destination-chitkul.jpg',
     chamba: '/images/destination-chamba.jpg',
     dalhousie: '/images/destination-dalhousie.jpg',
-    khajjiar: '/images/destination-khajjiar.jpg'
+    khajjiar: '/images/destination-khajjiar.jpg',
+    srinagar: '/images/destination-srinagar.jpg',
+    pahalgam: '/images/destination-pahalgam.jpg',
+    sonamarg: '/images/destination-sonamarg.jpg'
   },
   tours: {
     spitiCircuit: '/images/spiti-circuit.jpg',

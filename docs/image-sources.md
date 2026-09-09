@@ -4,12 +4,13 @@ Register of externally-sourced destination photography actually in use under
 `public/images/`. Only images that are live in `config/destinations.config.ts`
 are listed here — reject/deferred candidates are not recorded.
 
-All 10 images below were sourced from Wikimedia Commons (verified reuse rights,
+All images below were sourced from Wikimedia Commons (verified reuse rights,
 explicit per-file license metadata). Each was downloaded from Commons, resized
 for web delivery, and re-encoded (stripping EXIF/ICC/XMP) — no content changes
 (no added/removed objects, no weather/season changes, no AI transforms).
 
-Date checked for all entries: 2026-09-09.
+Date checked: 2026-09-09 (Gulmarg through Khajjiar, Phase 2B-2); 2026-09-09
+(Srinagar, Pahalgam, Sonamarg, Phase 2B-3B-A).
 
 ## Gulmarg
 
@@ -111,9 +112,40 @@ Date checked for all entries: 2026-09-09.
 - Attribution required: Yes
 - Attribution text: "A view of Khajjiar, Chamba, Himachal Pradesh" by Harvinder Chandigarh, CC BY-SA 4.0, via Wikimedia Commons
 
+## Srinagar
+
+- Local file: `public/images/destination-srinagar.jpg`
+- Source: Wikimedia Commons — `File:Srinagar pano.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Srinagar_pano.jpg
+- Creator: KennyOMG
+- License: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0)
+- Attribution required: Yes
+- Attribution text: "Srinagar pano" by KennyOMG, CC BY-SA 3.0, via Wikimedia Commons
+- Note: cropped from the original panorama (4.3:1 → ~16:9) to fit card/hero use; no content added or removed.
+
+## Pahalgam
+
+- Local file: `public/images/destination-pahalgam.jpg`
+- Source: Wikimedia Commons — `File:Pahalgam Valley.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Pahalgam_Valley.jpg
+- Creator: KennyOMG
+- License: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0)
+- Attribution required: Yes
+- Attribution text: "Pahalgam Valley" by KennyOMG, CC BY-SA 3.0, via Wikimedia Commons
+
+## Sonamarg
+
+- Local file: `public/images/destination-sonamarg.jpg`
+- Source: Wikimedia Commons — `File:Sonmarg.JPG`
+- Source page: https://commons.wikimedia.org/wiki/File:Sonmarg.JPG
+- Creator: Revoshots
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Sonmarg" by Revoshots, CC BY-SA 4.0, via Wikimedia Commons
+
 ## On-site attribution
 
-All nine attribution-required entries above are credited on `/photo-credits`,
+All attribution-required entries above are credited on `/photo-credits`,
 linked from the site footer ("Photo credits"). No other image-specific caption
 system exists on the Destination model (`image: string` is the only field —
 see `types/destination.ts`), so a centralized credits page is the smallest

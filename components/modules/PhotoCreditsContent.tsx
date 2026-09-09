@@ -90,6 +90,30 @@ const credits: PhotoCredit[] = [
     license: 'CC BY-SA 4.0',
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:A_view_of_Khajjiar_,Chamba,Himachal_Pradesh.jpg'
+  },
+  {
+    destination: 'Srinagar',
+    title: 'Srinagar pano',
+    creator: 'KennyOMG',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Srinagar_pano.jpg'
+  },
+  {
+    destination: 'Pahalgam',
+    title: 'Pahalgam Valley',
+    creator: 'KennyOMG',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Pahalgam_Valley.jpg'
+  },
+  {
+    destination: 'Sonamarg',
+    title: 'Sonmarg',
+    creator: 'Revoshots',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Sonmarg.JPG'
   }
 ];
 

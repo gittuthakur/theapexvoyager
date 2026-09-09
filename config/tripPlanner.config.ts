@@ -69,7 +69,7 @@ export const PLANNER_POPULAR_PLACES: string[] = [
   'Gulmarg',
   'Srinagar',
   'Pahalgam',
-  'Sonmarg',
+  'Sonamarg',
   'Leh-Ladakh',
   'Rishikesh',
   'Nainital',
