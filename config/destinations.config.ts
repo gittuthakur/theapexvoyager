@@ -1246,7 +1246,7 @@ export const destinations: Destination[] = [
       { title: 'Vishnuprayag', description: 'A river confluence a short drive from town, on the road toward the upper valley.' }
     ],
     experiences: ['Auli ropeway access', 'Narsingh Temple visit', 'Regional trekking base'],
-    relatedSlugs: ['auli', 'rishikesh'],
+    relatedSlugs: ['auli', 'rishikesh', 'badrinath'],
     seo: { title: 'Joshimath Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Joshimath stop — the base for Auli, Narsingh Temple, and upper Garhwal\'s mountain roads.' },
     travelTips: [
       'Joshimath has had documented land-subsidence concerns in recent years — check current official advisories before booking accommodation, and avoid assuming every hotel listed is unaffected.',
@@ -1593,6 +1593,106 @@ export const destinations: Destination[] = [
       Spring: 'March–May is comfortable, with the orchards in blossom.',
       Summer: 'June stays cooler than the plains, a quiet season here.',
       Autumn: 'September–November is clear and quiet, after the monsoon.'
+    }
+  },
+  {
+    slug: 'badrinath',
+    title: 'Badrinath',
+    category: 'Pilgrimage',
+    description: 'A seasonal Char Dham temple town on the Alaknanda, reached by road beyond Joshimath.',
+    toursCount: 5,
+    image: images.destinations.badrinath,
+    region: 'Chamoli District',
+    state: 'Uttarakhand',
+    accessType: 'road',
+    editorialDescription: 'Badrinath sits at the head of the Alaknanda valley, its temple\'s brightly painted facade set against bare mountain slopes at over 3,000 metres. Dedicated to Lord Vishnu and traditionally linked to Adi Shankaracharya, it is one of the four Uttarakhand Char Dham and, unlike Kedarnath or Yamunotri, reached entirely by road — the drive beyond Joshimath is the destination\'s main physical challenge, not a trek. The temple opens for only about half the year; the rest of the time the valley sits under snow. Mana, a short drive further on and often described as the last village on this route, adds a second, quieter layer to a visit here.',
+    bestTime: 'May – October',
+    idealDuration: '1–2 Days',
+    altitude: '3,100 m',
+    travelStyles: ['Pilgrimage', 'Nature'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Families', 'Solo Travelers'],
+    highlights: [
+      { title: 'Badrinath Temple', description: 'The Char Dham shrine itself, its carved and painted facade set against the Nar-Narayan ridgeline.' },
+      { title: 'Mana village', description: 'A short drive beyond the temple, popularly described as the last village on this route, with its own quieter character.' },
+      { title: 'Tapt Kund', description: 'A natural hot spring beside the temple, part of the traditional approach to a visit here.' }
+    ],
+    places: [
+      { title: 'Badrinath Temple', description: 'The main shrine, open only for around six months of the year — check the official portal for this year\'s dates before you travel.' },
+      { title: 'Mana Village', description: 'A short drive from the temple, known locally for its Vyas Gufa cave and Bhim Pul stone bridge.' },
+      { title: 'Tapt Kund', description: 'A hot-spring pool at the base of the temple steps, traditionally visited before entering.' }
+    ],
+    experiences: ['Badrinath Temple darshan', 'Mana village visit', 'Tapt Kund hot spring'],
+    relatedSlugs: ['joshimath', 'auli', 'rishikesh'],
+    seo: {
+      title: 'Badrinath Travel Guide | Uttarakhand Char Dham | The Apex Voyager',
+      description: 'Plan a Badrinath trip — the road-accessible Char Dham temple beyond Joshimath, Mana village, and seasonal travel planning.'
+    },
+    travelTips: [
+      'The temple is open only for part of the year and the exact opening and closing dates change annually — confirm this year\'s dates on the official Char Dham portal before booking travel.',
+      'Registration for Char Dham Yatra is required and is free through the official Uttarakhand Tourism portal — no third party is authorized to charge a fee for it.',
+      'The Joshimath–Badrinath road is scenic but can be affected by landslides in the monsoon shoulder months — build in buffer time rather than a tight same-day plan.'
+    ],
+    registrationInfo: {
+      required: true,
+      url: 'https://registrationandtouristcare.uk.gov.in/',
+      note: 'Official Uttarakhand Char Dham Yatra registration portal — registration is required and free; it is never collected by The Apex Voyager or any third party.'
+    },
+    matchScores: { adventure: 20, nature: 45, luxury: 25, crowds: 65, slowTravel: 30 },
+    seasonalNotes: {
+      Spring: 'Late April/May sees the temple reopen for the season, on a date fixed annually — check the official portal rather than assuming a fixed calendar day.',
+      Summer: 'June–August is the main yatra season and the busiest period; monsoon rain can also affect the approach road.',
+      Autumn: 'September–October is generally clearer before the temple closes for winter, again on a date fixed annually.'
+    }
+  },
+  {
+    slug: 'gangotri',
+    title: 'Gangotri',
+    category: 'Pilgrimage',
+    description: 'A road-accessible Char Dham temple town on the Bhagirathi, and the gateway to the separate Gaumukh trek.',
+    toursCount: 5,
+    image: images.destinations.gangotri,
+    region: 'Uttarkashi District',
+    state: 'Uttarakhand',
+    accessType: 'road',
+    editorialDescription: 'Gangotri is where the Bhagirathi — the headstream that becomes the Ganges — is worshipped at its traditional source, in a small temple town reached entirely by road via Uttarkashi and Harsil. Like Badrinath, there is no trek involved in visiting the temple itself; the drive through the Bhagirathi valley is the journey. Gaumukh, the actual glacier snout a further trek beyond the town, is a separate, regulated undertaking with its own permit requirements — it is not a casual extension of a temple visit, and this page treats it as a distinct decision, not a given. Harsil, a quieter village short of Gangotri, makes a pleasant stop or overnight base on the way in.',
+    bestTime: 'May – October',
+    idealDuration: '1–2 Days',
+    altitude: '3,200 m',
+    travelStyles: ['Pilgrimage', 'Nature'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Families', 'Solo Travelers'],
+    highlights: [
+      { title: 'Gangotri Temple', description: 'The temple marking the traditional source of the Ganges, on the bank of the Bhagirathi.' },
+      { title: 'Harsil', description: 'A quieter valley village on the approach road, known for its apple orchards and pine forest setting.' },
+      { title: 'Gaumukh — a separate trek', description: 'The glacier snout beyond Gangotri is a distinct, permitted trek, not part of an ordinary temple visit.' }
+    ],
+    places: [
+      { title: 'Gangotri Temple', description: 'The main shrine on the Bhagirathi, open only for around six months of the year — check the official portal for this year\'s dates.' },
+      { title: 'Harsil', description: 'An apple-orchard valley village on the road in, worth a stop or an overnight stay.' },
+      { title: 'Gaumukh (separate trek)', description: 'An approximately 18 km trek beyond Gangotri to the glacier itself, requiring a Forest Department permit and its own planning — not a same-day add-on to a temple visit.' }
+    ],
+    experiences: ['Gangotri Temple darshan', 'Harsil valley stop'],
+    relatedSlugs: ['rishikesh', 'dehradun', 'mussoorie'],
+    seo: {
+      title: 'Gangotri Travel Guide | Uttarakhand Char Dham | The Apex Voyager',
+      description: 'Plan a Gangotri trip — the road-accessible Char Dham temple, Harsil, and the separately permitted Gaumukh trek.'
+    },
+    travelTips: [
+      'The temple is open only for part of the year and the exact opening and closing dates change annually — confirm this year\'s dates on the official Char Dham portal before booking travel.',
+      'Registration for Char Dham Yatra is required and is free through the official Uttarakhand Tourism portal — no third party is authorized to charge a fee for it.',
+      'If you want to trek to Gaumukh, treat it as a separate trip decision — current permit rules, guide requirements and daily limits are set by the Forest Department and change; confirm directly with the Uttarkashi forest office before planning it.'
+    ],
+    registrationInfo: {
+      required: true,
+      url: 'https://registrationandtouristcare.uk.gov.in/',
+      note: 'Official Uttarakhand Char Dham Yatra registration portal — registration is required and free; it is never collected by The Apex Voyager or any third party.'
+    },
+    matchScores: { adventure: 25, nature: 55, luxury: 20, crowds: 55, slowTravel: 35 },
+    seasonalNotes: {
+      Spring: 'Late April/May sees the temple reopen for the season, on a date fixed annually — check the official portal rather than assuming a fixed calendar day.',
+      Summer: 'June–August is the main yatra season; monsoon rain can affect the Uttarkashi–Gangotri road.',
+      Autumn: 'September–October is generally clearer before the temple closes for winter, again on a date fixed annually.'
     }
   }
 ];

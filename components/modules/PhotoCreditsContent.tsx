@@ -203,6 +203,22 @@ const credits: PhotoCredit[] = [
     license: 'CC BY-SA 4.0',
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Apple_orchards_in_Chaubatia,_Ranikhet,_Uttarakhand.jpg'
+  },
+  {
+    destination: 'Badrinath',
+    title: 'Badrinath Temple',
+    creator: 'Harshit SR',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Badrinath_Temple.jpg'
+  },
+  {
+    destination: 'Gangotri',
+    title: 'Gangotri temple',
+    creator: 'Atarax42',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Gangotri_temple.jpg'
   }
 ];
 

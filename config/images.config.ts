@@ -40,7 +40,9 @@ export const images = {
     mukteshwar: '/images/destination-mukteshwar.jpg',
     almora: '/images/destination-almora.jpg',
     kausani: '/images/destination-kausani.jpg',
-    ranikhet: '/images/destination-ranikhet.jpg'
+    ranikhet: '/images/destination-ranikhet.jpg',
+    badrinath: '/images/destination-badrinath.jpg',
+    gangotri: '/images/destination-gangotri.jpg'
   },
   tours: {
     spitiCircuit: '/images/spiti-circuit.jpg',

@@ -10,7 +10,8 @@ for web delivery, and re-encoded (stripping EXIF/ICC/XMP) — no content changes
 (no added/removed objects, no weather/season changes, no AI transforms).
 
 Date checked: 2026-09-09 (Gulmarg through Khajjiar, Phase 2B-2); 2026-09-09
-(Srinagar, Pahalgam, Sonamarg, Phase 2B-3B-A).
+(Srinagar, Pahalgam, Sonamarg, Phase 2B-3B-A); 2026-09-10 (Badrinath, Gangotri,
+Phase 2B-3D-B).
 
 ## Gulmarg
 
@@ -257,6 +258,26 @@ Date checked: 2026-09-09 (Gulmarg through Khajjiar, Phase 2B-2); 2026-09-09
 - Attribution required: Yes
 - Attribution text: "Apple orchards in Chaubatia, Ranikhet, Uttarakhand" by Harshit SR, CC BY-SA 4.0, via Wikimedia Commons
 - Note: cropped from the original wide frame to a 16:9 region; no content added or removed.
+
+## Badrinath
+
+- Local file: `public/images/destination-badrinath.jpg`
+- Source: Wikimedia Commons — `File:Badrinath Temple.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Badrinath_Temple.jpg
+- Creator: Harshit SR
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Badrinath Temple" by Harshit SR, CC BY-SA 4.0, via Wikimedia Commons
+
+## Gangotri
+
+- Local file: `public/images/destination-gangotri.jpg`
+- Source: Wikimedia Commons — `File:Gangotri temple.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Gangotri_temple.jpg
+- Creator: Atarax42
+- License: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0)
+- Attribution required: Yes
+- Attribution text: "Gangotri temple" by Atarax42, CC BY-SA 3.0, via Wikimedia Commons
 
 ## On-site attribution
 

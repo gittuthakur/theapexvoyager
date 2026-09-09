@@ -281,5 +281,29 @@ export const transportRoutes: TransportRoute[] = [
     seasonalStatus: 'Seasonal (Mar-Nov)',
     active: true,
     featured: true
+  },
+  {
+    origin: 'Rishikesh',
+    destination: 'Badrinath',
+    routeType: 'Remote Himalayan Transfer',
+    estimatedDuration: '9-11 hours',
+    distanceKm: 299,
+    supportedVehicleCategories: ['SUV', 'Premium'],
+    startingFare: 16000,
+    seasonalStatus: 'Seasonal (Apr-Nov)',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Rishikesh',
+    destination: 'Gangotri',
+    routeType: 'Remote Himalayan Transfer',
+    estimatedDuration: '9-10 hours',
+    distanceKm: 260,
+    supportedVehicleCategories: ['SUV', 'Premium'],
+    startingFare: 14000,
+    seasonalStatus: 'Seasonal (Apr-Nov)',
+    active: true,
+    featured: true
   }
 ];
