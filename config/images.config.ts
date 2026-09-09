@@ -16,7 +16,17 @@ export const images = {
     spitiValley: '/images/destination-spiti.jpg',
     dharamshala: '/images/destination-dharamshala.jpg',
     shimla: '/images/destination-shimla.jpg',
-    kasol: '/images/destination-kasol.jpg'
+    kasol: '/images/destination-kasol.jpg',
+    gulmarg: '/images/destination-gulmarg.jpg',
+    munsiyari: '/images/destination-munsiyari.jpg',
+    rishikesh: '/images/destination-rishikesh.jpg',
+    haridwar: '/images/destination-haridwar.jpg',
+    birBilling: '/images/destination-bir-billing.jpg',
+    sanglaValley: '/images/destination-sangla-valley.jpg',
+    chitkul: '/images/destination-chitkul.jpg',
+    chamba: '/images/destination-chamba.jpg',
+    dalhousie: '/images/destination-dalhousie.jpg',
+    khajjiar: '/images/destination-khajjiar.jpg'
   },
   tours: {
     spitiCircuit: '/images/spiti-circuit.jpg',
@@ -38,12 +48,11 @@ export const images = {
     // (config/images.config.ts's experiences.himalayanVista).
     uttarakhandExplorer: '/images/img-hero-hero.jpg'
   },
-  // Every photo in public/images/ today is Himachal Pradesh-specific or a generic
-  // mountain hero shot — there is no dedicated Jammu & Kashmir or Uttarakhand
-  // photography yet. config/experiences.config.ts deliberately falls back to the
-  // generic entries below (himalayanVista, mountainDusk, valleyGeneric) for those
-  // two regions rather than mislabeling a Manali/Spiti photo as Srinagar or
-  // Rishikesh. Swap these for real regional photography as it becomes available.
+  // Destination-specific J&K/Uttarakhand photography now exists (see `destinations`
+  // above: gulmarg, munsiyari, rishikesh, haridwar). The generic entries below
+  // (himalayanVista, mountainDusk, valleyGeneric) remain wired into packages/tours/
+  // hero elsewhere in this file and are left as-is — swap those for dedicated
+  // photography as it becomes available for those specific uses.
   experiences: {
     spitiHomestay: '/images/spiti-valley-boutique-hotel.jpg',
     kinnaurTrek: '/images/kinnaur-rampur-trek.jpg',

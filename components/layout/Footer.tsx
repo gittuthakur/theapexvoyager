@@ -183,6 +183,9 @@ export default function Footer({
             <Link href="/accessibility-policy" className="cursor-hover transition-colors duration-300 ease-in-out hover:text-white">
               Accessibility
             </Link>
+            <Link href="/photo-credits" className="cursor-hover transition-colors duration-300 ease-in-out hover:text-white">
+              Photo Credits
+            </Link>
           </div>
         </div>
       </div>

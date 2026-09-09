@@ -405,7 +405,7 @@ export const destinations: Destination[] = [
     category: 'Adventure',
     description: 'The last inhabited village on the old Hindustan-Tibet trade route, deep in the Baspa Valley.',
     toursCount: 6,
-    image: images.destinations.kinnaur,
+    image: images.destinations.chitkul,
     region: 'Kinnaur Valley',
     state: 'Himachal Pradesh',
     editorialDescription: 'Chitkul sits at the road’s end in the Baspa Valley, past Sangla and past most itineraries. At close to 3,450 m it’s noticeably colder and starker than the valley below — fewer trees, wider skies, and a village that still runs on its own slow rhythm rather than a tourist one. It rewards travelers looking for the quiet, high end of a Kinnaur trip rather than a full itinerary in itself.',
@@ -491,7 +491,7 @@ export const destinations: Destination[] = [
     category: 'Adventure',
     description: "India's best-known paragliding site, paired with a slow-paced Tibetan settlement village.",
     toursCount: 9,
-    image: images.destinations.manali,
+    image: images.destinations.birBilling,
     region: 'Kangra Valley',
     state: 'Himachal Pradesh',
     editorialDescription: 'Bir and Billing are really two places. Bir, at around 1,525 m, is a Tibetan settlement village founded in the early 1960s — cafes, monasteries and landing-strip meadows at a gentle pace. Billing, 14 km up and over 800 m higher, is the actual paragliding takeoff point, with expansive Kangra Valley views on a clear day. Most visitors base themselves in Bir and treat Billing as a day trip up and back.',
@@ -536,7 +536,7 @@ export const destinations: Destination[] = [
     category: 'Adventure',
     description: 'Apple orchards and apricot groves along the Baspa river, deep in the Kinnaur Himalayas.',
     toursCount: 7,
-    image: images.destinations.kinnaur,
+    image: images.destinations.sanglaValley,
     region: 'Kinnaur Valley',
     state: 'Himachal Pradesh',
     editorialDescription: 'Sangla is the Baspa Valley’s main town — the practical base for the whole valley, rather than a quiet extension of it. Orchards run down to the river on both sides, and Kamru Fort watches over the town from a hill just above it. Kinnaur itself is the wider district; Sangla is where most travelers actually stay, using it as the launch point for Chitkul further up the valley.',
@@ -580,7 +580,7 @@ export const destinations: Destination[] = [
     category: 'Colonial Charm',
     description: 'A former Himalayan princely capital on the Ravi River, built around temples and a historic town square.',
     toursCount: 10,
-    image: images.destinations.shimla,
+    image: images.destinations.chamba,
     region: 'Chamba District',
     state: 'Himachal Pradesh',
     editorialDescription: 'Chamba has been a town in its own right since around 920 CE, when Raja Sahil Varman moved his capital here and named it after his daughter. That history is still legible today: the Chaugan — the open ground at the town’s centre — the 10th-century Lakshmi Narayan temple complex, and a museum built specifically to hold the kingdom’s art. It sits low and warm on the Ravi River, a different register entirely from the cooler colonial hill stations further along this district.',
@@ -623,7 +623,7 @@ export const destinations: Destination[] = [
     category: 'Colonial Charm',
     description: 'A colonial-era hill station spread across five hills, built by the British as a summer retreat in 1850.',
     toursCount: 11,
-    image: images.destinations.shimla,
+    image: images.destinations.dalhousie,
     region: 'Chamba District',
     state: 'Himachal Pradesh',
     editorialDescription: 'Dalhousie was laid out by the British in 1850 across five hills — Kathlog, Potreyn, Terah, Bakrota and Bhangora — as a cooler alternative to the plains, and its ridge roads, colonial churches and pine forest still carry that character. At around 1,970 m it’s noticeably cooler than Chamba below it, and its walking routes between the hills make it a good slower base rather than a single-sight stop.',
@@ -667,7 +667,7 @@ export const destinations: Destination[] = [
     category: 'Offbeat',
     description: 'A small meadow and lake ringed by deodar forest, roughly midway between Dalhousie and Chamba.',
     toursCount: 6,
-    image: images.destinations.dharamshala,
+    image: images.destinations.khajjiar,
     region: 'Chamba District',
     state: 'Himachal Pradesh',
     editorialDescription: 'Khajjiar is a stop, not a stay-a-week destination — a saucer-shaped meadow with a small lake at its centre, ringed by deodar forest at around 1,950 m. The 12th-century Khajji Nag temple sits at the meadow’s edge, and a short walk or pony ride covers most of what’s here. It works best as a half-day break between Dalhousie and Chamba rather than a base of its own.',
@@ -702,11 +702,7 @@ export const destinations: Destination[] = [
     category: 'Scenic',
     description: 'Alpine meadows and snow-capped peaks in Kashmir, home to one of the world’s highest gondola rides.',
     toursCount: 9,
-    // No dedicated Jammu & Kashmir photography exists yet (see config/images.config.ts) —
-    // this used to reuse Kinnaur's real Himachal Pradesh photo, mislabeling a specific
-    // Himachal place as Gulmarg. Same honest generic fallback the "Jammu & Kashmir"
-    // region card already uses in config/experiences.config.ts.
-    image: images.experiences.mountainDusk,
+    image: images.destinations.gulmarg,
     region: 'Baramulla District',
     state: 'Jammu & Kashmir',
     editorialDescription: 'Gulmarg is Kashmir at its most cinematic: a meadow ringed by pine and fir, riding one of the world’s highest cable cars up to Apharwat’s snowline. Come for the skiing in winter, the wildflower meadow in summer — either way, the mountain does the talking.',
@@ -763,11 +759,7 @@ export const destinations: Destination[] = [
     category: 'Spiritual',
     description: 'Uttarakhand’s yoga capital, with Ganga aartis, ashrams, and Himalayan white-water rafting.',
     toursCount: 14,
-    // No dedicated Uttarakhand photography exists yet (see config/images.config.ts) —
-    // this used to reuse Dharamshala's real Himachal Pradesh photo, mislabeling a
-    // specific Himachal place as Rishikesh. Same honest generic fallback the
-    // "Uttarakhand" region card already uses in config/experiences.config.ts.
-    image: images.experiences.himalayanVista,
+    image: images.destinations.rishikesh,
     region: 'Dehradun District',
     state: 'Uttarakhand',
     editorialDescription: 'Rishikesh sits where the Ganges leaves the mountains — ashrams and yoga halls along one bank, white-water rapids the next valley over. It’s a rare mix of stillness and adrenaline, all within a short walk of the riverfront.',
@@ -884,10 +876,7 @@ export const destinations: Destination[] = [
     category: 'Spiritual',
     description: 'One of Hinduism’s seven holiest cities in Uttarakhand, anchored by the sacred Har Ki Pauri ghat.',
     toursCount: 10,
-    // No dedicated Uttarakhand photography exists yet (see config/images.config.ts) —
-    // this used to reuse Shimla's real Himachal Pradesh photo, mislabeling a specific
-    // Himachal place as Haridwar. Same honest generic fallback used for Rishikesh above.
-    image: images.experiences.valleyGeneric,
+    image: images.destinations.haridwar,
     region: 'Haridwar District',
     state: 'Uttarakhand',
     editorialDescription: 'Haridwar is where the Ganges first reaches the plains — one of Hinduism’s seven holiest cities, built around the ghats at Har Ki Pauri. The evening aarti here is one of the great shared rituals of North India.',
@@ -944,10 +933,7 @@ export const destinations: Destination[] = [
     category: 'Offbeat',
     description: 'A quiet hill town beneath the Panchachuli peaks, gateway to Uttarakhand’s remote Johar Valley.',
     toursCount: 4,
-    // No dedicated Uttarakhand photography exists yet (see config/images.config.ts) —
-    // this used to reuse Kinnaur's real Himachal Pradesh photo, mislabeling a specific
-    // Himachal place as Munsiyari. Same honest generic fallback used for Rishikesh above.
-    image: images.experiences.mountainDusk,
+    image: images.destinations.munsiyari,
     region: 'Johar Valley',
     state: 'Uttarakhand',
     editorialDescription: 'Munsiyari sits far enough off the main Uttarakhand circuit that it barely features on most itineraries — a small town looking straight at the five snow peaks of Panchachuli, with trailheads into some of the Kumaon Himalaya’s quietest valleys.',
