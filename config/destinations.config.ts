@@ -1813,6 +1813,64 @@ export const destinations: Destination[] = [
       Summer: 'June–August is the main yatra season; monsoon rain can affect the Barkot–Janki Chatti road.',
       Autumn: 'September–October is generally clearer before the temple closes for winter, again on a date fixed annually.'
     }
+  },
+  {
+    slug: 'hemkund-sahib',
+    title: 'Hemkund Sahib',
+    category: 'Pilgrimage',
+    description: 'The world\'s highest Gurudwara, on a glacial lake at 4,329 m, reached by trek from the shared Ghangaria base.',
+    toursCount: 5,
+    image: images.destinations.hemkundSahib,
+    region: 'Chamoli District',
+    state: 'Uttarakhand',
+    accessType: 'trek-gated',
+    editorialDescription: 'Hemkund Sahib is the world\'s highest Gurudwara, set on the shore of a glacial lake at 4,329 metres and ringed by seven Himalayan peaks. The pilgrimage shares its access route with the Valley of Flowers: both are reached via Govindghat, the road head on the Joshimath–Badrinath highway, and Ghangaria, the shared overnight base where no accommodation exists at either destination itself. From Ghangaria, Hemkund Sahib is a steep, roughly 6 km climb — a same-day round trip, since no stay is possible at the shrine. Many travelers combine a visit here with the separate Valley of Flowers trek, based from the same village.',
+    bestTime: 'June – October',
+    idealDuration: '1 Day',
+    altitude: '4,329 m',
+    travelStyles: ['Pilgrimage', 'Adventure'],
+    seasons: ['Summer', 'Autumn'],
+    bestFor: ['Solo Travelers', 'Friends & Groups'],
+    highlights: [
+      { title: 'Hemkund Sahib', description: 'The world\'s highest Gurudwara, on the shore of Hemkund Lake at roughly 4,329 metres.' },
+      { title: 'The Ghangaria trek', description: 'A steep ~6 km, ~1,100 m climb from Ghangaria — the final and defining stretch of the journey.' },
+      { title: 'Hemkund Lake', description: 'A glacial lake ringed by seven Himalayan peaks, the setting for the Gurudwara.' }
+    ],
+    places: [
+      { title: 'Govindghat', description: 'The road head, where the motorable road from Joshimath ends and the trek toward Ghangaria begins.' },
+      { title: 'Ghangaria', description: 'The shared overnight base for both Hemkund Sahib and the Valley of Flowers — no accommodation exists at Hemkund itself, so this is where you stay before and after the climb.' },
+      { title: 'Hemkund Sahib', description: 'Reached by a steep ~6 km trek from Ghangaria — a same-day round trip, since no overnight stay is possible at the shrine.' }
+    ],
+    experiences: ['Hemkund Sahib darshan', 'Ghangaria–Hemkund trek'],
+    relatedSlugs: ['joshimath', 'badrinath', 'rishikesh'],
+    seo: {
+      title: 'Hemkund Sahib Travel Guide | Uttarakhand Pilgrimage | The Apex Voyager',
+      description: 'Plan a Hemkund Sahib trip — the trek-gated Gurudwara beyond Ghangaria, the shared Valley of Flowers base, and honest trip planning.'
+    },
+    travelTips: [
+      'There\'s no overnight stay at Hemkund itself — plan a same-day round trip from Ghangaria, and start early enough to be back down before dark.',
+      'The trek from Ghangaria is a steep, high-altitude climb — pace yourself, carry warm layers even in summer, and build in a buffer day in case of weather.',
+      'The Gurudwara is only open for part of the year and closed under snow the rest — confirm this year\'s opening and closing dates with the official Gurudwara authorities or Uttarakhand Tourism before you travel.',
+      'Travelers with health or mobility concerns should speak to a doctor before attempting the high-altitude trek — it is not suitable for everyone.'
+    ],
+    registrationInfo: {
+      required: true,
+      url: 'https://registrationandtouristcare.uk.gov.in/',
+      note: 'Official Uttarakhand Tourist Care registration portal — also used for Hemkund Sahib Yatra registration; required and free, never collected by The Apex Voyager or any third party.'
+    },
+    accessJourney: {
+      stages: [
+        { title: 'Gateway', description: 'Most journeys begin from Rishikesh or Haridwar, continuing via Joshimath.' },
+        { title: 'Govindghat — road head', description: 'Where the motorable road from Joshimath ends.', note: 'This is also the trailhead for both Hemkund Sahib and the Valley of Flowers.' },
+        { title: 'Ghangaria', description: 'A roughly 13 km trek from Govindghat leads to Ghangaria, the shared overnight base for the final approach.' },
+        { title: 'Hemkund Sahib', description: 'A further ~6 km, ~1,100 m climb from Ghangaria reaches the Gurudwara.', note: 'No vehicle reaches Hemkund Sahib directly, and there is no overnight stay at the shrine — it\'s a same-day round trip from Ghangaria.' }
+      ]
+    },
+    matchScores: { adventure: 55, nature: 55, luxury: 10, crowds: 60, slowTravel: 20 },
+    seasonalNotes: {
+      Summer: 'June–August is the main season, once the snow has cleared enough for the Gurudwara to reopen for the year.',
+      Autumn: 'September–early October is generally clearer, before the Gurudwara closes again for winter on a date fixed annually.'
+    }
   }
 ];
 

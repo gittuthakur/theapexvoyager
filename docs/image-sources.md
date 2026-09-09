@@ -11,7 +11,8 @@ for web delivery, and re-encoded (stripping EXIF/ICC/XMP) — no content changes
 
 Date checked: 2026-09-09 (Gulmarg through Khajjiar, Phase 2B-2); 2026-09-09
 (Srinagar, Pahalgam, Sonamarg, Phase 2B-3B-A); 2026-09-10 (Badrinath, Gangotri,
-Phase 2B-3D-B); 2026-09-10 (Kedarnath, Yamunotri, Phase 2B-3D-C).
+Phase 2B-3D-B); 2026-09-10 (Kedarnath, Yamunotri, Phase 2B-3D-C); 2026-09-10
+(Hemkund Sahib, Phase 2B-3D-D).
 
 ## Gulmarg
 
@@ -298,6 +299,16 @@ Phase 2B-3D-B); 2026-09-10 (Kedarnath, Yamunotri, Phase 2B-3D-C).
 - License: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0)
 - Attribution required: Yes
 - Attribution text: "Yamunotri temple and ashram" by Atarax42, CC BY-SA 3.0, via Wikimedia Commons
+
+## Hemkund Sahib
+
+- Local file: `public/images/destination-hemkund-sahib.jpg`
+- Source: Wikimedia Commons — `File:Hemkund Sahib and Lokpal Lake.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Hemkund_Sahib_and_Lokpal_Lake.jpg
+- Creator: Harshit SR
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Hemkund Sahib and Lokpal Lake" by Harshit SR, CC BY-SA 4.0, via Wikimedia Commons
 
 ## On-site attribution
 

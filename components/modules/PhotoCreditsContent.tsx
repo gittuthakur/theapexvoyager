@@ -235,6 +235,14 @@ const credits: PhotoCredit[] = [
     license: 'CC BY-SA 3.0',
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Yamunotri_temple_and_ashram.jpg'
+  },
+  {
+    destination: 'Hemkund Sahib',
+    title: 'Hemkund Sahib and Lokpal Lake',
+    creator: 'Harshit SR',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Hemkund_Sahib_and_Lokpal_Lake.jpg'
   }
 ];
 

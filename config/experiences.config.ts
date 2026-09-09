@@ -876,7 +876,7 @@ export const experiences: Experience[] = [
     currency: 'INR',
     bestFor: ['Solo Travellers', 'Friends & Groups'],
     seasons: ['Monsoon'],
-    highlights: ['A UNESCO World Heritage alpine meadow', 'Peak monsoon wildflower bloom', 'A certified naturalist guide', 'An overnight stay in Ghangaria'],
+    highlights: ['A UNESCO World Heritage alpine meadow', 'Peak monsoon wildflower bloom', 'A certified naturalist guide', 'An overnight stay in Ghangaria', 'Ghangaria also serves as the base for the separate Hemkund Sahib pilgrimage'],
     whatYoullExperience: [
       'A trek from Govindghat to Ghangaria on day one',
       'A full day inside the Valley of Flowers on day two',
@@ -887,7 +887,10 @@ export const experiences: Experience[] = [
     exclusions: ['Transport to Govindghat', 'Porter/mule hire (available on request)'],
     meetingPoint: 'Govindghat trailhead.',
     whatToBring: ['Waterproof trekking shoes', 'A rain jacket', 'A valid photo ID for park entry'],
-    importantInfo: ['The park is only open mid-June to early October, with peak bloom in July–August.'],
+    importantInfo: [
+      'The park is only open mid-June to early October, with peak bloom in July–August.',
+      'Overnight stays inside the Valley of Flowers itself are not permitted — every visit is a same-day entry and exit from Ghangaria, with fixed daily timings set by the Forest Department.'
+    ],
     availability: 'Seasonal',
     verified: true,
     featured: true,
