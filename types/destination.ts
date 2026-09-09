@@ -34,6 +34,20 @@ export interface DestinationMatchScores {
   slowTravel: number;
 }
 
+/** How a destination's final point is actually reached — lets the detail page distinguish
+ *  a place a car can drive straight to from one that requires a trek/helicopter leg beyond
+ *  the last road head, so "Getting Around" never implies road access that doesn't exist. */
+export type DestinationAccessType = 'road' | 'trek-gated' | 'trek-and-helicopter';
+
+/** Points at the one authoritative registration channel for a destination (e.g. a Char Dham
+ *  yatra registration portal) — never a form The Apex Voyager itself collects submissions
+ *  through. `required` and `note` are editorial, not live status. */
+export interface DestinationRegistrationInfo {
+  required: boolean;
+  url: string;
+  note?: string;
+}
+
 export interface Destination extends Partial<GooglePlaceEnrichment> {
   id?: string;
   slug: string;
@@ -80,4 +94,14 @@ export interface Destination extends Partial<GooglePlaceEnrichment> {
   bestFor?: string[];
   /** Map-ready; optional since most curated entries don't have it authored yet. */
   coordinates?: { lat: number; lng: number };
+  /** How the final point is reached — see DestinationAccessType. Absent for the ordinary
+   *  leisure-destination majority of the catalogue; only meaningful once a destination's
+   *  access genuinely isn't a straightforward drive. */
+  accessType?: DestinationAccessType;
+  /** Present only when a destination has one real, official registration requirement to
+   *  surface (e.g. a yatra registration portal) — never populated with a guess. */
+  registrationInfo?: DestinationRegistrationInfo;
+  /** A single outbound link to the relevant official advisory authority (road/weather/permit
+   *  status). Presence of this URL is never itself a status claim — see components/modules/detail/OfficialLinkCallout. */
+  officialAdvisoryUrl?: string;
 }

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArrowRight, Car, Clock, Compass, Gem, Mountain, Sparkles, Map, MapPin, Users } from 'lucide-react';
+import { ArrowRight, Car, Clock, Compass, Gem, Mountain, Route, Sparkles, Map, MapPin, Users } from 'lucide-react';
 import StaysGrid from '@/components/modules/StaysGrid';
 import DestinationCard from '@/components/modules/DestinationCard';
 import PackageCard from '@/components/modules/PackageCard';
@@ -10,6 +10,7 @@ import DestinationSeasonModule from '@/components/modules/DestinationSeasonModul
 import DestinationHero from '@/components/modules/destinations/DestinationHero';
 import DetailPageContainer from '@/components/modules/detail/DetailPageContainer';
 import DetailSectionNav from '@/components/modules/detail/DetailSectionNav';
+import CurrentOfficialInfoSection from '@/components/modules/detail/CurrentOfficialInfoSection';
 import BackButton from '@/components/ui/BackButton';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
@@ -21,7 +22,7 @@ import { getRoutes } from '@/lib/transport';
 import { getDestinationRatingsMap } from '@/lib/reviews';
 import { getRegionForState, getRegionHubSlug } from '@/lib/regions';
 import { formatINR } from '@/lib/pricing';
-import type { DestinationMatchScores } from '@/types/destination';
+import type { DestinationAccessType, DestinationMatchScores } from '@/types/destination';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,6 +52,12 @@ const MATCH_SCORE_LABELS: Array<{ key: keyof DestinationMatchScores; label: stri
   { key: 'crowds', label: 'Crowds' },
   { key: 'slowTravel', label: 'Slow Travel' }
 ];
+
+const ACCESS_TYPE_LABELS: Record<DestinationAccessType, string> = {
+  road: 'Road Access',
+  'trek-gated': 'Trek Access',
+  'trek-and-helicopter': 'Trek / Seasonal Helicopter Access'
+};
 
 const APEX_PICK_ORDER = ['view', 'stay', 'experience', 'taste', 'moment'] as const;
 const APEX_PICK_LABELS: Record<(typeof APEX_PICK_ORDER)[number], string> = {
@@ -89,7 +96,8 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
     [Clock, 'Best time', destination.bestTime],
     [Compass, 'Ideal duration', destination.idealDuration],
     [Mountain, 'Altitude', destination.altitude],
-    [Sparkles, 'Travel style', destination.travelStyles?.join(' • ')]
+    [Sparkles, 'Travel style', destination.travelStyles?.join(' • ')],
+    [Route, 'Access', destination.accessType ? ACCESS_TYPE_LABELS[destination.accessType] : undefined]
   ].filter((item): item is [typeof Clock, string, string] => Boolean(item[2]));
 
   const apexPickEntries = APEX_PICK_ORDER
@@ -262,6 +270,8 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
             Plan Transport to {destination.title} <ArrowRight size={16} />
           </Link>
         </section>
+
+        <CurrentOfficialInfoSection registrationInfo={destination.registrationInfo} officialAdvisoryUrl={destination.officialAdvisoryUrl} />
 
         <section id="experts" className="py-8">
           <SectionHeading eyebrow="Local knowledge" title={`Know ${destination.title} Through Locals`} />

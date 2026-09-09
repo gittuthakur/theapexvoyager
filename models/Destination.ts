@@ -23,6 +23,14 @@ export interface DestinationMatchScores {
   slowTravel: number;
 }
 
+export type DestinationAccessType = 'road' | 'trek-gated' | 'trek-and-helicopter';
+
+export interface DestinationRegistrationInfo {
+  required: boolean;
+  url: string;
+  note?: string;
+}
+
 export interface DestinationDocument extends Document {
   id?: string;
   slug: string;
@@ -59,6 +67,9 @@ export interface DestinationDocument extends Document {
   seasonalNotes?: Record<string, string>;
   bestFor?: string[];
   coordinates?: { lat: number; lng: number };
+  accessType?: DestinationAccessType;
+  registrationInfo?: DestinationRegistrationInfo;
+  officialAdvisoryUrl?: string;
   // Google Places enrichment (see types/destination.ts's GooglePlaceEnrichment) —
   // mirrored here so a curated Destination can carry it, never used for the
   // Google-Places-backed live search path in lib/destinations.ts, which stays config-only.
@@ -122,6 +133,13 @@ const DestinationSchema = new Schema<DestinationDocument>(
     seasonalNotes: { type: Schema.Types.Mixed },
     bestFor: { type: [String] },
     coordinates: { lat: Number, lng: Number },
+    accessType: { type: String, enum: ['road', 'trek-gated', 'trek-and-helicopter'] },
+    registrationInfo: {
+      required: Boolean,
+      url: String,
+      note: String
+    },
+    officialAdvisoryUrl: { type: String },
     placeId: { type: String },
     formattedAddress: { type: String },
     photos: { type: [String] },
