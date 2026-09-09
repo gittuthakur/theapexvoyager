@@ -125,5 +125,89 @@ export const transportRoutes: TransportRoute[] = [
     seasonalStatus: 'Seasonal (Apr-Nov)',
     active: true,
     featured: true
+  },
+  {
+    origin: 'Dehradun Airport',
+    destination: 'Dehradun',
+    routeType: 'Airport Transfer',
+    estimatedDuration: '40-50 minutes',
+    distanceKm: 25,
+    supportedVehicleCategories: ['Comfort', 'SUV', 'Premium'],
+    startingFare: 1600,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Dehradun',
+    destination: 'Mussoorie',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '1.5 hours',
+    distanceKm: 36,
+    supportedVehicleCategories: ['Comfort', 'SUV', 'Premium'],
+    startingFare: 2200,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Dehradun',
+    destination: 'Rishikesh',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '1-1.5 hours',
+    distanceKm: 43,
+    supportedVehicleCategories: ['Comfort', 'SUV'],
+    startingFare: 1900,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Rishikesh',
+    destination: 'Joshimath',
+    routeType: 'Remote Himalayan Transfer',
+    estimatedDuration: '8-10 hours',
+    distanceKm: 254,
+    supportedVehicleCategories: ['SUV', 'Premium'],
+    startingFare: 13500,
+    seasonalStatus: 'Seasonal (Apr-Nov)',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Joshimath',
+    destination: 'Auli',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '30-40 minutes',
+    distanceKm: 13,
+    supportedVehicleCategories: ['Comfort', 'SUV'],
+    startingFare: 1200,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Rishikesh',
+    destination: 'Chopta',
+    routeType: 'Remote Himalayan Transfer',
+    estimatedDuration: '6-7 hours',
+    distanceKm: 165,
+    supportedVehicleCategories: ['SUV', 'Premium'],
+    startingFare: 9500,
+    seasonalStatus: 'Seasonal (Apr-Nov)',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Dehradun',
+    destination: 'Lansdowne',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '4 hours',
+    distanceKm: 155,
+    supportedVehicleCategories: ['Comfort', 'SUV', 'Premium'],
+    startingFare: 7000,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
   }
 ];

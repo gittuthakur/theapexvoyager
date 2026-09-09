@@ -114,6 +114,54 @@ const credits: PhotoCredit[] = [
     license: 'CC BY-SA 4.0',
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Sonmarg.JPG'
+  },
+  {
+    destination: 'Dehradun',
+    title: 'Forest Research Institute campus, Dehradun, India',
+    creator: 'Torarne',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Forest_Research_Institute_campus,_Dehradun,_India.jpg'
+  },
+  {
+    destination: 'Mussoorie',
+    title: 'Mall Road, Mussoorie',
+    creator: 'ArmouredCyborg',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Mall_Road,_Mussoorie.jpg'
+  },
+  {
+    destination: 'Joshimath',
+    title: 'Panoramic view of Joshimath town on mountain slope',
+    creator: 'Rohanshah657',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Panoramic_view_of_Joshimath_town_on_mountain_slope.jpg'
+  },
+  {
+    destination: 'Auli',
+    title: 'Auli, India',
+    creator: 'Amit Shaw',
+    license: 'CC0 1.0',
+    licenseUrl: 'https://creativecommons.org/publicdomain/zero/1.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Auli,_India.jpg'
+  },
+  {
+    destination: 'Chopta',
+    title: 'Mejastic Meadows',
+    creator: 'Shubhsrt7',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Mejastic_Meadows.jpg'
+  },
+  {
+    destination: 'Lansdowne',
+    title: 'Lansdowne in monsoon',
+    creator: 'Navdeep Gusain',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Lansdowne_in_monsoon.jpg'
   }
 ];
 

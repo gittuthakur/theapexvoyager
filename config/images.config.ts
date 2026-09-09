@@ -29,7 +29,13 @@ export const images = {
     khajjiar: '/images/destination-khajjiar.jpg',
     srinagar: '/images/destination-srinagar.jpg',
     pahalgam: '/images/destination-pahalgam.jpg',
-    sonamarg: '/images/destination-sonamarg.jpg'
+    sonamarg: '/images/destination-sonamarg.jpg',
+    dehradun: '/images/destination-dehradun.jpg',
+    mussoorie: '/images/destination-mussoorie.jpg',
+    joshimath: '/images/destination-joshimath.jpg',
+    auli: '/images/destination-auli.jpg',
+    chopta: '/images/destination-chopta.jpg',
+    lansdowne: '/images/destination-lansdowne.jpg'
   },
   tours: {
     spitiCircuit: '/images/spiti-circuit.jpg',

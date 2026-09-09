@@ -780,7 +780,7 @@ export const destinations: Destination[] = [
       { title: 'Neer Garh Waterfall', description: 'A forest walk to a waterfall just outside town.' }
     ],
     experiences: ['White-water rafting', 'Yoga & meditation retreats', 'Ganga aarti', 'Ashram stays', 'Riverside cafes'],
-    relatedSlugs: ['haridwar'],
+    relatedSlugs: ['haridwar', 'dehradun', 'mussoorie'],
     seo: { title: 'Rishikesh Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Rishikesh trip — Ganga aartis, yoga retreats, and Himalayan white-water rafting.' },
     isPopular: true,
     priority: 6,
@@ -897,7 +897,7 @@ export const destinations: Destination[] = [
       { title: 'Mansa Devi Temple', description: 'A second hilltop shrine overlooking the city.' }
     ],
     experiences: ['Ganga aarti', 'Temple visits', 'Old-bazaar food walks', 'Ropeway rides'],
-    relatedSlugs: ['rishikesh'],
+    relatedSlugs: ['rishikesh', 'dehradun', 'lansdowne'],
     seo: { title: 'Haridwar Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Haridwar visit — the Har Ki Pauri aarti and one of Hinduism’s seven holiest cities.' },
     isPopular: true,
     priority: 8,
@@ -1127,6 +1127,259 @@ export const destinations: Destination[] = [
       Spring: 'May–June opens the valley as snow retreats, though upper trails can still be closed.',
       Summer: 'July–August is the most reliable season for the Thajiwas walk and valley access.',
       Autumn: 'September brings clear, cool days before winter closes the road toward Zojila.'
+    }
+  },
+  {
+    slug: 'dehradun',
+    title: 'Dehradun',
+    category: 'Scenic',
+    description: 'The Doon Valley capital and Garhwal\'s main gateway, with a quieter identity of its own.',
+    toursCount: 8,
+    image: images.destinations.dehradun,
+    region: 'Dehradun District',
+    state: 'Uttarakhand',
+    editorialDescription: 'Dehradun sits low in the Doon Valley between the Shivaliks and the Himalayan foothills — Uttarakhand\'s capital, its main airport and rail link, and the practical start of most Garhwal itineraries. It\'s worth more than a night in transit: the Forest Research Institute\'s century-old campus, quiet cantonment-era lanes and a milder climate than the hills above make it a real, if understated, city stop before you climb toward Mussoorie or Rishikesh.',
+    bestTime: 'October – March',
+    idealDuration: '1–2 Days',
+    altitude: '450 m',
+    travelStyles: ['Family', 'Nature', 'Culture'],
+    seasons: ['Autumn', 'Winter', 'Spring'],
+    bestFor: ['Families', 'Solo Travelers'],
+    highlights: [
+      { title: 'Garhwal\'s main gateway', description: 'Jolly Grant Airport and Dehradun railway station make this the entry point for most of the region.' },
+      { title: 'Forest Research Institute', description: 'A century-old colonial campus and one of Asia\'s largest forestry research institutions.' },
+      { title: 'A milder valley climate', description: 'Lower and warmer than Mussoorie above it, useful either end of a hill trip.' }
+    ],
+    places: [
+      { title: 'Forest Research Institute', description: 'A grand 1920s building set in wide lawns, with a museum on forestry and conservation.' },
+      { title: 'Robber\'s Cave (Guchhupani)', description: 'A narrow stream-carved gorge you wade through, a popular half-day outing.' },
+      { title: 'Sahastradhara', description: 'Sulphur springs and a cave waterfall on the city\'s outskirts.' },
+      { title: 'Paltan Bazaar', description: 'The old city\'s central market street, for a sense of everyday Dehradun.' }
+    ],
+    experiences: ['Forest Research Institute visit', 'Robber\'s Cave wade', 'City heritage walk', 'Sahastradhara day trip'],
+    relatedSlugs: ['mussoorie', 'rishikesh', 'haridwar'],
+    seo: { title: 'Dehradun Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Dehradun stop — the Forest Research Institute, Robber\'s Cave, and Garhwal\'s main gateway city.' },
+    hiddenGems: [
+      { title: 'Tapkeshwar Temple', description: 'A cave temple on the Tons riverbed, quieter than the city\'s better-known sights.' }
+    ],
+    travelTips: [
+      'Use Dehradun to break a long Delhi–Mussoorie or Delhi–Rishikesh drive rather than rushing through.',
+      'Book onward hill transport a day ahead in peak season — taxis fill up fast from the airport and station.',
+      'Robber\'s Cave involves wading through shallow water — bring a change of footwear.'
+    ],
+    matchScores: { adventure: 30, nature: 55, luxury: 45, crowds: 60, slowTravel: 35 },
+    seasonalNotes: {
+      Autumn: 'October–November is clear and comfortable, good for city sightseeing.',
+      Winter: 'December–February stays mild in the valley even when the hills above turn cold.',
+      Spring: 'March brings warming days before the pre-monsoon heat builds.'
+    }
+  },
+  {
+    slug: 'mussoorie',
+    title: 'Mussoorie',
+    category: 'Colonial Charm',
+    description: 'A ridge-top hill station above the Doon Valley, built around Mall Road and its viewpoints.',
+    toursCount: 14,
+    image: images.destinations.mussoorie,
+    region: 'Dehradun District',
+    state: 'Uttarakhand',
+    editorialDescription: 'Mussoorie runs along a ridge above the Doon Valley, its Mall Road strip of shops, cafes and old hotel facades still the town\'s center of gravity. Landour, the quieter cantonment area just above it, is where the pace slows down — worth the extra walk if Mall Road feels busy. On a clear day the views reach toward the Himalayan foothills, though cloud and haze are common enough that it\'s a bonus, not a promise.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '2–3 Days',
+    altitude: '2,000 m',
+    travelStyles: ['Nature', 'Family', 'Romantic'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Couples', 'Families'],
+    highlights: [
+      { title: 'Mall Road', description: 'The ridge-top strip of shops, cafes and colonial-era facades that anchors the town.' },
+      { title: 'Landour', description: 'A quieter cantonment area just above Mall Road, with its own slower rhythm.' },
+      { title: 'Doon Valley views', description: 'Gun Hill and other viewpoints look down over Dehradun and, on a clear day, the hills beyond.' }
+    ],
+    places: [
+      { title: 'Mall Road', description: 'The main pedestrian strip, busiest in the evenings.' },
+      { title: 'Gun Hill', description: 'A ropeway-accessed viewpoint above Mall Road.' },
+      { title: 'Landour', description: 'A quieter hillside area with old bakeries and walking lanes, a short walk above the main town.' },
+      { title: 'Kempty Falls', description: 'A popular waterfall stop around 15 km from town.' }
+    ],
+    experiences: ['Mall Road evening walk', 'Gun Hill ropeway ride', 'Landour heritage walk', 'Kempty Falls day trip'],
+    relatedSlugs: ['dehradun', 'rishikesh'],
+    seo: { title: 'Mussoorie Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Mussoorie trip — Mall Road, Landour\'s quieter lanes, and Doon Valley viewpoints.' },
+    hiddenGems: [
+      { title: 'Camel\'s Back Road', description: 'A quiet walking and horse-riding road looping past Landour, far less crowded than Mall Road.' }
+    ],
+    travelTips: [
+      'Weekend and holiday traffic on the Dehradun–Mussoorie road can be slow — build in buffer time.',
+      'Monsoon months (July–September) bring landslide risk on the approach road; check conditions before travel.',
+      'Pack layers — Mall Road evenings turn cool even in peak summer.'
+    ],
+    matchScores: { adventure: 30, nature: 65, luxury: 55, crowds: 75, slowTravel: 45 },
+    seasonalNotes: {
+      Spring: 'March–May is a comfortable, popular window before the summer crowds peak.',
+      Summer: 'June is Mussoorie\'s busiest season — a plains-heat escape for many travelers.',
+      Autumn: 'September–November is quieter with clearer air, once the monsoon clears.'
+    }
+  },
+  {
+    slug: 'joshimath',
+    title: 'Joshimath (Jyotirmath)',
+    category: 'Offbeat',
+    description: 'Upper Garhwal\'s practical mountain base, and the gateway town beneath Auli.',
+    toursCount: 6,
+    image: images.destinations.joshimath,
+    region: 'Chamoli District',
+    state: 'Uttarakhand',
+    editorialDescription: 'Joshimath — also recorded in official use as Jyotirmath — clings to a steep mountainside where the roads toward Auli and the upper Alaknanda valley meet. It\'s a working town first, not a resort: hotels, market stalls and transport stands built for travelers passing through rather than lingering. The Narsingh Temple and the town\'s association with Adi Shankaracharya give it a real historical layer, but its main job today is as the base from which you reach Auli\'s slopes or continue further into the mountains.',
+    bestTime: 'April – June, September – November',
+    idealDuration: '1–2 Days',
+    altitude: '1,875 m',
+    travelStyles: ['Adventure', 'Nature'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Friends & Groups', 'Solo Travelers'],
+    highlights: [
+      { title: 'Base for Auli', description: 'The town from which Auli\'s ropeway and road access begin.' },
+      { title: 'Narsingh Temple', description: 'A historic temple tied to the town\'s Jyotirmath identity and Adi Shankaracharya.' },
+      { title: 'Mountainside setting', description: 'Terraced buildings stacked against the slope, with bare Himalayan ridgelines behind.' }
+    ],
+    places: [
+      { title: 'Narsingh Temple', description: 'The town\'s principal historic temple, set against the mountain backdrop.' },
+      { title: 'Auli ropeway base station', description: 'The lower terminus of the ropeway climbing toward Auli.' },
+      { title: 'Vishnuprayag', description: 'A river confluence a short drive from town, on the road toward the upper valley.' }
+    ],
+    experiences: ['Auli ropeway access', 'Narsingh Temple visit', 'Regional trekking base'],
+    relatedSlugs: ['auli', 'rishikesh'],
+    seo: { title: 'Joshimath Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Joshimath stop — the base for Auli, Narsingh Temple, and upper Garhwal\'s mountain roads.' },
+    travelTips: [
+      'Joshimath has had documented land-subsidence concerns in recent years — check current official advisories before booking accommodation, and avoid assuming every hotel listed is unaffected.',
+      'Roads beyond Joshimath toward the upper valley are seasonal and weather-dependent — do not assume year-round or same-day access.',
+      'Book a base here rather than assuming same-day travel further up the valley in one stretch.'
+    ],
+    matchScores: { adventure: 55, nature: 60, luxury: 30, crowds: 40, slowTravel: 30 },
+    seasonalNotes: {
+      Spring: 'April–June is a comfortable window before monsoon travel disruption.',
+      Summer: 'July–August brings monsoon rain and a higher chance of road disruption on approach routes.',
+      Autumn: 'September–November is generally clear, ahead of winter cold.'
+    }
+  },
+  {
+    slug: 'auli',
+    title: 'Auli',
+    category: 'Adventure',
+    description: 'A high-altitude slope above Joshimath, India\'s best-known ski destination in winter.',
+    toursCount: 7,
+    image: images.destinations.auli,
+    region: 'Chamoli District',
+    state: 'Uttarakhand',
+    editorialDescription: 'Auli is a ridge of open slopes and meadow above Joshimath, reached by road or by a long ropeway ride — one of Asia\'s longer cable-car runs. In winter it\'s India\'s most established ski slope, with views toward Nanda Devi and the surrounding peaks on a clear day. Come summer, the snow gives way to Auli Bugyal\'s meadow and a quieter, greener character. Most travelers base themselves in Joshimath and treat Auli as a day up and back rather than an overnight stay.',
+    bestTime: 'December – March (skiing), April – June (meadows)',
+    idealDuration: '1 Day',
+    altitude: '2,800 m',
+    travelStyles: ['Adventure', 'Nature'],
+    seasons: ['Winter', 'Summer'],
+    bestFor: ['Friends & Groups', 'Couples'],
+    highlights: [
+      { title: 'The Joshimath–Auli ropeway', description: 'A long cable-car ride up from the valley floor, a highlight in its own right.' },
+      { title: 'Winter skiing', description: 'India\'s best-known ski slope, when snow and operations allow.' },
+      { title: 'Auli Bugyal in summer', description: 'The slopes turn to open meadow once the snow retreats.' }
+    ],
+    places: [
+      { title: 'Auli ropeway upper station', description: 'The top of the cable-car run, with the main slope and viewpoints around it.' },
+      { title: 'Auli Bugyal', description: 'The meadow that the ski slope becomes outside winter.' },
+      { title: 'Gorson Bugyal', description: 'A further meadow beyond the main slope, reached on foot.' }
+    ],
+    experiences: ['Skiing & snowboarding (seasonal)', 'Ropeway ride', 'Meadow walks (summer)'],
+    relatedSlugs: ['joshimath'],
+    seo: { title: 'Auli Travel Guide & Experiences | The Apex Voyager', description: 'Plan an Auli trip — the Joshimath ropeway, seasonal skiing, and summer meadow views.' },
+    travelTips: [
+      'Skiing and ropeway operation depend on current snow and weather conditions — confirm before building a trip around them.',
+      'Base your stay in Joshimath if Auli\'s limited on-slope lodging is full.',
+      'Carry warm layers even in summer — the altitude keeps evenings cold year-round.'
+    ],
+    matchScores: { adventure: 75, nature: 65, luxury: 40, crowds: 45, slowTravel: 25 },
+    seasonalNotes: {
+      Winter: 'December–March is ski season, when snow and conditions allow — confirm current status before you go.',
+      Summer: 'April–June turns the slope into open meadow, with walking replacing the snow sports.'
+    }
+  },
+  {
+    slug: 'chopta',
+    title: 'Chopta',
+    category: 'Adventure',
+    description: 'A small meadow base in Rudraprayag district, and the trailhead for Tungnath and Chandrashila.',
+    toursCount: 6,
+    image: images.destinations.chopta,
+    region: 'Rudraprayag District',
+    state: 'Uttarakhand',
+    editorialDescription: 'Chopta is barely a settlement — a scatter of dhabas and simple stays around an open meadow ringed by rhododendron and fir forest. Its real role is as a base: Tungnath, one of the Panch Kedar temples and among the highest Shiva temples in the Himalaya, sits a trek above the meadow, with Chandrashila\'s summit further still. Deoriatal, a forest lake, is a separate day-trek from a different trailhead nearby. Most travelers pass a night or two here specifically to stage one of these walks, not to sightsee the meadow alone.',
+    bestTime: 'April – June, September – November',
+    idealDuration: '1–2 Days',
+    altitude: '2,700 m',
+    travelStyles: ['Adventure', 'Nature'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Friends & Groups', 'Solo Travelers'],
+    highlights: [
+      { title: 'A meadow base for the trek', description: 'Open grassland ringed by rhododendron and fir, with simple dhaba-style stays.' },
+      { title: 'Tungnath & Chandrashila', description: 'A trek from Chopta reaches the Tungnath temple and, further on, the Chandrashila summit.' },
+      { title: 'Deoriatal', description: 'A separate forest-lake day-trek nearby, for travelers with an extra day.' }
+    ],
+    places: [
+      { title: 'Chopta meadow', description: 'The open grassland where most stays and dhabas cluster.' },
+      { title: 'Tungnath', description: 'One of the Panch Kedar temples, reached by trek from Chopta.' },
+      { title: 'Deoriatal', description: 'A forest lake reached by a separate trek, roughly an hour\'s drive from Chopta.' }
+    ],
+    experiences: ['Tungnath & Chandrashila trek', 'Deoriatal day trek', 'Meadow camping'],
+    relatedSlugs: ['rishikesh', 'joshimath'],
+    seo: { title: 'Chopta Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Chopta trip — the trek base for Tungnath, Chandrashila, and Deoriatal.' },
+    travelTips: [
+      'The Tungnath trail and temple access depend on season and weather — confirm current trail conditions before you commit to the trek.',
+      'Snow can close the upper trail outside the main April–November window; do not assume year-round access.',
+      'Accommodation in Chopta is simple and limited — book ahead in peak trekking season.'
+    ],
+    matchScores: { adventure: 70, nature: 75, luxury: 20, crowds: 40, slowTravel: 35 },
+    seasonalNotes: {
+      Spring: 'April–June is a reliable trekking window before monsoon rain sets in.',
+      Summer: 'July–August brings monsoon rain and slippery trail conditions.',
+      Autumn: 'September–November is generally clear, though snow can arrive early at altitude.'
+    }
+  },
+  {
+    slug: 'lansdowne',
+    title: 'Lansdowne',
+    category: 'Offbeat',
+    description: 'A quiet cantonment hill town in Pauri Garhwal, built for a short, unhurried break.',
+    toursCount: 5,
+    image: images.destinations.lansdowne,
+    region: 'Pauri Garhwal District',
+    state: 'Uttarakhand',
+    editorialDescription: 'Lansdowne stays quiet by design — a Garhwal Rifles cantonment town wrapped in oak and pine forest, without the market-strip energy of Mussoorie further west. There\'s no single headline sight; the appeal is walking trails, a small lake, the regimental war memorial, and long stretches where the loudest thing around is the forest. It works best as a short, deliberate break rather than a multi-day itinerary — a couple of unhurried days are usually enough.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '2 Days',
+    altitude: '1,700 m',
+    travelStyles: ['Nature', 'Family'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Couples', 'Families'],
+    highlights: [
+      { title: 'Cantonment quiet', description: 'A working Garhwal Rifles cantonment town, deliberately low-key and uncrowded.' },
+      { title: 'Forest walking trails', description: 'Oak and pine forest paths connect the town\'s main viewpoints.' },
+      { title: 'A short, complete break', description: 'Compact enough to see properly in two days without feeling rushed.' }
+    ],
+    places: [
+      { title: 'Tip n Top', description: 'A forest viewpoint on the edge of town, popular at sunset.' },
+      { title: 'War Memorial', description: 'The Garhwal Rifles regimental war memorial and museum.' },
+      { title: 'Bhulla Tal', description: 'A small artificial lake with boating, near the town center.' }
+    ],
+    experiences: ['Forest walking trails', 'War Memorial museum visit', 'Boating at Bhulla Tal'],
+    relatedSlugs: ['dehradun', 'haridwar'],
+    seo: { title: 'Lansdowne Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Lansdowne trip — forest walks, the Garhwal Rifles War Memorial, and a quiet short break.' },
+    travelTips: [
+      'Some cantonment areas are restricted to civilians — stick to the marked public viewpoints and roads.',
+      'Carry cash — card acceptance is patchy in the smaller shops and dhabas.',
+      'Two days is usually enough — Lansdowne rewards an unhurried pace rather than a packed itinerary.'
+    ],
+    matchScores: { adventure: 25, nature: 60, luxury: 30, crowds: 20, slowTravel: 60 },
+    seasonalNotes: {
+      Spring: 'March–May is comfortable and green, before the summer weekend crowds from Delhi-NCR arrive.',
+      Summer: 'June brings a wave of weekend visitors escaping the plains heat.',
+      Autumn: 'September–November is quiet and clear, once the monsoon clears.'
     }
   }
 ];

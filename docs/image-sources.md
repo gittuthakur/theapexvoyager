@@ -143,6 +143,69 @@ Date checked: 2026-09-09 (Gulmarg through Khajjiar, Phase 2B-2); 2026-09-09
 - Attribution required: Yes
 - Attribution text: "Sonmarg" by Revoshots, CC BY-SA 4.0, via Wikimedia Commons
 
+## Dehradun
+
+- Local file: `public/images/destination-dehradun.jpg`
+- Source: Wikimedia Commons — `File:Forest Research Institute campus, Dehradun, India.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Forest_Research_Institute_campus,_Dehradun,_India.jpg
+- Creator: Torarne
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Forest Research Institute campus, Dehradun, India" by Torarne, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original wide frame to a 16:9 region centered on the building; no content added or removed.
+
+## Mussoorie
+
+- Local file: `public/images/destination-mussoorie.jpg`
+- Source: Wikimedia Commons — `File:Mall Road, Mussoorie.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Mall_Road,_Mussoorie.jpg
+- Creator: ArmouredCyborg
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Mall Road, Mussoorie" by ArmouredCyborg, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped to 3:2 (minor trim off the bottom); no content added or removed.
+
+## Joshimath
+
+- Local file: `public/images/destination-joshimath.jpg`
+- Source: Wikimedia Commons — `File:Panoramic view of Joshimath town on mountain slope.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Panoramic_view_of_Joshimath_town_on_mountain_slope.jpg
+- Creator: Rohanshah657
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Panoramic view of Joshimath town on mountain slope" by Rohanshah657, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original portrait orientation to a landscape region (town + mountains), trimming blank sky; no content added or removed.
+
+## Auli
+
+- Local file: `public/images/destination-auli.jpg`
+- Source: Wikimedia Commons — `File:Auli, India.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Auli,_India.jpg
+- Creator: Amit Shaw
+- License: CC0 1.0 (public domain dedication — http://creativecommons.org/publicdomain/zero/1.0/deed.en)
+- Attribution required: No (credited voluntarily below)
+- Attribution text: "Auli, India" by Amit Shaw, CC0, via Wikimedia Commons
+
+## Chopta
+
+- Local file: `public/images/destination-chopta.jpg`
+- Source: Wikimedia Commons — `File:Mejastic Meadows.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Mejastic_Meadows.jpg
+- Creator: Shubhsrt7
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Mejastic Meadows" (Chopta Meadows) by Shubhsrt7, CC BY-SA 4.0, via Wikimedia Commons
+
+## Lansdowne
+
+- Local file: `public/images/destination-lansdowne.jpg`
+- Source: Wikimedia Commons — `File:Lansdowne in monsoon.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Lansdowne_in_monsoon.jpg
+- Creator: Navdeep Gusain
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Lansdowne in monsoon" by Navdeep Gusain, CC BY-SA 4.0, via Wikimedia Commons
+
 ## On-site attribution
 
 All attribution-required entries above are credited on `/photo-credits`,
