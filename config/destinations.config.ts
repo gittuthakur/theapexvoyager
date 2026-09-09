@@ -968,7 +968,7 @@ export const destinations: Destination[] = [
       Spring: 'April–June gives the clearest Panchachuli views before the monsoon haze sets in.',
       Autumn: 'September–November is the other reliable window, with cool, settled weather for the Khaliya Top hike.'
     },
-    relatedSlugs: ['rishikesh'],
+    relatedSlugs: ['rishikesh', 'almora'],
     seo: { title: 'Munsiyari Travel Guide & Experiences | The Apex Voyager', description: 'Discover Munsiyari — Panchachuli views and Uttarakhand’s quietest Himalayan valley.' }
   },
   {
@@ -1380,6 +1380,219 @@ export const destinations: Destination[] = [
       Spring: 'March–May is comfortable and green, before the summer weekend crowds from Delhi-NCR arrive.',
       Summer: 'June brings a wave of weekend visitors escaping the plains heat.',
       Autumn: 'September–November is quiet and clear, once the monsoon clears.'
+    }
+  },
+  {
+    slug: 'nainital',
+    title: 'Nainital',
+    category: 'Scenic',
+    description: 'Kumaon\'s best-known lake town, built in tiers around the crescent-shaped Naini Lake.',
+    toursCount: 12,
+    image: images.destinations.nainital,
+    region: 'Nainital District',
+    state: 'Uttarakhand',
+    editorialDescription: 'Nainital is built around Naini Lake the way few Indian hill towns are built around anything — Mall Road runs along one shore, boats cross the water below it, and the hillsides climb steeply on both sides. It\'s Kumaon\'s busiest and most complete base: a real town with markets and old churches, not just a viewpoint, though the viewpoints above it (reached by ropeway or a stiff walk) are worth the climb.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '2–3 Days',
+    altitude: '1,938 m',
+    travelStyles: ['Nature', 'Family', 'Romantic'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Families', 'Couples'],
+    highlights: [
+      { title: 'Naini Lake', description: 'The crescent lake at the town\'s centre, with boating and Mall Road along one shore.' },
+      { title: 'Ropeway viewpoints', description: 'Snow View and other points above town, reached by cable car or a steep walk.' },
+      { title: 'A complete hill-town base', description: 'Markets, churches and old colonial buildings alongside the lake, not just scenery.' }
+    ],
+    places: [
+      { title: 'Naini Lake', description: 'The heart of the town, ringed by Mall Road and the hillside above it.' },
+      { title: 'Snow View Point', description: 'A ropeway-accessed viewpoint above town, looking toward the Himalayan skyline on a clear day.' },
+      { title: 'Naina Devi Temple', description: 'A lakeside temple at the northern end of Naini Lake.' },
+      { title: 'Bhimtal', description: 'A quieter lake town about 22 km away, often visited as a half-day trip from Nainital.' }
+    ],
+    experiences: ['Boating on Naini Lake', 'Mall Road walk', 'Snow View ropeway ride', 'Naina Devi Temple visit'],
+    relatedSlugs: ['mukteshwar', 'almora'],
+    seo: { title: 'Nainital Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Nainital trip — Naini Lake, Mall Road and Kumaon\'s best-known hill-town base.' },
+    hiddenGems: [
+      { title: 'Naina Peak (China Peak)', description: 'The highest point above town, a genuine trek beyond the Snow View crowds.' }
+    ],
+    travelTips: [
+      'Weekends and holiday season bring heavy traffic and parking congestion — arrive early or use a hotel that arranges parking.',
+      'Agree a boating rate at the official counters rather than with touts along the lake.',
+      'Pack layers — the lake keeps evenings cool even in summer.'
+    ],
+    matchScores: { adventure: 30, nature: 65, luxury: 55, crowds: 80, slowTravel: 35 },
+    seasonalNotes: {
+      Spring: 'March–May is comfortable and popular, before the summer peak.',
+      Summer: 'June is Nainital\'s busiest season — expect crowds on Mall Road and the lake.',
+      Autumn: 'September–November is quieter with clearer air, once the monsoon clears.'
+    }
+  },
+  {
+    slug: 'mukteshwar',
+    title: 'Mukteshwar',
+    category: 'Offbeat',
+    description: 'A quiet ridge village above the Kumaon orchards, built around a cliff viewpoint and an old temple.',
+    toursCount: 6,
+    image: images.destinations.mukteshwar,
+    region: 'Nainital District',
+    state: 'Uttarakhand',
+    editorialDescription: 'Mukteshwar sits on a forested ridge above the Kumaon fruit belt, far enough from Nainital to feel like its own place rather than an extension of it. The Mukteshwar Mahadev Temple gives the town its name, and Chauli ki Jali — a sheer cliff a short walk from the village — is the reason most people come. It\'s a slow, small-scale destination: orchards, a handful of stays, and views that depend entirely on the weather.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '1–2 Days',
+    altitude: '2,171 m',
+    travelStyles: ['Nature', 'Romantic'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Couples', 'Friends & Groups'],
+    highlights: [
+      { title: 'Chauli ki Jali', description: 'A dramatic cliff-edge viewpoint a short walk from the village.' },
+      { title: 'Mukteshwar Mahadev Temple', description: 'The old Shiva temple the town is named for, set on the ridge.' },
+      { title: 'Orchard country', description: 'Apple and apricot orchards spread across the surrounding slopes.' }
+    ],
+    places: [
+      { title: 'Chauli ki Jali', description: 'The village\'s main viewpoint, a rock face with a long drop and wide views.' },
+      { title: 'Mukteshwar Mahadev Temple', description: 'A modest, old temple at the highest point of the village.' },
+      { title: 'Orchards around the ridge', description: 'Working fruit orchards that give the area its quiet, rural character.' }
+    ],
+    experiences: ['Chauli ki Jali viewpoint visit', 'Temple visit', 'Orchard walks'],
+    relatedSlugs: ['nainital'],
+    seo: { title: 'Mukteshwar Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Mukteshwar trip — Chauli ki Jali, orchard country, and a quiet Kumaon ridge village.' },
+    travelTips: [
+      'Himalayan visibility from Chauli ki Jali depends on the weather — clear mornings are the best bet, not guaranteed.',
+      'Stays are limited and small-scale — book ahead in peak season.',
+      'There\'s little nightlife or late dining here by design — come for the quiet, not the options.'
+    ],
+    matchScores: { adventure: 35, nature: 65, luxury: 45, crowds: 30, slowTravel: 55 },
+    seasonalNotes: {
+      Spring: 'March–May brings orchard blossom and clear pre-monsoon skies.',
+      Summer: 'June is warm and green, a cooler escape from the plains.',
+      Autumn: 'September–November has the clearest air of the year.'
+    }
+  },
+  {
+    slug: 'almora',
+    title: 'Almora',
+    category: 'Offbeat',
+    description: 'A former Chand-dynasty hill capital, and Kumaon\'s cultural and market town.',
+    toursCount: 9,
+    image: images.destinations.almora,
+    region: 'Almora District',
+    state: 'Uttarakhand',
+    editorialDescription: 'Almora has been a hill town in its own right since the Chand kings made it their capital in the 16th century — a working market town on a horseshoe ridge, not a resort. Its bazaar still deals in copper craft and Kumaoni sweets, and the town serves as the practical base for exploring the wider region — Kausani and Ranikhet are both under an hour away, and Binsar\'s forest sanctuary a bit further. Almora\'s own identity is the town itself: steep lanes, old temples and a slower pace than the lake towns nearby.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '2 Days',
+    altitude: '1,638 m',
+    travelStyles: ['Culture', 'Nature'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Couples', 'Solo Travelers'],
+    highlights: [
+      { title: 'A former hill capital', description: 'Chand-dynasty capital since the 16th century, with the historic character to match.' },
+      { title: 'Bright End Corner', description: 'A ridge-edge viewpoint at the town\'s western end, known for sunset.' },
+      { title: 'A Kumaon base', description: 'Kausani, Ranikhet and Binsar are all within about an hour, making Almora a practical hub.' }
+    ],
+    places: [
+      { title: 'Bright End Corner', description: 'A quiet viewpoint at the edge of town, popular at sunset.' },
+      { title: 'Nanda Devi Temple', description: 'Almora\'s own historic temple, distinct from the Naina Devi shrine at Nainital.' },
+      { title: 'Almora Bazaar', description: 'The old market street, known for copper craft and local sweets.' },
+      { title: 'Binsar Wildlife Sanctuary', description: 'A protected oak-and-rhododendron forest sanctuary about an hour away, with basic forest-rest-house stays and no guaranteed wildlife sightings.' }
+    ],
+    experiences: ['Heritage bazaar walk', 'Bright End Corner sunset', 'Nanda Devi Temple visit'],
+    relatedSlugs: ['kausani', 'ranikhet', 'munsiyari'],
+    seo: { title: 'Almora Travel Guide & Experiences | The Apex Voyager', description: 'Plan an Almora trip — Kumaon\'s historic hill capital, its bazaar, and the base for Kausani and Binsar.' },
+    hiddenGems: [
+      { title: 'Kasar Devi Temple', description: 'A hilltop temple a short drive from town, known for sweeping views and a long history as a quiet retreat.' }
+    ],
+    travelTips: [
+      'Almora\'s lanes are steep and largely pedestrian — expect to park at the edge of town and walk in.',
+      'Binsar Wildlife Sanctuary charges a separate entry fee and has no guaranteed wildlife sightings — treat it as a forest excursion, not a safari.',
+      'Almora works well as a base for a wider Kumaon loop rather than a single-stop visit.'
+    ],
+    matchScores: { adventure: 30, nature: 60, luxury: 35, crowds: 40, slowTravel: 55 },
+    seasonalNotes: {
+      Spring: 'March–May is clear and comfortable for walking the bazaar and viewpoints.',
+      Summer: 'June stays cooler than the plains, though it can be hazy.',
+      Autumn: 'September–November brings the clearest skies of the year.'
+    }
+  },
+  {
+    slug: 'kausani',
+    title: 'Kausani',
+    category: 'Scenic',
+    description: 'A small ridge settlement in Bageshwar district, built almost entirely around its Himalayan panorama.',
+    toursCount: 5,
+    image: images.destinations.kausani,
+    region: 'Bageshwar District',
+    state: 'Uttarakhand',
+    editorialDescription: 'Kausani is small by design — a ridge settlement with a handful of hotels lined up to face the Himalayan skyline. On a clear day, Trishul, Nanda Devi and the Panchachuli peaks run across the horizon in one continuous panorama, which is the entire reason the town exists as a destination. Mahatma Gandhi stayed here in 1929, at what\'s now the Anasakti Ashram; beyond that and a working tea estate, there isn\'t much to the town itself — it\'s a place to sit still and look at mountains, not to fill an itinerary.',
+    bestTime: 'October – March',
+    idealDuration: '1–2 Days',
+    altitude: '1,890 m',
+    travelStyles: ['Nature', 'Romantic'],
+    seasons: ['Autumn', 'Winter', 'Spring'],
+    bestFor: ['Couples', 'Solo Travelers'],
+    highlights: [
+      { title: 'The Himalayan panorama', description: 'Trishul, Nanda Devi and the Panchachuli range, visible in one sweep on a clear day.' },
+      { title: 'Anasakti Ashram', description: 'Where Gandhi stayed in 1929, now a small museum and library.' },
+      { title: 'A working tea estate', description: 'One of the few tea-growing operations in this part of Uttarakhand.' }
+    ],
+    places: [
+      { title: 'Anasakti Ashram', description: 'A quiet ashram and museum tied to Gandhi\'s 1929 stay.' },
+      { title: 'Kausani Tea Estate', description: 'A working estate on the edge of town, open for walks and tastings.' },
+      { title: 'Rudradhari Falls', description: 'A forest waterfall a short drive away, for travelers with an extra half-day.' }
+    ],
+    experiences: ['Himalayan viewpoint walk', 'Anasakti Ashram visit', 'Tea estate visit'],
+    relatedSlugs: ['almora', 'ranikhet'],
+    seo: { title: 'Kausani Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Kausani trip — the Himalayan panorama, Anasakti Ashram, and Kumaon\'s quietest viewpoint town.' },
+    travelTips: [
+      'The Himalayan view depends on the weather and season — October–March gives the clearest odds, but it\'s never guaranteed.',
+      'Kausani is genuinely small — a day covers the town itself, with Rudradhari Falls as an easy add-on.',
+      'Book ahead in the October–March viewing season, when the handful of view-facing rooms sell out first.'
+    ],
+    matchScores: { adventure: 20, nature: 70, luxury: 40, crowds: 25, slowTravel: 65 },
+    seasonalNotes: {
+      Autumn: 'October–November typically gives the clearest post-monsoon Himalayan views.',
+      Winter: 'December–February is cold but often clear, with the best odds of a full panorama.',
+      Spring: 'March–April warms up while visibility is still generally good.'
+    }
+  },
+  {
+    slug: 'ranikhet',
+    title: 'Ranikhet',
+    category: 'Colonial Charm',
+    description: 'A quiet cantonment town in Almora district, home to the Kumaon Regiment and its orchard gardens.',
+    toursCount: 7,
+    image: images.destinations.ranikhet,
+    region: 'Almora District',
+    state: 'Uttarakhand',
+    editorialDescription: 'Ranikhet has been an army cantonment since the British established it in 1869, and it still runs at that pace — wide roads, forest edges kept deliberately undeveloped, and none of the market-town bustle of Almora nearby. It\'s the headquarters of the Kumaon Regiment, one of the Indian Army\'s most decorated, and the Chaubatia orchards just outside town are as close as the destination gets to a single headline sight. Come for the quiet rather than a checklist of attractions.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '2 Days',
+    altitude: '1,869 m',
+    travelStyles: ['Nature', 'Family'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Families', 'Couples'],
+    highlights: [
+      { title: 'Chaubatia orchards', description: 'Apple and apricot orchards and a garden, just outside the main town.' },
+      { title: 'Kumaon Regiment Centre', description: 'Headquarters of one of the Indian Army\'s most decorated regiments since 1948.' },
+      { title: 'Deliberate quiet', description: 'Cantonment planning has kept development and crowds well below nearby Nainital or Almora.' }
+    ],
+    places: [
+      { title: 'Chaubatia Garden', description: 'Terraced orchards and a horticultural garden on the edge of town.' },
+      { title: 'Kumaon Regimental Centre Museum', description: 'A regimental museum covering the Kumaon Regiment\'s history, open to visitors.' },
+      { title: 'Jhula Devi Temple', description: 'A forest temple near Chaubatia, known for the bells left by visitors.' }
+    ],
+    experiences: ['Chaubatia orchard walk', 'Regimental museum visit', 'Jhula Devi Temple visit'],
+    relatedSlugs: ['almora', 'kausani'],
+    seo: { title: 'Ranikhet Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Ranikhet trip — Chaubatia orchards, the Kumaon Regiment Centre, and Uttarakhand\'s quietest cantonment town.' },
+    travelTips: [
+      'Ranikhet is a working cantonment — some areas are restricted to civilians, so stick to the marked public roads and gardens.',
+      'There\'s no single must-see sight here — plan a relaxed two days rather than a packed itinerary.',
+      'Combine with Almora and Kausani for a fuller Kumaon loop rather than visiting Ranikhet alone.'
+    ],
+    matchScores: { adventure: 20, nature: 55, luxury: 35, crowds: 25, slowTravel: 55 },
+    seasonalNotes: {
+      Spring: 'March–May is comfortable, with the orchards in blossom.',
+      Summer: 'June stays cooler than the plains, a quiet season here.',
+      Autumn: 'September–November is clear and quiet, after the monsoon.'
     }
   }
 ];

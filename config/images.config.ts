@@ -35,7 +35,12 @@ export const images = {
     joshimath: '/images/destination-joshimath.jpg',
     auli: '/images/destination-auli.jpg',
     chopta: '/images/destination-chopta.jpg',
-    lansdowne: '/images/destination-lansdowne.jpg'
+    lansdowne: '/images/destination-lansdowne.jpg',
+    nainital: '/images/destination-nainital.jpg',
+    mukteshwar: '/images/destination-mukteshwar.jpg',
+    almora: '/images/destination-almora.jpg',
+    kausani: '/images/destination-kausani.jpg',
+    ranikhet: '/images/destination-ranikhet.jpg'
   },
   tours: {
     spitiCircuit: '/images/spiti-circuit.jpg',

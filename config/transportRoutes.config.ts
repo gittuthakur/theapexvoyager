@@ -209,5 +209,77 @@ export const transportRoutes: TransportRoute[] = [
     seasonalStatus: 'Year-round',
     active: true,
     featured: true
+  },
+  {
+    origin: 'Kathgodam',
+    destination: 'Nainital',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '1.5 hours',
+    distanceKm: 35,
+    supportedVehicleCategories: ['Comfort', 'SUV', 'Premium'],
+    startingFare: 1800,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Kathgodam',
+    destination: 'Mukteshwar',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '2.5 hours',
+    distanceKm: 60,
+    supportedVehicleCategories: ['Comfort', 'SUV'],
+    startingFare: 3200,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Kathgodam',
+    destination: 'Almora',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '3 hours',
+    distanceKm: 82,
+    supportedVehicleCategories: ['Comfort', 'SUV', 'Premium'],
+    startingFare: 4200,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Almora',
+    destination: 'Kausani',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '1 hour',
+    distanceKm: 46,
+    supportedVehicleCategories: ['Comfort', 'SUV'],
+    startingFare: 2200,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Almora',
+    destination: 'Ranikhet',
+    routeType: 'Intercity Transfer',
+    estimatedDuration: '1 hour',
+    distanceKm: 46,
+    supportedVehicleCategories: ['Comfort', 'SUV'],
+    startingFare: 2200,
+    seasonalStatus: 'Year-round',
+    active: true,
+    featured: true
+  },
+  {
+    origin: 'Kathgodam',
+    destination: 'Munsiyari',
+    routeType: 'Remote Himalayan Transfer',
+    estimatedDuration: '10-12 hours',
+    distanceKm: 280,
+    supportedVehicleCategories: ['SUV', 'Premium'],
+    startingFare: 15500,
+    seasonalStatus: 'Seasonal (Mar-Nov)',
+    active: true,
+    featured: true
   }
 ];

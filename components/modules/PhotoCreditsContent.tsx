@@ -162,6 +162,47 @@ const credits: PhotoCredit[] = [
     license: 'CC BY-SA 4.0',
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Lansdowne_in_monsoon.jpg'
+  },
+  {
+    destination: 'Nainital',
+    title: 'View of Nainital lake from Snow View Point',
+    creator: 'Slyronit',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:View_of_Nainital_lake_from_Snow_View_Point.jpg'
+  },
+  {
+    destination: 'Mukteshwar',
+    title: 'Mukteshwar Sunset 01',
+    creator: 'ArmouredCyborg',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Mukteshwar_Sunset_01.jpg'
+  },
+  {
+    destination: 'Almora',
+    title: 'Almora Sunset Skyline',
+    creator: 'ArmouredCyborg',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Almora_Sunset_Skyline.jpg'
+  },
+  {
+    destination: 'Kausani',
+    title: 'View from Hotel Uttarakhand at dawn, Kausani',
+    creator: 'David M.',
+    license: 'CC BY 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/3.0',
+    sourceUrl:
+      'https://commons.wikimedia.org/wiki/File:View_from_Hotel_Uttarakhand_at_dawn,_Kausani,_11-2009_-_panoramio.jpg'
+  },
+  {
+    destination: 'Ranikhet',
+    title: 'Apple orchards in Chaubatia, Ranikhet, Uttarakhand',
+    creator: 'Harshit SR',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Apple_orchards_in_Chaubatia,_Ranikhet,_Uttarakhand.jpg'
   }
 ];
 

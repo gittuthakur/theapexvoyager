@@ -206,6 +206,58 @@ Date checked: 2026-09-09 (Gulmarg through Khajjiar, Phase 2B-2); 2026-09-09
 - Attribution required: Yes
 - Attribution text: "Lansdowne in monsoon" by Navdeep Gusain, CC BY-SA 4.0, via Wikimedia Commons
 
+## Nainital
+
+- Local file: `public/images/destination-nainital.jpg`
+- Source: Wikimedia Commons — `File:View of Nainital lake from Snow View Point.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:View_of_Nainital_lake_from_Snow_View_Point.jpg
+- Creator: Slyronit
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "View of Nainital lake from Snow View Point" by Slyronit, CC BY-SA 4.0, via Wikimedia Commons
+
+## Mukteshwar
+
+- Local file: `public/images/destination-mukteshwar.jpg`
+- Source: Wikimedia Commons — `File:Mukteshwar Sunset 01.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Mukteshwar_Sunset_01.jpg
+- Creator: ArmouredCyborg
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Mukteshwar Sunset 01" by ArmouredCyborg, CC BY-SA 4.0, via Wikimedia Commons
+
+## Almora
+
+- Local file: `public/images/destination-almora.jpg`
+- Source: Wikimedia Commons — `File:Almora Sunset Skyline.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Almora_Sunset_Skyline.jpg
+- Creator: ArmouredCyborg
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Almora Sunset Skyline" by ArmouredCyborg, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original wide frame to a 16:9 region; no content added or removed.
+
+## Kausani
+
+- Local file: `public/images/destination-kausani.jpg`
+- Source: Wikimedia Commons — `File:View from Hotel Uttarakhand at dawn, Kausani, 11-2009 - panoramio.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:View_from_Hotel_Uttarakhand_at_dawn,_Kausani,_11-2009_-_panoramio.jpg
+- Creator: David M.
+- License: CC BY 3.0 (https://creativecommons.org/licenses/by/3.0)
+- Attribution required: Yes
+- Attribution text: "View from Hotel Uttarakhand at dawn, Kausani" by David M., CC BY 3.0, via Wikimedia Commons
+
+## Ranikhet
+
+- Local file: `public/images/destination-ranikhet.jpg`
+- Source: Wikimedia Commons — `File:Apple orchards in Chaubatia, Ranikhet, Uttarakhand.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Apple_orchards_in_Chaubatia,_Ranikhet,_Uttarakhand.jpg
+- Creator: Harshit SR
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Apple orchards in Chaubatia, Ranikhet, Uttarakhand" by Harshit SR, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original wide frame to a 16:9 region; no content added or removed.
+
 ## On-site attribution
 
 All attribution-required entries above are credited on `/photo-credits`,
