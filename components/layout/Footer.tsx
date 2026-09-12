@@ -171,7 +171,7 @@ export default function Footer({
           <p>
             © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
           </p>
-          <div className="flex gap-6">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
             <Link href="/terms" className="cursor-hover transition-colors duration-300 ease-in-out hover:text-white">
               Terms &amp; Conditions
             </Link>
