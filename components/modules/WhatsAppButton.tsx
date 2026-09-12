@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
 import { cn } from '@/lib/utils';
+import { trackWhatsAppConversion } from '@/lib/googleAds';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 
 export interface WhatsAppButtonProps {
@@ -47,6 +48,7 @@ export default function WhatsAppButton({
 
   function openChat() {
     const url = buildWhatsAppLink({ phoneNumber, messageText, tripTitle, destination, dates });
+    trackWhatsAppConversion();
     window.open(url, '_blank');
   }
 

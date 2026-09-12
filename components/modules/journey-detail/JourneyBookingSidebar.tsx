@@ -6,6 +6,7 @@ import WhatsAppButton from '@/components/modules/WhatsAppButton';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 import { registerBottomOverlay } from '@/lib/bottomOverlay';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
+import { trackWhatsAppConversion } from '@/lib/googleAds';
 import { formatPriceOrQuote, isValidPrice } from '@/lib/pricing';
 import type { TravelPackage } from '@/types/package';
 
@@ -104,7 +105,10 @@ export default function JourneyBookingSidebar({ pkg, onCustomize }: JourneyBooki
           <button
             type="button"
             aria-label="Chat on WhatsApp"
-            onClick={() => window.open(buildWhatsAppLink({ tripTitle: pkg.name, destination: pkg.destination }), '_blank')}
+            onClick={(event) => {
+              trackWhatsAppConversion(event.nativeEvent);
+              window.open(buildWhatsAppLink({ tripTitle: pkg.name, destination: pkg.destination }), '_blank');
+            }}
             className="cursor-hover inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#25D366] text-white shadow-sm transition-all duration-300 ease-in-out hover:bg-[#20ba5a]"
           >
             <WhatsAppIcon size={20} />

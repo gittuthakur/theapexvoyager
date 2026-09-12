@@ -7,6 +7,7 @@ import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 import { Button } from '@/components/ui/Button';
 import { Input, Textarea } from '@/components/ui/Input';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
+import WhatsAppLink from '@/components/modules/WhatsAppLink';
 import type { Experience } from '@/types/experience';
 
 export interface ExperienceBookingActionsProps {
@@ -60,7 +61,7 @@ export default function ExperienceBookingActions({ experience }: ExperienceBooki
         Plan This Experience <ArrowRight size={18} />
       </Button>
 
-      <a
+      <WhatsAppLink
         href={quickWhatsAppHref}
         target="_blank"
         rel="noopener noreferrer"
@@ -68,7 +69,7 @@ export default function ExperienceBookingActions({ experience }: ExperienceBooki
       >
         <WhatsAppIcon className="h-4 w-4" />
         Chat on WhatsApp
-      </a>
+      </WhatsAppLink>
     </div>
   );
 }

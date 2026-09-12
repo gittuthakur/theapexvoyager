@@ -1,6 +1,7 @@
 import { siteConfig } from '@/config/site.config';
 import type { BookingRequestType } from '@/models/BookingRequest';
 import { postJSON } from '@/lib/api';
+import { trackWhatsAppConversion } from '@/lib/googleAds';
 
 export interface WhatsAppLinkParams {
   phoneNumber?: string;
@@ -253,6 +254,7 @@ export async function openTransportWhatsAppLead({
     quantity
   });
 
+  trackWhatsAppConversion();
   window.open(buildWhatsAppLink({ messageText }), '_blank', 'noopener,noreferrer');
 }
 

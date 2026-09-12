@@ -3,6 +3,7 @@ import { Mail, MapPin, Phone } from 'lucide-react';
 import { footerColumns, socialLinks } from '@/config/footer.config';
 import { siteConfig } from '@/config/site.config';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
+import WhatsAppLink from '@/components/modules/WhatsAppLink';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 import type { FooterColumn, SocialLink } from '@/types';
 
@@ -124,14 +125,14 @@ export default function Footer({
               </li>
               <li className="flex items-center gap-2">
                 <WhatsAppIcon size={15} className="text-apex-300" />
-                <a
+                <WhatsAppLink
                   href={buildWhatsAppLink({ messageText: 'Hi The Apex Voyager, I want to plan a custom Himalayan journey.' })}
                   target="_blank"
                   rel="noreferrer"
                   className="cursor-hover transition-colors duration-300 ease-in-out hover:text-white"
                 >
                   WhatsApp Us
-                </a>
+                </WhatsAppLink>
               </li>
               <li className="flex flex-wrap items-center gap-2">
                 <Mail size={15} className="text-apex-300" />

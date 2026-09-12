@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
+import { GOOGLE_ADS_ID } from '@/lib/googleAds';
 import './globals.css';
 import { Poppins } from 'next/font/google';
 import { MotionConfig } from 'framer-motion';
@@ -47,6 +49,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#ffffff" />
       </head>
       <body className="font-sans">
+        <Script id="google-ads-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};
+gtag('js', new Date());
+gtag('config', '${GOOGLE_ADS_ID}');`}
+        </Script>
+        <Script id="google-ads-base" src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`} strategy="afterInteractive" />
         <NavigationTracker />
         {/* `reducedMotion="user"` makes every framer-motion `motion.*` component sitewide
             automatically honor the OS-level `prefers-reduced-motion` setting (disabling

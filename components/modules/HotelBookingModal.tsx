@@ -6,6 +6,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
+import WhatsAppLink from '@/components/modules/WhatsAppLink';
 import { postJSON } from '@/lib/api';
 import { buildBookingMessage, buildWhatsAppLink } from '@/lib/whatsapp';
 import { useBookingNavigation } from '@/lib/bookingNavigation';
@@ -103,7 +104,7 @@ export default function HotelBookingModal({
               Send us the pre-filled message on WhatsApp and our team will confirm availability and pricing for{' '}
               <strong>{hotelName}</strong> directly with you.
             </p>
-            <a
+            <WhatsAppLink
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -112,7 +113,7 @@ export default function HotelBookingModal({
             >
               <WhatsAppIcon size={16} />
               Continue on WhatsApp
-            </a>
+            </WhatsAppLink>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">

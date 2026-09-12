@@ -8,6 +8,7 @@ import { buildBookingMessage, buildWhatsAppLink } from '@/lib/whatsapp';
 import type { BookingRequestType } from '@/models/BookingRequest';
 import { FloatingOverlay } from '@/components/ui/FloatingOverlay';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
+import WhatsAppLink from '@/components/modules/WhatsAppLink';
 
 // Matches lib/bookingId.ts's generateBookingId() output ("TAP-" + digits) across every
 // booking type this shared modal serves (Journeys/Trip Planner, Transport, Experts, …).
@@ -177,7 +178,7 @@ export function BookingRequestProvider({ children }: { children: ReactNode }) {
                 Send us the pre-filled message on WhatsApp and our team will confirm availability and pricing directly with
                 you.
               </p>
-              <a
+              <WhatsAppLink
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -186,7 +187,7 @@ export function BookingRequestProvider({ children }: { children: ReactNode }) {
               >
                 <WhatsAppIcon size={16} />
                 Continue on WhatsApp
-              </a>
+              </WhatsAppLink>
             </div>
           ) : status === 'review' || status === 'submitting' ? (
             <div className="mt-5 space-y-4">

@@ -4,6 +4,7 @@ import { createContext, useContext, useState, type FormEvent, type ReactNode } f
 import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
+import { trackWhatsAppConversion } from '@/lib/googleAds';
 import { STAY_TYPE_LABELS, type StayType } from '@/types/stay';
 import { FloatingOverlay } from '@/components/ui/FloatingOverlay';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
@@ -95,6 +96,7 @@ export function WhatsAppInquiryProvider({ children }: { children: ReactNode }) {
       const datePart = date ? ` Preferred date: ${date}.` : '';
       const messageText = `Hi, I am interested in booking the ${selection.name}${stayLabel}.${datePart}`;
 
+      trackWhatsAppConversion(event.nativeEvent);
       window.open(buildWhatsAppLink({ messageText }), '_blank', 'noopener,noreferrer');
       close();
     } catch (error) {

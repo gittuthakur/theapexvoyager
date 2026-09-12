@@ -1,5 +1,6 @@
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
+import WhatsAppLink from '@/components/modules/WhatsAppLink';
 
 export interface NoInventoryActionsProps {
   onRequestCustomVehicle: () => void;
@@ -25,7 +26,7 @@ export default function NoInventoryActions({ onRequestCustomVehicle, requestLabe
       >
         {requestLabel}
       </button>
-      <a
+      <WhatsAppLink
         href={buildWhatsAppLink({ messageText: 'Hi! I need help finding suitable transport for my trip.' })}
         target="_blank"
         rel="noopener noreferrer"
@@ -33,7 +34,7 @@ export default function NoInventoryActions({ onRequestCustomVehicle, requestLabe
       >
         <WhatsAppIcon size={16} />
         WhatsApp Travel Expert
-      </a>
+      </WhatsAppLink>
       <a
         href={modifyHref}
         className="cursor-hover inline-flex items-center justify-center px-4 py-3 text-sm font-semibold text-apex-600 transition-colors duration-300 ease-in-out hover:text-apex-700"

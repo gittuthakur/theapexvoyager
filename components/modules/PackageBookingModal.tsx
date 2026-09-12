@@ -8,6 +8,7 @@ import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 import { calculateBookingPrice, CUSTOM_QUOTE_LABEL, formatINR, isValidPrice, type PriceBreakdown } from '@/lib/pricing';
 import { postJSON } from '@/lib/api';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
+import { trackWhatsAppConversion } from '@/lib/googleAds';
 import { cn } from '@/lib/utils';
 import type { TravelPackage } from '@/types/package';
 
@@ -385,6 +386,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
       });
 
       const link = buildWhatsAppLink({ messageText: message });
+      trackWhatsAppConversion();
       window.open(link, '_blank', 'noopener,noreferrer');
       setStep('done');
     } catch (error) {
