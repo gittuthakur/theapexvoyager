@@ -125,4 +125,19 @@ export interface Destination extends Partial<GooglePlaceEnrichment> {
   /** Staged access sequence for a trek-gated (or otherwise multi-leg) destination — see
    *  DestinationAccessJourney. Absent for the ordinary single-hop majority of the catalogue. */
   accessJourney?: DestinationAccessJourney;
+  /** The town where normal road transport (a private vehicle/taxi, as opposed to a
+   *  government-authorized shuttle-only stretch or the trek/pony/helicopter leg beyond it)
+   *  actually terminates — used as the Transport search target instead of `title` so a
+   *  trek-gated destination's "Getting Around" section never implies a vehicle reaches the
+   *  shrine itself. Generic across any future staged-access destination; absent for the
+   *  ordinary drive-straight-there majority of the catalogue, where `title` already is the
+   *  correct search target. */
+  roadHead?: string;
+  /** Real overnight-stay base town(s) for a destination whose own accommodation is limited,
+   *  seasonal, or nonexistent — used as the Stays search target instead of `title` so results
+   *  aren't mislabeled as physically at the destination. Ordered by how commonly travelers
+   *  actually book there; only the first entry is used as the live search location today, but
+   *  the full list is kept so a future fallback search doesn't need another schema change.
+   *  Absent for the ordinary majority of the catalogue, where `title` already is correct. */
+  stayBaseLocations?: string[];
 }

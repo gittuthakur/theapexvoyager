@@ -82,6 +82,11 @@ export interface DestinationDocument extends Document {
   registrationInfo?: DestinationRegistrationInfo;
   officialAdvisoryUrl?: string;
   accessJourney?: DestinationAccessJourney;
+  // See types/destination.ts for the full rationale — the town normal road transport
+  // actually terminates at, and the real overnight stay base(s), for a trek-gated
+  // destination whose `title` isn't a truthful Stays/Transport search target.
+  roadHead?: string;
+  stayBaseLocations?: string[];
   // Google Places enrichment (see types/destination.ts's GooglePlaceEnrichment) —
   // mirrored here so a curated Destination can carry it, never used for the
   // Google-Places-backed live search path in lib/destinations.ts, which stays config-only.
@@ -156,6 +161,8 @@ const DestinationSchema = new Schema<DestinationDocument>(
       heading: String,
       stages: [{ title: String, description: String, note: String }]
     },
+    roadHead: { type: String },
+    stayBaseLocations: { type: [String] },
     placeId: { type: String },
     formattedAddress: { type: String },
     photos: { type: [String] },

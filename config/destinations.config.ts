@@ -1724,6 +1724,13 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Kedarnath Temple darshan', 'Gaurikund–Kedarnath trek'],
     relatedSlugs: ['rishikesh', 'badrinath', 'yamunotri'],
+    // Sonprayag, not Gaurikund: this is where a normal private vehicle/taxi (the kind our
+    // Transport search arranges) actually stops — the Sonprayag→Gaurikund stretch is a
+    // regulated shuttle-only transfer, not open road transport. See editorialDescription
+    // above ("staying a night at Guptkashi or Sonprayag before the final push") for why
+    // these two towns are the Stays search target instead of the shrine itself.
+    roadHead: 'Sonprayag',
+    stayBaseLocations: ['Guptkashi', 'Sonprayag'],
     seo: {
       title: 'Kedarnath Travel Guide | Uttarakhand Char Dham | The Apex Voyager',
       description: 'Plan a Kedarnath trip — the trek-gated Char Dham shrine beyond Gaurikund, the seasonal helicopter option, and honest trip planning.'
@@ -1784,6 +1791,11 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Yamunotri Temple darshan', 'Janki Chatti–Yamunotri trek'],
     relatedSlugs: ['rishikesh', 'gangotri', 'kedarnath'],
+    // Janki Chatti is where the motorable road itself ends (unlike Kedarnath, there's no
+    // separate shuttle-only stretch beyond it — a private vehicle can drive here directly).
+    // Barkot is the gateway town's own hotel base — see editorialDescription above.
+    roadHead: 'Janki Chatti',
+    stayBaseLocations: ['Barkot'],
     seo: {
       title: 'Yamunotri Travel Guide | Uttarakhand Char Dham | The Apex Voyager',
       description: 'Plan a Yamunotri trip — the trek-gated Char Dham shrine beyond Janki Chatti, Kharsali, and honest trip planning.'
@@ -1843,6 +1855,10 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Hemkund Sahib darshan', 'Ghangaria–Hemkund trek'],
     relatedSlugs: ['joshimath', 'badrinath', 'rishikesh'],
+    // Govindghat is where the motorable road from Joshimath ends. Ghangaria is the only
+    // overnight base — no accommodation exists at Hemkund Sahib itself (see places above).
+    roadHead: 'Govindghat',
+    stayBaseLocations: ['Ghangaria'],
     seo: {
       title: 'Hemkund Sahib Travel Guide | Uttarakhand Pilgrimage | The Apex Voyager',
       description: 'Plan a Hemkund Sahib trip — the trek-gated Gurudwara beyond Ghangaria, the shared Valley of Flowers base, and honest trip planning.'

@@ -81,7 +81,16 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
   const tours = await getToursByDestinationSlug(destination.slug);
   const catalogExperiences = await getExperiencesByDestination(destination.title);
   const localExperts = await getExpertsByDestinationSlug(destination.slug);
-  const routesToDestination = await getRoutes({ destination: destination.title });
+  // For a trek-gated destination, normal road transport terminates at `roadHead` (e.g.
+  // Sonprayag for Kedarnath), never at the shrine itself — searching routes by `title`
+  // would either find nothing or, if a route were ever added, wrongly imply a vehicle
+  // reaches the shrine. Falls back to `title` for the ordinary drive-straight-there
+  // majority of destinations, where that's already the correct search target.
+  const routesToDestination = await getRoutes({ destination: destination.roadHead ?? destination.title });
+  // Same reasoning for Stays: `stayBaseLocations[0]` is the real overnight-stay base
+  // travelers actually book (e.g. Guptkashi for Kedarnath), not the shrine itself, which
+  // typically has limited, seasonal, or no accommodation.
+  const stayBaseLocation = destination.stayBaseLocations?.[0];
   // Real rating computed from actual Review documents — takes precedence over the static
   // config rating so this never disagrees with the rating shown on journey cards
   // elsewhere on the site (both of which read from the same getDestinationRatingsMap).
@@ -271,6 +280,10 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
                 </div>
               ))}
             </div>
+          ) : destination.roadHead ? (
+            <p className="mt-6 rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500">
+              No fixed routes to {destination.roadHead} — the road head where normal road transport for {destination.title} ends — are listed yet. Our team can still arrange private transport there.
+            </p>
           ) : (
             <p className="mt-6 rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500">
               No fixed routes to {destination.title} listed yet — our team can still arrange private transport.
@@ -307,6 +320,11 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-apex-600">Where to stay</p>
               <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">Hotels, Homestays &amp; Unique Stays in {destination.title}</h2>
+              {stayBaseLocation ? (
+                <p className="mt-2 text-sm text-slate-500">
+                  Showing stays around {stayBaseLocation} — the usual overnight base, since {destination.title} itself has limited or seasonal accommodation.
+                </p>
+              ) : null}
             </div>
             <Link
               href={`/stays/${destination.slug}`}
@@ -316,7 +334,7 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
             </Link>
           </div>
           <div className="mt-6">
-            <StaysGrid location={destination.title} state={destination.state} />
+            <StaysGrid location={stayBaseLocation ?? destination.title} state={destination.state} />
           </div>
         </div>
 
