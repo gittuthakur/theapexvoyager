@@ -1,11 +1,15 @@
 import { images } from './images.config';
 import type { Region } from '@/types';
 
-// Every photo under public/images/ today is Himachal Pradesh-specific (see
-// config/images.config.ts) — Jammu & Kashmir and Uttarakhand deliberately use the
-// same honest generic fallbacks config/experiences.config.ts already uses for those
-// two states, rather than mislabeling a real Himachal photo (Kinnaur/Dharamshala) as
-// a Kashmir/Uttarakhand region card.
+// Himachal Pradesh and Uttarakhand each use a real, named destination photo from
+// their own state (Manali; Rishikesh) as their region card/hero image — the same
+// pattern, just pointed at a genuine in-region place rather than a generic stock
+// shot. Jammu & Kashmir still uses a generic fallback (config/experiences.config.ts's
+// mountainDusk) rather than mislabeling a real Himachal photo as Kashmir; the
+// Uttarakhand entry previously did the same via `himalayanVista`, but that asset is
+// actually Key Monastery in Spiti Valley, Himachal Pradesh — a real, identifiable
+// place in the wrong state, not a safe generic fallback — so it was replaced with
+// its own real destination photo instead.
 
 // The one canonical list of the three regions The Apex Voyager covers. `name` here
 // is deliberately the full, exact string already used on `Destination.state` (see
@@ -36,7 +40,7 @@ export const regions: Region[] = [
     name: 'Uttarakhand',
     shortName: 'Uttarakhand',
     description: 'Riverside yoga towns, sacred ghats and the foothills of the high Garhwal.',
-    image: images.experiences.himalayanVista
+    image: images.destinations.rishikesh
   }
 ];
 

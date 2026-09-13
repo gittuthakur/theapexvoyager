@@ -99,7 +99,7 @@ export default async function RegionHubPage({ params }: RegionHubPageProps) {
         {sections.some((s) => s.id === 'experiences') ? <RegionExperiences experiences={experiences} regionName={region.name} /> : null}
         {sections.some((s) => s.id === 'travel-guide') ? <RegionTravelGuide region={region} googleContext={googleContext} /> : null}
 
-        <RegionTransport transportServices={transportServices} transportVehicles={transportVehicles} regionName={region.name} />
+        <RegionTransport transportServices={transportServices} transportVehicles={transportVehicles} regionName={region.name} regionSlug={region.slug} />
         <RegionExperts travelExperts={travelExperts} regionName={region.name} />
         <RegionFinalCTA region={region} />
       </DetailPageContainer>

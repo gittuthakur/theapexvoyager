@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { ArrowRight, Car } from 'lucide-react';
 import { useBookingNavigation } from '@/lib/bookingNavigation';
 import { formatINR } from '@/lib/pricing';
@@ -10,9 +9,10 @@ export interface RegionTransportProps {
   transportServices: TransportRoute[];
   transportVehicles: VehicleOption[];
   regionName: string;
+  regionSlug: string;
 }
 
-export default function RegionTransport({ transportServices, transportVehicles, regionName }: RegionTransportProps) {
+export default function RegionTransport({ transportServices, transportVehicles, regionName, regionSlug }: RegionTransportProps) {
   const { navigateToBooking } = useBookingNavigation();
   const hasContent = transportServices.length > 0 || transportVehicles.length > 0;
 
@@ -59,9 +59,18 @@ export default function RegionTransport({ transportServices, transportVehicles, 
         </p>
       )}
 
-      <Link href={`/transport?destination=${encodeURIComponent(regionName)}`} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-apex-600 hover:text-apex-700">
-        Plan Transport to {regionName} <ArrowRight size={16} />
-      </Link>
+      {/* Transport search only matches city/destination-level names, not a state name
+          like regionName — linking to /transport?destination= here always produced a
+          false zero-result state. Plan My Journey's region-scoped handoff (used by the
+          Hero/Final CTA sections on this same page) genuinely carries this region's
+          context, including transport preferences within the planner. */}
+      <button
+        type="button"
+        onClick={() => navigateToBooking({ source: 'region', slug: regionSlug })}
+        className="cursor-hover mt-6 inline-flex items-center gap-2 text-sm font-semibold text-apex-600 hover:text-apex-700"
+      >
+        Plan My Journey to {regionName} <ArrowRight size={16} />
+      </button>
     </section>
   );
 }
