@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { connectDB } from '@/lib/mongodb';
 import { Region, type RegionDocument } from '@/models/Region';
 import { Destination, type DestinationDocument } from '@/models/Destination';
@@ -41,12 +42,13 @@ function toRegionProfile(doc: RegionDocument): RegionProfile {
 
 /** Lightweight lookup for callers that only need the region profile itself — e.g.
  *  lib/bookingContext.ts's 'region' booking source — without the full Promise.all of
- *  related-catalog queries getRegionHubData runs. */
-export async function getRegionProfileBySlug(slug: string): Promise<RegionProfile | undefined> {
+ *  related-catalog queries getRegionHubData runs. React's cache() request-memoizes it
+ *  by `slug` in case more than one caller needs it within the same request. */
+export const getRegionProfileBySlug = cache(async (slug: string): Promise<RegionProfile | undefined> => {
   await connectDB();
   const doc = await Region.findOne({ slug, status: 'published' }).lean<RegionDocument | null>();
   return doc ? JSON.parse(JSON.stringify(toRegionProfile(doc))) : undefined;
-}
+});
 
 /**
  * The single data-access function backing both app/regions/[slug]/page.tsx (called

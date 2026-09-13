@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { connectDB } from '@/lib/mongodb';
 import { DestinationSearchCache } from '@/models/DestinationSearchCache';
 import { Destination as DestinationModel, type DestinationDocument } from '@/models/Destination';
@@ -147,11 +148,14 @@ export async function getCuratedDestinations(): Promise<Destination[]> {
   return JSON.parse(JSON.stringify(docs.map(toDestination)));
 }
 
-export async function getCuratedDestinationBySlug(slug: string): Promise<Destination | undefined> {
+// React's cache() request-memoizes this by `slug` — app/destinations/[slug]/page.tsx's
+// generateMetadata and the page component itself both call this independently for the
+// same request, and without memoization that would run the same lookup twice.
+export const getCuratedDestinationBySlug = cache(async (slug: string): Promise<Destination | undefined> => {
   await connectDB();
   const doc = await DestinationModel.findOne({ slug }).lean<DestinationDocument | null>();
   return doc ? JSON.parse(JSON.stringify(toDestination(doc))) : undefined;
-}
+});
 
 /**
  * Case-insensitive substring match against the curated destinations' titles — mirrors
