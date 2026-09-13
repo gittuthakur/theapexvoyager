@@ -422,33 +422,45 @@ export default function DestinationsExplorer({
             </FieldPopover>
           </div>
 
+          {/* max-[339px]: only — below this, the row's min-content width (this toggle
+              plus the "Filter by" trigger) exceeds a 300-339px viewport, since flex items
+              don't shrink past their own min-content by default. Text labels collapse to
+              icon-only there (full names still exposed via aria-label); 340px+ is
+              untouched, matching today's already-non-overflowing layout exactly. */}
           <div className="ml-auto inline-flex items-center rounded-full bg-slate-200">
-            {/* Cards Button */} 
+            {/* Cards Button */}
             <button
               type="button"
               onClick={() => setView('cards')}
               aria-pressed={view === 'cards'}
+              aria-label="Cards view"
               className={cn(
-                'cursor-hover inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-all duration-300 ease-in-out',
+                'cursor-hover inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-all duration-300 ease-in-out max-[339px]:px-2.5',
                 view === 'cards' ? 'bg-apex-500 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'
               )}
             >
               <LayoutGrid size={14} />
-              Cards
+              <span className="max-[339px]:hidden">Cards</span>
             </button>
             <button
               type="button"
               onClick={() => setView('map')}
               aria-pressed={view === 'map'}
               title="Map view — coming soon"
+              aria-label="Map view — coming soon"
               className={cn(
-                'cursor-hover inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-all duration-300 ease-in-out',
+                'cursor-hover inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-all duration-300 ease-in-out max-[339px]:px-2.5',
                 view === 'map' ? 'bg-slate-300 text-slate-700' : 'text-slate-500 hover:text-slate-900'
               )}
             >
               <MapIcon size={14} />
-              Map
-              <span className="rounded-full bg-white/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-500">Soon</span>
+              <span className="max-[339px]:hidden">Map</span>
+              <span
+                className="rounded-full bg-white/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-500 max-[339px]:px-1 max-[339px]:text-[8px]"
+                aria-hidden="true"
+              >
+                Soon
+              </span>
             </button>
           </div>
         </div>
