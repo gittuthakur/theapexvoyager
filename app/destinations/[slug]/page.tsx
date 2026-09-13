@@ -338,20 +338,24 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
           </div>
         </div>
 
-        {destination.hiddenGems?.length ? (
+        {destination.hiddenGems?.length || destination.travelTips?.length ? (
           <section id="hidden-gems" className="py-8">
-            <SectionHeading eyebrow="Off the main road" title="Beyond the Tourist Trail" />
-            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {destination.hiddenGems.map((gem) => (
-                <article key={gem.title} className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
-                  <Map className="text-apex-500" size={20} />
-                  <h3 className="mt-3 text-lg font-semibold text-slate-900">{gem.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-500">{gem.description}</p>
-                </article>
-              ))}
-            </div>
+            {destination.hiddenGems?.length ? (
+              <>
+                <SectionHeading eyebrow="Off the main road" title="Beyond the Tourist Trail" />
+                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                  {destination.hiddenGems.map((gem) => (
+                    <article key={gem.title} className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+                      <Map className="text-apex-500" size={20} />
+                      <h3 className="mt-3 text-lg font-semibold text-slate-900">{gem.title}</h3>
+                      <p className="mt-2 text-sm leading-6 text-slate-500">{gem.description}</p>
+                    </article>
+                  ))}
+                </div>
+              </>
+            ) : null}
             {destination.travelTips?.length ? (
-              <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+              <div className={`rounded-2xl border border-slate-200 bg-white p-6${destination.hiddenGems?.length ? ' mt-6' : ''}`}>
                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Travel tips</p>
                 <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
                   {destination.travelTips.map((tip) => <li key={tip}>• {tip}</li>)}
