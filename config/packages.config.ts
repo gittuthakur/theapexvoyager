@@ -65,10 +65,11 @@ export const packages: TravelPackage[] = [
     slug: 'kashmir-signature-journey',
     name: 'Kashmir Paradise',
     destination: 'Srinagar & Gulmarg, Kashmir',
-    // Gulmarg is the only one of this journey's stops that's also a curated
-    // Destination (config/destinations.config.ts) — Srinagar isn't in that catalog —
-    // so this is the stable link used to derive the journey's region/season for filtering.
-    destinationSlugs: ['gulmarg'],
+    // Srinagar (2 nights, dedicated sightseeing day) and Pahalgam (dedicated day trip
+    // with named stops) are both meaningfully covered by the itinerary below, not just
+    // passed through — and both are curated Destinations (config/destinations.config.ts).
+    // This is the stable link used to derive the journey's region/season for filtering.
+    destinationSlugs: ['gulmarg', 'srinagar', 'pahalgam'],
     image: images.packages.kashmirSignatureJourney,
     duration: '6 Days / 5 Nights',
     price: 24999,
@@ -221,7 +222,9 @@ export const packages: TravelPackage[] = [
     slug: 'himachal-himalayan-explorer',
     name: 'Honeymoon in Hills',
     destination: 'Shimla, Manali & Manikaran, Himachal Pradesh',
-    destinationSlugs: ['shimla', 'manali'],
+    // Day 6 is a dedicated Kasol day trip (not optional/alternate) with named stops —
+    // Kasol is a curated Destination, so it belongs alongside Shimla/Manali here.
+    destinationSlugs: ['shimla', 'manali', 'kasol'],
     image: images.packages.himachalHimalayanExplorer,
     duration: '8 Days / 7 Nights',
     price: 22999,
@@ -301,7 +304,9 @@ export const packages: TravelPackage[] = [
     slug: 'dharamshala-dalhousie-escape',
     name: 'Himachal Family Escape',
     destination: 'Dharamshala & Dalhousie, Himachal Pradesh',
-    destinationSlugs: ['dharamshala', 'dalhousie'],
+    // Day 4 is a dedicated Khajjiar day trip (not optional/alternate) with named stops —
+    // Khajjiar is a curated Destination, so it belongs alongside Dharamshala/Dalhousie.
+    destinationSlugs: ['dharamshala', 'dalhousie', 'khajjiar'],
     image: images.packages.dharamshalaDalhousieEscape,
     duration: '5 Days / 4 Nights',
     price: 15999,
@@ -362,7 +367,11 @@ export const packages: TravelPackage[] = [
     slug: 'uttarakhand-explorer',
     name: 'Uttarakhand Explorer',
     destination: 'Rishikesh, Haridwar & Mussoorie, Uttarakhand',
-    destinationSlugs: ['rishikesh', 'haridwar'],
+    // Day 5 is a dedicated Mussoorie day trip (not optional/alternate) with named stops —
+    // Mussoorie is a curated Destination, so it belongs alongside Rishikesh/Haridwar.
+    // (Day 6's "transfer back to Dehradun/Haridwar" is a departure/transit mention only,
+    // with no described sightseeing there, so Dehradun does not meet the same threshold.)
+    destinationSlugs: ['rishikesh', 'haridwar', 'mussoorie'],
     image: images.packages.uttarakhandExplorer,
     duration: '6 Days / 5 Nights',
     price: 20999,

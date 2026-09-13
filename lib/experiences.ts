@@ -67,9 +67,17 @@ export async function getExperienceBySlug(slug: string): Promise<Experience | un
   return doc ? JSON.parse(JSON.stringify(toExperience(doc))) : undefined;
 }
 
+/** Strips a trailing "(Alt Name)" annotation — e.g. "Joshimath (Jyotirmath)" — so a
+ *  destination's title can be used as a plain search/matching key (Experience location
+ *  substring matching below; also reused by app/destinations/[slug]/page.tsx for the
+ *  Stays/Transport title fallback) instead of leaking the literal parenthetical into it. */
+export function primaryDestinationName(title: string): string {
+  return title.replace(/\s*\([^)]*\)\s*$/, '').trim();
+}
+
 /** Pure, synchronous filter over an already-fetched list — extracted from getExperiencesByDestination so batch callers (lib/destinationStats.ts) can fetch once and filter many times instead of one Mongo round-trip per destination. */
 export function filterExperiencesByDestinationTitle(source: Experience[], destinationTitle: string): Experience[] {
-  const needle = destinationTitle.trim().toLowerCase();
+  const needle = primaryDestinationName(destinationTitle).toLowerCase();
   if (!needle) return [];
   return source.filter((experience) => experience.location.toLowerCase().includes(needle));
 }

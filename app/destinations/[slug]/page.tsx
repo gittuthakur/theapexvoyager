@@ -17,7 +17,7 @@ import { SafeImage } from '@/components/ui/SafeImage';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
 import { getPackagesByDestinationSlug } from '@/lib/packages';
 import { getToursByDestinationSlug } from '@/lib/tours';
-import { getExperiencesByDestination } from '@/lib/experiences';
+import { getExperiencesByDestination, primaryDestinationName } from '@/lib/experiences';
 import { getExpertsByDestinationSlug } from '@/lib/experts';
 import { getRoutes } from '@/lib/transport';
 import { getDestinationRatingsMap } from '@/lib/reviews';
@@ -86,7 +86,7 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
   // would either find nothing or, if a route were ever added, wrongly imply a vehicle
   // reaches the shrine. Falls back to `title` for the ordinary drive-straight-there
   // majority of destinations, where that's already the correct search target.
-  const routesToDestination = await getRoutes({ destination: destination.roadHead ?? destination.title });
+  const routesToDestination = await getRoutes({ destination: destination.roadHead ?? primaryDestinationName(destination.title) });
   // Same reasoning for Stays: `stayBaseLocations[0]` is the real overnight-stay base
   // travelers actually book (e.g. Guptkashi for Kedarnath), not the shrine itself, which
   // typically has limited, seasonal, or no accommodation.
@@ -334,7 +334,7 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
             </Link>
           </div>
           <div className="mt-6">
-            <StaysGrid location={stayBaseLocation ?? destination.title} state={destination.state} />
+            <StaysGrid location={stayBaseLocation ?? primaryDestinationName(destination.title)} state={destination.state} />
           </div>
         </div>
 

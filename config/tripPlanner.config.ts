@@ -70,13 +70,13 @@ export const PLANNER_POPULAR_PLACES: string[] = [
   'Srinagar',
   'Pahalgam',
   'Sonamarg',
-  'Leh-Ladakh',
   'Rishikesh',
   'Nainital',
   'Mussoorie',
   'Auli',
   'Chopta',
   'Kedarnath',
+  'Hemkund Sahib',
   'Valley of Flowers'
 ];
 
