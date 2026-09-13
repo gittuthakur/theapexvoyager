@@ -23,6 +23,8 @@ export interface RegionOverview {
   idealDuration: string;
   startingPoint: string;
   climate: string;
+  whyVisit?: string[];
+  bestFor?: string[];
 }
 
 export interface RegionTravelGuide {

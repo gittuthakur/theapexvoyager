@@ -1,6 +1,6 @@
-import Link from 'next/link';
-import { ArrowRight, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
 import ExpertCard from '@/components/modules/ExpertCard';
+import TalkToTravelTeamButton from '@/components/modules/TalkToTravelTeamButton';
 import type { TravelExpert } from '@/types/expert';
 
 export interface RegionExpertsProps {
@@ -26,9 +26,15 @@ export default function RegionExperts({ travelExperts, regionName }: RegionExper
             <Users size={16} className="mr-2 inline text-apex-300" />
             No dedicated {regionName} specialist yet — our broader team can still help you plan.
           </p>
-          <Link href="/experts" className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-apex-600 hover:text-apex-700">
-            Explore all Travel Experts <ArrowRight size={16} />
-          </Link>
+          {/* No Expert is currently publicly listed for any region (or site-wide), so a
+              link into /experts would land on an empty grid. This mirrors the same
+              real, working enquiry mechanism used in RegionFinalCTA/experts page for
+              exactly this "no specific expert" case. */}
+          <TalkToTravelTeamButton
+            destination={regionName}
+            label="Talk to our travel team"
+            className="min-h-0 shrink-0 rounded-none bg-transparent px-0 py-0 text-sm font-semibold text-apex-600 hover:bg-transparent hover:text-apex-700"
+          />
         </div>
       )}
     </section>

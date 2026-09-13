@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
-import { ArrowRight, Compass, Users } from 'lucide-react';
+import { Compass, ArrowRight } from 'lucide-react';
 import { useBookingNavigation } from '@/lib/bookingNavigation';
+import TalkToTravelTeamButton from '@/components/modules/TalkToTravelTeamButton';
 import type { RegionProfile } from '@/types/regionHub';
 
 export interface RegionFinalCTAProps {
@@ -25,13 +25,16 @@ export default function RegionFinalCTA({ region }: RegionFinalCTAProps) {
           Create My Journey
           <ArrowRight size={18} />
         </button>
-        <Link
-          href="/experts"
-          className="cursor-hover inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition-all duration-300 ease-in-out hover:bg-slate-50"
-        >
-          <Users size={18} />
-          Talk to a Travel Expert
-        </Link>
+        {/* No Expert is currently publicly listed for any region (or site-wide) — a
+            "Talk to a Travel Expert" link into /experts would land on an empty grid.
+            TalkToTravelTeamButton is the same real, working enquiry mechanism used
+            elsewhere on the site for exactly this "no specific expert" case: it opens
+            a genuine booking-request modal, never a dead end. */}
+        <TalkToTravelTeamButton
+          destination={region.name}
+          label="Talk to Our Travel Team"
+          className="min-h-[48px] rounded-xl border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+        />
       </div>
     </section>
   );

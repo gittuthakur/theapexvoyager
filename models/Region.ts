@@ -17,6 +17,13 @@ export interface RegionOverview {
   idealDuration: string;
   startingPoint: string;
   climate: string;
+  /** 2-4 short, specific reasons to visit this region — distinct from `description`'s
+   *  narrative prose; rendered as a compact bullet list. Optional so a region without
+   *  this content yet simply doesn't render the section. */
+  whyVisit?: string[];
+  /** 2-4 short traveller-type tags (e.g. "Couples", "Road-trip travellers") — rendered
+   *  as small pills. Optional for the same reason as `whyVisit`. */
+  bestFor?: string[];
 }
 
 export interface RegionTravelGuide {
@@ -63,7 +70,9 @@ const OverviewSchema = {
   bestSeason: { type: String, required: true },
   idealDuration: { type: String, required: true },
   startingPoint: { type: String, required: true },
-  climate: { type: String, required: true }
+  climate: { type: String, required: true },
+  whyVisit: { type: [String] },
+  bestFor: { type: [String] }
 };
 
 const TravelGuideSchema = {

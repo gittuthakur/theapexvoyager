@@ -14,7 +14,7 @@ import RegionTransport from '@/components/modules/regions/RegionTransport';
 import RegionTravelGuide from '@/components/modules/regions/RegionTravelGuide';
 import RegionExperts from '@/components/modules/regions/RegionExperts';
 import RegionFinalCTA from '@/components/modules/regions/RegionFinalCTA';
-import { getRegionHubData } from '@/services/regions/regionHub.service';
+import { getRegionHubData, getRegionProfileBySlug } from '@/services/regions/regionHub.service';
 
 // Matches every sibling detail route (app/destinations/[slug]/page.tsx,
 // app/journeys/[slug]/page.tsx) — Region content is admin-edited in MongoDB and should
@@ -29,12 +29,19 @@ interface RegionHubPageProps {
 
 export async function generateMetadata({ params }: RegionHubPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const hub = await getRegionHubData(slug);
-  if (!hub) return { title: 'Region Not Found | The Apex Voyager' };
+  // Metadata only needs the Region profile itself, not the full Destinations/Journeys/
+  // Tours/Hotels/Experiences/Transport/Experts/Google/Booking.com fan-out getRegionHubData
+  // runs for the page body — getRegionProfileBySlug is the same lightweight, React.cache()-
+  // memoized lookup lib/bookingContext.ts already uses for exactly this reason.
+  const region = await getRegionProfileBySlug(slug);
+  if (!region) return { title: 'Region Not Found | The Apex Voyager' };
 
-  const { region } = hub;
   const title = region.seo.title;
   const description = region.seo.description;
+  // region.seo.image is editorial-only and unset for every region today; falling back to
+  // the hero image (always set) means every region page gets a real, correct og:image
+  // instead of none, without hardcoding any individual region's path here.
+  const ogImage = region.seo.image ?? region.hero.image;
   return {
     title,
     description,
@@ -43,7 +50,7 @@ export async function generateMetadata({ params }: RegionHubPageProps): Promise<
       title,
       description,
       url: `/regions/${region.slug}`,
-      images: region.seo.image ? [{ url: region.seo.image, alt: region.name }] : undefined
+      images: ogImage ? [{ url: ogImage, alt: region.name }] : undefined
     }
   };
 }
