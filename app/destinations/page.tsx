@@ -85,7 +85,14 @@ export default async function DestinationsPage({ searchParams }: DestinationsPag
   // tabs already claim the new filter is active. Keying on the full query string forces a
   // fresh, correctly-seeded instance whenever an external link changes it — same fix as
   // app/experiences/page.tsx's `listingKey`.
-  const explorerKey = JSON.stringify({ destination, style, season, region, priceMin, priceMax, bestFor, sort, page, view });
+  //
+  // `page` is deliberately excluded: it only ever changes from *inside* the already-
+  // mounted DestinationsExplorer (its own pagination controls), which sync it via
+  // useSearchParams + router.push rather than relying on a fresh mount. Including it
+  // here forced a full remount on every pagination click — racing that click's own
+  // immediate state update against the remount's re-seed from the URL and producing
+  // the page flipping back to 1 right after a Next/page-number click.
+  const explorerKey = JSON.stringify({ destination, style, season, region, priceMin, priceMax, bestFor, sort, view });
 
   return (
     <>

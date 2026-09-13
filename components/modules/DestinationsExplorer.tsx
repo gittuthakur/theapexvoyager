@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LayoutGrid, Map as MapIcon, RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react';
 import DestinationCard from '@/components/modules/DestinationCard';
@@ -69,6 +69,13 @@ function toggleValue(values: string[], value: string): string[] {
   return values.includes(value) ? values.filter((current) => current !== value) : [...values, value];
 }
 
+// Anything that isn't a positive integer (missing, "abc", "0", "-1", "1.5", ...)
+// normalizes to page 1 rather than producing NaN or a fractional page.
+function normalizePage(value?: string | null): number {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : 1;
+}
+
 export default function DestinationsExplorer({
   destinations,
   stats,
@@ -85,6 +92,7 @@ export default function DestinationsExplorer({
 }: DestinationsExplorerProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const statsMap = useMemo(() => new Map(Object.entries(stats)), [stats]);
   const regions = getAllRegions();
   const travelStyleOptions = getAllTravelStyles();
@@ -103,7 +111,7 @@ export default function DestinationsExplorer({
   const [activeSeasons, setActiveSeasons] = useState<string[]>(splitParam(initialSeasons));
   const [activeBestFor, setActiveBestFor] = useState<string[]>(splitParam(initialBestFor));
   const [sortBy, setSortBy] = useState<DestinationSortOption>(isSortOption(initialSort) ? initialSort : 'popular');
-  const [page, setPage] = useState(Number(initialPage) > 0 ? Number(initialPage) : 1);
+  const [page, setPage] = useState(() => normalizePage(initialPage));
   const [view, setView] = useState<DestinationViewMode>(initialView === 'map' ? 'map' : 'cards');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const filtersAnchorRef = useRef<HTMLDivElement>(null);
@@ -168,9 +176,8 @@ export default function DestinationsExplorer({
   // Any change to what's being shown should land the reader back on page 1 —
   // otherwise a narrower filter can strand them on a now-nonexistent page. Skipped
   // on the initial mount — otherwise this fires immediately after `page` was just
-  // seeded from `initialPage` (e.g. a `?page=2` deep link or an explorerKey remount
-  // from the URL-sync effect below) and stomps it straight back to 1, making any
-  // page beyond 1 unreachable.
+  // seeded from `initialPage` (e.g. a `?page=2` deep link) and stomps it straight
+  // back to 1, making any page beyond 1 unreachable.
   const skipNextPageReset = useRef(true);
   useEffect(() => {
     if (skipNextPageReset.current) {
@@ -181,31 +188,72 @@ export default function DestinationsExplorer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, activeRegion, activeStyles.join(','), activeSeasons.join(','), isPriceNarrowed, displayedPriceRange.join(','), activeBestFor.join(','), sortBy]);
 
-  // Keeps the address bar (and therefore back/forward + shareable links) in sync with
-  // every facet — debounced so the free-text search box doesn't spam history on every
-  // keystroke. router.replace (not push) + { scroll: false } so this never adds a
-  // history entry per filter click or jumps the viewport.
+  // Builds the querystring for the current facets, with `page` overridable so both
+  // the debounced filter sync below and the immediate pagination handler share one
+  // definition instead of duplicating the param list. Page 1 is never written out.
+  function buildQueryString(pageOverride: number) {
+    const params = new URLSearchParams();
+    if (query.trim()) params.set('destination', query.trim());
+    if (activeRegion !== 'all') params.set('region', activeRegion);
+    if (activeStyles.length) params.set('style', activeStyles.join(','));
+    if (activeSeasons.length) params.set('season', activeSeasons.join(','));
+    if (isPriceNarrowed) {
+      params.set('priceMin', String(displayedPriceRange[0]));
+      params.set('priceMax', String(displayedPriceRange[1]));
+    }
+    if (activeBestFor.length) params.set('bestFor', activeBestFor.join(','));
+    if (sortBy !== 'popular') params.set('sort', sortBy);
+    if (pageOverride > 1) params.set('page', String(pageOverride));
+    if (view !== 'cards') params.set('view', view);
+    return params.toString();
+  }
+
+  // `page` is intentionally not a dependency of the debounced effect below — pagination
+  // has its own immediate, history-creating handler (goToPage), so a page-only change
+  // shouldn't also schedule a competing debounced replace. But when a filter/sort change
+  // resets page back to 1 (the effect above), that reset must still make it into the URL
+  // this effect writes — and since the reset can commit *after* this effect was already
+  // scheduled (same tick, next React commit), the timeout closure needs the page value as
+  // of when it actually fires, not as of when it was scheduled. A ref, kept current every
+  // render, gives it that without adding safePage back as a dependency.
+  const safePageRef = useRef(safePage);
+  useEffect(() => {
+    safePageRef.current = safePage;
+  }, [safePage]);
+
+  // Keeps the address bar (and therefore shareable links) in sync with every facet —
+  // debounced so the free-text search box doesn't spam history on every keystroke.
+  // router.replace (not push) + { scroll: false } so this never adds a history entry
+  // per filter click or jumps the viewport.
   useEffect(() => {
     const timeout = setTimeout(() => {
-      const params = new URLSearchParams();
-      if (query.trim()) params.set('destination', query.trim());
-      if (activeRegion !== 'all') params.set('region', activeRegion);
-      if (activeStyles.length) params.set('style', activeStyles.join(','));
-      if (activeSeasons.length) params.set('season', activeSeasons.join(','));
-      if (isPriceNarrowed) {
-        params.set('priceMin', String(displayedPriceRange[0]));
-        params.set('priceMax', String(displayedPriceRange[1]));
-      }
-      if (activeBestFor.length) params.set('bestFor', activeBestFor.join(','));
-      if (sortBy !== 'popular') params.set('sort', sortBy);
-      if (safePage > 1) params.set('page', String(safePage));
-      if (view !== 'cards') params.set('view', view);
-      const qs = params.toString();
+      const qs = buildQueryString(safePageRef.current);
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     }, 300);
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, activeRegion, activeStyles, activeSeasons, isPriceNarrowed, displayedPriceRange.join(','), activeBestFor, sortBy, safePage, view, pathname, router]);
+  }, [query, activeRegion, activeStyles, activeSeasons, isPriceNarrowed, displayedPriceRange.join(','), activeBestFor, sortBy, view, pathname, router]);
+
+  // Pagination changes are discrete, deliberate actions (unlike free-text search), so
+  // they navigate immediately rather than through the debounced filter-sync effect —
+  // and with router.push (not replace) so Page 1 → 2 → 3 creates real history entries
+  // Back/Forward can step through, matching every other pagination UI on the site.
+  function goToPage(nextPage: number) {
+    const clamped = Math.min(Math.max(1, nextPage), totalPages);
+    setPage(clamped);
+    const qs = buildQueryString(clamped);
+    router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }
+
+  // Restores `page` from the URL on browser Back/Forward and on any external deep-link
+  // into a `?page=` value (e.g. a shared link) — cases where the URL changes but this
+  // component isn't remounted, so `initialPage` alone (only read once, at mount) can't
+  // reach it. A no-op whenever the URL already agrees with local state, including right
+  // after goToPage's own router.push already set it.
+  useEffect(() => {
+    const urlPage = normalizePage(searchParams.get('page'));
+    setPage((current) => (current === urlPage ? current : urlPage));
+  }, [searchParams]);
 
   function clearFilters() {
     setQuery('');
@@ -510,7 +558,7 @@ export default function DestinationsExplorer({
           </div>
         )}
 
-        {view === 'cards' ? <Pagination page={safePage} totalPages={totalPages} onChange={setPage} className="mt-10" /> : null}
+        {view === 'cards' ? <Pagination page={safePage} totalPages={totalPages} onChange={goToPage} className="mt-10" /> : null}
       </div>
     </div>
   );
