@@ -6,7 +6,7 @@ export const siteConfig = {
   description: 'Luxury expedition travel experiences across the Himalayas.',
   url: 'https://www.theapexvoyager.in',
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '917307521100',
-  contactEmail: 'hello@theapexvoyager.com',
+  contactEmail: 'theapexvoyagertravels@gmail.com',
   contactPhone: '+91 7307521100',
   // Machine-safe tel: URI — a raw `tel:${contactPhone}` embeds the display string's
   // space, which is invalid in a tel URI. Kept as its own field so every consumer's
