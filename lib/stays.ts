@@ -1,9 +1,9 @@
 import { connectDB } from '@/lib/mongodb';
 import { PlaceCache, type PlaceCacheDocument } from '@/models/PlaceCache';
-import { searchStays, placeName, placePhotoUrls, type RawGooglePlace } from '@/lib/googlePlaces';
+import { searchStays, placeName, placePhotoUrls, placeCoordinates, type RawGooglePlace } from '@/lib/googlePlaces';
 import { isLocalDevelopment } from '@/lib/env';
 import { isRecentFailure, markFailure } from '@/lib/negativeCache';
-import { CATEGORY_TO_STAY_TYPE, STAY_TYPES, type Stay, type StayType } from '@/types/stay';
+import { STAY_TYPES, type Stay, type StayType } from '@/types/stay';
 import type { HotelPackage } from '@/types/hotel';
 
 export function slugify(input: string): string {
@@ -14,34 +14,41 @@ export function slugify(input: string): string {
     .replace(/(^-|-$)/g, '');
 }
 
-function toStay(doc: Pick<PlaceCacheDocument, 'placeId' | 'name' | 'slug' | 'stayType' | 'formattedAddress' | 'rating' | 'userRatingCount' | 'photos' | 'customPrice' | 'destinationSlug' | 'updatedAt'>): Stay {
+function toStay(doc: Pick<PlaceCacheDocument, 'placeId' | 'name' | 'slug' | 'stayType' | 'formattedAddress' | 'latitude' | 'longitude' | 'rating' | 'userRatingCount' | 'photos' | 'customPrice' | 'destinationSlug' | 'updatedAt'>): Stay {
   return {
     placeId: doc.placeId,
     name: doc.name,
     slug: doc.slug,
     stayType: doc.stayType,
     formattedAddress: doc.formattedAddress,
+    latitude: doc.latitude,
+    longitude: doc.longitude,
     rating: doc.rating,
     userRatingCount: doc.userRatingCount,
     photos: doc.photos,
     customPrice: doc.customPrice,
     destinationSlug: doc.destinationSlug,
-    updatedAt: new Date(doc.updatedAt).toISOString()
+    updatedAt: new Date(doc.updatedAt).toISOString(),
+    source: 'google'
   };
 }
 
 function toDevStay(place: RawGooglePlace, destinationSlug: string, stayType: StayType): Stay {
+  const { latitude, longitude } = placeCoordinates(place);
   return {
     placeId: place.id,
     name: placeName(place),
     slug: `${destinationSlug}-${slugify(placeName(place))}`,
     stayType,
     formattedAddress: place.formattedAddress,
+    latitude,
+    longitude,
     rating: place.rating,
     userRatingCount: place.userRatingCount,
     photos: placePhotoUrls(place),
     destinationSlug,
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
+    source: 'google'
   };
 }
 
@@ -54,22 +61,36 @@ async function fetchAndCacheStayType(
 ): Promise<Stay[]> {
   const rawPlaces = await searchStays(location, stayType, apiKey, state);
 
-  const docs = rawPlaces.map((place: RawGooglePlace) => ({
-    placeId: place.id,
-    name: placeName(place),
-    slug: `${destinationSlug}-${slugify(placeName(place))}`,
-    stayType,
-    formattedAddress: place.formattedAddress,
-    rating: place.rating,
-    userRatingCount: place.userRatingCount,
-    photos: placePhotoUrls(place),
-    destinationSlug
-  }));
+  const docs = rawPlaces.map((place: RawGooglePlace) => {
+    const { latitude, longitude } = placeCoordinates(place);
+    return {
+      placeId: place.id,
+      name: placeName(place),
+      slug: `${destinationSlug}-${slugify(placeName(place))}`,
+      stayType,
+      formattedAddress: place.formattedAddress,
+      latitude,
+      longitude,
+      rating: place.rating,
+      userRatingCount: place.userRatingCount,
+      photos: placePhotoUrls(place),
+      destinationSlug,
+      searchLocation: location
+    };
+  });
 
   await connectDB();
   const saved = await Promise.all(
+    // Keyed by (placeId, destinationSlug, stayType) — see models/PlaceCache.ts's index
+    // comment: two destinations that legitimately share a real search location (e.g.
+    // Kinnaur and Sangla Valley both resolving to "Sangla") must each get their own
+    // cached copy of the same real place, never overwrite each other's.
     docs.map((doc) =>
-      PlaceCache.findOneAndUpdate({ placeId: doc.placeId }, doc, { upsert: true, returnDocument: 'after' }).lean()
+      PlaceCache.findOneAndUpdate(
+        { placeId: doc.placeId, destinationSlug: doc.destinationSlug, stayType: doc.stayType },
+        doc,
+        { upsert: true, returnDocument: 'after' }
+      ).lean()
     )
   );
 
@@ -109,7 +130,10 @@ export async function getStaysForDestination(
 
   const perType = await Promise.all(
     stayTypes.map(async (stayType) => {
-      const cached = await PlaceCache.find({ destinationSlug, stayType }).lean();
+      // `searchLocation` is part of the read key — see models/PlaceCache.ts's field
+      // comment — so a destination whose canonical search location changes (as several
+      // did in Phase B) never has a stale prior-location row served as if still valid.
+      const cached = await PlaceCache.find({ destinationSlug, stayType, searchLocation: location }).lean();
       if (cached.length > 0) return cached.map(toStay);
 
       if (!apiKey) {
@@ -133,9 +157,17 @@ export async function getStaysForDestination(
   return perType.flat();
 }
 
+function normalizeName(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
 // Attaches live Google rating/photos to our own bookable HotelPackage listings, matched
-// by a loose case-insensitive substring on name (preferring a same-category Stay match)
-// — never blocks or throws on a miss.
+// by an EXACT normalized name match within the same location group only — never a fuzzy
+// a.includes(b)||b.includes(a) substring match (see AGENTS.md Phase C section 8: that
+// pattern risks attaching one real property's rating/photos to a different hotel with a
+// similar name). Hotel has no stored Google Place ID today, so exact-name-within-same-
+// location is the strongest identity signal actually available; an ambiguous or absent
+// match is left unenriched rather than guessed at. Never blocks or throws on a miss.
 export async function enrichHotelsWithPlaces(hotels: HotelPackage[]): Promise<HotelPackage[]> {
   if (!process.env.GOOGLE_PLACES_API_KEY || hotels.length === 0) {
     return hotels;
@@ -152,13 +184,7 @@ export async function enrichHotelsWithPlaces(hotels: HotelPackage[]): Promise<Ho
 
     return hotels.map((hotel) => {
       const candidates = staysByLocation.get(hotel.location) ?? [];
-      const preferredType = CATEGORY_TO_STAY_TYPE[hotel.category];
-      const nameMatches = candidates.filter((candidate) => {
-        const a = candidate.name.toLowerCase();
-        const b = hotel.title.toLowerCase();
-        return a.includes(b) || b.includes(a);
-      });
-      const match = nameMatches.find((candidate) => candidate.stayType === preferredType) ?? nameMatches[0];
+      const match = candidates.find((candidate) => normalizeName(candidate.name) === normalizeName(hotel.title));
       return match ? { ...hotel, places: match } : hotel;
     });
   } catch (error) {

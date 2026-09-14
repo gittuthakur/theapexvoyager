@@ -37,7 +37,8 @@ function hotelToStay(hotel: HotelPackage, destinationSlug?: string): Stay {
     userRatingCount: hotel.reviewCount,
     photos: hotel.images,
     customPrice: hotel.pricePerNight,
-    destinationSlug: destinationSlug ?? hotel.slug
+    destinationSlug: destinationSlug ?? hotel.slug,
+    source: 'curated'
   };
 }
 
@@ -164,6 +165,9 @@ function StayCard({ stay, priority = false }: { stay: Stay; priority?: boolean }
             <Star size={12} className="fill-amber-400 text-amber-400" />
             {stay.rating.toFixed(1)}
             {stay.userRatingCount ? <span className="text-slate-300"> ({stay.userRatingCount})</span> : null}
+            {/* Provenance disclosure — see AGENTS.md Phase C section 22: never imply The
+                Apex Voyager verified a rating that actually came from Google. */}
+            {stay.source === 'google' ? <span className="text-slate-300"> · Google</span> : null}
           </span>
         ) : null}
         {stay.photos[0] ? (

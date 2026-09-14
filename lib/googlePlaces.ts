@@ -10,6 +10,7 @@ const SEARCH_FIELD_MASK = [
   'places.id',
   'places.displayName',
   'places.formattedAddress',
+  'places.location',
   'places.rating',
   'places.userRatingCount',
   'places.photos'
@@ -19,6 +20,8 @@ export interface RawGooglePlace {
   id: string;
   displayName?: { text: string };
   formattedAddress?: string;
+  // Standard Text Search (New) field — no separate Place Details call needed for this.
+  location?: { latitude: number; longitude: number };
   rating?: number;
   userRatingCount?: number;
   photos?: Array<{ name: string }>;
@@ -110,6 +113,10 @@ export function toProxiedPhotoUrl(photoName: string, maxWidthPx = 1200): string 
 
 export function placeName(place: RawGooglePlace): string {
   return place.displayName?.text ?? 'Untitled place';
+}
+
+export function placeCoordinates(place: RawGooglePlace): { latitude?: number; longitude?: number } {
+  return { latitude: place.location?.latitude, longitude: place.location?.longitude };
 }
 
 export function placePhotoUrls(place: RawGooglePlace, maxWidthPx?: number): string[] {
