@@ -56,4 +56,12 @@ export interface Stay {
    *  yet: no live Booking.com integration exists (services/providers/booking/ is an
    *  unpopulated, credential-gated skeleton — see its own doc comments). */
   source: 'google' | 'curated';
+  /** Google's raw place `types` (e.g. "lodging", "hotel") — absent for curated Stays. */
+  types?: string[];
+  googleMapsUri?: string;
+  websiteUri?: string;
+  /** Google-sourced only — see lib/placeLocationSafety.ts. A 'wrong-location' result is
+   *  never cached or returned in the first place, so this only ever holds the three
+   *  "shown" values for a google-sourced Stay; absent for curated Stays. */
+  locationClassification?: 'exact' | 'nearby' | 'access-base';
 }

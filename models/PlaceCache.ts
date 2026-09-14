@@ -29,6 +29,13 @@ export interface PlaceCacheDocument extends Document {
    *  under the previous location text are never silently served as if still valid —
    *  a fresh fetch under the new location text simply misses the cache instead. */
   searchLocation: string;
+  /** Google's raw place `types` (e.g. "lodging", "hotel"). */
+  types?: string[];
+  googleMapsUri?: string;
+  websiteUri?: string;
+  /** See lib/placeLocationSafety.ts — a 'wrong-location' result is filtered out before
+   *  it ever reaches this collection, so only the three "shown" values are ever stored. */
+  locationClassification: 'exact' | 'nearby' | 'access-base';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,7 +54,11 @@ const PlaceCacheSchema = new Schema<PlaceCacheDocument>(
     photos: { type: [String], default: [] },
     customPrice: { type: Number },
     destinationSlug: { type: String, required: true },
-    searchLocation: { type: String, required: true }
+    searchLocation: { type: String, required: true },
+    types: { type: [String] },
+    googleMapsUri: { type: String },
+    websiteUri: { type: String },
+    locationClassification: { type: String, enum: ['exact', 'nearby', 'access-base'], required: true }
   },
   { timestamps: true }
 );

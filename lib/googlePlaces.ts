@@ -13,7 +13,11 @@ const SEARCH_FIELD_MASK = [
   'places.location',
   'places.rating',
   'places.userRatingCount',
-  'places.photos'
+  'places.photos',
+  'places.types',
+  'places.googleMapsUri',
+  'places.websiteUri',
+  'nextPageToken'
 ].join(',');
 
 export interface RawGooglePlace {
@@ -25,18 +29,29 @@ export interface RawGooglePlace {
   rating?: number;
   userRatingCount?: number;
   photos?: Array<{ name: string }>;
+  types?: string[];
+  googleMapsUri?: string;
+  websiteUri?: string;
 }
 
 const REQUEST_TIMEOUT_MS = 8000;
 // Matches what a single grid/carousel actually shows on screen — Google bills and
 // serializes per result, so asking for more than we render is pure waste.
 const DEFAULT_PAGE_SIZE = 8;
+// Text Search (New) caps pageSize at 20; hard ceiling on how many pages
+// searchPlacesAllPages will follow via nextPageToken — bounds both Google spend and
+// response latency instead of exhausting every page Google is willing to return.
+const MAX_PAGES = 3;
 
-// Exported (in addition to the Himachal-flavored searchDestinations/searchStays below)
-// so region-neutral callers — e.g. services/providers/google/googlePlaces.attractions.ts,
-// which must work for Kashmir and Uttarakhand too, not just Himachal Pradesh — can
-// compose their own query text without duplicating this fetch/timeout/cache logic.
-export async function searchPlaces(textQuery: string, apiKey: string, pageSize = DEFAULT_PAGE_SIZE): Promise<RawGooglePlace[]> {
+interface SearchTextResponse {
+  places?: RawGooglePlace[];
+  nextPageToken?: string;
+}
+
+async function searchTextOnce(
+  body: { textQuery?: string; pageToken?: string; pageSize?: number },
+  apiKey: string
+): Promise<SearchTextResponse> {
   // Fetch has no default timeout — a blocked/slow host would otherwise hang the
   // calling page (getStaysForDestination, getDestinationsForLocation) indefinitely
   // instead of falling back to mock data.
@@ -53,18 +68,60 @@ export async function searchPlaces(textQuery: string, apiKey: string, pageSize =
       'X-Goog-Api-Key': apiKey,
       'X-Goog-FieldMask': SEARCH_FIELD_MASK
     },
-    body: JSON.stringify({ textQuery, pageSize }),
+    body: JSON.stringify(body),
     next: { revalidate: 86400 },
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
   });
 
   if (!res.ok) {
-    const body = await res.text().catch(() => '');
-    throw new Error(`Google Places searchText failed (${res.status}): ${body.slice(0, 300)}`);
+    const errBody = await res.text().catch(() => '');
+    throw new Error(`Google Places searchText failed (${res.status}): ${errBody.slice(0, 300)}`);
   }
 
-  const data = (await res.json()) as { places?: RawGooglePlace[] };
+  return (await res.json()) as SearchTextResponse;
+}
+
+// Exported (in addition to the Himachal-flavored searchDestinations/searchStays below)
+// so region-neutral callers — e.g. services/providers/google/googlePlaces.attractions.ts,
+// which must work for Kashmir and Uttarakhand too, not just Himachal Pradesh — can
+// compose their own query text without duplicating this fetch/timeout/cache logic.
+// Single page only — see searchPlacesAllPages for the paginated variant.
+export async function searchPlaces(textQuery: string, apiKey: string, pageSize = DEFAULT_PAGE_SIZE): Promise<RawGooglePlace[]> {
+  const data = await searchTextOnce({ textQuery, pageSize }, apiKey);
   return data.places ?? [];
+}
+
+// Follows `nextPageToken` up to MAX_PAGES — bounded, controlled query expansion (see
+// AGENTS.md's 3-state Google Places inventory expansion mission) rather than an
+// unbounded loop, so one destination's saturated result set can't blow through Google
+// spend or a single page render's latency budget. Stops early the moment a page comes
+// back with no token (Google itself has exhausted results) — "saturation reached"
+// means either this or MAX_PAGES was hit, and callers should report which.
+export async function searchPlacesAllPages(
+  textQuery: string,
+  apiKey: string,
+  pageSize = DEFAULT_PAGE_SIZE
+): Promise<{ places: RawGooglePlace[]; pagesFetched: number; saturated: boolean }> {
+  const places: RawGooglePlace[] = [];
+  let pageToken: string | undefined;
+  let pagesFetched = 0;
+  let saturated = false;
+
+  for (let page = 0; page < MAX_PAGES; page += 1) {
+    const data: SearchTextResponse = pageToken
+      ? await searchTextOnce({ pageToken }, apiKey)
+      : await searchTextOnce({ textQuery, pageSize }, apiKey);
+    pagesFetched += 1;
+    places.push(...(data.places ?? []));
+
+    if (!data.nextPageToken) {
+      saturated = true;
+      break;
+    }
+    pageToken = data.nextPageToken;
+  }
+
+  return { places, pagesFetched, saturated };
 }
 
 export function searchDestinations(location: string, apiKey: string): Promise<RawGooglePlace[]> {
@@ -91,16 +148,22 @@ const STAY_TYPE_QUERIES: Record<StayType, string> = {
 // field) should always pass it — otherwise a Jammu & Kashmir/Uttarakhand search like
 // "hotels in Gulmarg" silently becomes "hotels in Gulmarg, Himachal Pradesh", which can
 // make Google resolve the wrong place entirely.
-export function searchStays(location: string, stayType: StayType, apiKey: string, state = 'Himachal Pradesh'): Promise<RawGooglePlace[]> {
+export interface StaySearchResult {
+  places: RawGooglePlace[];
+  pagesFetched: number;
+  saturated: boolean;
+}
+
+export async function searchStays(location: string, stayType: StayType, apiKey: string, state = 'Himachal Pradesh'): Promise<StaySearchResult> {
   if (isLocalDevelopment()) {
     console.info(`[dev] Serving mock Places data for "${stayType}" stays in "${location}" — no Google Places credits spent.`);
     // Every stay type shares the same mock location data, so the place `id`s must be
     // namespaced per stayType here — otherwise all 6 categories resolve to identical
     // ids and StaysGrid's `key={stay.placeId}` collides once results are combined.
     const mockPlaces = getMockPlaces(location, state).map((place) => ({ ...place, id: `${place.id}_${stayType}` }));
-    return Promise.resolve(mockPlaces);
+    return { places: mockPlaces, pagesFetched: 1, saturated: true };
   }
-  return searchPlaces(`${STAY_TYPE_QUERIES[stayType]} in ${location}, ${state}`, apiKey);
+  return searchPlacesAllPages(`${STAY_TYPE_QUERIES[stayType]} in ${location}, ${state}`, apiKey);
 }
 
 // Points at our own proxy (app/api/places/photo/route.ts), never at Google directly —

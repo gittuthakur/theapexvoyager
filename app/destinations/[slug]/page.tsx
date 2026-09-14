@@ -347,6 +347,7 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
               destinationSlug={destination.slug}
               curatedStays={curatedStays}
               emptyStateMessage={stayContext.emptyStateMessage}
+              stayMode={stayContext.stayMode === 'unavailable' ? undefined : stayContext.stayMode}
             />
           </div>
         </div>

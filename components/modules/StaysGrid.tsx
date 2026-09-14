@@ -24,6 +24,10 @@ export interface StaysGridProps {
   /** Stay-mode-aware copy (lib/stayLocation.ts) — falls back to the previous generic
    *  message if not provided. */
   emptyStateMessage?: string;
+  /** Forwarded to the stays API purely to label a matched Google result "exact" /
+   *  "nearby" / "access-base" for reporting — never loosens the location-safety filter
+   *  itself (see lib/placeLocationSafety.ts). */
+  stayMode?: 'destination' | 'nearby' | 'access-base';
 }
 
 function hotelToStay(hotel: HotelPackage, destinationSlug?: string): Stay {
@@ -56,7 +60,7 @@ function dedupeAgainstCurated(curated: Stay[], google: Stay[]): Stay[] {
   return google.filter((stay) => !curatedKeys.has(identityKey(stay.name, stay.formattedAddress)));
 }
 
-export default function StaysGrid({ location, state, curatedStays = [], destinationSlug, emptyStateMessage }: StaysGridProps) {
+export default function StaysGrid({ location, state, curatedStays = [], destinationSlug, emptyStateMessage, stayMode }: StaysGridProps) {
   const [googleStays, setGoogleStays] = useState<Stay[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [activeType, setActiveType] = useState<StayType | 'all'>('all');
@@ -68,7 +72,8 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
     setStatus('loading');
 
     const stateParam = state ? `&state=${encodeURIComponent(state)}` : '';
-    fetch(`/api/destinations?type=stays&location=${encodeURIComponent(location)}${stateParam}`)
+    const stayModeParam = stayMode ? `&stayMode=${encodeURIComponent(stayMode)}` : '';
+    fetch(`/api/destinations?type=stays&location=${encodeURIComponent(location)}${stateParam}${stayModeParam}`)
       .then((res) => {
         if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
         return res.json();
@@ -86,7 +91,7 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
     return () => {
       cancelled = true;
     };
-  }, [location, state]);
+  }, [location, state, stayMode]);
 
   // publiclyListed curated stays render immediately without waiting on the Google
   // Places round trip — they're already-verified data, not something that should be

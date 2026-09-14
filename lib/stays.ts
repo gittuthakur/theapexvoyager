@@ -3,7 +3,9 @@ import { PlaceCache, type PlaceCacheDocument } from '@/models/PlaceCache';
 import { searchStays, placeName, placePhotoUrls, placeCoordinates, type RawGooglePlace } from '@/lib/googlePlaces';
 import { isLocalDevelopment } from '@/lib/env';
 import { isRecentFailure, markFailure } from '@/lib/negativeCache';
+import { classifyPlaceLocation } from '@/lib/placeLocationSafety';
 import { STAY_TYPES, type Stay, type StayType } from '@/types/stay';
+import type { StayMode } from '@/config/stayLocations.config';
 import type { HotelPackage } from '@/types/hotel';
 
 export function slugify(input: string): string {
@@ -14,7 +16,49 @@ export function slugify(input: string): string {
     .replace(/(^-|-$)/g, '');
 }
 
-function toStay(doc: Pick<PlaceCacheDocument, 'placeId' | 'name' | 'slug' | 'stayType' | 'formattedAddress' | 'latitude' | 'longitude' | 'rating' | 'userRatingCount' | 'photos' | 'customPrice' | 'destinationSlug' | 'updatedAt'>): Stay {
+/** Per-category discovery diagnostics — see AGENTS.md's 3-state Google Places
+ *  inventory expansion mission, Table B. Never includes secrets; safe to return from
+ *  an API response or log verbatim. */
+export interface StayCategoryMeta {
+  stayType: StayType;
+  fromCache: boolean;
+  queried: boolean;
+  pagesFetched: number;
+  saturated: boolean;
+  rawCount: number;
+  duplicatesRemoved: number;
+  wrongLocationRejected: number;
+  finalCount: number;
+  error?: string;
+}
+
+export interface StaysForDestinationResult {
+  stays: Stay[];
+  meta: StayCategoryMeta[];
+}
+
+function toStay(
+  doc: Pick<
+    PlaceCacheDocument,
+    | 'placeId'
+    | 'name'
+    | 'slug'
+    | 'stayType'
+    | 'formattedAddress'
+    | 'latitude'
+    | 'longitude'
+    | 'rating'
+    | 'userRatingCount'
+    | 'photos'
+    | 'customPrice'
+    | 'destinationSlug'
+    | 'updatedAt'
+    | 'types'
+    | 'googleMapsUri'
+    | 'websiteUri'
+    | 'locationClassification'
+  >
+): Stay {
   return {
     placeId: doc.placeId,
     name: doc.name,
@@ -29,7 +73,11 @@ function toStay(doc: Pick<PlaceCacheDocument, 'placeId' | 'name' | 'slug' | 'sta
     customPrice: doc.customPrice,
     destinationSlug: doc.destinationSlug,
     updatedAt: new Date(doc.updatedAt).toISOString(),
-    source: 'google'
+    source: 'google',
+    types: doc.types,
+    googleMapsUri: doc.googleMapsUri,
+    websiteUri: doc.websiteUri,
+    locationClassification: doc.locationClassification
   };
 }
 
@@ -48,7 +96,11 @@ function toDevStay(place: RawGooglePlace, destinationSlug: string, stayType: Sta
     photos: placePhotoUrls(place),
     destinationSlug,
     updatedAt: new Date().toISOString(),
-    source: 'google'
+    source: 'google',
+    types: place.types,
+    googleMapsUri: place.googleMapsUri,
+    websiteUri: place.websiteUri,
+    locationClassification: 'exact'
   };
 }
 
@@ -57,27 +109,59 @@ async function fetchAndCacheStayType(
   location: string,
   stayType: StayType,
   apiKey: string,
-  state?: string
-): Promise<Stay[]> {
-  const rawPlaces = await searchStays(location, stayType, apiKey, state);
+  state: string | undefined,
+  stayMode: StayMode | undefined
+): Promise<{ stays: Stay[]; meta: Omit<StayCategoryMeta, 'stayType' | 'fromCache' | 'queried' | 'error'> }> {
+  const { places: rawPlaces, pagesFetched, saturated } = await searchStays(location, stayType, apiKey, state);
 
-  const docs = rawPlaces.map((place: RawGooglePlace) => {
-    const { latitude, longitude } = placeCoordinates(place);
-    return {
-      placeId: place.id,
-      name: placeName(place),
-      slug: `${destinationSlug}-${slugify(placeName(place))}`,
-      stayType,
-      formattedAddress: place.formattedAddress,
-      latitude,
-      longitude,
-      rating: place.rating,
-      userRatingCount: place.userRatingCount,
-      photos: placePhotoUrls(place),
-      destinationSlug,
-      searchLocation: location
-    };
-  });
+  // Google's own pagination can occasionally hand back the same place across two
+  // pages — dedupe strictly by place.id (never by name) before anything else.
+  const seenPlaceIds = new Set<string>();
+  const uniquePlaces: RawGooglePlace[] = [];
+  let duplicatesRemoved = 0;
+  for (const place of rawPlaces) {
+    if (seenPlaceIds.has(place.id)) {
+      duplicatesRemoved += 1;
+      continue;
+    }
+    seenPlaceIds.add(place.id);
+    uniquePlaces.push(place);
+  }
+
+  let wrongLocationRejected = 0;
+  const docs = uniquePlaces
+    .map((place) => {
+      const classification = classifyPlaceLocation(place.formattedAddress, location, stayMode);
+      return { place, classification };
+    })
+    .filter(({ classification }) => {
+      if (classification === 'wrong-location') {
+        wrongLocationRejected += 1;
+        return false;
+      }
+      return true;
+    })
+    .map(({ place, classification }) => {
+      const { latitude, longitude } = placeCoordinates(place);
+      return {
+        placeId: place.id,
+        name: placeName(place),
+        slug: `${destinationSlug}-${slugify(placeName(place))}`,
+        stayType,
+        formattedAddress: place.formattedAddress,
+        latitude,
+        longitude,
+        rating: place.rating,
+        userRatingCount: place.userRatingCount,
+        photos: placePhotoUrls(place),
+        destinationSlug,
+        searchLocation: location,
+        types: place.types,
+        googleMapsUri: place.googleMapsUri,
+        websiteUri: place.websiteUri,
+        locationClassification: classification as 'exact' | 'nearby' | 'access-base'
+      };
+    });
 
   await connectDB();
   const saved = await Promise.all(
@@ -94,19 +178,32 @@ async function fetchAndCacheStayType(
     )
   );
 
-  return saved.filter((doc): doc is NonNullable<typeof doc> => Boolean(doc)).map(toStay);
+  return {
+    stays: saved.filter((doc): doc is NonNullable<typeof doc> => Boolean(doc)).map(toStay),
+    meta: {
+      pagesFetched,
+      saturated,
+      rawCount: rawPlaces.length,
+      duplicatesRemoved,
+      wrongLocationRejected,
+      finalCount: docs.length
+    }
+  };
 }
 
 // Fetches every requested accommodation category for a destination, using the 30-day
-// Mongo cache (models/PlaceCache.ts) per (destinationSlug, stayType) pair and only
-// calling Google for categories that aren't cached yet. Each category fails
-// independently — one broken query never blocks the others or the whole page.
+// Mongo cache (models/PlaceCache.ts) per (destinationSlug, stayType, searchLocation)
+// tuple and only calling Google for categories that aren't cached yet. Each category
+// fails independently — one broken query never blocks the others or the whole page.
+// `stayMode` is optional and purely cosmetic (labels a matched result "exact" / "nearby"
+// / "access-base" for reporting) — it never loosens the location-safety check itself.
 export async function getStaysForDestination(
   destinationSlug: string,
   location: string,
   stayTypes: StayType[] = STAY_TYPES,
-  state?: string
-): Promise<Stay[]> {
+  state?: string,
+  stayMode?: StayMode
+): Promise<StaysForDestinationResult> {
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
 
   // Local dev and production read the same MongoDB database (there's no separate dev
@@ -118,43 +215,118 @@ export async function getStaysForDestination(
   // cache — production's caching behavior below is completely unchanged.
   if (isLocalDevelopment()) {
     const perType = await Promise.all(
-      stayTypes.map(async (stayType) => {
-        const rawPlaces = await searchStays(location, stayType, apiKey ?? '', state);
-        return rawPlaces.map((place) => toDevStay(place, destinationSlug, stayType));
+      stayTypes.map(async (stayType): Promise<{ stays: Stay[]; meta: StayCategoryMeta }> => {
+        const { places: rawPlaces, pagesFetched, saturated } = await searchStays(location, stayType, apiKey ?? '', state);
+        const stays = rawPlaces.map((place) => toDevStay(place, destinationSlug, stayType));
+        return {
+          stays,
+          meta: {
+            stayType,
+            fromCache: false,
+            queried: true,
+            pagesFetched,
+            saturated,
+            rawCount: rawPlaces.length,
+            duplicatesRemoved: 0,
+            wrongLocationRejected: 0,
+            finalCount: stays.length
+          }
+        };
       })
     );
-    return perType.flat();
+    return { stays: perType.flatMap((r) => r.stays), meta: perType.map((r) => r.meta) };
   }
 
   await connectDB();
 
   const perType = await Promise.all(
-    stayTypes.map(async (stayType) => {
+    stayTypes.map(async (stayType): Promise<{ stays: Stay[]; meta: StayCategoryMeta }> => {
       // `searchLocation` is part of the read key — see models/PlaceCache.ts's field
       // comment — so a destination whose canonical search location changes (as several
       // did in Phase B) never has a stale prior-location row served as if still valid.
       const cached = await PlaceCache.find({ destinationSlug, stayType, searchLocation: location }).lean();
-      if (cached.length > 0) return cached.map(toStay);
+      if (cached.length > 0) {
+        const stays = cached.map(toStay);
+        return {
+          stays,
+          meta: {
+            stayType,
+            fromCache: true,
+            queried: false,
+            pagesFetched: 0,
+            saturated: true,
+            rawCount: stays.length,
+            duplicatesRemoved: 0,
+            wrongLocationRejected: 0,
+            finalCount: stays.length
+          }
+        };
+      }
 
       if (!apiKey) {
         console.warn(`GOOGLE_PLACES_API_KEY is not set — skipping live "${stayType}" search for "${location}"`);
-        return [];
+        return {
+          stays: [],
+          meta: {
+            stayType,
+            fromCache: false,
+            queried: false,
+            pagesFetched: 0,
+            saturated: false,
+            rawCount: 0,
+            duplicatesRemoved: 0,
+            wrongLocationRejected: 0,
+            finalCount: 0,
+            error: 'API_KEY_MISSING'
+          }
+        };
       }
 
       const failureKey = `stay:${destinationSlug}:${stayType}`;
-      if (isRecentFailure(failureKey)) return [];
+      if (isRecentFailure(failureKey)) {
+        return {
+          stays: [],
+          meta: {
+            stayType,
+            fromCache: false,
+            queried: false,
+            pagesFetched: 0,
+            saturated: false,
+            rawCount: 0,
+            duplicatesRemoved: 0,
+            wrongLocationRejected: 0,
+            finalCount: 0,
+            error: 'NEGATIVE_CACHE'
+          }
+        };
+      }
 
       try {
-        return await fetchAndCacheStayType(destinationSlug, location, stayType, apiKey, state);
+        const { stays, meta } = await fetchAndCacheStayType(destinationSlug, location, stayType, apiKey, state, stayMode);
+        return { stays, meta: { stayType, fromCache: false, queried: true, ...meta } };
       } catch (error) {
         console.error(`Failed to fetch "${stayType}" stays for "${location}" from Google Places`, error);
         markFailure(failureKey);
-        return [];
+        return {
+          stays: [],
+          meta: {
+            stayType,
+            fromCache: false,
+            queried: true,
+            pagesFetched: 0,
+            saturated: false,
+            rawCount: 0,
+            duplicatesRemoved: 0,
+            wrongLocationRejected: 0,
+            finalCount: 0,
+            error: error instanceof Error ? error.message.slice(0, 200) : 'UNKNOWN_ERROR'
+          }
+        };
       }
     })
   );
 
-  return perType.flat();
+  return { stays: perType.flatMap((r) => r.stays), meta: perType.map((r) => r.meta) };
 }
 
 function normalizeName(name: string): string {
@@ -178,7 +350,10 @@ export async function enrichHotelsWithPlaces(hotels: HotelPackage[]): Promise<Ho
   try {
     const staysByLocation = new Map<string, Stay[]>(
       await Promise.all(
-        locations.map(async (location) => [location, await getStaysForDestination(slugify(location), location)] as const)
+        locations.map(async (location) => {
+          const { stays } = await getStaysForDestination(slugify(location), location);
+          return [location, stays] as const;
+        })
       )
     );
 

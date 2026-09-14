@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { getDestinationsForLocation, getDestinationsWithFallback, getCuratedDestinations, DEFAULT_HIMACHAL_LOCATIONS } from '@/lib/destinations';
 import { getStaysForDestination, slugify } from '@/lib/stays';
 import { STAY_TYPES, type StayType } from '@/types/stay';
+import type { StayMode } from '@/config/stayLocations.config';
+
+const VALID_STAY_MODES: StayMode[] = ['destination', 'nearby', 'access-base'];
 
 // Underlying results already come from a 30-day-TTL Mongo cache (lib/destinations.ts,
 // lib/stays.ts), so this is safe to cache a full day at the HTTP layer too — repeat
@@ -16,6 +19,7 @@ const CACHE_HEADERS = {
 // GET /api/destinations?type=stays&location=Manali          -> every stay category (hotel, homestay, cottage, resort, camp, treehouse) for a location
 // GET /api/destinations?type=stays&location=Manali&stayType=treehouse -> just one stay category
 // GET /api/destinations?type=stays&location=Gulmarg&state=Jammu%20%26%20Kashmir -> stays scoped to the real destination state (defaults to Himachal Pradesh when omitted)
+// GET /api/destinations?type=stays&location=Sangla&state=...&stayMode=nearby -> labels matched results "nearby" in the response's meta (see lib/stayLocation.ts) rather than "exact"; never loosens the location-safety filter itself
 //
 // GET /api/destinations?isPopular=true                       -> the curated homepage "Popular Destinations" set
 // GET /api/destinations?region=Himachal%20Pradesh&style=Adventure&season=Summer -> curated catalog, filtered
@@ -42,8 +46,10 @@ export async function GET(request: Request) {
 
       const stayTypeParam = searchParams.get('stayType') as StayType | null;
       const stayTypes = stayTypeParam && STAY_TYPES.includes(stayTypeParam) ? [stayTypeParam] : STAY_TYPES;
-      const stays = await getStaysForDestination(slugify(location), location, stayTypes, state);
-      return NextResponse.json({ stays }, { status: 200, headers: CACHE_HEADERS });
+      const stayModeParam = searchParams.get('stayMode') as StayMode | null;
+      const stayMode = stayModeParam && VALID_STAY_MODES.includes(stayModeParam) ? stayModeParam : undefined;
+      const { stays, meta } = await getStaysForDestination(slugify(location), location, stayTypes, state, stayMode);
+      return NextResponse.json({ stays, meta }, { status: 200, headers: CACHE_HEADERS });
     }
 
     if (isCuratedBrowseRequest) {
