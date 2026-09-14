@@ -108,9 +108,23 @@ export async function searchPlacesAllPages(
   let saturated = false;
 
   for (let page = 0; page < MAX_PAGES; page += 1) {
-    const data: SearchTextResponse = pageToken
-      ? await searchTextOnce({ pageToken }, apiKey)
-      : await searchTextOnce({ textQuery, pageSize }, apiKey);
+    // A page-token request must repeat the original textQuery/pageSize alongside the
+    // token — Google (New) rejects a token-only body with "Empty text_query. Request
+    // parameters for paging requests must match the initial SearchText request."
+    const body = pageToken ? { textQuery, pageSize, pageToken } : { textQuery, pageSize };
+
+    let data: SearchTextResponse;
+    try {
+      data = await searchTextOnce(body, apiKey);
+    } catch (error) {
+      // A failure on page 2+ must never discard page 1's already-successful results —
+      // stop pagination here and return what was already collected instead of letting
+      // the exception propagate and lose it.
+      if (page === 0) throw error;
+      console.error(`Google Places pagination stopped early on page ${page + 1} for "${textQuery}"`, error);
+      break;
+    }
+
     pagesFetched += 1;
     places.push(...(data.places ?? []));
 
