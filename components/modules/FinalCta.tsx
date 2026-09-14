@@ -23,7 +23,10 @@ export default function FinalCta({
   subtitle = "Tell us where you want to go and our team will craft a journey you'll talk about for years — no cookie-cutter itineraries, only yours.",
   primaryLabel = 'Plan My Trip',
   primaryHref = '/plan-my-journey',
-  secondaryLabel = 'Talk to an Expert'
+  // This button always dials `contactPhoneHref` directly (see the <a> below) — the
+  // label must read as a phone call, not an enquiry, so it isn't confused with the
+  // separate "Talk to Our Travel Team" enquiry-modal CTA used elsewhere on the site.
+  secondaryLabel = 'Call Our Travel Team'
 }: FinalCtaProps) {
   return (
     <section className="py-14 lg:py-20 bg-white px-6">

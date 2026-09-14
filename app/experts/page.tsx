@@ -142,7 +142,7 @@ export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
           subtitle="Share your destination and preferences and a real travel expert will help you shape the trip."
           primaryLabel="Plan My Journey"
           primaryHref="/plan-my-journey"
-          secondaryLabel="Talk to an Expert"
+          secondaryLabel="Call Our Travel Team"
         />
       </main>
     </>

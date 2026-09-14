@@ -22,8 +22,9 @@ export interface HotelBookingModalProps {
 
 type Status = 'form' | 'sending' | 'success' | 'error';
 
-// "Book Now" hands off to the universal Plan My Journey flow (source=stay&slug=...)
-// instead of opening the form below — the form/Modal are kept as-is (unreachable, not
+// Hands off to the universal Plan My Journey flow (source=stay&slug=...) instead of
+// opening the form below — labeled "Plan This Stay" rather than "Book Now" since this
+// never completes an instant booking. The form/Modal are kept as-is (unreachable, not
 // deleted) since nothing else in the app still opens them; see the booking-context plan.
 export default function HotelBookingModal({
   hotelName,
@@ -89,7 +90,7 @@ export default function HotelBookingModal({
   return (
     <>
       <Button type="button" className="w-full" onClick={() => navigateToBooking({ source: 'stay', slug: hotelSlug })}>
-        Book Now
+        Plan This Stay
       </Button>
 
       <Modal open={open} onClose={handleClose} title={status === 'success' ? undefined : `Book ${hotelName}`}>

@@ -305,7 +305,7 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
                 <p className="mt-1 text-sm text-slate-600">Local destination knowledge, stay recommendations, and custom itinerary support.</p>
                 <div className="mt-3 flex flex-wrap items-center gap-3">
                   <Link href="/experts" className="inline-flex items-center gap-1 text-sm font-semibold text-apex-600 hover:text-apex-700">
-                    <Users size={14} /> Talk to an Expert
+                    <Users size={14} /> Browse Travel Experts
                   </Link>
                   <WhatsAppEnquireButton
                     selection={{

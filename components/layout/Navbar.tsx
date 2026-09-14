@@ -7,7 +7,14 @@ import { ArrowRight, Bus, ChevronDown, Info, Menu, Phone, Search, UserCheck, X, 
 import { navRoutes, siteConfig } from '@/config/site.config';
 import { ButtonLink } from '@/components/ui/Button';
 import { GlobalSearch } from '@/components/modules/GlobalSearch';
+import { useBodyScrollLock } from '@/lib/useBodyScrollLock';
 import { cn } from '@/lib/utils';
+
+// Same focusable-element set FloatingOverlay traps within, kept local here since the
+// mobile menu is an inline expanded panel (not a portaled dialog) and shouldn't share
+// GlobalSearch's modal markup/semantics.
+const MOBILE_MENU_FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 // Routes whose page starts with <HeroSection> — the navbar overlays these transparently
 // at scroll = 0 and turns solid on scroll. Every other route stays solid from the top.
@@ -258,6 +265,14 @@ export default function Navbar() {
   const searchButtonRef = useRef<HTMLButtonElement>(null);
   const mobileSearchButtonRef = useRef<HTMLButtonElement>(null);
   const menuRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  // Bounds the mobile menu's focus trap/outside-click check — everything visible on a
+  // mobile viewport while the menu is open (logo, search/phone/toggle row, nav panel)
+  // lives inside this one <header>, and the hidden `xl:flex` desktop nav has no
+  // offsetParent at these widths, so it's naturally excluded without extra filtering.
+  const headerRef = useRef<HTMLElement>(null);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
+
+  useBodyScrollLock(open);
 
   function registerMenuRef(key: string, node: HTMLDivElement | null) {
     menuRefs.current[key] = node;
@@ -346,16 +361,79 @@ export default function Navbar() {
   // its own effect since `open` (the mobile hamburger menu) and `openMenuKey` (a
   // desktop dropdown) are independent pieces of state — only one listener is ever
   // mounted at a time per state, so this doesn't add a second always-on listener.
+  // Escape also returns focus to the toggle button, same as clicking it directly.
   useEffect(() => {
     if (!open) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false);
+      if (event.key === 'Escape') {
+        setOpen(false);
+        mobileMenuButtonRef.current?.focus();
+      }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open]);
+
+  // Closes the mobile menu on an outside click/tap (background content is otherwise
+  // reachable by touch even though it's excluded from the keyboard trap below).
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+    };
+  }, [open]);
+
+  // Traps Tab/Shift+Tab within the header (logo, search/phone/toggle row, and the
+  // open nav panel) while the mobile menu is open, so background page content isn't
+  // keyboard-reachable behind it — mirrors FloatingOverlay's trap, scoped to this
+  // inline panel instead of a portaled dialog.
+  useEffect(() => {
+    if (!open) return;
+
+    function getFocusable(): HTMLElement[] {
+      const container = headerRef.current;
+      if (!container) return [];
+      return Array.from(container.querySelectorAll<HTMLElement>(MOBILE_MENU_FOCUSABLE_SELECTOR)).filter(
+        (el) => el.offsetParent !== null
+      );
+    }
+
+    function handleTabTrap(event: KeyboardEvent) {
+      if (event.key !== 'Tab') return;
+      const focusable = getFocusable();
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+
+      if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      } else if (!headerRef.current?.contains(active)) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener('keydown', handleTabTrap);
+    return () => {
+      document.removeEventListener('keydown', handleTabTrap);
     };
   }, [open]);
 
@@ -413,6 +491,7 @@ export default function Navbar() {
 
   return (
     <header
+      ref={headerRef}
       className={cn(
         'inset-x-0 top-0 z-50 transition-all duration-300 ease-out',
         isTransparent
@@ -568,6 +647,7 @@ export default function Navbar() {
           <Phone size={20} />
         </a>
           <button
+            ref={mobileMenuButtonRef}
             type="button"
             onClick={() => setOpen((value) => !value)}
             className="cursor-hover inline-flex items-center justify-center rounded-full border border-slate-700 p-2 text-slate-700"

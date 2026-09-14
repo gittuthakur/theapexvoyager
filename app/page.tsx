@@ -251,7 +251,7 @@ export default async function HomePage() {
           subtitle="Tell us your dates, interests and travel style, and our travel team can help shape a journey around what matters to you."
           primaryLabel="Plan My Journey"
           primaryHref="/plan-my-journey"
-          secondaryLabel="Talk to Our Travel Team"
+          secondaryLabel="Call Our Travel Team"
         />
         <TestimonialSection
           testimonials={testimonials}
