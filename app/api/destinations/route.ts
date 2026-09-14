@@ -20,6 +20,7 @@ const CACHE_HEADERS = {
 // GET /api/destinations?type=stays&location=Manali&stayType=treehouse -> just one stay category
 // GET /api/destinations?type=stays&location=Gulmarg&state=Jammu%20%26%20Kashmir -> stays scoped to the real destination state (defaults to Himachal Pradesh when omitted)
 // GET /api/destinations?type=stays&location=Sangla&state=...&stayMode=nearby -> labels matched results "nearby" in the response's meta (see lib/stayLocation.ts) rather than "exact"; never loosens the location-safety filter itself
+// GET /api/destinations?type=stays&location=Kaza&destinationSlug=spiti-valley -> caches/reads under the true canonical destination slug rather than slugify(location) — required whenever a destination's primaryStayLocation differs from its own slug (Kaza≠spiti-valley, Sangla≠kinnaur, Guptkashi≠kedarnath, etc.), otherwise several distinct destinations that share one real search location would all collapse onto the same slugify(location)-derived cache bucket instead of each getting their own tagged copy
 //
 // GET /api/destinations?isPopular=true                       -> the curated homepage "Popular Destinations" set
 // GET /api/destinations?region=Himachal%20Pradesh&style=Adventure&season=Summer -> curated catalog, filtered
@@ -48,7 +49,13 @@ export async function GET(request: Request) {
       const stayTypes = stayTypeParam && STAY_TYPES.includes(stayTypeParam) ? [stayTypeParam] : STAY_TYPES;
       const stayModeParam = searchParams.get('stayMode') as StayMode | null;
       const stayMode = stayModeParam && VALID_STAY_MODES.includes(stayModeParam) ? stayModeParam : undefined;
-      const { stays, meta } = await getStaysForDestination(slugify(location), location, stayTypes, state, stayMode);
+      // Prefer the caller's real canonical destination slug when it has one (the
+      // destination page/StaysGrid always does); fall back to deriving one from the
+      // location text only for callers with no actual Destination object (e.g.
+      // enrichHotelsWithPlaces, matching a curated Hotel's free-text `location`).
+      const destinationSlugParam = searchParams.get('destinationSlug');
+      const destinationSlug = destinationSlugParam || slugify(location);
+      const { stays, meta } = await getStaysForDestination(destinationSlug, location, stayTypes, state, stayMode);
       return NextResponse.json({ stays, meta }, { status: 200, headers: CACHE_HEADERS });
     }
 

@@ -73,7 +73,8 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
 
     const stateParam = state ? `&state=${encodeURIComponent(state)}` : '';
     const stayModeParam = stayMode ? `&stayMode=${encodeURIComponent(stayMode)}` : '';
-    fetch(`/api/destinations?type=stays&location=${encodeURIComponent(location)}${stateParam}${stayModeParam}`)
+    const destinationSlugParam = destinationSlug ? `&destinationSlug=${encodeURIComponent(destinationSlug)}` : '';
+    fetch(`/api/destinations?type=stays&location=${encodeURIComponent(location)}${stateParam}${stayModeParam}${destinationSlugParam}`)
       .then((res) => {
         if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
         return res.json();
@@ -91,7 +92,7 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
     return () => {
       cancelled = true;
     };
-  }, [location, state, stayMode]);
+  }, [location, state, stayMode, destinationSlug]);
 
   // publiclyListed curated stays render immediately without waiting on the Google
   // Places round trip — they're already-verified data, not something that should be
