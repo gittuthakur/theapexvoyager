@@ -50,7 +50,7 @@ export default async function PlanMyJourneyPage({ searchParams }: PlanMyJourneyP
         : '/';
 
   return (
-    <main className="px-6 py-10 sm:px-10 lg:px-16">
+    <main id="main-content" className="px-6 py-10 sm:px-10 lg:px-16">
       <div className="mx-auto max-w-6xl space-y-6">
         <BackButton fallbackHref={fallbackHref} label="Back" />
 

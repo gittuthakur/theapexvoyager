@@ -59,7 +59,7 @@ export default async function ExperiencesPage({ searchParams }: ExperiencesPageP
       <ExperiencesHero />
       <ExperienceMoodDiscovery />
       <FeaturedExperiences />
-      <main>
+      <main id="main-content">
         <ExperiencesListing
           key={listingKey}
           experiences={experiences}

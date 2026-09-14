@@ -96,7 +96,7 @@ export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
 
       <ExpertHelpOptions />
 
-      <main>
+      <main id="main-content">
         <section className="mx-auto max-w-[1440px] px-6 pb-16">
           <ExpertGrid experts={experts} />
         </section>

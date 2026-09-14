@@ -82,7 +82,7 @@ export default async function JourneysPage({ searchParams }: JourneysPageProps) 
         variant="dark"
       />
 
-      <main className="">
+      <main id="main-content" className="">
         <JourneysExplorer
           packages={packages}
           destinations={destinations}

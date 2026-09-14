@@ -3,7 +3,7 @@ import { GlassCard } from '@/components/ui/GlassCard';
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen px-6 py-14 sm:px-10 lg:px-16">
+    <main id="main-content" className="min-h-screen px-6 py-14 sm:px-10 lg:px-16">
       <section className="mx-auto max-w-5xl space-y-8">
         <GlassCard className="p-10">
           <p className="text-sm uppercase tracking-[0.32em] text-apex-600">Contact us</p>

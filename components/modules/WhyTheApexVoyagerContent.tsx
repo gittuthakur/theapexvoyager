@@ -6,7 +6,7 @@ import { images } from '@/config/images.config';
 
 export default function WhyTheApexVoyagerContent() {
   return (
-    <>
+    <main id="main-content">
       <InnerHeroBanner
         eyebrow="Why The Apex Voyager"
         title="Built for the way"
@@ -31,6 +31,6 @@ export default function WhyTheApexVoyagerContent() {
           </Link>
         </div>
       </section>
-    </>
+    </main>
   );
 }

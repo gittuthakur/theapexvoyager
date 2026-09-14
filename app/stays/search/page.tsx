@@ -53,7 +53,7 @@ export default async function StaySearchPage({ searchParams }: StaySearchPagePro
   const { destination, checkIn, checkOut, guests, type, priceMax, amenity, mood, category } = await searchParams;
 
   return (
-    <main className="px-6 py-10 sm:px-10 lg:px-16">
+    <main id="main-content" className="px-6 py-10 sm:px-10 lg:px-16">
       <section className="mx-auto max-w-[1440px] space-y-6">
         <BackButton fallbackHref="/stays" label="Back to Apex Stays" />
 

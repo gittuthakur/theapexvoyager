@@ -212,7 +212,7 @@ export default async function HomePage() {
 
       <StatsBar items={homepageStats} />
 
-      <main>
+      <main id="main-content">
         <PopularDestinationsSection destinations={popularDestinations} />
         <BeyondTouristTrailSection destinations={popularDestinations} />
         <PackageSection

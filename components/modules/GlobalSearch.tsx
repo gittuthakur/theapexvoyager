@@ -23,8 +23,11 @@ export function GlobalSearch({ open, onClose }: GlobalSearchProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResultsGrouped>({
     destinations: [],
+    regions: [],
     tours: [],
+    stays: [],
     experiences: [],
+    travelServices: [],
     blog: []
   });
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -50,8 +53,11 @@ export function GlobalSearch({ open, onClose }: GlobalSearchProps) {
     } else {
       setResults({
         destinations: [],
+        regions: [],
         tours: [],
+        stays: [],
         experiences: [],
+        travelServices: [],
         blog: []
       });
       setSelectedIndex(-1);
@@ -61,8 +67,11 @@ export function GlobalSearch({ open, onClose }: GlobalSearchProps) {
   // Check if any results exist
   const hasResults =
     results.destinations.length > 0 ||
+    results.regions.length > 0 ||
     results.tours.length > 0 ||
+    results.stays.length > 0 ||
     results.experiences.length > 0 ||
+    results.travelServices.length > 0 ||
     results.blog.length > 0;
 
   const allPopular = getPopularSearches();
@@ -74,8 +83,11 @@ export function GlobalSearch({ open, onClose }: GlobalSearchProps) {
     if (query.trim() && hasResults) {
       return [
         ...results.destinations,
+        ...results.regions,
         ...results.tours,
+        ...results.stays,
         ...results.experiences,
+        ...results.travelServices,
         ...results.blog
       ].map((result): ActiveItem => ({ kind: 'result', result }));
     }
@@ -250,14 +262,55 @@ export function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                       </div>
                     )}
 
-                    {/* Tours */}
+                    {/* Regions */}
+                    {results.regions.length > 0 && (
+                      <div>
+                        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                          Regions
+                        </p>
+                        <div className="space-y-2">
+                          {results.regions.map((result) => (
+                            <SearchResultItem
+                              key={result.id}
+                              result={result}
+                              onClose={onClose}
+                              isSelected={selectedItem?.kind === 'result' && selectedItem.result.id === result.id}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Tours — the site calls these "Journeys" everywhere else (nav,
+                        routes, page copy); the group label matches that, even though the
+                        internal `type: 'tour'`/`tours` key is left as-is to keep this
+                        change scoped to the user-facing label only. */}
                     {results.tours.length > 0 && (
                       <div>
                         <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                          Tours
+                          Journeys
                         </p>
                         <div className="space-y-2">
                           {results.tours.map((result) => (
+                            <SearchResultItem
+                              key={result.id}
+                              result={result}
+                              onClose={onClose}
+                              isSelected={selectedItem?.kind === 'result' && selectedItem.result.id === result.id}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Apex Stays */}
+                    {results.stays.length > 0 && (
+                      <div>
+                        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                          Apex Stays
+                        </p>
+                        <div className="space-y-2">
+                          {results.stays.map((result) => (
                             <SearchResultItem
                               key={result.id}
                               result={result}
@@ -277,6 +330,25 @@ export function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                         </p>
                         <div className="space-y-2">
                           {results.experiences.map((result) => (
+                            <SearchResultItem
+                              key={result.id}
+                              result={result}
+                              onClose={onClose}
+                              isSelected={selectedItem?.kind === 'result' && selectedItem.result.id === result.id}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Travel Services */}
+                    {results.travelServices.length > 0 && (
+                      <div>
+                        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                          Travel Services
+                        </p>
+                        <div className="space-y-2">
+                          {results.travelServices.map((result) => (
                             <SearchResultItem
                               key={result.id}
                               result={result}
@@ -365,7 +437,7 @@ export function GlobalSearch({ open, onClose }: GlobalSearchProps) {
 interface SearchResultItemProps {
   result: {
     id: string;
-    type: 'destination' | 'tour' | 'experience' | 'blog';
+    type: 'destination' | 'tour' | 'experience' | 'blog' | 'region' | 'stay' | 'travelService';
     title: string;
     description: string;
     image?: string;
@@ -413,13 +485,19 @@ function SearchResultItem({ result, onClose, isSelected }: SearchResultItemProps
           <div className={cn(
             'flex h-10 w-10 items-center justify-center rounded-full text-xs font-semibold',
             result.type === 'destination' && 'bg-blue-50 text-blue-600',
+            result.type === 'region' && 'bg-emerald-50 text-emerald-600',
             result.type === 'tour' && 'bg-purple-50 text-purple-600',
+            result.type === 'stay' && 'bg-rose-50 text-rose-600',
             result.type === 'experience' && 'bg-amber-50 text-amber-600',
+            result.type === 'travelService' && 'bg-indigo-50 text-indigo-600',
             result.type === 'blog' && 'bg-cyan-50 text-cyan-600'
           )}>
             {result.type === 'destination' && '📍'}
+            {result.type === 'region' && '🗺️'}
             {result.type === 'tour' && '🏔️'}
+            {result.type === 'stay' && '🏨'}
             {result.type === 'experience' && '✨'}
+            {result.type === 'travelService' && '🧭'}
             {result.type === 'blog' && '📖'}
           </div>
         )}

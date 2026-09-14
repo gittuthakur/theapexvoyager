@@ -25,9 +25,28 @@ import { getVehicles, getRoutes, getVehiclesByDestinationSlug } from '@/lib/tran
 import { findDestinationByLocationText } from '@/lib/destinations';
 import { categoriesForMotorcycleType, serviceTypeFromUrlSlug, SERVICE_TYPE_UI } from '@/config/transportServiceTypes.config';
 
+// Same canonical/OpenGraph shape as /journeys and /experiences: a relative
+// `alternates.canonical` (resolved against the root layout's `metadataBase`) so every
+// `?pickup=&destination=&vehicle=...` search/filter variant of this URL canonicalizes
+// back to the bare `/transport` page rather than each query-string combination being
+// treated as its own indexable URL. `images.toursHero` is reused as-is — it's the same
+// image this page's own InnerHeroBanner already renders (see `bgImage` below).
+const transportTitle = 'Travel Transport & Private Transfers | The Apex Voyager';
+const transportDescription =
+  'Book private transfers, SUVs, group vehicles and customised Himalayan transport with The Apex Voyager.';
+
 export const metadata: Metadata = {
-  title: 'Travel Transport & Private Transfers | The Apex Voyager',
-  description: 'Book private transfers, SUVs, group vehicles and customised Himalayan transport with The Apex Voyager.'
+  title: transportTitle,
+  description: transportDescription,
+  alternates: { canonical: '/transport' },
+  openGraph: {
+    type: 'website',
+    title: transportTitle,
+    description: transportDescription,
+    url: '/transport',
+    images: [{ url: images.toursHero, alt: 'Himalayan transport and private transfers' }]
+  },
+  robots: { index: true, follow: true }
 };
 
 interface TransportPageProps {
@@ -365,7 +384,7 @@ export default async function TransportPage({ searchParams }: TransportPageProps
         <TransportHeroSearch />
       </InnerHeroBanner>
 
-      <main className="space-y-14 py-14">
+      <main id="main-content" className="space-y-14 py-14">
         {isSearchResultsMode ? (
           <TransportSearchResultsBar
             serviceLabel={resultsBarServiceLabel}

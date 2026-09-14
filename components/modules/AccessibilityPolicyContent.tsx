@@ -15,7 +15,7 @@ import { siteConfig } from '@/config/site.config';
 
 export default function AccessibilityPolicyContent() {
   return (
-    <main className="min-h-screen bg-white px-4 pb-20 pt-24 text-slate-900 sm:px-6 lg:px-8">
+    <main id="main-content" className="min-h-screen bg-white px-4 pb-20 pt-24 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-5xl space-y-14">
         {/* Hero */}
         <section className="space-y-5 text-center">

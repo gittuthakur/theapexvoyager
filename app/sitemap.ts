@@ -53,7 +53,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: siteConfig.url, changeFrequency: 'weekly', priority: 1 },
     { url: `${siteConfig.url}/destinations`, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${siteConfig.url}/journeys`, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${siteConfig.url}/stays`, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${siteConfig.url}/experiences`, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${siteConfig.url}/transport`, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${siteConfig.url}/experts`, changeFrequency: 'weekly', priority: 0.9 }
   ];
 

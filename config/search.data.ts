@@ -8,10 +8,13 @@
 
 import { destinations } from '@/config/destinations.config';
 import { packages } from '@/config/packages.config';
+import { regions } from '@/config/regions.config';
+import { stayTypes } from '@/config/stayTypes.config';
+import { getRegionHubSlug } from '@/lib/regions';
 
 export interface SearchResult {
   id: string;
-  type: 'destination' | 'tour' | 'experience' | 'blog';
+  type: 'destination' | 'tour' | 'experience' | 'blog' | 'region' | 'stay' | 'travelService';
   title: string;
   description: string;
   image?: string;
@@ -152,6 +155,63 @@ export const searchExperiences: SearchResult[] = [
 ];
 
 /**
+ * Regions - the one canonical list of the three regions the site covers
+ * (config/regions.config.ts). `getRegionHubSlug` resolves each region's real
+ * /regions/[slug] route — Jammu & Kashmir's Hub slug ("kashmir") differs from its
+ * `id` ("jammu-kashmir"), so this can't just interpolate `region.id` directly.
+ */
+export const searchRegions: SearchResult[] = regions.map((region) => ({
+  id: `region-${region.id}`,
+  type: 'region',
+  title: region.name,
+  description: region.description,
+  image: region.image,
+  href: `/regions/${getRegionHubSlug(region.id)}`,
+  keywords: [region.name, region.shortName]
+}));
+
+/**
+ * Apex Stays - category-level results only (config/stayTypes.config.ts), each
+ * routing to a real, working /stays/[slug] type filter. Individual hotels live in
+ * MongoDB and aren't bundled into this static, client-side search data.
+ */
+export const searchStays: SearchResult[] = stayTypes.map((stayType) => ({
+  id: `stay-${stayType.slug}`,
+  type: 'stay',
+  title: stayType.label,
+  description: stayType.description,
+  image: stayType.image,
+  href: `/stays/${stayType.slug}`,
+  keywords: [stayType.label, 'stay', 'stays', 'hotel', 'accommodation']
+}));
+
+/**
+ * Travel Services - Transport and Travel Experts, the two remaining primary nav
+ * verticals with their own dedicated pages (mirrors the Header's own "Travel
+ * Services" grouping). Travel Experts links to the portal page itself rather than
+ * naming any individual expert, since no Expert profile is currently publicly
+ * listed — this must stay true regardless of that count.
+ */
+export const searchTravelServices: SearchResult[] = [
+  {
+    id: 'service-transport',
+    type: 'travelService',
+    title: 'Transport & Private Transfers',
+    description: 'Private transfers, SUVs, group vehicles and self-drive rentals across the Himalayas.',
+    href: '/transport',
+    keywords: ['transport', 'transfer', 'taxi', 'cab', 'vehicle', 'suv', 'car', 'bike', 'rental']
+  },
+  {
+    id: 'service-experts',
+    type: 'travelService',
+    title: 'Travel Experts',
+    description: 'Get matched with a local travel expert for personalised trip planning.',
+    href: '/experts',
+    keywords: ['expert', 'experts', 'travel team', 'planner', 'advisor']
+  }
+];
+
+/**
  * All searchable results combined.
  * A blog/travel-guides section doesn't exist in the app yet, so there is no
  * `searchBlog` source — the 'blog' type stays in the SearchResult union so wiring
@@ -159,8 +219,11 @@ export const searchExperiences: SearchResult[] = [
  */
 export const allSearchResults: SearchResult[] = [
   ...searchDestinations,
+  ...searchRegions,
   ...searchTours,
-  ...searchExperiences
+  ...searchStays,
+  ...searchExperiences,
+  ...searchTravelServices
 ];
 
 /**

@@ -11,6 +11,7 @@ import NavigationTracker from '@/components/NavigationTracker';
 import { WhatsAppInquiryProvider } from '@/components/modules/WhatsAppInquiryModal';
 import { BookingRequestProvider } from '@/components/modules/BookingRequestModal';
 import { siteConfig } from '@/config/site.config';
+import { images } from '@/config/images.config';
 
 // Poppins has no variable-weight axis on Google Fonts, so each of these 5 weights is a
 // separate static .woff2 file, and next/font preloads all of them on every route (this
@@ -26,6 +27,13 @@ const poppins = Poppins({
   preload: false
 });
 
+// `images.hero` is the same generic, non-destination-specific brand image already used
+// as the OG/Twitter fallback on Home, Plan My Journey, Experiences and Experts — reused
+// here as the root default so any route that doesn't set its own openGraph/twitter
+// still gets a real, on-brand social preview instead of an image-less card. A page that
+// already defines its own openGraph/twitter (every dynamic detail page, and the pages
+// above) keeps its own object — Next replaces, not merges, an object-valued field a
+// child sets, so this default never overrides a page-specific image.
 export const metadata: Metadata = {
   title: siteConfig.name,
   description: siteConfig.description,
@@ -33,7 +41,14 @@ export const metadata: Metadata = {
   openGraph: {
     title: siteConfig.name,
     description: siteConfig.description,
-    url: siteConfig.url
+    url: siteConfig.url,
+    images: [{ url: images.hero, alt: 'Himalayan peaks at first light' }]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: [images.hero]
   }
 };
 
@@ -49,6 +64,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#ffffff" />
       </head>
       <body className="font-sans">
+        {/* Visually hidden until keyboard-focused; jumps a keyboard user straight to
+            each page's <main id="main-content"> instead of tabbing through the full
+            Header/nav on every route. */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-apex-500 focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg"
+        >
+          Skip to content
+        </a>
         <Script id="google-ads-init" strategy="afterInteractive">
           {`window.dataLayer = window.dataLayer || [];
 window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};

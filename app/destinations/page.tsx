@@ -113,7 +113,7 @@ export default async function DestinationsPage({ searchParams }: DestinationsPag
       <DestinationStyleGrid />
       <BeyondTouristTrailSection destinations={beyondTheTrail} />
 
-      <main className="py-14 lg:py-16">
+      <main id="main-content" className="py-14 lg:py-16">
         <section className="mx-auto max-w-[1440px] px-6">
           <DestinationsExplorer
             key={explorerKey}

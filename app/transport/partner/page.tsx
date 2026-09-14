@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function TransportPartnerPage() {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-14">
+    <main id="main-content" className="mx-auto max-w-3xl px-6 py-14">
       <p className="text-sm font-semibold uppercase tracking-[0.24em] text-apex-600">Transport partners</p>
       <h1 className="mt-2 text-3xl font-bold text-slate-900 sm:text-4xl">Become a Transport Partner</h1>
       <p className="mt-3 max-w-2xl text-slate-600">

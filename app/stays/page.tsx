@@ -90,7 +90,7 @@ export default async function StaysPage() {
   const popularDestinationHrefs = await Promise.all(POPULAR_DESTINATION_LABELS.map(resolveDestinationHref));
 
   return (
-    <main className="">
+    <main id="main-content" className="">
       {/* 1. Hero — same banner component as Home/Journeys, with a pill-styled search bar */}
       <HeroSection
         data={staysHeroData}

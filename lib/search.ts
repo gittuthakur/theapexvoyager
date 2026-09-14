@@ -11,9 +11,24 @@ import {
 
 export interface SearchResultsGrouped {
   destinations: SearchResult[];
+  regions: SearchResult[];
   tours: SearchResult[];
+  stays: SearchResult[];
   experiences: SearchResult[];
+  travelServices: SearchResult[];
   blog: SearchResult[];
+}
+
+function emptyGroupedResults(): SearchResultsGrouped {
+  return {
+    destinations: [],
+    regions: [],
+    tours: [],
+    stays: [],
+    experiences: [],
+    travelServices: [],
+    blog: []
+  };
 }
 
 /**
@@ -87,12 +102,7 @@ export function searchGlobal(query: string): SearchResultsGrouped {
   const trimmedQuery = query.trim();
 
   if (!trimmedQuery) {
-    return {
-      destinations: [],
-      tours: [],
-      experiences: [],
-      blog: []
-    };
+    return emptyGroupedResults();
   }
 
   const scored = allSearchResults
@@ -103,17 +113,15 @@ export function searchGlobal(query: string): SearchResultsGrouped {
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score);
 
-  const grouped: SearchResultsGrouped = {
-    destinations: [],
-    tours: [],
-    experiences: [],
-    blog: []
-  };
+  const grouped: SearchResultsGrouped = emptyGroupedResults();
 
   const groupKeyByType: Record<SearchResult['type'], keyof SearchResultsGrouped> = {
     destination: 'destinations',
+    region: 'regions',
     tour: 'tours',
+    stay: 'stays',
     experience: 'experiences',
+    travelService: 'travelServices',
     blog: 'blog'
   };
 

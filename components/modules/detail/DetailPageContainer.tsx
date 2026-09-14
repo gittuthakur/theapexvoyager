@@ -18,7 +18,7 @@ export interface DetailPageContainerProps {
  */
 export default function DetailPageContainer({ children, mainClassName, className }: DetailPageContainerProps) {
   return (
-    <main className={cn('min-h-screen px-6 py-14 sm:px-10 lg:px-16', mainClassName)}>
+    <main id="main-content" className={cn('min-h-screen px-6 py-14 sm:px-10 lg:px-16', mainClassName)}>
       <section className={cn('mx-auto max-w-[1440px] space-y-6', className)}>{children}</section>
     </main>
   );

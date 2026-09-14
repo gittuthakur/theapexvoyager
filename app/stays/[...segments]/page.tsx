@@ -139,7 +139,7 @@ export default async function StaysCatchAllPage({ params, searchParams }: StaysC
 
 function StayListing({ eyebrow, title, subtitle, hotels }: { eyebrow: string; title: string; subtitle: string; hotels: HotelPackage[] }) {
   return (
-    <main className="px-6 py-10 sm:px-10 lg:px-16">
+    <main id="main-content" className="px-6 py-10 sm:px-10 lg:px-16">
       <section className="mx-auto max-w-[1440px] space-y-5">
         <BackButton fallbackHref="/stays" label="Back to Apex Stays" />
 

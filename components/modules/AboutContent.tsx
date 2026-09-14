@@ -11,7 +11,7 @@ export default async function AboutPage() {
   const [packages, hotels] = await Promise.all([getAllPackages(), getHotels()]);
 
   return (
-    <main className="min-h-screen bg-white pt-24 pb-12 px-4 sm:px-6 lg:px-8 text-slate-900 flex flex-col justify-center">
+    <main id="main-content" className="min-h-screen bg-white pt-24 pb-12 px-4 sm:px-6 lg:px-8 text-slate-900 flex flex-col justify-center">
       <div className="max-w-[1440px] mx-auto w-full space-y-7">
 
         {/* 1. Compact Hero & Story Section (Side-by-Side to reduce height) */}

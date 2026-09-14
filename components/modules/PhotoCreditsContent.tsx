@@ -248,7 +248,7 @@ const credits: PhotoCredit[] = [
 
 export default function PhotoCreditsContent() {
   return (
-    <main className="min-h-screen bg-white px-4 pb-20 pt-24 text-slate-900 sm:px-6 lg:px-8">
+    <main id="main-content" className="min-h-screen bg-white px-4 pb-20 pt-24 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-4xl space-y-10">
         <section className="space-y-4 text-center">
           <div className="inline-flex items-center gap-2.5 rounded-full border border-apex-200 bg-apex-50 px-3.5 py-1.5 text-sm font-semibold uppercase tracking-wider text-apex-600">
