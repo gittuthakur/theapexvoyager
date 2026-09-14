@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Youtube } from 'lucide-react';
+import { Facebook, Instagram } from 'lucide-react';
 import { footerLinks } from './site.config';
 import type { FooterColumn, SocialLink } from '@/types';
 
@@ -31,8 +31,11 @@ export const footerColumns: FooterColumn[] = [
   }
 ];
 
+// No official YouTube channel is confirmed yet — omitted here rather than left
+// pointing at the generic youtube.com homepage. Add it back with a real channel
+// URL once one exists; the Youtube icon remains available from lucide-react and
+// SocialLink/Footer already render any number of entries generically.
 export const socialLinks: SocialLink[] = [
-  { label: 'Instagram', href: 'https://instagram.com', icon: Instagram },
-  { label: 'Facebook', href: 'https://facebook.com', icon: Facebook },
-  { label: 'YouTube', href: 'https://youtube.com', icon: Youtube }
+  { label: 'Instagram', href: 'https://www.instagram.com/theapexvoyager/', icon: Instagram },
+  { label: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61593334715757', icon: Facebook }
 ];
