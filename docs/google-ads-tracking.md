@@ -4,7 +4,7 @@
 
 - `app/layout.tsx` mounts one inline initialization script and one external Google tag using `next/script` with `afterInteractive`. Next.js retains them across client-side navigation.
 - Base ID: `AW-18419258781`.
-- `lib/googleAds.ts` exports `trackWhatsAppConversion()`, which sends `gtag('event', 'conversion', { send_to: 'AW-18419258781/1oMOCOWpnvUcEJ2r_s5E' })`.
+- `lib/googleAds.ts` exports `trackWhatsAppConversion()`, which sends `gtag('event', 'conversion', { send_to: 'AW-18419258781/1oM0COWpnvUcEJ2r_s5E' })`.
 - The utility is SSR-safe, queues early clicks in the standard `dataLayer`, catches analytics errors, and deduplicates supplied native events with a `WeakSet`.
 - `WhatsAppLink` is an explicitly opted-in native anchor with click and middle-click tracking. It preserves href, target, rel, classes, content, and existing click callbacks.
 - Programmatic WhatsApp actions call the utility immediately before their existing `window.open`. No timers, navigation overrides, or callback delays were added.

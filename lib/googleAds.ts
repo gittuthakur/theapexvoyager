@@ -1,5 +1,5 @@
 export const GOOGLE_ADS_ID = 'AW-18419258781';
-export const WHATSAPP_CONVERSION_TARGET = 'AW-18419258781/1oMOCOWpnvUcEJ2r_s5E';
+export const WHATSAPP_CONVERSION_TARGET = 'AW-18419258781/1oM0COWpnvUcEJ2r_s5E';
 
 type GoogleTag = (...args: unknown[]) => void;
 type TrackingWindow = Window & { dataLayer?: unknown[]; gtag?: GoogleTag };
