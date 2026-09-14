@@ -19,7 +19,7 @@ export default function RegionStays({ curatedStays, bookingContext, regionName }
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-apex-600">Where to stay</p>
-          <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">Handpicked Stays in {regionName}</h2>
+          <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">Stays in {regionName}</h2>
         </div>
         <Link
           href="/stays"

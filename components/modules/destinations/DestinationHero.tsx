@@ -2,6 +2,7 @@ import { Star } from 'lucide-react';
 import DetailHero from '@/components/modules/detail/DetailHero';
 import DestinationPlanJourneyButton from '@/components/modules/DestinationPlanJourneyButton';
 import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
+import { DESTINATIONS_WITHOUT_VERIFIED_IMAGE } from '@/config/destinationImageOverrides';
 import type { Destination } from '@/types/destination';
 import type { DestinationRating } from '@/lib/reviews';
 
@@ -19,6 +20,7 @@ export default function DestinationHero({ destination, rating }: DestinationHero
     <DetailHero
       image={destination.image}
       imageAlt={`${destination.title}, ${destination.state ?? 'Himalayas'}`}
+      imagePlaceholderLabel={DESTINATIONS_WITHOUT_VERIFIED_IMAGE.has(destination.slug) ? destination.title : undefined}
       imageSizes="(min-width: 1024px) 1200px, 100vw"
       eyebrow={destination.region ?? destination.category}
       title={destination.title}

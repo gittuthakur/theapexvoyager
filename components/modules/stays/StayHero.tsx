@@ -7,17 +7,21 @@ export interface StayHeroProps {
   /** The chosen primary/first gallery image — the caller (PropertyDetail) still owns
    *  building the full gallery list and rendering the rest as a thumbnail strip below. */
   image: string;
+  /** Set by the caller when the property has no real photo — renders a neutral
+   *  placeholder instead of `image` (which is unused, and may be an empty string). */
+  imagePlaceholderLabel?: string;
 }
 
 // Thin adapter over the shared DetailHero. Previously a plain white-card title block
 // followed by a separate, un-overlaid gallery image; now the same image-led hero
 // language as Region/Journey/Destination. Booking CTA stays exactly where it is today
 // (the sticky pricing aside further down the page) — not relocated into the hero.
-export default function StayHero({ hotel, image }: StayHeroProps) {
+export default function StayHero({ hotel, image, imagePlaceholderLabel }: StayHeroProps) {
   return (
     <DetailHero
       image={image}
       imageAlt={hotel.title}
+      imagePlaceholderLabel={imagePlaceholderLabel}
       imageSizes="(min-width: 1024px) 1200px, 100vw"
       eyebrow={hotel.category}
       title={hotel.title}

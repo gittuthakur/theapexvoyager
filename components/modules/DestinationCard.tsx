@@ -3,8 +3,11 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, MapPin, Star } from 'lucide-react';
+import { Mountain } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { fadeInUp, viewportOnce } from '@/lib/motion';
+import { DESTINATIONS_WITHOUT_VERIFIED_IMAGE } from '@/config/destinationImageOverrides';
 import type { Destination, DestinationStats } from '@/types';
 
 export interface DestinationCardProps {
@@ -22,6 +25,7 @@ export default function DestinationCard({ destination, stats, className, priorit
   const topBadge = destination.badge ?? destination.category;
   const styleChips = destination.travelStyles?.slice(0, 2) ?? [];
   const hasStatsRow = Boolean(stats?.startingPrice) || Boolean(stats?.journeyCount) || Boolean(stats?.stayCount);
+  const hasVerifiedImage = !DESTINATIONS_WITHOUT_VERIFIED_IMAGE.has(destination.slug);
 
   return (
     <motion.div
@@ -48,15 +52,19 @@ export default function DestinationCard({ destination, stats, className, priorit
             {destination.userRatingCount ? <span className="text-slate-300">({destination.userRatingCount})</span> : null}
           </span>
         ) : null}
-        <SafeImage
-          src={destination.image}
-          alt={locationLabel ? `${destination.title}, ${locationLabel}` : destination.title}
-          fill
-          sizes="w-100 h-100"
-          className="object-cover transition duration-500 group-hover:scale-105"
-          priority={priority}
-          loading={priority ? undefined : 'lazy'}
-        />
+        {hasVerifiedImage ? (
+          <SafeImage
+            src={destination.image}
+            alt={locationLabel ? `${destination.title}, ${locationLabel}` : destination.title}
+            fill
+            sizes="w-100 h-100"
+            className="object-cover transition duration-500 group-hover:scale-105"
+            priority={priority}
+            loading={priority ? undefined : 'lazy'}
+          />
+        ) : (
+          <MediaPlaceholder label={destination.title} icon={Mountain} fill />
+        )}
         {/* to-b (top→bottom), not to-t: the title/description sit at the bottom via
             `inset-x-0 bottom-0` below, so the darkest/most opaque stop has to land there
             for the text to actually be readable — from-black/30 at the top keeps the

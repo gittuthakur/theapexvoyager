@@ -8,7 +8,7 @@ import TrustBadges from '@/components/modules/TrustBadges';
 // in the (server) page — see the same pattern in destinations/WhyTheApexSection.tsx.
 const JOURNEYS_TRUST_BADGES = [
   { icon: MapPin, title: 'Local Himalayan Expertise', description: 'On-ground knowledge across every region' },
-  { icon: ShieldCheck, title: 'Verified Stays & Experiences', description: 'Every partner is checked by our team' },
+  { icon: ShieldCheck, title: 'Accommodation & Experience Planning', description: 'We help you plan stays and experiences around your route' },
   { icon: Sparkles, title: 'Personalized Journeys', description: 'Configured to your dates and preferences' },
   { icon: Gem, title: 'Transparent Travel Planning', description: 'Clear pricing, never a hidden surprise' },
   { icon: Headphones, title: '24/7 Travel Support', description: "We're here whenever you need us" }

@@ -20,6 +20,7 @@ import StayTypeCard from '@/components/modules/StayTypeCard';
 import DestinationStayCard from '@/components/modules/DestinationStayCard';
 import StayMoodCard from '@/components/modules/StayMoodCard';
 import PropertyCard from '@/components/modules/PropertyCard';
+import TalkToTravelTeamButton from '@/components/modules/TalkToTravelTeamButton';
 import { ButtonLink } from '@/components/ui/Button';
 import { getHotels } from '@/lib/hotels';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
@@ -78,9 +79,9 @@ const UNIQUE_STAYS: Array<{ label: string; description: string; href: string; ic
 ];
 
 const WHY_APEX_STAYS: Array<{ title: string; description: string; icon: LucideIcon }> = [
-  { title: 'Verified Stays', description: 'Every Apex Verified property is checked before it earns the badge.', icon: BadgeCheck },
-  { title: 'Local Expertise', description: 'Curated by people who actually know the Himalayas.', icon: MapPinned },
-  { title: 'Curated Recommendations', description: 'Handpicked for location, character and experience — not volume.', icon: Sparkles },
+  { title: 'Stay Planning', description: 'Help finding the right accommodation for your route.', icon: BadgeCheck },
+  { title: 'Local Expertise', description: 'Advice from people who actually know the Himalayas.', icon: MapPinned },
+  { title: 'Accommodation Options', description: 'From hotels to homestays, matched to how you want to travel.', icon: Sparkles },
   { title: '24/7 Travel Support', description: 'Real help on WhatsApp, before and during your stay.', icon: Clock }
 ];
 
@@ -156,7 +157,27 @@ export default async function StaysPage() {
             ))}
           </div>
         </section>
-      ) : null}
+      ) : (
+        <section className="mx-auto max-w-[1440px] px-6 py-12 lg:py-16">
+          <div className="mx-auto max-w-2xl rounded-3xl border border-slate-200 bg-slate-50 p-10 text-center">
+            <p className="text-md font-semibold uppercase tracking-[0.16em] text-apex-600">Places Worth Staying For</p>
+            <h2 className="mx-auto mt-3 text-2xl font-bold text-slate-900 sm:text-3xl">Curated stays are being added</h2>
+            <p className="mx-auto mt-4 text-slate-600">
+              Our travel team can help you choose the right accommodation while planning your trip — tell us where
+              you&apos;re headed and we&apos;ll take it from there.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
+              <Link
+                href={siteConfig.bookNowHref}
+                className="cursor-hover inline-flex items-center gap-2 rounded-full bg-apex-500 px-6 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400"
+              >
+                Plan My Journey <ArrowRight size={16} />
+              </Link>
+              <TalkToTravelTeamButton className="min-h-[48px]" />
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* 5. Stay by feeling */}
       <section className='bg-slate-100 py-12 lg:py-16'>

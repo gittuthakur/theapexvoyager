@@ -1,10 +1,16 @@
 import type { ReactNode } from 'react';
+import { Mountain } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { cn } from '@/lib/utils';
 
 export interface DetailHeroProps {
   image: string;
   imageAlt: string;
+  /** When set, renders a neutral placeholder instead of `image` — for a subject with no
+   *  verified photo, so an unrelated real photograph is never shown in its place. Every
+   *  caller that doesn't pass this renders exactly as before. */
+  imagePlaceholderLabel?: string;
   eyebrow?: string;
   title: ReactNode;
   subtitle?: string;
@@ -35,6 +41,7 @@ export interface DetailHeroProps {
 export default function DetailHero({
   image,
   imageAlt,
+  imagePlaceholderLabel,
   eyebrow,
   title,
   subtitle,
@@ -47,7 +54,11 @@ export default function DetailHero({
   return (
     <section className={cn('relative isolate overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-900', className)}>
       <div className="absolute inset-0">
-        <SafeImage src={image} alt={imageAlt} fill priority sizes={imageSizes} className="object-cover" />
+        {imagePlaceholderLabel ? (
+          <MediaPlaceholder label={imagePlaceholderLabel} icon={Mountain} fill />
+        ) : (
+          <SafeImage src={image} alt={imageAlt} fill priority sizes={imageSizes} className="object-cover" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-slate-950/10" />
       </div>
 

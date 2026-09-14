@@ -126,13 +126,17 @@ export default async function HomePage() {
 
   // "Destinations", "Stays & Properties" and "Curated Journeys" are real catalog counts —
   // compute them from the same data sources the rest of the homepage uses instead of the
-  // hardcoded placeholders in stats.config.ts.
-  const homepageStats: StatItem[] = statsItems.map((item) => {
-    if (item.label === 'Destinations') return { ...item, value: `${destinations.length}+` };
-    if (item.label === 'Stays & Properties') return { ...item, value: `${hotels.length}+` };
-    if (item.label === 'Curated Journeys') return { ...item, value: `${allPackages.length}+` };
-    return item;
-  });
+  // hardcoded placeholders in stats.config.ts. "Stays & Properties" is dropped entirely
+  // (rather than shown as "0+") whenever there's nothing real to publicly list yet — same
+  // honest-zero rule the testimonials below already follow.
+  const homepageStats: StatItem[] = statsItems
+    .filter((item) => item.label !== 'Stays & Properties' || hotels.length > 0)
+    .map((item) => {
+      if (item.label === 'Destinations') return { ...item, value: `${destinations.length}+` };
+      if (item.label === 'Stays & Properties') return { ...item, value: `${hotels.length}+` };
+      if (item.label === 'Curated Journeys') return { ...item, value: `${allPackages.length}+` };
+      return item;
+    });
 
   // Real reviews only — sourced from the Review collection (see lib/reviews.ts). No
   // fallback/demo data: an empty collection means no testimonials render at all.

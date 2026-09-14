@@ -9,10 +9,10 @@ import StayHero from '@/components/modules/stays/StayHero';
 import DetailPageContainer from '@/components/modules/detail/DetailPageContainer';
 import BackButton from '@/components/ui/BackButton';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { getHotels, getHotelBySlug } from '@/lib/hotels';
 import { getPackagesByDestinationSlug } from '@/lib/packages';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
-import { getPlaceholderImageForCategory } from '@/lib/hotelImages';
 import { destinations } from '@/config/destinations.config';
 import { findStayTypeBySlug } from '@/config/stayTypes.config';
 import { CATEGORY_TO_STAY_TYPE } from '@/types/stay';
@@ -192,7 +192,7 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
   const journeys = nearbyJourneys.slice(0, 2);
 
   const price = hotel.places?.customPrice ?? hotel.pricePerNight;
-  const galleryImages = hotel.images.length > 0 ? hotel.images : [getPlaceholderImageForCategory(hotel.category)];
+  const galleryImages = hotel.images;
 
   return (
     <DetailPageContainer>
@@ -201,7 +201,11 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
         label="Back to Apex Stays"
       />
 
-      <StayHero hotel={hotel} image={galleryImages[0]} />
+      <StayHero
+        hotel={hotel}
+        image={galleryImages[0] ?? ''}
+        imagePlaceholderLabel={galleryImages[0] ? undefined : 'Photo not available yet'}
+      />
 
       {galleryImages.length > 1 ? (
         <div className="flex gap-2 overflow-x-auto">

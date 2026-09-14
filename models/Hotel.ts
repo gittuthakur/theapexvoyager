@@ -17,6 +17,17 @@ export interface HotelDocument extends Document {
   verified?: boolean;
   cancellationPolicy?: string;
   mealPlan?: string;
+  /** Gates whether a Hotel may be shown on any customer-facing listing/detail surface at
+   *  all. Defaults to `false` so every currently-seeded record (demo/seed data — see
+   *  config/hotels.config.ts; a September 2026 media-authenticity audit found none of
+   *  them has real-world property or image identity evidence) stays hidden from the
+   *  public catalogue without any data migration: existing documents simply lack this
+   *  field, and a missing field never satisfies a `{publiclyListed: true}` query
+   *  regardless of the schema default below (Mongoose defaults only apply to
+   *  newly-constructed documents, never to a query against already-stored data). A
+   *  future genuine, identity-verified property must explicitly set this to `true` to
+   *  appear anywhere public (lib/hotels.ts). Mirrors models/Expert.ts's identical field. */
+  publiclyListed?: boolean;
   /** Backfilled by scripts/backfillRegionRefs.ts from `location` — see models/Region.ts. */
   regionId?: Types.ObjectId;
 }
@@ -41,6 +52,7 @@ const HotelSchema = new Schema<HotelDocument>(
     verified: { type: Boolean },
     cancellationPolicy: { type: String },
     mealPlan: { type: String },
+    publiclyListed: { type: Boolean, default: false },
     regionId: { type: Schema.Types.ObjectId, ref: 'Region' }
   },
   { timestamps: true }
@@ -48,11 +60,11 @@ const HotelSchema = new Schema<HotelDocument>(
 
 // Matches getHotels()'s default sort (lib/hotels.ts) so an unfiltered listing reads
 // straight off the index instead of an in-memory sort of the full collection.
-HotelSchema.index({ featured: -1, createdAt: 1 });
+HotelSchema.index({ publiclyListed: 1, featured: -1, createdAt: 1 });
 // Supports the `category` filter in getHotels().
-HotelSchema.index({ category: 1 });
+HotelSchema.index({ publiclyListed: 1, category: 1 });
 // Supports the Region Hub's per-region stays listing.
-HotelSchema.index({ regionId: 1, featured: -1, createdAt: 1 });
+HotelSchema.index({ regionId: 1, publiclyListed: 1, featured: -1, createdAt: 1 });
 
 // `models.Hotel` survives Next.js dev hot-reloads — without this guard, re-running this
 // module would call `model()` on an already-registered name and throw.

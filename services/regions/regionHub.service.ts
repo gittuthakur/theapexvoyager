@@ -71,7 +71,12 @@ export async function getRegionHubData(slug: string): Promise<RegionHubData | nu
       Destination.find({ regionId: regionObjectId }).sort({ priority: 1 }).lean<DestinationDocument[]>(),
       Journey.find({ regionId: regionObjectId }).sort({ featured: -1, createdAt: 1 }).lean<JourneyDocument[]>(),
       Tour.find({ regionId: regionObjectId }).sort({ featured: -1, createdAt: 1 }).lean<TourDocument[]>(),
-      Hotel.find({ regionId: regionObjectId }).sort({ featured: -1, createdAt: 1 }).limit(6).lean<HotelDocument[]>(),
+      // `publiclyListed: true` required — see models/Hotel.ts's field comment (media-
+      // authenticity remediation, Phase A). Without it this query bypassed
+      // lib/hotels.ts's getHotels() gate entirely and kept surfacing the demo/seed
+      // hotel records on every Region Hub page — the same latent-bug pattern already
+      // fixed for Expert above.
+      Hotel.find({ regionId: regionObjectId, publiclyListed: true }).sort({ featured: -1, createdAt: 1 }).limit(6).lean<HotelDocument[]>(),
       Experience.find({ regionId: regionObjectId }).sort({ featured: -1 }).lean<ExperienceDocument[]>(),
       TransportRoute.find({ regionId: regionObjectId, active: true }).sort({ featured: -1, createdAt: 1 }).lean<TransportRouteDocument[]>(),
       TransportVehicle.find({ regionIds: regionObjectId, active: true }).sort({ featured: -1, createdAt: 1 }).lean<TransportVehicleDocument[]>(),

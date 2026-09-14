@@ -23,6 +23,8 @@ import { getRoutes } from '@/lib/transport';
 import { getDestinationRatingsMap } from '@/lib/reviews';
 import { getRegionForState, getRegionHubSlug } from '@/lib/regions';
 import { formatINR } from '@/lib/pricing';
+import { images } from '@/config/images.config';
+import { DESTINATIONS_WITHOUT_VERIFIED_IMAGE } from '@/config/destinationImageOverrides';
 import type { DestinationAccessType, DestinationMatchScores } from '@/types/destination';
 
 export const dynamic = 'force-dynamic';
@@ -38,11 +40,16 @@ export async function generateMetadata({ params }: DestinationDetailPageProps): 
 
   const title = destination.seo?.title ?? `${destination.title} Travel Guide | The Apex Voyager`;
   const description = destination.seo?.description ?? destination.description;
+  // This destination's configured image was found to actually depict a different place
+  // (see config/destinationImageOverrides.ts) — the generic site-wide hero image is used
+  // for the social preview instead of a misattributed photo, same fallback the root
+  // layout already uses for pages with no page-specific image.
+  const ogImage = DESTINATIONS_WITHOUT_VERIFIED_IMAGE.has(destination.slug) ? images.hero : destination.image;
   return {
     title,
     description,
     alternates: { canonical: `/destinations/${destination.slug}` },
-    openGraph: { title, description, url: `/destinations/${destination.slug}`, images: [{ url: destination.image, alt: destination.title }] }
+    openGraph: { title, description, url: `/destinations/${destination.slug}`, images: [{ url: ogImage, alt: destination.title }] }
   };
 }
 

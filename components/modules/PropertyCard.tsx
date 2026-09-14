@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, BadgeCheck, Heart, MapPin, Star } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
-import { getPlaceholderImageForCategory } from '@/lib/hotelImages';
 import { CATEGORY_TO_STAY_TYPE } from '@/types/stay';
 import { cn } from '@/lib/utils';
 import type { HotelPackage } from '@/types';
@@ -74,19 +74,23 @@ export default function PropertyCard({ hotel, checkIn, checkOut, guests, priorit
   const detailHref = detailQuery ? `/stays/${hotel.slug}?${detailQuery}` : `/stays/${hotel.slug}`;
 
   const price = hotel.places?.customPrice ?? hotel.pricePerNight;
-  const imageSrc = hotel.images[0] ?? getPlaceholderImageForCategory(hotel.category);
+  const imageSrc = hotel.images[0];
 
   return (
     <article className="group flex h-full flex-col rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm transition-all duration-300 ease-in-out motion-safe:hover:-translate-y-1 hover:shadow-lg">
       <div className="relative h-52 overflow-hidden bg-slate-300 sm:h-52">
-        <SafeImage
-          src={imageSrc}
-          alt={hotel.title}
-          fill
-          sizes="(min-width: 1280px) 30vw, (min-width: 640px) 45vw, 90vw"
-          className="object-cover transition duration-500 ease-in-out motion-safe:group-hover:scale-105"
-          priority={priority}
-        />
+        {imageSrc ? (
+          <SafeImage
+            src={imageSrc}
+            alt={hotel.title}
+            fill
+            sizes="(min-width: 1280px) 30vw, (min-width: 640px) 45vw, 90vw"
+            className="object-cover transition duration-500 ease-in-out motion-safe:group-hover:scale-105"
+            priority={priority}
+          />
+        ) : (
+          <MediaPlaceholder fill />
+        )}
         <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2">
           <span className="rounded-full bg-white/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-apex-600 backdrop-blur-sm">
             {hotel.category}

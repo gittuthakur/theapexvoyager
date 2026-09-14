@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowRight, MapPin, Star } from 'lucide-react';
 import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { CATEGORY_TO_STAY_TYPE } from '@/types/stay';
 import type { HotelPackage } from '@/types';
 
@@ -23,13 +24,17 @@ export default function HotelCard({ hotel, checkIn, checkOut, guests }: HotelCar
   return (
     <article className="group rounded-[2rem] border border-slate-200 bg-white p-6 shadow-glow transition hover:-translate-y-1">
       <div className="relative h-72 overflow-hidden rounded-[1.5rem] bg-slate-100">
-        <SafeImage
-          src={hotel.images[0]}
-          alt={hotel.title}
-          fill
-          sizes="(min-width: 1024px) 33vw, 90vw"
-          className="object-cover transition duration-500 group-hover:scale-105"
-        />
+        {hotel.images[0] ? (
+          <SafeImage
+            src={hotel.images[0]}
+            alt={hotel.title}
+            fill
+            sizes="(min-width: 1024px) 33vw, 90vw"
+            className="object-cover transition duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <MediaPlaceholder fill />
+        )}
         <span className="absolute left-4 top-4 rounded-full bg-apex-500 px-3 py-1 text-xs font-semibold uppercase text-white">
           {hotel.category}
         </span>
