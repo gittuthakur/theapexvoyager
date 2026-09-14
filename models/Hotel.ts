@@ -30,6 +30,14 @@ export interface HotelDocument extends Document {
   publiclyListed?: boolean;
   /** Backfilled by scripts/backfillRegionRefs.ts from `location` — see models/Region.ts. */
   regionId?: Types.ObjectId;
+  /** Explicit destination-slug mapping (config/destinations.config.ts slugs) — the
+   *  preferred match for lib/hotels.ts's `getHotels({ destinationSlug })` over the
+   *  legacy free-text `location` regex (lib/stayLocation.ts's `searchLocations`), which
+   *  remains as a fallback for any record that hasn't set this yet. Purely additive: no
+   *  currently-seeded record has this field, so this changes nothing for them today —
+   *  a future genuine property should set it explicitly rather than relying on
+   *  substring matching alone. */
+  destinationSlugs?: string[];
 }
 
 const HotelSchema = new Schema<HotelDocument>(
@@ -53,7 +61,8 @@ const HotelSchema = new Schema<HotelDocument>(
     cancellationPolicy: { type: String },
     mealPlan: { type: String },
     publiclyListed: { type: Boolean, default: false },
-    regionId: { type: Schema.Types.ObjectId, ref: 'Region' }
+    regionId: { type: Schema.Types.ObjectId, ref: 'Region' },
+    destinationSlugs: { type: [String] }
   },
   { timestamps: true }
 );
@@ -65,6 +74,8 @@ HotelSchema.index({ publiclyListed: 1, featured: -1, createdAt: 1 });
 HotelSchema.index({ publiclyListed: 1, category: 1 });
 // Supports the Region Hub's per-region stays listing.
 HotelSchema.index({ regionId: 1, publiclyListed: 1, featured: -1, createdAt: 1 });
+// Supports getHotels()'s preferred `destinationSlug` match (lib/hotels.ts).
+HotelSchema.index({ publiclyListed: 1, destinationSlugs: 1 });
 
 // `models.Hotel` survives Next.js dev hot-reloads — without this guard, re-running this
 // module would call `model()` on an already-registered name and throw.

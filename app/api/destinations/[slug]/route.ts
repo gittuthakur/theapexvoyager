@@ -5,6 +5,7 @@ import { getToursByDestinationSlug } from '@/lib/tours';
 import { getExperiencesByDestination } from '@/lib/experiences';
 import { getExpertsByDestinationSlug } from '@/lib/experts';
 import { getHotels } from '@/lib/hotels';
+import { getStayLocationContext } from '@/lib/stayLocation';
 
 // GET /api/destinations/[slug] -> the destination "graph": the curated destination
 // record plus everything else site-wide that relates to it (tours, journeys,
@@ -29,7 +30,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   // degrades to an empty stays summary rather than failing the whole graph response.
   let stays: { count: number; fromPrice: number | null } = { count: 0, fromPrice: null };
   try {
-    const hotels = await getHotels({ destination: destination.title });
+    const hotels = await getHotels({
+      locations: getStayLocationContext(destination).searchLocations,
+      destinationSlug: destination.slug
+    });
     stays = {
       count: hotels.length,
       fromPrice: hotels.length > 0 ? Math.min(...hotels.map((hotel) => hotel.pricePerNight)) : null

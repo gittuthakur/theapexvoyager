@@ -2,13 +2,17 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { destinations as allDestinations } from '@/config/destinations.config';
+import { getStayLocationContext } from '@/lib/stayLocation';
 import type { Destination } from '@/types/destination';
 import type { HotelPackage } from '@/types';
 
 export interface DestinationStayCardProps {
   destinations?: Destination[];
-  /** Real stay counts are computed from this list (same location-substring match
-   *  `getHotels({ destination })` already uses) — omit it to render without counts. */
+  /** Real stay counts are computed from this list, matched against each destination's
+   *  canonical Stay-location context (lib/stayLocation.ts) — the same mapping
+   *  /stays/[destination] and the destination detail page use — rather than a raw title
+   *  substring, so a destination like Joshimath (Jyotirmath) or Dharamshala (McLeod
+   *  Ganj) counts correctly. Omit `hotels` to render without counts. */
   hotels?: HotelPackage[];
 }
 
@@ -26,7 +30,11 @@ export default function DestinationStayCard({ destinations = defaultDestinations
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
       {destinations.map((destination) => {
-        const stayCount = hotels?.filter((hotel) => hotel.location.toLowerCase().includes(destination.title.toLowerCase())).length;
+        const searchLocations = getStayLocationContext(destination).searchLocations.map((loc) => loc.toLowerCase());
+        const stayCount = hotels?.filter(
+          (hotel) =>
+            hotel.destinationSlugs?.includes(destination.slug) || searchLocations.some((loc) => hotel.location.toLowerCase().includes(loc))
+        ).length;
         const description = destination.editorialDescription ?? destination.description;
         return (
           <Link

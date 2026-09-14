@@ -13,6 +13,8 @@ import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { getHotels, getHotelBySlug } from '@/lib/hotels';
 import { getPackagesByDestinationSlug } from '@/lib/packages';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
+import { getStayLocationContext } from '@/lib/stayLocation';
+import { primaryDestinationName } from '@/lib/experiences';
 import { destinations } from '@/config/destinations.config';
 import { findStayTypeBySlug } from '@/config/stayTypes.config';
 import { CATEGORY_TO_STAY_TYPE } from '@/types/stay';
@@ -110,25 +112,33 @@ export default async function StaysCatchAllPage({ params, searchParams }: StaysC
   }
 
   if (resolved.kind === 'destination') {
-    const hotels = await getHotels({ destination: resolved.destination.title });
+    const stayContext = getStayLocationContext(resolved.destination);
+    const hotels = await getHotels({ locations: stayContext.searchLocations, destinationSlug: resolved.destination.slug });
     return (
       <StayListing
         eyebrow="Apex Stays"
-        title={`Stays in ${resolved.destination.title}`}
-        subtitle={`Hotels, homestays, resorts and unique stays in ${resolved.destination.title}.`}
+        title={stayContext.headingLabel}
+        subtitle={stayContext.helperText ?? `Hotels, homestays, resorts and unique stays in ${stayContext.destinationName}.`}
         hotels={hotels}
+        emptyMessage={stayContext.emptyStateMessage}
       />
     );
   }
 
   if (resolved.kind === 'combined') {
-    const hotels = await getHotels({ category: resolved.stayType.category, destination: resolved.destination.title });
+    const stayContext = getStayLocationContext(resolved.destination);
+    const hotels = await getHotels({
+      category: resolved.stayType.category,
+      locations: stayContext.searchLocations,
+      destinationSlug: resolved.destination.slug
+    });
     return (
       <StayListing
         eyebrow="Apex Stays"
-        title={`${resolved.stayType.label} in ${resolved.destination.title}`}
-        subtitle={`${resolved.stayType.label} available in ${resolved.destination.title}.`}
+        title={`${resolved.stayType.label} in ${stayContext.destinationName}`}
+        subtitle={stayContext.helperText ?? `${resolved.stayType.label} available in ${stayContext.destinationName}.`}
         hotels={hotels}
+        emptyMessage={stayContext.emptyStateMessage}
       />
     );
   }
@@ -137,7 +147,19 @@ export default async function StaysCatchAllPage({ params, searchParams }: StaysC
   return <PropertyDetail hotel={resolved.hotel} checkIn={checkIn} checkOut={checkOut} guests={guests} />;
 }
 
-function StayListing({ eyebrow, title, subtitle, hotels }: { eyebrow: string; title: string; subtitle: string; hotels: HotelPackage[] }) {
+function StayListing({
+  eyebrow,
+  title,
+  subtitle,
+  hotels,
+  emptyMessage
+}: {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  hotels: HotelPackage[];
+  emptyMessage?: string;
+}) {
   return (
     <main id="main-content" className="px-6 py-10 sm:px-10 lg:px-16">
       <section className="mx-auto max-w-[1440px] space-y-5">
@@ -151,7 +173,7 @@ function StayListing({ eyebrow, title, subtitle, hotels }: { eyebrow: string; ti
 
         {hotels.length === 0 ? (
           <div className="rounded-2xl border border-slate-300 bg-white p-10 text-center text-slate-600 shadow-glow">
-            <p className="text-lg font-semibold text-slate-900">No stays match this yet.</p>
+            <p className="text-lg font-semibold text-slate-900">{emptyMessage ?? 'No stays match this yet.'}</p>
             <p className="mt-3">Try browsing all stays instead.</p>
             <Link href="/stays" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-apex-600 hover:text-apex-700">
               Back to Apex Stays <ArrowRight size={16} />
@@ -181,7 +203,7 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
   // honest cross-sell modules below (nearby experiences, similar journeys) — the
   // Hotel model itself has no destinationSlug foreign key today.
   const matchedDestination: Destination | undefined = destinations.find((destination) =>
-    hotel.location.toLowerCase().includes(destination.title.toLowerCase())
+    hotel.location.toLowerCase().includes(primaryDestinationName(destination.title).toLowerCase())
   );
 
   const [similarStays, nearbyJourneys] = await Promise.all([

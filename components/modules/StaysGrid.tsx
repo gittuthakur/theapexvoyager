@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Star } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
@@ -8,19 +8,59 @@ import { SkeletonGrid } from '@/components/ui/Skeleton';
 import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
 import { cn } from '@/lib/utils';
 import { fadeInUp } from '@/lib/motion';
-import { STAY_TYPES, STAY_TYPE_LABELS, type Stay, type StayType } from '@/types/stay';
+import { STAY_TYPES, STAY_TYPE_LABELS, CATEGORY_TO_STAY_TYPE, type Stay, type StayType } from '@/types/stay';
+import type { HotelPackage } from '@/types/hotel';
 
 export interface StaysGridProps {
   location: string;
   /** The destination's real state (e.g. "Jammu & Kashmir") — forwarded to the stays API so
    *  it never falls back to the Himachal Pradesh-only default for a non-Himachal destination. */
   state?: string;
+  /** publiclyListed curated Hotel records for this destination's mapped location(s) — see
+   *  lib/stayLocation.ts. Source priority: curated first, Google Places second (this
+   *  section's existing data source), honest empty state last — never fabricated. */
+  curatedStays?: HotelPackage[];
+  destinationSlug?: string;
+  /** Stay-mode-aware copy (lib/stayLocation.ts) — falls back to the previous generic
+   *  message if not provided. */
+  emptyStateMessage?: string;
 }
 
-export default function StaysGrid({ location, state }: StaysGridProps) {
-  const [stays, setStays] = useState<Stay[]>([]);
+function hotelToStay(hotel: HotelPackage, destinationSlug?: string): Stay {
+  return {
+    placeId: `curated:${hotel.slug}`,
+    name: hotel.title,
+    slug: hotel.slug,
+    stayType: CATEGORY_TO_STAY_TYPE[hotel.category],
+    formattedAddress: hotel.location,
+    rating: hotel.rating,
+    userRatingCount: hotel.reviewCount,
+    photos: hotel.images,
+    customPrice: hotel.pricePerNight,
+    destinationSlug: destinationSlug ?? hotel.slug
+  };
+}
+
+function identityKey(name: string, address: string | undefined): string {
+  return `${name.trim().toLowerCase()}|${(address ?? '').trim().toLowerCase()}`;
+}
+
+/** Excludes any Google Places result that's an exact (not fuzzy) name+address match for
+ *  a curated stay already shown — a curated listing and a live Places result for the
+ *  same real property should never both render as separate cards. Deliberately does
+ *  NOT use substring/`includes()` matching (too easy to falsely collapse two distinct
+ *  properties with related names) — see AGENTS.md Phase B section 19. */
+function dedupeAgainstCurated(curated: Stay[], google: Stay[]): Stay[] {
+  const curatedKeys = new Set(curated.map((stay) => identityKey(stay.name, stay.formattedAddress)));
+  return google.filter((stay) => !curatedKeys.has(identityKey(stay.name, stay.formattedAddress)));
+}
+
+export default function StaysGrid({ location, state, curatedStays = [], destinationSlug, emptyStateMessage }: StaysGridProps) {
+  const [googleStays, setGoogleStays] = useState<Stay[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [activeType, setActiveType] = useState<StayType | 'all'>('all');
+
+  const curatedAsStays = useMemo(() => curatedStays.map((hotel) => hotelToStay(hotel, destinationSlug)), [curatedStays, destinationSlug]);
 
   useEffect(() => {
     let cancelled = false;
@@ -34,7 +74,7 @@ export default function StaysGrid({ location, state }: StaysGridProps) {
       })
       .then((data: { stays: Stay[] }) => {
         if (cancelled) return;
-        setStays(data.stays ?? []);
+        setGoogleStays(data.stays ?? []);
         setStatus('ready');
       })
       .catch((error) => {
@@ -47,19 +87,25 @@ export default function StaysGrid({ location, state }: StaysGridProps) {
     };
   }, [location, state]);
 
+  // publiclyListed curated stays render immediately without waiting on the Google
+  // Places round trip — they're already-verified data, not something that should be
+  // hidden behind a loading skeleton just because a supplementary source is slow or
+  // unavailable (e.g. production has no GOOGLE_PLACES_API_KEY configured today).
+  const stays = status === 'ready' ? [...curatedAsStays, ...dedupeAgainstCurated(curatedAsStays, googleStays)] : curatedAsStays;
+
   const visibleStays = activeType === 'all' ? stays : stays.filter((stay) => stay.stayType === activeType);
   const availableTypes = STAY_TYPES.filter((stayType) => stays.some((stay) => stay.stayType === stayType));
 
-  if (status === 'loading') {
+  if (status === 'loading' && curatedAsStays.length === 0) {
     return <SkeletonGrid count={6} className="sm:grid-cols-2 xl:grid-cols-3" />;
   }
 
-  if (status === 'error') {
+  if (status === 'error' && curatedAsStays.length === 0) {
     return <p className="text-sm text-slate-500">We couldn't load live stays right now — please check back shortly.</p>;
   }
 
   if (stays.length === 0) {
-    return <p className="text-sm text-slate-500">No stays found near {location} yet.</p>;
+    return <p className="text-sm text-slate-500">{emptyStateMessage ?? `No stays found near ${location} yet.`}</p>;
   }
 
   return (

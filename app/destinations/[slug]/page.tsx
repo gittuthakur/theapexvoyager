@@ -20,6 +20,8 @@ import { getToursByDestinationSlug } from '@/lib/tours';
 import { getExperiencesByDestination, primaryDestinationName } from '@/lib/experiences';
 import { getExpertsByDestinationSlug } from '@/lib/experts';
 import { getRoutes } from '@/lib/transport';
+import { getHotels } from '@/lib/hotels';
+import { getStayLocationContext } from '@/lib/stayLocation';
 import { getDestinationRatingsMap } from '@/lib/reviews';
 import { getRegionForState, getRegionHubSlug } from '@/lib/regions';
 import { formatINR } from '@/lib/pricing';
@@ -94,10 +96,12 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
   // reaches the shrine. Falls back to `title` for the ordinary drive-straight-there
   // majority of destinations, where that's already the correct search target.
   const routesToDestination = await getRoutes({ destination: destination.roadHead ?? primaryDestinationName(destination.title) });
-  // Same reasoning for Stays: `stayBaseLocations[0]` is the real overnight-stay base
-  // travelers actually book (e.g. Guptkashi for Kedarnath), not the shrine itself, which
-  // typically has limited, seasonal, or no accommodation.
-  const stayBaseLocation = destination.stayBaseLocations?.[0];
+  // Canonical Destination↔Stay location mapping (Phase B) — the single source both this
+  // embedded section and /stays/[...segments] read for where this destination's
+  // accommodation actually is and how the UI should describe it. See
+  // lib/stayLocation.ts and config/stayLocations.config.ts.
+  const stayContext = getStayLocationContext(destination);
+  const curatedStays = await getHotels({ locations: stayContext.searchLocations, destinationSlug: destination.slug });
   // Real rating computed from actual Review documents — takes precedence over the static
   // config rating so this never disagrees with the rating shown on journey cards
   // elsewhere on the site (both of which read from the same getDestinationRatingsMap).
@@ -326,12 +330,8 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-apex-600">Where to stay</p>
-              <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">Hotels, Homestays &amp; Unique Stays in {destination.title}</h2>
-              {stayBaseLocation ? (
-                <p className="mt-2 text-sm text-slate-500">
-                  Showing stays around {stayBaseLocation} — the usual overnight base, since {destination.title} itself has limited or seasonal accommodation.
-                </p>
-              ) : null}
+              <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">{stayContext.headingLabel}</h2>
+              {stayContext.helperText ? <p className="mt-2 text-sm text-slate-500">{stayContext.helperText}</p> : null}
             </div>
             <Link
               href={`/stays/${destination.slug}`}
@@ -341,7 +341,13 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
             </Link>
           </div>
           <div className="mt-6">
-            <StaysGrid location={stayBaseLocation ?? primaryDestinationName(destination.title)} state={destination.state} />
+            <StaysGrid
+              location={stayContext.primaryStayLocation}
+              state={destination.state}
+              destinationSlug={destination.slug}
+              curatedStays={curatedStays}
+              emptyStateMessage={stayContext.emptyStateMessage}
+            />
           </div>
         </div>
 
