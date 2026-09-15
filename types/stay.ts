@@ -29,6 +29,22 @@ export const CATEGORY_TO_STAY_TYPE: Record<
   GuestHouse: 'homestay'
 };
 
+// An official/provider-verified hotel STAR CLASS — a fundamentally different concept
+// from a Google guest rating (the average of customer reviews, e.g. 4.8). A 4.8 rating
+// does not mean a 5-star property, and a 3-star property can easily have a higher
+// guest rating than a 5-star one. Deliberately capped at 5 — see AGENTS.md's "no 7-star
+// marketing claims" rule: only a real provider's own classification may ever populate
+// this, never inferred from rating, price, review count, name, or photos.
+//
+// No trusted source for this exists anywhere in the app today (audited 2026-09):
+// PlaceCache has no such field, the curated Hotel schema has no such field, and
+// services/providers/booking/ (the only other provider integration) is an unpopulated,
+// credential-gated skeleton (see its own doc comments) whose types carry no star class
+// either. This field exists so the data model and UI can represent one honestly the
+// moment a real source is connected — it is never populated today, and no filter or
+// badge should render for it while that remains true.
+export type HotelClass = '3-star' | '4-star' | '5-star' | 'luxury';
+
 // A single accommodation discovered via Google Places (New) Text Search, cached in
 // MongoDB (models/PlaceCache.ts) with a 30-day TTL, OR a publiclyListed curated Hotel
 // record adapted to this same shape for display alongside Google results (see
@@ -64,4 +80,7 @@ export interface Stay {
    *  never cached or returned in the first place, so this only ever holds the three
    *  "shown" values for a google-sourced Stay; absent for curated Stays. */
   locationClassification?: 'exact' | 'nearby' | 'access-base';
+  /** See HotelClass's own doc comment — always unset today; never derived from
+   *  `rating`. Kept separate from `rating` in the UI wherever both are shown. */
+  hotelClass?: HotelClass;
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { MapPin, Star } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
@@ -143,58 +144,76 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
 // Exported so server-rendered catalog/search listings can render the exact same card
 // (safe photo fallback, honest "Contact for pricing", Google attribution) rather than
 // a second, divergent card template.
+// Google-backed stays have a real, canonical detail page (/stays/property/<placeId>
+// — see app/stays/[...segments]/page.tsx's getStayByPlaceId); curated stays reuse the
+// existing curated Hotel detail page at /stays/<hotel-slug>. `stay.placeId` for a
+// curated Stay is `curated:${hotel.slug}` (see lib/stayMerge.ts's hotelToStay), which
+// isn't a resolvable route on its own, so the two sources need different hrefs.
+function stayDetailHref(stay: Stay): string {
+  return stay.source === 'google' ? `/stays/property/${stay.placeId}` : `/stays/${stay.slug}`;
+}
+
 export function StayCard({ stay, priority = false }: { stay: Stay; priority?: boolean }) {
+  const href = stayDetailHref(stay);
+
   return (
     <article className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-lg transition hover:-translate-y-1">
-      <div className="relative h-48 w-full overflow-hidden bg-slate-100">
-        <span className="absolute left-3 top-3 z-10 rounded-full bg-apex-500 px-3 py-1 text-xs font-semibold text-white">
-          {STAY_TYPE_LABELS[stay.stayType]}
-        </span>
-        {stay.rating ? (
-          <span className="absolute right-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-[#0a0a0a]/70 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
-            <Star size={12} className="fill-amber-400 text-amber-400" />
-            {stay.rating.toFixed(1)}
-            {stay.userRatingCount ? <span className="text-slate-300"> ({stay.userRatingCount})</span> : null}
-            {/* Provenance disclosure — see AGENTS.md Phase C section 22: never imply The
-                Apex Voyager verified a rating that actually came from Google. */}
-            {stay.source === 'google' ? <span className="text-slate-300"> · Google</span> : null}
+      {/* Only the image + name are inside the Link — WhatsAppEnquireButton below is a
+          <button>, and interactive content must never nest inside an <a> (HTML5's
+          content model forbids it, and it breaks keyboard/screen-reader navigation). */}
+      <Link href={href} className="cursor-hover block">
+        <div className="relative h-48 w-full overflow-hidden bg-slate-100">
+          <span className="absolute left-3 top-3 z-10 rounded-full bg-apex-500 px-3 py-1 text-xs font-semibold text-white">
+            {STAY_TYPE_LABELS[stay.stayType]}
           </span>
-        ) : null}
-        {stay.photos[0] ? (
-          <SafeImage
-            src={stay.photos[0]}
-            alt={stay.name}
-            fill
-            sizes="(min-width: 1280px) 360px, 90vw"
-            className="object-cover"
-            priority={priority}
-            loading={priority ? undefined : 'lazy'}
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-slate-600">No photo available</div>
-        )}
-      </div>
+          {stay.rating ? (
+            <span className="absolute right-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-[#0a0a0a]/70 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+              <Star size={12} className="fill-amber-400 text-amber-400" />
+              {stay.rating.toFixed(1)}
+              {stay.userRatingCount ? <span className="text-slate-300"> ({stay.userRatingCount})</span> : null}
+              {/* Provenance disclosure — see AGENTS.md Phase C section 22: never imply The
+                  Apex Voyager verified a rating that actually came from Google. */}
+              {stay.source === 'google' ? <span className="text-slate-300"> · Google</span> : null}
+            </span>
+          ) : null}
+          {stay.photos[0] ? (
+            <SafeImage
+              src={stay.photos[0]}
+              alt={stay.name}
+              fill
+              sizes="(min-width: 1280px) 360px, 90vw"
+              className="object-cover"
+              priority={priority}
+              loading={priority ? undefined : 'lazy'}
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-slate-600">No photo available</div>
+          )}
+        </div>
 
-      <div className="space-y-3 p-5">
-        <h3 className="text-lg font-bold text-slate-900">{stay.name}</h3>
-        {stay.formattedAddress ? (
-          <p className="flex items-center gap-1.5 truncate text-sm text-slate-500">
-            <MapPin size={14} className="shrink-0 text-apex-600" />
-            <span className="truncate">{stay.formattedAddress}</span>
-          </p>
-        ) : null}
+        <div className="space-y-3 p-5 pb-0">
+          <h3 className="text-lg font-bold text-slate-900">{stay.name}</h3>
+          {stay.formattedAddress ? (
+            <p className="flex items-center gap-1.5 truncate text-sm text-slate-500">
+              <MapPin size={14} className="shrink-0 text-apex-600" />
+              <span className="truncate">{stay.formattedAddress}</span>
+            </p>
+          ) : null}
 
-        {stay.photos.length > 1 ? (
-          <div className="flex gap-1.5">
-            {stay.photos.slice(1, 4).map((photo, index) => (
-              <span key={photo} className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-slate-200">
-                <SafeImage src={photo} alt={`${stay.name} photo ${index + 2}`} fill sizes="40px" className="object-cover" />
-              </span>
-            ))}
-          </div>
-        ) : null}
+          {stay.photos.length > 1 ? (
+            <div className="flex gap-1.5">
+              {stay.photos.slice(1, 4).map((photo, index) => (
+                <span key={photo} className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-slate-200">
+                  <SafeImage src={photo} alt={`${stay.name} photo ${index + 2}`} fill sizes="40px" className="object-cover" />
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      </Link>
 
-        <div className="flex flex-col justify-between gap-3 pt-2">
+      <div className="space-y-3 p-5 pt-3">
+        <div className="flex flex-col justify-between gap-3">
           <div>
             <p className="text-xs uppercase tracking-wider text-slate-500">Starting from</p>
             <p className="text-md font-bold text-slate-900">

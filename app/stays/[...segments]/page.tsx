@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArrowRight, Car, MapPin, Sparkles, Users } from 'lucide-react';
+import { ArrowRight, Car, ExternalLink, Globe, MapPin, Sparkles, Users } from 'lucide-react';
 import PropertyCard from '@/components/modules/PropertyCard';
 import StaysGrid, { StayCard } from '@/components/modules/StaysGrid';
+import { PropertyPhotoGallery } from '@/components/modules/stays/PropertyPhotoGallery';
 import { hotelToStay, dedupeAgainstCurated } from '@/lib/stayMerge';
 import HotelBookingModal from '@/components/modules/HotelBookingModal';
 import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
@@ -15,12 +16,12 @@ import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { getHotels, getHotelBySlug } from '@/lib/hotels';
 import { getPackagesByDestinationSlug } from '@/lib/packages';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
-import { getCachedStaysCatalog } from '@/lib/stays';
+import { getCachedStaysCatalog, getStayByPlaceId } from '@/lib/stays';
 import { getStayLocationContext, type StayMode } from '@/lib/stayLocation';
 import { primaryDestinationName } from '@/lib/experiences';
 import { destinations } from '@/config/destinations.config';
 import { findStayTypeBySlug } from '@/config/stayTypes.config';
-import { CATEGORY_TO_STAY_TYPE, type Stay, type StayType } from '@/types/stay';
+import { CATEGORY_TO_STAY_TYPE, STAY_TYPE_LABELS, type Stay, type StayType } from '@/types/stay';
 import { formatINR } from '@/lib/pricing';
 import type { HotelPackage } from '@/types';
 import type { Destination } from '@/types/destination';
@@ -52,6 +53,18 @@ async function resolveSegments(segments: string[]) {
     const hotel = await getHotelBySlug(slug);
     if (hotel) return { kind: 'property' as const, hotel };
 
+    return { kind: 'not-found' as const };
+  }
+
+  if (segments.length === 2 && segments[0] === 'property') {
+    // A Google-backed property's own detail page — keyed by its real, globally
+    // unique Place ID (never a slug: the same real place can have several different
+    // cached `slug` values, one per destinationSlug it's tagged under — see
+    // models/PlaceCache.ts's index comment — so only placeId is a safe, stable
+    // identifier for a canonical URL). No `destinationSlug` is ever literally named
+    // "property", so this never collides with the combined-listing case below.
+    const stay = await getStayByPlaceId(segments[1]);
+    if (stay) return { kind: 'google-property' as const, stay };
     return { kind: 'not-found' as const };
   }
 
@@ -94,6 +107,15 @@ export async function generateMetadata({ params }: StaysCatchAllPageProps): Prom
         description: resolved.hotel.description,
         alternates: { canonical: `/stays/${resolved.hotel.slug}` },
         openGraph: resolved.hotel.images[0] ? { images: [{ url: resolved.hotel.images[0], alt: resolved.hotel.title }] } : undefined
+      };
+    case 'google-property':
+      return {
+        title: `${resolved.stay.name} | Apex Stays`,
+        description: resolved.stay.formattedAddress
+          ? `${STAY_TYPE_LABELS[resolved.stay.stayType]} in ${resolved.stay.formattedAddress}.`
+          : `${STAY_TYPE_LABELS[resolved.stay.stayType]} on Apex Stays.`,
+        alternates: { canonical: `/stays/property/${resolved.stay.placeId}` },
+        openGraph: resolved.stay.photos[0] ? { images: [{ url: resolved.stay.photos[0], alt: resolved.stay.name }] } : undefined
       };
     default:
       return { title: 'Stay Not Found | Apex Stays' };
@@ -203,6 +225,10 @@ export default async function StaysCatchAllPage({ params, searchParams }: StaysC
         }
       />
     );
+  }
+
+  if (resolved.kind === 'google-property') {
+    return <GooglePropertyDetail stay={resolved.stay} />;
   }
 
   return <PropertyDetail hotel={resolved.hotel} checkIn={checkIn} checkOut={checkOut} guests={guests} />;
@@ -553,6 +579,114 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
             </div>
           </div>
         ) : null}
+    </DetailPageContainer>
+  );
+}
+
+// The detail page for a Google-backed Stay (/stays/property/<placeId>). Reads
+// nothing but the same PlaceCache row every other Stay card already shows — no new
+// Google call of any kind (see lib/stays.ts's getStayByPlaceId). Deliberately shows
+// no room inventory or hotel-class star rating: no trusted source for either exists
+// anywhere in this app today (audited 2026-09 — see types/stay.ts's HotelClass and
+// types/stayInventory.ts's StayRoom doc comments), so this honestly says rooms will
+// be confirmed on enquiry rather than fabricating cards, and never renders a star-
+// class badge at all rather than inventing one from the Google guest rating.
+async function GooglePropertyDetail({ stay }: { stay: Stay }) {
+  const matchedDestination = await getCuratedDestinationBySlug(stay.destinationSlug);
+  const locationLabel = matchedDestination?.title ?? stay.formattedAddress ?? stay.destinationSlug;
+
+  return (
+    <DetailPageContainer>
+      <BackButton fallbackHref={matchedDestination ? `/destinations/${matchedDestination.slug}` : '/stays'} label="Back to Apex Stays" />
+
+      <PropertyPhotoGallery photos={stay.photos} propertyName={stay.name} />
+
+      <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-glow sm:p-10">
+        <div className="grid gap-8 xl:grid-cols-[1.4fr_0.9fr]">
+          <div className="space-y-8">
+            <div>
+              <span className="inline-flex items-center rounded-full bg-apex-500 px-3 py-1 text-xs font-semibold text-white">
+                {STAY_TYPE_LABELS[stay.stayType]}
+              </span>
+              <h1 className="mt-3 text-2xl font-bold text-slate-900 sm:text-3xl">{stay.name}</h1>
+              <p className="mt-2 flex items-center gap-2 text-slate-600">
+                <MapPin size={16} className="shrink-0 text-apex-600" /> {stay.formattedAddress ?? locationLabel}
+              </p>
+
+              {/* Google Guest Rating — deliberately NOT labeled "Hotel Class"/stars-only.
+                  See this component's top comment: no trusted hotel-class source exists,
+                  so no star-class badge is ever rendered, on this page or anywhere else. */}
+              {stay.rating ? (
+                <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-700">
+                  <span className="font-semibold text-slate-900">{stay.rating.toFixed(1)} ★</span>
+                  <span>Google Guest Rating{stay.userRatingCount ? ` · ${stay.userRatingCount.toLocaleString('en-IN')} reviews` : ''}</span>
+                </div>
+              ) : null}
+            </div>
+
+            {/* Room section — honest placeholder only. See this component's top
+                comment: no verified room-inventory source is connected today. */}
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <p className="text-sm font-semibold text-slate-900">Rooms &amp; Rates</p>
+              <p className="mt-1 text-sm text-slate-600">
+                Exact room options, occupancy and pricing for this property will be confirmed with you directly when you enquire.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              {stay.googleMapsUri ? (
+                <a
+                  href={stay.googleMapsUri}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cursor-hover inline-flex items-center gap-1.5 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-apex-400 hover:text-slate-900"
+                >
+                  <MapPin size={14} /> View on Google Maps
+                </a>
+              ) : null}
+              {stay.websiteUri ? (
+                <a
+                  href={stay.websiteUri}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cursor-hover inline-flex items-center gap-1.5 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-apex-400 hover:text-slate-900"
+                >
+                  <Globe size={14} /> Visit Website <ExternalLink size={12} />
+                </a>
+              ) : null}
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <p className="text-sm font-semibold text-slate-900">Need a ride?</p>
+              <p className="mt-1 text-sm text-slate-600">Airport transfers, sightseeing cabs, and private vehicles.</p>
+              <Link href="/transport" className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-apex-600 hover:text-apex-700">
+                <Car size={14} /> Add Transport
+              </Link>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <p className="text-sm font-semibold text-slate-900">Need help choosing your stay?</p>
+              <p className="mt-1 text-sm text-slate-600">Local destination knowledge, stay recommendations, and custom itinerary support.</p>
+              <Link href="/experts" className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-apex-600 hover:text-apex-700">
+                <Users size={14} /> Browse Travel Experts
+              </Link>
+            </div>
+          </div>
+
+          <aside className="h-fit space-y-4 rounded-[2rem] border border-slate-200 bg-slate-50 p-8 text-center xl:sticky xl:top-24">
+            <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Starting from</p>
+            <p className="text-2xl font-semibold text-slate-900">Contact for pricing</p>
+            <p className="text-xs text-slate-500">
+              Property and rating data from Google. No live availability or pricing is connected yet — our team will confirm current rates.
+            </p>
+            <WhatsAppEnquireButton
+              className="w-full"
+              label="Plan This Stay"
+              selection={{ name: stay.name, type: 'stay', stayType: stay.stayType, slug: stay.slug, destinationSlug: stay.destinationSlug }}
+            />
+          </aside>
+        </div>
+      </div>
     </DetailPageContainer>
   );
 }

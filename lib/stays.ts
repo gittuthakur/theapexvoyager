@@ -519,6 +519,31 @@ export async function getCachedStaysCatalog(options: { stayType?: StayType; page
   };
 }
 
+// Powers the property detail page (/stays/property/<placeId>) — a pure PlaceCache
+// read, no Google call of any kind. Every field this page shows (name, rating,
+// address, photos, types, googleMapsUri, websiteUri) already comes from the Text
+// Search response that originally cached this place (see lib/googlePlaces.ts's
+// comment: "no separate Place Details call needed for this"), so opening a property
+// detail page — cached or not — never triggers new Google spend.
+//
+// The same real place can have several cached rows (different destinationSlug/
+// searchLocation tags — see models/PlaceCache.ts's index comment); this picks the
+// one with real Google `types` data when more than one exists (same preference as
+// getCachedStaysCatalog's dedupe), then classifies it exactly like every other
+// customer-facing Stay (lib/stayClassification.ts) — never trusting whichever
+// category query happened to discover this particular cached row.
+export async function getStayByPlaceId(placeId: string): Promise<Stay | null> {
+  await connectDB();
+  const docs = await PlaceCache.find({ placeId }).lean();
+  if (docs.length === 0) return null;
+
+  const best =
+    docs.find((doc) => (doc.types?.length ?? 0) > 0) ??
+    docs.slice().sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0) || (b.userRatingCount ?? 0) - (a.userRatingCount ?? 0))[0];
+
+  return toStay({ ...best, stayType: classifyVerifiedStayType(best.types) });
+}
+
 function normalizeName(name: string): string {
   return name.trim().toLowerCase().replace(/\s+/g, ' ');
 }
