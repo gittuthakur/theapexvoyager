@@ -51,6 +51,38 @@ export function classifyVerifiedStayType(googleTypes: string[] | undefined): Sta
   return FALLBACK_STAY_TYPE;
 }
 
+// Google Places has no structured type for a "treehouse" stay — confirmed by a
+// 2026-09 audit of the entire live cache: zero cached documents anywhere carry any
+// Google `types` value corresponding to one — so it can never be a PRIMARY
+// classification the way the categories above are. It genuinely exists as a real,
+// marketed property attribute though: Google's own captured property NAMES already
+// say so explicitly for real cached places ("Jibhi Homestead cabin and Tree House",
+// "Suro Treehouse Resort", "Oak Suite - The Treehouse" — 33 distinct real properties
+// found this way as of the same audit, zero Google calls spent finding them).
+//
+// This is a narrow, explicit exception granted specifically because no structured
+// provider signal exists at all for this one category — it is NOT a reversion to
+// name-based guessing for the categories above, which always have real Google
+// `types` evidence to classify from instead.
+//
+// A property matching this is never reclassified by it — it keeps its own real
+// primary type (Hotel/Cottage/Homestay/...) everywhere — but is additionally and
+// separately surfaced as a SECONDARY listing on /stays/treehouses and a
+// /stays/<destination>/treehouses combined page (see lib/stays.ts). The same real
+// property can legitimately appear on both its primary type's page and on
+// /stays/treehouses; it is never shown twice on one combined "all types" listing.
+const TREEHOUSE_NAME_PATTERN_SOURCE = 'tree[\\s-]?houses?';
+
+export function hasTreehouseNameEvidence(name: string): boolean {
+  return new RegExp(TREEHOUSE_NAME_PATTERN_SOURCE, 'i').test(name);
+}
+
+// Same pattern source as hasTreehouseNameEvidence, for use in a MongoDB $regex match
+// (getCachedStaysCatalog) — a plain pattern string, not a JS RegExp literal.
+export function treehouseNameMongoPattern(): string {
+  return TREEHOUSE_NAME_PATTERN_SOURCE;
+}
+
 // The exact same rule as classifyVerifiedStayType, expressed as a MongoDB aggregation
 // expression — built from the same GOOGLE_TYPE_GROUPS constant so the two can never
 // drift apart. Lets getCachedStaysCatalog (lib/stays.ts) filter/paginate at the

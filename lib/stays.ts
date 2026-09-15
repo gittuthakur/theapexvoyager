@@ -5,7 +5,7 @@ import { isLocalDevelopment } from '@/lib/env';
 import { isRecentFailure, markFailure } from '@/lib/negativeCache';
 import { coalesce, COALESCE_LOCKED } from '@/lib/requestCoalescing';
 import { classifyPlaceLocation } from '@/lib/placeLocationSafety';
-import { classifyVerifiedStayType, verifiedStayTypeMongoExpr } from '@/lib/stayClassification';
+import { classifyVerifiedStayType, verifiedStayTypeMongoExpr, hasTreehouseNameEvidence, treehouseNameMongoPattern } from '@/lib/stayClassification';
 import { STAY_TYPES, type Stay, type StayType } from '@/types/stay';
 import type { StayMode } from '@/config/stayLocations.config';
 import type { HotelPackage } from '@/types/hotel';
@@ -418,9 +418,19 @@ export async function getStaysForDestination(
     }
   }
   const requestedTypes = new Set(stayTypes);
-  const verifiedStays = Array.from(dedupedByPlaceId.values())
-    .map((stay) => ({ ...stay, stayType: classifyVerifiedStayType(stay.types) }))
-    .filter((stay) => requestedTypes.has(stay.stayType));
+  // Treehouse has no structured Google type to verify a PRIMARY classification from
+  // (see lib/stayClassification.ts) — it only ever appears as a SECONDARY listing,
+  // and only when the caller asked for treehouse alone (a combined
+  // /stays/<destination>/treehouses page), never mixed into a general "all types"
+  // destination view, where every real property must still render exactly once.
+  const treehouseOnlyRequest = requestedTypes.size === 1 && requestedTypes.has('treehouse');
+  const verifiedStays = Array.from(dedupedByPlaceId.values()).flatMap((stay): Stay[] => {
+    if (treehouseOnlyRequest) {
+      return hasTreehouseNameEvidence(stay.name) ? [{ ...stay, stayType: 'treehouse' }] : [];
+    }
+    const primaryType = classifyVerifiedStayType(stay.types);
+    return requestedTypes.has(primaryType) ? [{ ...stay, stayType: primaryType }] : [];
+  });
 
   return { stays: verifiedStays, meta: perType.map((r) => r.meta) };
 }
@@ -446,6 +456,13 @@ export async function getStaysForDestination(
 // Google types (e.g. "KORA SPITI" — real types: hotel, motel, private_guest_room; no
 // resort_hotel) must never appear on /stays/resorts just because that query found it.
 //
+// `stayType: 'treehouse'` is the one exception — Google has no structured type for it
+// (see lib/stayClassification.ts), so it matches on explicit "tree house"/"treehouse"
+// evidence in the place's own real Google name instead, and the matched place is
+// labeled 'treehouse' for this listing regardless of its real primary type elsewhere
+// (a genuine secondary classification, not a reclassification — that same property
+// still shows its true primary type on /stays/hotels or wherever else it belongs).
+//
 // Sorted by real, already-stored fields only (rating, then review count, then a
 // placeId tiebreak for stable pagination) — never a fabricated ranking — and paginated
 // via $skip/$limit inside the aggregation itself so a "browse everything" request
@@ -455,6 +472,7 @@ export async function getCachedStaysCatalog(options: { stayType?: StayType; page
   const page = Math.max(1, Math.floor(options.page ?? 1));
   const pageSize = options.pageSize ?? CATALOG_PAGE_SIZE;
   const skip = (page - 1) * pageSize;
+  const isTreehouseRequest = options.stayType === 'treehouse';
   const dedupeSortStage = {
     // Prefer a copy that actually has Google's structured `types` over a stale/typeless
     // row for the same real place (see models/PlaceCache.ts — `types` wasn't always
@@ -465,6 +483,12 @@ export async function getCachedStaysCatalog(options: { stayType?: StayType; page
     placeId: 1 as const
   };
   const finalSortStage = { rating: -1 as const, userRatingCount: -1 as const, placeId: 1 as const };
+
+  const matchStage = isTreehouseRequest
+    ? { $match: { name: { $regex: treehouseNameMongoPattern(), $options: 'i' } } }
+    : options.stayType
+      ? { $match: { verifiedStayType: options.stayType } }
+      : null;
 
   const [facetResult] = await PlaceCache.aggregate<PlaceCacheFacetResult>([
     {
@@ -477,7 +501,7 @@ export async function getCachedStaysCatalog(options: { stayType?: StayType; page
     { $sort: dedupeSortStage },
     { $group: { _id: '$placeId', doc: { $first: '$$ROOT' } } },
     { $replaceRoot: { newRoot: '$doc' } },
-    ...(options.stayType ? [{ $match: { verifiedStayType: options.stayType } }] : []),
+    ...(matchStage ? [matchStage] : []),
     // $group does not guarantee output order, so the real sort is this one, after dedup.
     { $sort: finalSortStage },
     { $facet: { data: [{ $skip: skip }, { $limit: pageSize }], totalCount: [{ $count: 'count' }] } }
@@ -487,7 +511,7 @@ export async function getCachedStaysCatalog(options: { stayType?: StayType; page
   const totalCount = facetResult?.totalCount?.[0]?.count ?? 0;
 
   return {
-    stays: docs.map((doc) => toStay({ ...doc, stayType: doc.verifiedStayType })),
+    stays: docs.map((doc) => toStay({ ...doc, stayType: isTreehouseRequest ? 'treehouse' : doc.verifiedStayType })),
     page,
     pageSize,
     totalCount,
