@@ -4,15 +4,21 @@ import type { Metadata } from 'next';
 import StaySearch from '@/components/modules/StaySearch';
 import StayFilters from '@/components/modules/StayFilters';
 import PropertyCard from '@/components/modules/PropertyCard';
+import { StayCard } from '@/components/modules/StaysGrid';
+import { hotelToStay, dedupeAgainstCurated } from '@/lib/stayMerge';
 import { FILTER_EMPTY_STATE_CLASS } from '@/components/modules/filters/filterStyles';
 import { SkeletonGrid } from '@/components/ui/Skeleton';
 import BackButton from '@/components/ui/BackButton';
 import { cn } from '@/lib/utils';
 import { getHotels } from '@/lib/hotels';
+import { getStaysForDestination, getCachedStaysCatalog, slugify } from '@/lib/stays';
+import { getCuratedDestinationBySlug } from '@/lib/destinations';
+import { getStayLocationContext } from '@/lib/stayLocation';
 import { findStayTypeBySlug } from '@/config/stayTypes.config';
 import { findStayMoodBySlug } from '@/config/stayMoods.config';
 import { parseValidPriceMax } from '@/components/modules/filters/priceMax';
 import { images } from '@/config/images.config';
+import { CATEGORY_TO_STAY_TYPE, type Stay } from '@/types/stay';
 import type { HotelCategory, HotelPackage } from '@/types';
 
 export const dynamic = 'force-dynamic';
@@ -113,6 +119,11 @@ interface StaySearchResultsProps {
   category?: string;
 }
 
+// Bounds a destination-less global browse — see the "no destination" branch below.
+// This page has no pagination UI (unlike /stays/<type>'s catalog pages), so this is
+// simply "show a generous first page" rather than "load the whole cache."
+const GLOBAL_SEARCH_RESULT_LIMIT = 60;
+
 const HOTEL_CATEGORIES: HotelCategory[] = ['Hotel', 'Homestay', 'Resort', 'Villa', 'Camp', 'Treehouse', 'Farmstay', 'Hostel', 'Heritage', 'GuestHouse'];
 function isHotelCategory(value?: string): value is HotelCategory {
   return Boolean(value) && HOTEL_CATEGORIES.includes(value as HotelCategory);
@@ -165,6 +176,50 @@ async function StaySearchResults({ destination, checkIn, checkOut, guests, type,
     return true;
   });
 
+  // Google-sourced stays carry no price/amenity/description data, so a price ceiling,
+  // amenity, mood-keyword or boutique(`featured`)-only filter can never be honestly
+  // verified against them — rather than silently dropping them (invisible) or silently
+  // including them (implying they satisfy a filter that was never checked), Google
+  // augmentation is simply not attempted while any such filter is active. "Heritage" is
+  // also excluded — Google's cache has no heritage-specific category (see
+  // app/stays/[...segments]/page.tsx's identical exclusion for the same reason).
+  const includeGoogleData = !isBoutiqueOnly && !moodKeyword && priceMaxValue === undefined && !amenity && category !== 'Heritage';
+  const googleStayType = includeGoogleData && category ? CATEGORY_TO_STAY_TYPE[category] : undefined;
+
+  let googleStays: Stay[] = [];
+  if (includeGoogleData) {
+    if (destination) {
+      // A free-text `destination` only triggers real Google discovery when it resolves
+      // to one of our actual, known destinations (canonical slug, state, stay-base
+      // rules) — never an arbitrary user-typed string sent straight into a Places
+      // query. An unresolved destination falls back to curated-only matching for that
+      // text (getHotels' existing free-text `location` regex, unchanged above).
+      const matchedDestination = await getCuratedDestinationBySlug(slugify(destination));
+      if (matchedDestination) {
+        const stayContext = getStayLocationContext(matchedDestination);
+        const result = await getStaysForDestination(
+          matchedDestination.slug,
+          stayContext.primaryStayLocation,
+          googleStayType ? [googleStayType] : undefined,
+          matchedDestination.state,
+          stayContext.stayMode === 'unavailable' ? undefined : stayContext.stayMode
+        );
+        googleStays = result.stays;
+      }
+    } else {
+      // No destination at all — a genuinely global browse. Aggregates ONLY the
+      // existing PlaceCache (never Google — see lib/stays.ts's getCachedStaysCatalog),
+      // deduped by placeId across every cached destination, bounded to one page so an
+      // unfiltered global search can never dump the full cache into one response.
+      const catalogPage = await getCachedStaysCatalog({ stayType: googleStayType, pageSize: GLOBAL_SEARCH_RESULT_LIMIT });
+      googleStays = catalogPage.stays;
+    }
+  }
+
+  const curatedAsStays = hotels.map((hotel) => hotelToStay(hotel));
+  const finalStays: Stay[] | null = includeGoogleData ? [...curatedAsStays, ...dedupeAgainstCurated(curatedAsStays, googleStays)] : null;
+  const resultCount = finalStays ? finalStays.length : hotels.length;
+
   const currentParams: Record<string, string | undefined> = { destination, checkIn, checkOut, guests, type, priceMax, amenity, mood };
 
   const filters = (
@@ -174,12 +229,12 @@ async function StaySearchResults({ destination, checkIn, checkOut, guests, type,
       activePriceMax={priceMax}
       activeType={type}
       activeAmenity={amenity}
-      resultCount={hotels.length}
+      resultCount={resultCount}
       priceBounds={priceBounds}
     />
   );
 
-  if (hotels.length === 0) {
+  if (resultCount === 0) {
     // Whether *anything* the visitor chose narrowed the result set — if not, an empty
     // result means the catalog itself has nothing right now, not that their destination/
     // type/price/amenity/mood choice was too narrow. Blaming a search that was never
@@ -215,11 +270,19 @@ async function StaySearchResults({ destination, checkIn, checkOut, guests, type,
   return (
     <div className="flex flex-col gap-5 xl:flex-row xl:items-start">
       {filters}
-      <div className="grid flex-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {hotels.map((hotel, index) => (
-          <PropertyCard key={hotel.slug} hotel={hotel} checkIn={checkIn} checkOut={checkOut} guests={guests} priority={index < 4} />
-        ))}
-      </div>
+      {finalStays ? (
+        <div className="grid flex-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          {finalStays.map((stay, index) => (
+            <StayCard key={`${stay.placeId}-${index}`} stay={stay} priority={index < 4} />
+          ))}
+        </div>
+      ) : (
+        <div className="grid flex-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {hotels.map((hotel, index) => (
+            <PropertyCard key={hotel.slug} hotel={hotel} checkIn={checkIn} checkOut={checkOut} guests={guests} priority={index < 4} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

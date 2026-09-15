@@ -3,7 +3,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ArrowRight, Car, MapPin, Sparkles, Users } from 'lucide-react';
 import PropertyCard from '@/components/modules/PropertyCard';
-import StaysGrid from '@/components/modules/StaysGrid';
+import StaysGrid, { StayCard } from '@/components/modules/StaysGrid';
+import { hotelToStay, dedupeAgainstCurated } from '@/lib/stayMerge';
 import HotelBookingModal from '@/components/modules/HotelBookingModal';
 import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
 import StayHero from '@/components/modules/stays/StayHero';
@@ -14,11 +15,12 @@ import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { getHotels, getHotelBySlug } from '@/lib/hotels';
 import { getPackagesByDestinationSlug } from '@/lib/packages';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
+import { getCachedStaysCatalog } from '@/lib/stays';
 import { getStayLocationContext, type StayMode } from '@/lib/stayLocation';
 import { primaryDestinationName } from '@/lib/experiences';
 import { destinations } from '@/config/destinations.config';
 import { findStayTypeBySlug } from '@/config/stayTypes.config';
-import { CATEGORY_TO_STAY_TYPE, type StayType } from '@/types/stay';
+import { CATEGORY_TO_STAY_TYPE, type Stay, type StayType } from '@/types/stay';
 import { formatINR } from '@/lib/pricing';
 import type { HotelPackage } from '@/types';
 import type { Destination } from '@/types/destination';
@@ -27,7 +29,7 @@ export const dynamic = 'force-dynamic';
 
 interface StaysCatchAllPageProps {
   params: Promise<{ segments: string[] }>;
-  searchParams: Promise<{ checkIn?: string; checkOut?: string; guests?: string }>;
+  searchParams: Promise<{ checkIn?: string; checkOut?: string; guests?: string; page?: string }>;
 }
 
 /**
@@ -100,6 +102,7 @@ export async function generateMetadata({ params }: StaysCatchAllPageProps): Prom
 
 export default async function StaysCatchAllPage({ params, searchParams }: StaysCatchAllPageProps) {
   const { segments } = await params;
+  const { checkIn, checkOut, guests, page: pageParam } = await searchParams;
   const resolved = await resolveSegments(segments);
 
   if (resolved.kind === 'not-found') {
@@ -109,7 +112,42 @@ export default async function StaysCatchAllPage({ params, searchParams }: StaysC
   if (resolved.kind === 'type') {
     const hotels = await getHotels(resolved.stayType.category ? { category: resolved.stayType.category } : undefined);
     const scoped = resolved.stayType.category ? hotels : hotels.filter((hotel) => hotel.featured);
-    return <StayListing eyebrow="Apex Stays" title={resolved.stayType.label} subtitle={resolved.stayType.description} hotels={scoped} />;
+
+    // Google Places' cache only ever has the 6 real categories in types/stay.ts's
+    // StayType — "Heritage" (a curated-only, colonial-character concept Google's text
+    // search never specifically verifies) and "boutique-stays" (no category at all,
+    // purely a curated `featured` flag) have no faithful Google equivalent. Forcing
+    // generic Google hotel results under a "Heritage Stays" heading would present
+    // unverified properties as having heritage character they were never checked for
+    // — an honest curated-only (today: honestly empty) page beats a fake one.
+    const googleStayType =
+      resolved.stayType.category && resolved.stayType.category !== 'Heritage' ? CATEGORY_TO_STAY_TYPE[resolved.stayType.category] : undefined;
+
+    if (!googleStayType) {
+      return <StayListing eyebrow="Apex Stays" title={resolved.stayType.label} subtitle={resolved.stayType.description} hotels={scoped} />;
+    }
+
+    const requestedPage = Number(pageParam) > 0 ? Math.floor(Number(pageParam)) : 1;
+    const catalogPage = await getCachedStaysCatalog({ stayType: googleStayType, page: requestedPage });
+    // Curated stays are only prepended on page 1 — they're a small, fixed set, not
+    // something to re-show (or paginate) on every subsequent Google-backed page.
+    const curatedAsStays = requestedPage === 1 ? scoped.map((hotel) => hotelToStay(hotel)) : [];
+    const combinedStays: Stay[] = [...curatedAsStays, ...dedupeAgainstCurated(curatedAsStays, catalogPage.stays)];
+
+    return (
+      <StayListing
+        eyebrow="Apex Stays"
+        title={resolved.stayType.label}
+        subtitle={resolved.stayType.description}
+        hotels={[]}
+        catalog={{
+          stays: combinedStays,
+          page: catalogPage.page,
+          totalPages: catalogPage.totalPages,
+          basePath: `/stays/${resolved.stayType.slug}`
+        }}
+      />
+    );
   }
 
   if (resolved.kind === 'destination') {
@@ -167,7 +205,6 @@ export default async function StaysCatchAllPage({ params, searchParams }: StaysC
     );
   }
 
-  const { checkIn, checkOut, guests } = await searchParams;
   return <PropertyDetail hotel={resolved.hotel} checkIn={checkIn} checkOut={checkOut} guests={guests} />;
 }
 
@@ -187,13 +224,24 @@ interface GoogleStaysSection {
   emptyStateMessage?: string;
 }
 
+interface CatalogSection {
+  /** Already merged (curated + deduped Google), already paginated server-side —
+   *  see lib/stays.ts's getCachedStaysCatalog. Never the full cache in one response. */
+  stays: Stay[];
+  page: number;
+  totalPages: number;
+  /** Used to build `?page=N` links — no client JS needed for pagination. */
+  basePath: string;
+}
+
 function StayListing({
   eyebrow,
   title,
   subtitle,
   hotels,
   emptyMessage,
-  googleSection
+  googleSection,
+  catalog
 }: {
   eyebrow: string;
   title: string;
@@ -208,6 +256,10 @@ function StayListing({
    *  `publiclyListed: false` (models/Hotel.ts), and no code path had ever connected this
    *  route to the real Google-backed Stay discovery that already existed in PlaceCache. */
   googleSection?: GoogleStaysSection;
+  /** Cross-destination category browsing (e.g. /stays/hotels) — a server-computed,
+   *  already-paginated, placeId-deduped page of PlaceCache-backed stays spanning every
+   *  cached destination. Takes priority over `googleSection`/`hotels` when present. */
+  catalog?: CatalogSection;
 }) {
   return (
     <main id="main-content" className="px-6 py-10 sm:px-10 lg:px-16">
@@ -220,7 +272,9 @@ function StayListing({
           <p className="mt-1 max-w-2xl text-sm text-slate-500">{subtitle}</p>
         </div>
 
-        {googleSection ? (
+        {catalog ? (
+          <CatalogListing {...catalog} emptyMessage={emptyMessage} />
+        ) : googleSection ? (
           <StaysGrid
             location={googleSection.location}
             state={googleSection.state}
@@ -247,6 +301,51 @@ function StayListing({
         )}
       </section>
     </main>
+  );
+}
+
+// Pure server-rendered grid + Prev/Next links for a cross-destination catalog page —
+// no client JS, no fetch: the data arrives already merged, deduped and paginated
+// (lib/stays.ts's getCachedStaysCatalog). Distinct from StaysGrid, which is a client
+// component that fetches one destination's stays and offers a type-filter toggle —
+// neither applies here, since this page already covers every destination for one type.
+function CatalogListing({ stays, page, totalPages, basePath, emptyMessage }: CatalogSection & { emptyMessage?: string }) {
+  if (stays.length === 0) {
+    return <p className="text-sm text-slate-500">{emptyMessage ?? 'No stays match this yet.'}</p>;
+  }
+
+  return (
+    <div>
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        {stays.map((stay, index) => (
+          <StayCard key={`${stay.placeId}-${index}`} stay={stay} priority={index < 4} />
+        ))}
+      </div>
+
+      {totalPages > 1 ? (
+        <nav className="mt-8 flex items-center justify-center gap-4" aria-label="Pagination">
+          {page > 1 ? (
+            <Link
+              href={`${basePath}?page=${page - 1}`}
+              className="cursor-hover rounded-full border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:border-apex-400 hover:text-slate-900"
+            >
+              Previous
+            </Link>
+          ) : null}
+          <span className="text-sm text-slate-500">
+            Page {page} of {totalPages}
+          </span>
+          {page < totalPages ? (
+            <Link
+              href={`${basePath}?page=${page + 1}`}
+              className="cursor-hover rounded-full border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:border-apex-400 hover:text-slate-900"
+            >
+              Next
+            </Link>
+          ) : null}
+        </nav>
+      ) : null}
+    </div>
   );
 }
 

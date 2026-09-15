@@ -38,6 +38,41 @@ export interface StaysForDestinationResult {
   meta: StayCategoryMeta[];
 }
 
+export interface CachedStaysPage {
+  stays: Stay[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+}
+
+const CATALOG_PAGE_SIZE = 24;
+
+interface PlaceCacheAggregateDoc {
+  placeId: string;
+  name: string;
+  slug: string;
+  stayType: StayType;
+  formattedAddress?: string;
+  latitude?: number;
+  longitude?: number;
+  rating?: number;
+  userRatingCount?: number;
+  photos: string[];
+  customPrice?: number;
+  destinationSlug: string;
+  updatedAt: Date;
+  types?: string[];
+  googleMapsUri?: string;
+  websiteUri?: string;
+  locationClassification: 'exact' | 'nearby' | 'access-base';
+}
+
+interface PlaceCacheFacetResult {
+  data: PlaceCacheAggregateDoc[];
+  totalCount: Array<{ count: number }>;
+}
+
 function toStay(
   doc: Pick<
     PlaceCacheDocument,
@@ -352,6 +387,54 @@ export async function getStaysForDestination(
   );
 
   return { stays: perType.flatMap((r) => r.stays), meta: perType.map((r) => r.meta) };
+}
+
+// Cross-destination "browse by category" aggregation — e.g. /stays/hotels, or a
+// destination-less /stays/search. Reads ONLY the existing PlaceCache collection —
+// never Google, never fetchAndCacheStayType, never the coalescing lock — so opening
+// this on any number of cached or uncached destinations always costs 0 Google Places
+// calls; there is no per-destination "miss" concept here at all.
+//
+// The same real Google property can legitimately be cached under more than one
+// destinationSlug (see models/PlaceCache.ts's index comment — e.g. Kinnaur and Sangla
+// Valley both resolve to the real town "Sangla"), so this dedupes by `placeId` alone
+// before paginating — one real property must render as exactly one card, no matter
+// how many destinations it's tagged under. `stayType` narrows to one real Google
+// category when given; omitted, it aggregates across all 6.
+//
+// Sorted by real, already-stored fields only (rating, then review count, then a
+// placeId tiebreak for stable pagination) — never a fabricated ranking — and paginated
+// via $skip/$limit inside the aggregation itself so a "browse everything" request
+// never has to load the full cache into memory just to show one page of results.
+export async function getCachedStaysCatalog(options: { stayType?: StayType; page?: number; pageSize?: number } = {}): Promise<CachedStaysPage> {
+  await connectDB();
+  const page = Math.max(1, Math.floor(options.page ?? 1));
+  const pageSize = options.pageSize ?? CATALOG_PAGE_SIZE;
+  const skip = (page - 1) * pageSize;
+  const match = options.stayType ? { stayType: options.stayType } : {};
+  const sortStage = { rating: -1 as const, userRatingCount: -1 as const, placeId: 1 as const };
+
+  const [facetResult] = await PlaceCache.aggregate<PlaceCacheFacetResult>([
+    { $match: match },
+    // Determines which duplicate `$first` keeps when grouping below.
+    { $sort: sortStage },
+    { $group: { _id: '$placeId', doc: { $first: '$$ROOT' } } },
+    { $replaceRoot: { newRoot: '$doc' } },
+    // $group does not guarantee output order, so the real sort is this one, after dedup.
+    { $sort: sortStage },
+    { $facet: { data: [{ $skip: skip }, { $limit: pageSize }], totalCount: [{ $count: 'count' }] } }
+  ]);
+
+  const docs = facetResult?.data ?? [];
+  const totalCount = facetResult?.totalCount?.[0]?.count ?? 0;
+
+  return {
+    stays: docs.map(toStay),
+    page,
+    pageSize,
+    totalCount,
+    totalPages: Math.max(1, Math.ceil(totalCount / pageSize))
+  };
 }
 
 function normalizeName(name: string): string {

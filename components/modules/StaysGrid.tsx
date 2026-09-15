@@ -8,7 +8,8 @@ import { SkeletonGrid } from '@/components/ui/Skeleton';
 import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
 import { cn } from '@/lib/utils';
 import { fadeInUp } from '@/lib/motion';
-import { STAY_TYPES, STAY_TYPE_LABELS, CATEGORY_TO_STAY_TYPE, type Stay, type StayType } from '@/types/stay';
+import { hotelToStay, dedupeAgainstCurated } from '@/lib/stayMerge';
+import { STAY_TYPES, STAY_TYPE_LABELS, type Stay, type StayType } from '@/types/stay';
 import type { HotelPackage } from '@/types/hotel';
 
 export interface StaysGridProps {
@@ -35,36 +36,6 @@ export interface StaysGridProps {
    *  which is strictly less Google discovery than fetching all 6 and discarding 5.
    *  When set, the all/type toggle chips are hidden — there's only one type to show. */
   stayTypeFilter?: StayType;
-}
-
-function hotelToStay(hotel: HotelPackage, destinationSlug?: string): Stay {
-  return {
-    placeId: `curated:${hotel.slug}`,
-    name: hotel.title,
-    slug: hotel.slug,
-    stayType: CATEGORY_TO_STAY_TYPE[hotel.category],
-    formattedAddress: hotel.location,
-    rating: hotel.rating,
-    userRatingCount: hotel.reviewCount,
-    photos: hotel.images,
-    customPrice: hotel.pricePerNight,
-    destinationSlug: destinationSlug ?? hotel.slug,
-    source: 'curated'
-  };
-}
-
-function identityKey(name: string, address: string | undefined): string {
-  return `${name.trim().toLowerCase()}|${(address ?? '').trim().toLowerCase()}`;
-}
-
-/** Excludes any Google Places result that's an exact (not fuzzy) name+address match for
- *  a curated stay already shown — a curated listing and a live Places result for the
- *  same real property should never both render as separate cards. Deliberately does
- *  NOT use substring/`includes()` matching (too easy to falsely collapse two distinct
- *  properties with related names) — see AGENTS.md Phase B section 19. */
-function dedupeAgainstCurated(curated: Stay[], google: Stay[]): Stay[] {
-  const curatedKeys = new Set(curated.map((stay) => identityKey(stay.name, stay.formattedAddress)));
-  return google.filter((stay) => !curatedKeys.has(identityKey(stay.name, stay.formattedAddress)));
 }
 
 export default function StaysGrid({ location, state, curatedStays = [], destinationSlug, emptyStateMessage, stayMode, stayTypeFilter }: StaysGridProps) {
@@ -169,7 +140,10 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
   );
 }
 
-function StayCard({ stay, priority = false }: { stay: Stay; priority?: boolean }) {
+// Exported so server-rendered catalog/search listings can render the exact same card
+// (safe photo fallback, honest "Contact for pricing", Google attribution) rather than
+// a second, divergent card template.
+export function StayCard({ stay, priority = false }: { stay: Stay; priority?: boolean }) {
   return (
     <article className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-lg transition hover:-translate-y-1">
       <div className="relative h-48 w-full overflow-hidden bg-slate-100">
