@@ -5,6 +5,7 @@ import { isLocalDevelopment } from '@/lib/env';
 import { isRecentFailure, markFailure } from '@/lib/negativeCache';
 import { coalesce, COALESCE_LOCKED } from '@/lib/requestCoalescing';
 import { classifyPlaceLocation } from '@/lib/placeLocationSafety';
+import { classifyVerifiedStayType, verifiedStayTypeMongoExpr } from '@/lib/stayClassification';
 import { STAY_TYPES, type Stay, type StayType } from '@/types/stay';
 import type { StayMode } from '@/config/stayLocations.config';
 import type { HotelPackage } from '@/types/hotel';
@@ -53,6 +54,10 @@ interface PlaceCacheAggregateDoc {
   name: string;
   slug: string;
   stayType: StayType;
+  /** Computed in the aggregation pipeline from Google's own `types` — see
+   *  lib/stayClassification.ts. The authoritative type; `stayType` above remains
+   *  whatever category's search query originally discovered this place. */
+  verifiedStayType: StayType;
   formattedAddress?: string;
   latitude?: number;
   longitude?: number;
@@ -386,7 +391,38 @@ export async function getStaysForDestination(
     })
   );
 
-  return { stays: perType.flatMap((r) => r.stays), meta: perType.map((r) => r.meta) };
+  // Each category above ran its own independent cache-hit/miss check against
+  // PlaceCache's (query-provenance) `stayType` field — necessary and unchanged, since
+  // that's what decides whether a Google search actually runs for that category. But
+  // the raw union of their results can legitimately contain the SAME real place more
+  // than once (discovered by 2+ different category queries — e.g. both the "resort"
+  // and "cottage" searches for one destination can return the identical property), and
+  // each copy's meaning as "an X" is only ever query provenance, not verified identity
+  // (see lib/stayClassification.ts). This final pass is what actually decides what the
+  // customer sees: one card per real placeId, labeled by its VERIFIED Google-typed
+  // category, kept only if that verified category is one the caller actually asked for
+  // (`stayTypes` — e.g. a combined /stays/<destination>/treehouses page must never show
+  // a property whose real type turned out to be Hotel just because it was cached under
+  // a treehouse-category search).
+  const rawStays = perType.flatMap((r) => r.stays);
+  const dedupedByPlaceId = new Map<string, Stay>();
+  for (const stay of rawStays) {
+    const existing = dedupedByPlaceId.get(stay.placeId);
+    if (!existing) {
+      dedupedByPlaceId.set(stay.placeId, stay);
+    } else if ((existing.types?.length ?? 0) === 0 && (stay.types?.length ?? 0) > 0) {
+      // Prefer whichever cached copy actually has Google's structured `types` — the
+      // same real place can have a stale/typeless row from before that field existed
+      // (see models/PlaceCache.ts) alongside a fresher, fully-populated one.
+      dedupedByPlaceId.set(stay.placeId, stay);
+    }
+  }
+  const requestedTypes = new Set(stayTypes);
+  const verifiedStays = Array.from(dedupedByPlaceId.values())
+    .map((stay) => ({ ...stay, stayType: classifyVerifiedStayType(stay.types) }))
+    .filter((stay) => requestedTypes.has(stay.stayType));
+
+  return { stays: verifiedStays, meta: perType.map((r) => r.meta) };
 }
 
 // Cross-destination "browse by category" aggregation — e.g. /stays/hotels, or a
@@ -397,10 +433,18 @@ export async function getStaysForDestination(
 //
 // The same real Google property can legitimately be cached under more than one
 // destinationSlug (see models/PlaceCache.ts's index comment — e.g. Kinnaur and Sangla
-// Valley both resolve to the real town "Sangla"), so this dedupes by `placeId` alone
-// before paginating — one real property must render as exactly one card, no matter
-// how many destinations it's tagged under. `stayType` narrows to one real Google
-// category when given; omitted, it aggregates across all 6.
+// Valley both resolve to the real town "Sangla") AND under more than one stored
+// `stayType` (query provenance — the same place can be returned by more than one
+// category's search query for the same destination too), so this dedupes by
+// `placeId` alone before paginating — one real property must render as exactly one
+// card, no matter how many destinations or category searches it's tagged under.
+//
+// `stayType` narrows to one category when given, but never against the stored,
+// query-provenance `stayType` field — always against `verifiedStayType`, computed
+// here from Google's own structured `types` (see lib/stayClassification.ts). A place
+// cached under a "resort" search query with no real resort-hotel signal in its actual
+// Google types (e.g. "KORA SPITI" — real types: hotel, motel, private_guest_room; no
+// resort_hotel) must never appear on /stays/resorts just because that query found it.
 //
 // Sorted by real, already-stored fields only (rating, then review count, then a
 // placeId tiebreak for stable pagination) — never a fabricated ranking — and paginated
@@ -411,17 +455,31 @@ export async function getCachedStaysCatalog(options: { stayType?: StayType; page
   const page = Math.max(1, Math.floor(options.page ?? 1));
   const pageSize = options.pageSize ?? CATALOG_PAGE_SIZE;
   const skip = (page - 1) * pageSize;
-  const match = options.stayType ? { stayType: options.stayType } : {};
-  const sortStage = { rating: -1 as const, userRatingCount: -1 as const, placeId: 1 as const };
+  const dedupeSortStage = {
+    // Prefer a copy that actually has Google's structured `types` over a stale/typeless
+    // row for the same real place (see models/PlaceCache.ts — `types` wasn't always
+    // captured), so classification below is never needlessly forced to the fallback.
+    hasTypes: -1 as const,
+    rating: -1 as const,
+    userRatingCount: -1 as const,
+    placeId: 1 as const
+  };
+  const finalSortStage = { rating: -1 as const, userRatingCount: -1 as const, placeId: 1 as const };
 
   const [facetResult] = await PlaceCache.aggregate<PlaceCacheFacetResult>([
-    { $match: match },
+    {
+      $addFields: {
+        hasTypes: { $gt: [{ $size: { $ifNull: ['$types', []] } }, 0] },
+        verifiedStayType: verifiedStayTypeMongoExpr()
+      }
+    },
     // Determines which duplicate `$first` keeps when grouping below.
-    { $sort: sortStage },
+    { $sort: dedupeSortStage },
     { $group: { _id: '$placeId', doc: { $first: '$$ROOT' } } },
     { $replaceRoot: { newRoot: '$doc' } },
+    ...(options.stayType ? [{ $match: { verifiedStayType: options.stayType } }] : []),
     // $group does not guarantee output order, so the real sort is this one, after dedup.
-    { $sort: sortStage },
+    { $sort: finalSortStage },
     { $facet: { data: [{ $skip: skip }, { $limit: pageSize }], totalCount: [{ $count: 'count' }] } }
   ]);
 
@@ -429,7 +487,7 @@ export async function getCachedStaysCatalog(options: { stayType?: StayType; page
   const totalCount = facetResult?.totalCount?.[0]?.count ?? 0;
 
   return {
-    stays: docs.map(toStay),
+    stays: docs.map((doc) => toStay({ ...doc, stayType: doc.verifiedStayType })),
     page,
     pageSize,
     totalCount,
