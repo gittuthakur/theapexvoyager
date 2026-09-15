@@ -28,6 +28,13 @@ export interface StaysGridProps {
    *  "nearby" / "access-base" for reporting — never loosens the location-safety filter
    *  itself (see lib/placeLocationSafety.ts). */
   stayMode?: 'destination' | 'nearby' | 'access-base';
+  /** Scopes both the Google Places fetch and curated matching to a single stay type —
+   *  used by /stays/[destination]/[type] combined listing pages, where the whole page
+   *  is already about one category. Forwarding it narrows the API's own Google fetch
+   *  to that one category too (see app/api/destinations/route.ts's `stayType` param),
+   *  which is strictly less Google discovery than fetching all 6 and discarding 5.
+   *  When set, the all/type toggle chips are hidden — there's only one type to show. */
+  stayTypeFilter?: StayType;
 }
 
 function hotelToStay(hotel: HotelPackage, destinationSlug?: string): Stay {
@@ -60,10 +67,10 @@ function dedupeAgainstCurated(curated: Stay[], google: Stay[]): Stay[] {
   return google.filter((stay) => !curatedKeys.has(identityKey(stay.name, stay.formattedAddress)));
 }
 
-export default function StaysGrid({ location, state, curatedStays = [], destinationSlug, emptyStateMessage, stayMode }: StaysGridProps) {
+export default function StaysGrid({ location, state, curatedStays = [], destinationSlug, emptyStateMessage, stayMode, stayTypeFilter }: StaysGridProps) {
   const [googleStays, setGoogleStays] = useState<Stay[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [activeType, setActiveType] = useState<StayType | 'all'>('all');
+  const [activeType, setActiveType] = useState<StayType | 'all'>(stayTypeFilter ?? 'all');
 
   const curatedAsStays = useMemo(() => curatedStays.map((hotel) => hotelToStay(hotel, destinationSlug)), [curatedStays, destinationSlug]);
 
@@ -74,7 +81,8 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
     const stateParam = state ? `&state=${encodeURIComponent(state)}` : '';
     const stayModeParam = stayMode ? `&stayMode=${encodeURIComponent(stayMode)}` : '';
     const destinationSlugParam = destinationSlug ? `&destinationSlug=${encodeURIComponent(destinationSlug)}` : '';
-    fetch(`/api/destinations?type=stays&location=${encodeURIComponent(location)}${stateParam}${stayModeParam}${destinationSlugParam}`)
+    const stayTypeParam = stayTypeFilter ? `&stayType=${encodeURIComponent(stayTypeFilter)}` : '';
+    fetch(`/api/destinations?type=stays&location=${encodeURIComponent(location)}${stateParam}${stayModeParam}${destinationSlugParam}${stayTypeParam}`)
       .then((res) => {
         if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
         return res.json();
@@ -92,7 +100,7 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
     return () => {
       cancelled = true;
     };
-  }, [location, state, stayMode, destinationSlug]);
+  }, [location, state, stayMode, destinationSlug, stayTypeFilter]);
 
   // publiclyListed curated stays render immediately without waiting on the Google
   // Places round trip — they're already-verified data, not something that should be
@@ -124,31 +132,33 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
     // otherwise. Scoped to this component only — lib/motion.ts's viewportOnce (used
     // elsewhere) is untouched.
     <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0 }} variants={fadeInUp}>
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => setActiveType('all')}
-          className={cn(
-            'cursor-hover rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-300 ease-in-out',
-            activeType === 'all' ? 'bg-apex-500 text-white shadow-lg shadow-apex-500/30' : 'bg-slate-100 text-slate-600 hover:text-slate-900'
-          )}
-        >
-          All Stays
-        </button>
-        {availableTypes.map((stayType) => (
+      {stayTypeFilter ? null : (
+        <div className="flex flex-wrap gap-2">
           <button
-            key={stayType}
             type="button"
-            onClick={() => setActiveType(stayType)}
+            onClick={() => setActiveType('all')}
             className={cn(
               'cursor-hover rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-300 ease-in-out',
-              activeType === stayType ? 'bg-apex-500 text-white shadow-lg shadow-apex-500/30' : 'bg-slate-100 text-slate-600 hover:text-slate-900'
+              activeType === 'all' ? 'bg-apex-500 text-white shadow-lg shadow-apex-500/30' : 'bg-slate-100 text-slate-600 hover:text-slate-900'
             )}
           >
-            {STAY_TYPE_LABELS[stayType]}
+            All Stays
           </button>
-        ))}
-      </div>
+          {availableTypes.map((stayType) => (
+            <button
+              key={stayType}
+              type="button"
+              onClick={() => setActiveType(stayType)}
+              className={cn(
+                'cursor-hover rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-300 ease-in-out',
+                activeType === stayType ? 'bg-apex-500 text-white shadow-lg shadow-apex-500/30' : 'bg-slate-100 text-slate-600 hover:text-slate-900'
+              )}
+            >
+              {STAY_TYPE_LABELS[stayType]}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {visibleStays.map((stay, index) => (

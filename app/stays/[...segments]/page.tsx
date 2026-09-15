@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ArrowRight, Car, MapPin, Sparkles, Users } from 'lucide-react';
 import PropertyCard from '@/components/modules/PropertyCard';
+import StaysGrid from '@/components/modules/StaysGrid';
 import HotelBookingModal from '@/components/modules/HotelBookingModal';
 import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
 import StayHero from '@/components/modules/stays/StayHero';
@@ -13,11 +14,11 @@ import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { getHotels, getHotelBySlug } from '@/lib/hotels';
 import { getPackagesByDestinationSlug } from '@/lib/packages';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
-import { getStayLocationContext } from '@/lib/stayLocation';
+import { getStayLocationContext, type StayMode } from '@/lib/stayLocation';
 import { primaryDestinationName } from '@/lib/experiences';
 import { destinations } from '@/config/destinations.config';
 import { findStayTypeBySlug } from '@/config/stayTypes.config';
-import { CATEGORY_TO_STAY_TYPE } from '@/types/stay';
+import { CATEGORY_TO_STAY_TYPE, type StayType } from '@/types/stay';
 import { formatINR } from '@/lib/pricing';
 import type { HotelPackage } from '@/types';
 import type { Destination } from '@/types/destination';
@@ -121,6 +122,13 @@ export default async function StaysCatchAllPage({ params, searchParams }: StaysC
         subtitle={stayContext.helperText ?? `Hotels, homestays, resorts and unique stays in ${stayContext.destinationName}.`}
         hotels={hotels}
         emptyMessage={stayContext.emptyStateMessage}
+        googleSection={{
+          location: stayContext.primaryStayLocation,
+          state: resolved.destination.state,
+          destinationSlug: resolved.destination.slug,
+          stayMode: toStayGridMode(stayContext.stayMode),
+          emptyStateMessage: stayContext.emptyStateMessage
+        }}
       />
     );
   }
@@ -132,6 +140,10 @@ export default async function StaysCatchAllPage({ params, searchParams }: StaysC
       locations: stayContext.searchLocations,
       destinationSlug: resolved.destination.slug
     });
+    // Google Places has no equivalent of the curated-only "boutique-stays" (`featured`
+    // flag) category — a combined page for a slug with no real HotelCategory mapping
+    // (only "boutique-stays" today) stays curated-only, same as before this fix.
+    const stayTypeFilter = resolved.stayType.category ? CATEGORY_TO_STAY_TYPE[resolved.stayType.category] : undefined;
     return (
       <StayListing
         eyebrow="Apex Stays"
@@ -139,6 +151,18 @@ export default async function StaysCatchAllPage({ params, searchParams }: StaysC
         subtitle={stayContext.helperText ?? `${resolved.stayType.label} available in ${stayContext.destinationName}.`}
         hotels={hotels}
         emptyMessage={stayContext.emptyStateMessage}
+        googleSection={
+          stayTypeFilter
+            ? {
+                location: stayContext.primaryStayLocation,
+                state: resolved.destination.state,
+                destinationSlug: resolved.destination.slug,
+                stayMode: toStayGridMode(stayContext.stayMode),
+                stayTypeFilter,
+                emptyStateMessage: stayContext.emptyStateMessage
+              }
+            : undefined
+        }
       />
     );
   }
@@ -147,18 +171,43 @@ export default async function StaysCatchAllPage({ params, searchParams }: StaysC
   return <PropertyDetail hotel={resolved.hotel} checkIn={checkIn} checkOut={checkOut} guests={guests} />;
 }
 
+// getStayLocationContext's `stayMode` also carries 'unavailable' (no authored rule for
+// this destination) — StaysGrid only understands the three real modes, so 'unavailable'
+// becomes "no mode" rather than a fourth, unhandled value.
+function toStayGridMode(mode: StayMode | 'unavailable'): StayMode | undefined {
+  return mode === 'unavailable' ? undefined : mode;
+}
+
+interface GoogleStaysSection {
+  location: string;
+  state?: string;
+  destinationSlug: string;
+  stayMode?: StayMode;
+  stayTypeFilter?: StayType;
+  emptyStateMessage?: string;
+}
+
 function StayListing({
   eyebrow,
   title,
   subtitle,
   hotels,
-  emptyMessage
+  emptyMessage,
+  googleSection
 }: {
   eyebrow: string;
   title: string;
   subtitle: string;
   hotels: HotelPackage[];
   emptyMessage?: string;
+  /** When set, this listing also merges in real, cache-backed Google Places stays for
+   *  this one destination (via StaysGrid — the exact same component and merge/dedupe/
+   *  honest-empty-state logic already proven on the destination detail page's own
+   *  "Where to stay" section) instead of showing curated Hotel documents only. Curated
+   *  stays here published nothing before this fix — the ~14 seed Hotel records are all
+   *  `publiclyListed: false` (models/Hotel.ts), and no code path had ever connected this
+   *  route to the real Google-backed Stay discovery that already existed in PlaceCache. */
+  googleSection?: GoogleStaysSection;
 }) {
   return (
     <main id="main-content" className="px-6 py-10 sm:px-10 lg:px-16">
@@ -171,7 +220,17 @@ function StayListing({
           <p className="mt-1 max-w-2xl text-sm text-slate-500">{subtitle}</p>
         </div>
 
-        {hotels.length === 0 ? (
+        {googleSection ? (
+          <StaysGrid
+            location={googleSection.location}
+            state={googleSection.state}
+            destinationSlug={googleSection.destinationSlug}
+            curatedStays={hotels}
+            stayMode={googleSection.stayMode}
+            stayTypeFilter={googleSection.stayTypeFilter}
+            emptyStateMessage={emptyMessage ?? googleSection.emptyStateMessage}
+          />
+        ) : hotels.length === 0 ? (
           <div className="rounded-2xl border border-slate-300 bg-white p-10 text-center text-slate-600 shadow-glow">
             <p className="text-lg font-semibold text-slate-900">{emptyMessage ?? 'No stays match this yet.'}</p>
             <p className="mt-3">Try browsing all stays instead.</p>
