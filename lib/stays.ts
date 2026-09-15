@@ -3,6 +3,7 @@ import { PlaceCache, type PlaceCacheDocument } from '@/models/PlaceCache';
 import { searchStays, placeName, placePhotoUrls, placeCoordinates, type RawGooglePlace } from '@/lib/googlePlaces';
 import { isLocalDevelopment } from '@/lib/env';
 import { isRecentFailure, markFailure } from '@/lib/negativeCache';
+import { coalesce, COALESCE_LOCKED } from '@/lib/requestCoalescing';
 import { classifyPlaceLocation } from '@/lib/placeLocationSafety';
 import { STAY_TYPES, type Stay, type StayType } from '@/types/stay';
 import type { StayMode } from '@/config/stayLocations.config';
@@ -301,8 +302,32 @@ export async function getStaysForDestination(
         };
       }
 
+      // Coalesced across concurrent requests for the exact same tuple — see
+      // lib/requestCoalescing.ts. A request that loses the race never touches Google;
+      // it's reported below as 'COALESCED_IN_FLIGHT' rather than an error.
+      const coalesceKey = `${destinationSlug}:${stayType}:${location}`;
       try {
-        const { stays, meta } = await fetchAndCacheStayType(destinationSlug, location, stayType, apiKey, state, stayMode);
+        const result = await coalesce(coalesceKey, () =>
+          fetchAndCacheStayType(destinationSlug, location, stayType, apiKey, state, stayMode)
+        );
+        if (result === COALESCE_LOCKED) {
+          return {
+            stays: [],
+            meta: {
+              stayType,
+              fromCache: false,
+              queried: false,
+              pagesFetched: 0,
+              saturated: false,
+              rawCount: 0,
+              duplicatesRemoved: 0,
+              wrongLocationRejected: 0,
+              finalCount: 0,
+              error: 'COALESCED_IN_FLIGHT'
+            }
+          };
+        }
+        const { stays, meta } = result;
         return { stays, meta: { stayType, fromCache: false, queried: true, ...meta } };
       } catch (error) {
         console.error(`Failed to fetch "${stayType}" stays for "${location}" from Google Places`, error);

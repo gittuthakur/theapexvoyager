@@ -1,10 +1,35 @@
 import { NextResponse } from 'next/server';
 import { getDestinationsForLocation, getDestinationsWithFallback, getCuratedDestinations, DEFAULT_HIMACHAL_LOCATIONS } from '@/lib/destinations';
 import { getStaysForDestination, slugify } from '@/lib/stays';
+import { isRateLimited } from '@/lib/rateLimit';
 import { STAY_TYPES, type StayType } from '@/types/stay';
 import type { StayMode } from '@/config/stayLocations.config';
 
 const VALID_STAY_MODES: StayMode[] = ['destination', 'nearby', 'access-base'];
+
+// A real place/state name — letters (incl. accented), digits, spaces and a few
+// punctuation marks actually seen in place names ("Jammu & Kashmir", "Sangla-Chitkul").
+// Rejects anything else so an arbitrary/garbage string can't be forwarded into a
+// Google Places textQuery (lib/googlePlaces.ts) or blow past reasonable size.
+const PLACE_NAME_PATTERN = /^[\p{L}\p{N}\s,.'&-]+$/u;
+const MAX_PLACE_NAME_LENGTH = 100;
+
+function isValidPlaceName(value: string): boolean {
+  return value.length > 0 && value.length <= MAX_PLACE_NAME_LENGTH && PLACE_NAME_PATTERN.test(value);
+}
+
+// Google billing protection for the one endpoint that can trigger real Google Places
+// calls on a cache miss (lib/stays.ts's getStaysForDestination). Request coalescing
+// (lib/requestCoalescing.ts) already caps duplicate Google calls for the *same*
+// destination to one in flight; this catches the other risk — a bot/script hammering
+// many distinct (and therefore individually uncoalescable) locations from one source.
+const STAYS_RATE_LIMIT_PER_MINUTE = 20;
+
+function getClientIp(request: Request): string {
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  if (forwardedFor) return forwardedFor.split(',')[0].trim();
+  return request.headers.get('x-real-ip') ?? 'unknown';
+}
 
 // Underlying results already come from a 30-day-TTL Mongo cache (lib/destinations.ts,
 // lib/stays.ts), so this is safe to cache a full day at the HTTP layer too — repeat
@@ -43,6 +68,17 @@ export async function GET(request: Request) {
     if (type === 'stays') {
       if (!location) {
         return NextResponse.json({ error: 'A "location" query parameter is required when type=stays' }, { status: 400 });
+      }
+      if (!isValidPlaceName(location) || (state && !isValidPlaceName(state))) {
+        return NextResponse.json({ error: 'Invalid "location" or "state" query parameter' }, { status: 400 });
+      }
+
+      const clientIp = getClientIp(request);
+      if (isRateLimited(`stays:${clientIp}`, STAYS_RATE_LIMIT_PER_MINUTE)) {
+        return NextResponse.json(
+          { error: 'Too many requests — please slow down.' },
+          { status: 429, headers: { 'Retry-After': '60' } }
+        );
       }
 
       const stayTypeParam = searchParams.get('stayType') as StayType | null;
