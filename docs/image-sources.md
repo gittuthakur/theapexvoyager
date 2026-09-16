@@ -12,7 +12,8 @@ for web delivery, and re-encoded (stripping EXIF/ICC/XMP) — no content changes
 Date checked: 2026-09-09 (Gulmarg through Khajjiar, Phase 2B-2); 2026-09-09
 (Srinagar, Pahalgam, Sonamarg, Phase 2B-3B-A); 2026-09-10 (Badrinath, Gangotri,
 Phase 2B-3D-B); 2026-09-10 (Kedarnath, Yamunotri, Phase 2B-3D-C); 2026-09-10
-(Hemkund Sahib, Phase 2B-3D-D).
+(Hemkund Sahib, Phase 2B-3D-D); 2026-09-16 (Kasauli, McLeod Ganj, Jammu, Katra,
+Ramnagar/Corbett — Destinations Batch A).
 
 ## Gulmarg
 
@@ -309,6 +310,65 @@ Phase 2B-3D-B); 2026-09-10 (Kedarnath, Yamunotri, Phase 2B-3D-C); 2026-09-10
 - License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
 - Attribution required: Yes
 - Attribution text: "Hemkund Sahib and Lokpal Lake" by Harshit SR, CC BY-SA 4.0, via Wikimedia Commons
+
+## Kasauli
+
+- Local file: `public/images/destination-kasauli.jpg`
+- Source: Wikimedia Commons — `File:CHRIST CHURCH, KASAULI.JPG`
+- Source page: https://commons.wikimedia.org/wiki/File:CHRIST_CHURCH,_KASAULI.JPG
+- Creator: Suman Wadhwa
+- License: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0)
+- Attribution required: Yes
+- Attribution text: "CHRIST CHURCH, KASAULI" by Suman Wadhwa, CC BY-SA 3.0, via Wikimedia Commons
+- Note: cropped from the original 4,320×3,240 frame to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## McLeod Ganj
+
+- Local file: `public/images/destination-mcleod-ganj.jpg`
+- Source: Wikimedia Commons — `File:Namgyal Monastery India Himachal Pradesh Mc Leod Ganj.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Namgyal_Monastery_India_Himachal_Pradesh_Mc_Leod_Ganj.jpg
+- Creator: "(in search for a new country of residence)" (Flickr, per Commons file page attribution)
+- License: CC BY-SA 2.0 (https://creativecommons.org/licenses/by-sa/2.0)
+- Attribution required: Yes
+- Attribution text: "Namgyal Monastery, India, Himachal Pradesh, Mc Leod Ganj" by "(in search for a new country of residence)", CC BY-SA 2.0, via Wikimedia Commons
+- Note: cropped from the original 4,000×3,000 frame to a centered 16:9 (1600×900) region showing the monastery corridor, prayer wheels and painted door; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Jammu
+
+- Local file: `public/images/destination-jammu.jpg`
+- Source: Wikimedia Commons — `File:View of Bahu Fort from approach road.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:View_of_Bahu_Fort_from_approach_road.jpg
+- Creator: Nvvchar
+- License: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0) / also GFDL 1.2+ as dual-licensed on the source page
+- Attribution required: Yes
+- Attribution text: "View of Bahu Fort from approach road" by Nvvchar, CC BY-SA 3.0, via Wikimedia Commons
+- Note: cropped from the original 2,272×1,704 frame to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Katra
+
+- Local file: `public/images/destination-katra.jpg`
+- Source: Wikimedia Commons — `File:Katra railway station.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Katra_railway_station.jpg
+- Creator: Lillottama
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Katra railway station" by Lillottama, CC BY-SA 4.0, via Wikimedia Commons
+- Note: source was already native 16:9 (4,608×2,592) — resized proportionally to 1,600×900, no cropping/reframing needed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Ramnagar (Corbett)
+
+- Local file: `public/images/destination-ramnagar-corbett.jpg`
+- Source: Wikimedia Commons — `File:Kosi River, Jim Corbett National Park, Ramnagar, Uttarakhand.jpeg`
+- Source page: https://commons.wikimedia.org/wiki/File:Kosi_River,_Jim_Corbett_National_Park,_Ramnagar,_Uttarakhand.jpeg
+- Creator: Anamdas
+- License: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0)
+- Attribution required: Yes
+- Attribution text: "Kosi River, Jim Corbett National Park, Ramnagar, Uttarakhand" by Anamdas, CC BY-SA 3.0, via Wikimedia Commons
+- Note: cropped from the original 4,160×3,120 frame to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Chail, Patnitop, Bhaderwah — no verified image yet
+
+No rights-cleared, identity-verified photograph of Chail, Patnitop, or Bhaderwah was found during Destinations Batch A sourcing (three search passes across Wikimedia Commons, Unsplash, Pexels, Flickr, and official J&K/Himachal tourism media — none cleared license + identity + resolution + no-watermark simultaneously). Their `image` field points at the generic `destinationsHero` asset (never a misattributed specific-place photo) and all three are listed in `config/destinationImageOverrides.ts`'s `DESTINATIONS_WITHOUT_VERIFIED_IMAGE` set, so the UI shows the honest neutral placeholder instead. Add a real entry here only once a verified photo is sourced and shipped.
 
 ## On-site attribution
 

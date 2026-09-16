@@ -45,7 +45,12 @@ export const images = {
     gangotri: '/images/destination-gangotri.jpg',
     kedarnath: '/images/destination-kedarnath.jpg',
     yamunotri: '/images/destination-yamunotri.jpg',
-    hemkundSahib: '/images/destination-hemkund-sahib.jpg'
+    hemkundSahib: '/images/destination-hemkund-sahib.jpg',
+    kasauli: '/images/destination-kasauli.jpg',
+    mcleodGanj: '/images/destination-mcleod-ganj.jpg',
+    jammu: '/images/destination-jammu.jpg',
+    katra: '/images/destination-katra.jpg',
+    ramnagarCorbett: '/images/destination-ramnagar-corbett.jpg'
   },
   tours: {
     spitiCircuit: '/images/spiti-circuit.jpg',

@@ -14,7 +14,7 @@ export interface StayLocationRule {
   reason: string;
 }
 
-// Every one of the 38 public destinations (config/destinations.config.ts) gets an
+// Every one of the 46 public destinations (config/destinations.config.ts) gets an
 // explicit row here — see AGENTS.md Phase B, section 4: "Do NOT leave behavior
 // implicit." Built from each destination's own accessType/stayBaseLocations/roadHead
 // fields and editorialDescription/apexPicks copy already in destinations.config.ts,
@@ -32,10 +32,16 @@ export const STAY_LOCATION_RULES: StayLocationRule[] = [
   { slug: 'spiti-valley', stayMode: 'destination', primaryStayLocation: 'Kaza', reason: 'editorialDescription names Kaza "the valley\'s lively high-altitude hub" — the real accommodation hub within the named destination; existing curated hotel locations ("Kaza, Spiti Valley", "Kibber, Spiti Valley") already match.' },
   {
     slug: 'dharamshala',
-    stayMode: 'nearby',
+    stayMode: 'destination',
+    primaryStayLocation: 'Dharamshala',
+    reason: 'Revised for Destinations Batch A (Sept 2026): McLeod Ganj is now its own destination with its own stay rule below, so Dharamshala-proper regains its own accommodation search instead of duplicating McLeod Ganj\'s.'
+  },
+  {
+    slug: 'mcleod-ganj',
+    stayMode: 'destination',
     primaryStayLocation: 'McLeod Ganj',
     nearbyStayLocations: ['Bhagsu'],
-    reason: 'editorialDescription states explicitly: "Most trips use Dharamshala as the arrival point and McLeod Ganj as the base."'
+    reason: 'Moved from the Dharamshala rule (Destinations Batch A, Sept 2026) — McLeod Ganj\'s own editorialDescription names it as the real accommodation town, so it is now the correct owner of this search.'
   },
   { slug: 'shimla', stayMode: 'destination', primaryStayLocation: 'Shimla', reason: 'Accommodation directly on/near Mall Road in town.' },
   { slug: 'tirthan-valley', stayMode: 'destination', primaryStayLocation: 'Gushaini', reason: 'apexPicks.stay: "Gushaini riverside cottage"; places[0] describes Gushaini as "a relaxed riverside base for the valley."' },
@@ -109,5 +115,22 @@ export const STAY_LOCATION_RULES: StayLocationRule[] = [
     primaryStayLocation: 'Ghangaria',
     nearbyStayLocations: ['Govindghat'],
     reason: 'accessType: "trek-gated"; destination.stayBaseLocations = ["Ghangaria"], roadHead = "Govindghat" — preserved exactly from existing pilgrimage architecture.'
+  },
+  { slug: 'chail', stayMode: 'destination', primaryStayLocation: 'Chail', reason: 'Town has its own accommodation (Chail Palace and others); no separate stay-base town.' },
+  { slug: 'kasauli', stayMode: 'destination', primaryStayLocation: 'Kasauli', reason: 'Cantonment town has its own hotels.' },
+  { slug: 'jammu', stayMode: 'destination', primaryStayLocation: 'Jammu', reason: 'City has its own extensive accommodation.' },
+  {
+    slug: 'katra',
+    stayMode: 'destination',
+    primaryStayLocation: 'Katra',
+    reason: 'Katra is road head, main stay base and destination title all at once — unlike Kedarnath/Yamunotri/Hemkund Sahib, no split needed. The Shrine Board\'s own separate dormitory system further up the route is a distinct booking channel, not ordinary hotel inventory.'
+  },
+  { slug: 'patnitop', stayMode: 'destination', primaryStayLocation: 'Patnitop', reason: 'Highway-side hill station with its own hotels.' },
+  { slug: 'bhaderwah', stayMode: 'destination', primaryStayLocation: 'Bhaderwah', reason: 'Valley town has its own accommodation.' },
+  {
+    slug: 'ramnagar-corbett',
+    stayMode: 'destination',
+    primaryStayLocation: 'Ramnagar',
+    reason: 'Ramnagar town holds the accommodation; in-park Forest Rest House stays are a distinct, permit-gated booking channel through the forest department, not ordinary hotel inventory.'
   }
 ];

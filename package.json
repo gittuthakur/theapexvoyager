@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "db:seed": "tsx scripts/seed.ts",
+    "db:sync-batch-a": "tsx scripts/syncDestinationBatchA.ts",
     "db:backfill-region-refs": "tsx scripts/backfillRegionRefs.ts",
     "db:backfill-transport-service-type": "tsx scripts/backfillTransportServiceType.ts"
   },

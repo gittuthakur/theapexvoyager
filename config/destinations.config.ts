@@ -192,51 +192,87 @@ export const destinations: Destination[] = [
     slug: 'dharamshala',
     title: 'Dharamshala',
     category: 'Wellness',
-    description: 'A Kangra Valley hill town below the Dhauladhar range, and gateway to McLeod Ganj above it.',
+    description: 'The Kangra Valley gateway town below the Dhauladhar range — the arrival point for this corner of Himachal, with McLeod Ganj as a separate destination further up the hill.',
     toursCount: 15,
     image: images.destinations.dharamshala,
     region: 'Kangra Valley',
     state: 'Himachal Pradesh',
-    editorialDescription: 'Dharamshala and McLeod Ganj are often treated as one place, but they sit about 9 km and a real climb apart. Dharamshala itself is the lower Kangra Valley town — quieter, more local, with sweeping Dhauladhar views. McLeod Ganj, higher up, is where the Tibetan government-in-exile has been based since 1960 and where most travelers actually spend their time — monasteries, cafes and the Dalai Lama’s temple complex. Most trips use Dharamshala as the arrival point and McLeod Ganj as the base.',
+    editorialDescription: 'Dharamshala is the Kangra Valley town most journeys into this corner of Himachal actually begin from — rail and bus links, valley-floor views of the Dhauladhar range, and a quieter, more local pace than the upper town. McLeod Ganj, the Tibetan-culture hub most travelers associate with "Dharamshala," sits about 9 km and a real climb above it and is treated here as its own destination.',
     bestTime: 'March – June, September – November',
-    idealDuration: '3–4 Days',
+    idealDuration: '2–3 Days',
     travelStyles: ['Wellness', 'Nature', 'Slow travel'],
     seasons: ['Spring', 'Summer', 'Autumn'],
     bestFor: ['Solo Travelers', 'Couples'],
     highlights: [
-      { title: 'McLeod Ganj and the Dalai Lama complex', description: 'The Tibetan government-in-exile’s base since 1960, with the Tsuglagkhang temple complex as its centre.' },
-      { title: 'Dhauladhar backdrop', description: 'The range’s peaks, including Hanuman Ka Tibba, rise directly behind the town.' },
-      { title: 'Triund day hike', description: 'A well-known ridge hike above McLeod Ganj, popular but genuinely rewarding on a clear day.' }
+      { title: 'Dhauladhar backdrop', description: 'Forest trails and ridgelines sit moments from town.' },
+      { title: 'Kangra Valley gateway', description: 'The practical arrival point for this stretch of Himachal — rail, bus and road links converge here.' },
+      { title: 'Kangra Art Museum', description: 'Centuries of Kangra valley and Tibetan craft, at Kotwali Bazaar.' }
     ],
     places: [
-      { title: 'McLeod Ganj', description: 'The upper town, roughly 9 km and a steep climb above Dharamshala, and where most stays and cafes are.' },
-      { title: 'Tsuglagkhang Complex', description: 'The Dalai Lama’s temple and residence complex in McLeod Ganj.' },
-      { title: 'Bhagsu Nag', description: 'A village just beyond McLeod Ganj with a waterfall and temple.' },
-      { title: 'Norbulingka Institute', description: 'A Tibetan arts and culture institute in the valley below, quieter than McLeod Ganj itself.' }
+      { title: 'HPCA Cricket Stadium', description: 'A high-altitude cricket ground in the Kotwali Bazaar area, home ground of the Himachal Pradesh Ranji team, at around 1,457 m.' },
+      { title: 'Kangra Art Museum', description: 'Miniature paintings, sculptures and Kangra valley and Tibetan craft, at Kotwali Bazaar.' },
+      { title: 'HP State War Memorial', description: 'A pine-forest memorial to Himachal soldiers, near the town entrance.' },
+      { title: 'Kotwali Bazaar', description: 'The lower town’s own market — Kangra tea, woolens and local crafts.' }
     ],
-    experiences: ['Monastery visits', 'Triund day hike', 'Tibetan cooking and culture', 'Café culture in McLeod Ganj'],
-    relatedSlugs: ['bir-billing', 'chamba'],
-    seo: { title: 'Dharamshala Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Dharamshala trip — McLeod Ganj’s Tibetan culture, Dhauladhar views, and the Triund day hike.' },
+    experiences: ['Museum visit (Kangra Art Museum)', 'War Memorial walk', 'Kotwali Bazaar shopping', 'Cricket-stadium visit (match days seasonal)'],
+    relatedSlugs: ['mcleod-ganj', 'bir-billing', 'chamba'],
+    seo: { title: 'Dharamshala Travel Guide | Kangra Valley Gateway | The Apex Voyager', description: 'Plan a Dharamshala stop — the Kangra Valley’s Dhauladhar-backed gateway town, Kangra Art Museum, and the road up to McLeod Ganj.' },
+    travelTips: [
+      'If you’re after the Tibetan-culture experience — cafes, monasteries, the Dalai Lama’s temple complex — that’s McLeod Ganj, a separate destination a real drive above this one.'
+    ],
+    matchScores: { adventure: 40, nature: 60, luxury: 35, crowds: 40, slowTravel: 55 },
+    seasonalNotes: {
+      Spring: 'March–May is clear and comfortable.',
+      Summer: 'June is warm in the valley.',
+      Autumn: 'September–November has clear Dhauladhar views.'
+    }
+  },
+  {
+    slug: 'mcleod-ganj',
+    title: 'McLeod Ganj',
+    category: 'Culture',
+    description: 'The hillside Tibetan-culture hub above Dharamshala — home to the Dalai Lama’s temple complex and the Tibetan government-in-exile since 1960.',
+    toursCount: 0,
+    image: images.destinations.mcleodGanj,
+    region: 'Kangra Valley',
+    state: 'Himachal Pradesh',
+    editorialDescription: 'McLeod Ganj sits about 9 km and a genuine climb above Dharamshala, and it’s where most travelers who say they’re "going to Dharamshala" actually spend their time. The Tibetan government-in-exile has been based here since 1960, and the Tsuglagkhang temple complex — the Dalai Lama’s residence and monastery — sits at the town’s centre. Narrow lanes, Tibetan cafes and the Triund trailhead give it a different pace from the valley town below.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '2–3 Days',
+    travelStyles: ['Culture', 'Wellness', 'Slow travel'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Solo Travelers', 'Couples'],
+    highlights: [
+      { title: 'Tsuglagkhang Complex', description: 'The Dalai Lama’s temple and residence complex, the town’s centre.' },
+      { title: 'Tibetan government-in-exile', description: 'Based here since 1960, shaping the town’s monasteries, cafes and daily rhythm.' },
+      { title: 'Triund trailhead', description: 'A well-known ridge hike starting directly from the upper town.' }
+    ],
+    places: [
+      { title: 'Tsuglagkhang Complex', description: 'The Dalai Lama’s temple and residence complex.' },
+      { title: 'Bhagsu Nag', description: 'A village just beyond McLeod Ganj with a waterfall and temple.' },
+      { title: 'Dharamkot', description: 'A quieter hillside hamlet above the main town.' }
+    ],
+    experiences: ['Monastery visits', 'Triund day hike', 'Tibetan cooking and culture', 'Café culture'],
+    relatedSlugs: ['dharamshala', 'bir-billing'],
+    seo: { title: 'McLeod Ganj Travel Guide | Tibetan Culture, Kangra Valley | The Apex Voyager', description: 'Plan a McLeod Ganj trip — the Dalai Lama’s temple complex, Tibetan culture, cafes and the Triund trailhead.' },
     apexPicks: {
-      view: { title: 'Triund ridge at sunset', description: 'Dhauladhar peaks catching the last light, above the treeline.' },
       stay: { title: 'McLeod Ganj hillside guesthouse', description: 'Simple rooms with valley or mountain views, a short walk from the main square.' },
       experience: { title: 'Morning at the Tsuglagkhang Complex', description: 'The Dalai Lama’s temple complex before the day’s crowds arrive.' },
-      taste: { title: 'Tibetan momos and thukpa', description: 'McLeod Ganj’s café strip is built around this exact meal.' },
-      moment: { title: 'Prayer flags over the valley', description: 'The view from McLeod Ganj’s upper lanes on a clear morning.' }
+      taste: { title: 'Tibetan momos and thukpa', description: 'The town’s café strip is built around this exact meal.' },
+      moment: { title: 'Prayer flags over the valley', description: 'The view from the upper lanes on a clear morning.' }
     },
     hiddenGems: [
-      { title: 'Dharamkot', description: 'A quieter hillside hamlet above McLeod Ganj, popular with longer-staying travelers.' },
-      { title: 'Norbulingka Institute', description: 'A calm Tibetan arts campus in the valley, easy to miss if you never leave McLeod Ganj.' }
+      { title: 'Dharamkot', description: 'A quieter hillside hamlet, popular with longer-staying travelers.' }
     ],
     travelTips: [
-      'Confirm whether your stay is in Dharamshala or McLeod Ganj — they are a real drive apart, not the same address.',
-      'The Triund trail can be crowded on weekends — a weekday or early start is quieter.',
-      'Pack layers even in summer — McLeod Ganj’s elevation keeps evenings cool.'
+      'Evenings are cool even in summer — the elevation here is noticeably higher than lower Dharamshala.',
+      'Confirm your booking is actually in McLeod Ganj, not lower Dharamshala — they are a real drive apart.',
+      'Confirm current trekking/access requirements for Triund locally before setting out.'
     ],
-    matchScores: { adventure: 55, nature: 75, luxury: 40, crowds: 65, slowTravel: 55 },
+    matchScores: { adventure: 55, nature: 70, luxury: 35, crowds: 70, slowTravel: 55 },
     seasonalNotes: {
-      Spring: 'March–May is clear and comfortable, good for the Triund hike before summer haze builds.',
-      Summer: 'June is warm in the valley but cooler in McLeod Ganj — a popular season to escape the plains’ heat.',
+      Spring: 'March–May is clear and comfortable.',
+      Summer: 'June is warm in the valley but cooler here.',
       Autumn: 'September–November has the clearest Dhauladhar views of the year.'
     }
   },
@@ -1887,6 +1923,274 @@ export const destinations: Destination[] = [
       Summer: 'June–August is the main season, once the snow has cleared enough for the Gurudwara to reopen for the year.',
       Autumn: 'September–early October is generally clearer, before the Gurudwara closes again for winter on a date fixed annually.'
     }
+  },
+  {
+    slug: 'chail',
+    title: 'Chail',
+    category: 'Colonial Charm',
+    description: 'A former royal summer retreat in the Shivalik foothills, with a hillside cricket ground long noted as one of the highest anywhere.',
+    toursCount: 0,
+    image: images.destinationsHero,
+    region: 'Solan District',
+    state: 'Himachal Pradesh',
+    editorialDescription: 'Chail was Maharaja Bhupinder Singh of Patiala’s summer retreat, about 45 km from Shimla — quieter and lower-key than the colonial capital it was built to rival. The Chail Palace, now a heritage hotel, still anchors the town, and the cricket ground built into the hillside above it, from 1893, remains one of the highest of its kind anywhere.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '2 Days',
+    altitude: '2,250 m',
+    travelStyles: ['Culture', 'Nature', 'Slow travel'],
+    seasons: ['Summer', 'Autumn'],
+    bestFor: ['Couples', 'Families'],
+    highlights: [
+      { title: 'Chail Palace', description: 'The Maharaja’s former summer residence, now a heritage hotel open to day visitors.' },
+      { title: 'Chail Cricket Ground', description: 'Built in 1893 at around 2,444 m — long noted as one of the highest cricket grounds anywhere, though no competitive cricket is played there today; it now serves as the Chail Military School’s playground.' },
+      { title: 'Deodar-forest quiet', description: 'A noticeably calmer pace than Shimla, an hour or so away.' }
+    ],
+    places: [
+      { title: 'Chail Palace', description: 'Heritage-hotel grounds open for a walk-through even for non-guests.' },
+      { title: 'Chail Cricket Ground', description: 'The hillside ground, viewable from just outside; not used for competitive matches.' },
+      { title: 'Sadhupul', description: 'A river stop on the way in, a common photo halt.' }
+    ],
+    experiences: ['Heritage walks', 'Forest walks', 'Photography', 'Day trip to Kufri'],
+    relatedSlugs: ['shimla', 'kasauli'],
+    seo: { title: 'Chail Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Chail trip — the Maharaja’s summer palace, a historic hillside cricket ground, and quiet Shivalik forest.' },
+    travelTips: [
+      'Chail Palace’s grounds charge a small entry fee for non-guests — confirm the current amount locally.',
+      'The road from Shimla is narrow in places — comfortable for a half-day drive, not a rushed one.'
+    ],
+    matchScores: { adventure: 20, nature: 65, luxury: 55, crowds: 30, slowTravel: 70 },
+    seasonalNotes: {
+      Summer: 'April–June is Chail’s clearest, warmest window.',
+      Autumn: 'September–November is cool and quiet.'
+    }
+  },
+  {
+    slug: 'kasauli',
+    title: 'Kasauli',
+    category: 'Colonial Charm',
+    description: 'A small colonial cantonment town in pine and oak forest, built around 19th-century churches and viewpoints.',
+    toursCount: 0,
+    image: images.destinations.kasauli,
+    region: 'Solan District',
+    state: 'Himachal Pradesh',
+    editorialDescription: 'Kasauli was laid out by the British in the 1840s as a cantonment town, and it still feels like one — narrow lanes, colonial-era bungalows, a working army cantonment at its centre, and Christ Church watching over the ridge. Close enough to Chandigarh and Shimla to work as a short, easy break.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '2 Days',
+    altitude: '1,900 m',
+    travelStyles: ['Culture', 'Slow travel', 'Nature'],
+    seasons: ['Summer', 'Autumn', 'Winter'],
+    bestFor: ['Couples', 'Families'],
+    highlights: [
+      { title: 'Christ Church', description: 'An 1850s colonial-era church at the heart of the town.' },
+      { title: 'Cantonment-town walks', description: 'A small, walkable grid of colonial lanes and bungalows.' },
+      { title: 'Sunset Point', description: 'A ridge viewpoint over the Shivalik foothills.' }
+    ],
+    places: [
+      { title: 'Christ Church', description: 'The town’s best-known colonial landmark.' },
+      { title: 'Monkey Point', description: 'A ridge viewpoint inside the cantonment area — an active military area; confirm current access rules locally.' },
+      { title: 'Gilbert Trail', description: 'A forested walking trail along the cantonment boundary.' }
+    ],
+    experiences: ['Heritage walks', 'Forest trail walks', 'Café mornings', 'Photography'],
+    relatedSlugs: ['chail', 'shimla'],
+    seo: { title: 'Kasauli Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Kasauli trip — colonial churches, forest trails and an easy Shivalik hill-town break.' },
+    travelTips: [
+      'Kasauli is a working cantonment town — some areas require ID and have restricted timings; confirm current rules locally.',
+      'It’s a popular weekend trip from Chandigarh — weekdays are noticeably quieter.'
+    ],
+    matchScores: { adventure: 15, nature: 55, luxury: 40, crowds: 45, slowTravel: 70 },
+    seasonalNotes: {
+      Summer: 'April–June is warm and clear.',
+      Winter: 'December–February is cold but rarely snowbound.'
+    }
+  },
+  {
+    slug: 'jammu',
+    title: 'Jammu',
+    category: 'Culture',
+    description: 'The "City of Temples" on the Tawi River — Jammu & Kashmir’s winter capital, and a common gateway before Kashmir or the hills beyond.',
+    toursCount: 0,
+    image: images.destinations.jammu,
+    region: 'Jammu District',
+    state: 'Jammu & Kashmir',
+    editorialDescription: 'Jammu is often treated as a stopover, but it’s a substantial city in its own right, built around the Raghunath Temple complex Maharaja Gulab Singh commissioned in the 1850s and the Bahu Fort overlooking the Tawi River. It also serves periodically as J&K’s winter seat of government, under the long-standing (though not uninterrupted) Darbar Move practice.',
+    bestTime: 'October – March',
+    idealDuration: '1–2 Days',
+    travelStyles: ['Culture', 'Family'],
+    seasons: ['Autumn', 'Winter', 'Spring'],
+    bestFor: ['Families', 'Couples'],
+    highlights: [
+      { title: 'Raghunath Temple complex', description: 'A cluster of seven shrines, each with its own shikhara, built in the mid-1800s.' },
+      { title: 'Bahu Fort', description: 'A fort above the Tawi River, with the Bagh-e-Bahu gardens beside it.' },
+      { title: 'Gateway city', description: 'The practical starting point for Katra, Patnitop, and the road into Kashmir.' }
+    ],
+    places: [
+      { title: 'Raghunath Temple', description: 'The city’s principal temple complex, in continuous use since the 1860s.' },
+      { title: 'Bahu Fort', description: 'A riverside fort with garden grounds.' },
+      { title: 'Tawi riverfront', description: 'The river the old city is built around.' }
+    ],
+    experiences: ['Temple visits', 'Fort and garden walks', 'Old-city bazaar walks'],
+    relatedSlugs: ['katra', 'patnitop'],
+    seo: { title: 'Jammu Travel Guide | Jammu & Kashmir | The Apex Voyager', description: 'Plan a Jammu stop — the Raghunath Temple complex, Bahu Fort, and the gateway to Katra and Kashmir.' },
+    travelTips: [
+      'Most itineraries treat Jammu as a 1-night stop before Katra or Srinagar — it works well as a deliberate day too.',
+      'The Raghunath Temple is a working shrine — dress modestly.'
+    ],
+    matchScores: { adventure: 10, nature: 25, luxury: 35, crowds: 50, slowTravel: 40 },
+    seasonalNotes: {
+      Winter: 'December–February is Jammu’s mild season and its periodic role as J&K’s winter seat of government.',
+      Autumn: 'October–November is clear and comfortably warm.'
+    }
+  },
+  {
+    slug: 'katra',
+    title: 'Katra',
+    category: 'Pilgrimage',
+    accessType: 'road',
+    description: 'The base town for the Vaishno Devi pilgrimage — where travelers register, stay, and begin the route to the Bhawan.',
+    toursCount: 0,
+    image: images.destinations.katra,
+    region: 'Reasi District',
+    state: 'Jammu & Kashmir',
+    editorialDescription: 'Katra exists almost entirely because of Vaishno Devi — the road- and rail-connected base town where pilgrims register and stay before the route up to the Bhawan shrine (on foot, pony, palki, or helicopter). Katra is the main practical stay base for most trips; the Shrine Board itself also runs dormitory accommodation further up the route and at Bhawan for pilgrims who choose to stay overnight there.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '2 Days',
+    travelStyles: ['Pilgrimage', 'Culture'],
+    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
+    bestFor: ['Families', 'Solo Travelers'],
+    highlights: [
+      { title: 'Vaishno Devi Bhawan', description: 'The shrine, reached by a multi-stage route from Katra — on foot, pony, palki, or helicopter.' },
+      { title: 'Banganga to Sanjichhat route', description: 'The staged pilgrim route, with checkpoints along the way.' },
+      { title: 'A dedicated pilgrimage town', description: 'Katra’s infrastructure — registration counters, accommodation, food — is built around the yatra.' }
+    ],
+    places: [
+      { title: 'Yatra Registration Counter, Katra bus stand', description: 'Where every pilgrim registers and collects the RFID Yatra Access Card before starting.' },
+      { title: 'Banganga', description: 'The official start of the trek route.' },
+      { title: 'Ardhkuwari', description: 'A midpoint shrine and rest stop on the route.' }
+    ],
+    experiences: ['Vaishno Devi pilgrimage route', 'Helicopter service (subject to booking/weather)', 'Pony/palki hire'],
+    relatedSlugs: ['jammu', 'patnitop'],
+    seo: { title: 'Katra Travel Guide | Vaishno Devi Base | The Apex Voyager', description: 'Plan a Vaishno Devi yatra from Katra — registration, the route to the Bhawan, and honest trip planning.' },
+    registrationInfo: { required: true, url: 'https://www.maavaishnodevi.org', note: 'Official Shri Mata Vaishno Devi Shrine Board site — the sole statutory registration authority; free, with an RFID Yatra Access Card issued at Katra bus stand.' },
+    accessJourney: { stages: [
+      { title: 'Katra — road head and main stay base', description: 'Reached by road or rail; most accommodation and all registration is here.' },
+      { title: 'The route to Bhawan', description: 'A multi-stage route on foot, pony, palki, or helicopter.', note: 'Route length is commonly cited at around 13 km one-way — treat this as a widely reported approximation; confirm current route details via the Shrine Board’s own site.' },
+      { title: 'Vaishno Devi Bhawan', description: 'The shrine itself.', note: 'The Shrine Board also operates its own paid dormitory accommodation along the route and at Bhawan for pilgrims who choose to stay overnight there.' }
+    ] },
+    travelTips: [
+      'Register before starting — either online at the Shrine Board’s own site or at the Katra counter — the RFID card is checked at route checkpoints.',
+      'Both Katra and the Shrine Board’s own dormitories along the route offer accommodation — check the Board’s site directly for options closer to Bhawan.',
+      'Helicopter, pony and palki services exist but current fares change — check the Shrine Board’s own site.'
+    ],
+    matchScores: { adventure: 40, nature: 45, luxury: 25, crowds: 75, slowTravel: 20 }
+  },
+  {
+    slug: 'patnitop',
+    title: 'Patnitop',
+    category: 'Adventure',
+    description: 'A forested hill station on the Jammu–Srinagar highway, known for winter skiing at nearby Madha Top and summer meadow walks.',
+    toursCount: 0,
+    image: images.destinationsHero,
+    region: 'Udhampur District',
+    state: 'Jammu & Kashmir',
+    editorialDescription: 'Patnitop sits directly on the Jammu–Srinagar highway between Udhampur and Ramban, which makes it both an easy stop for travelers passing through and a genuine short-break destination — skiing at nearby Madha Top in winter, forest walks the rest of the year.',
+    bestTime: 'January – February (skiing), April – June (meadows)',
+    idealDuration: '2 Days',
+    altitude: '2,024 m',
+    travelStyles: ['Adventure', 'Nature'],
+    seasons: ['Winter', 'Summer'],
+    bestFor: ['Families', 'Friends & Groups'],
+    highlights: [
+      { title: 'Winter skiing at Madha Top', description: 'Gentle, beginner-friendly slopes about 5-6 km from Patnitop on the Sanasar road.' },
+      { title: 'Deodar forest walks', description: 'Pine and deodar cover much of the plateau around the town.' },
+      { title: 'A highway-side base', description: 'Easy to fold into a Jammu–Srinagar road trip.' }
+    ],
+    places: [
+      { title: 'Patnitop meadow', description: 'The open plateau at the centre of the town.' },
+      { title: 'Madha Top', description: 'The nearby ski slope, on the road toward Sanasar.' }
+    ],
+    experiences: ['Skiing at Madha Top (winter)', 'Forest walks', 'Photography'],
+    relatedSlugs: ['jammu', 'bhaderwah'],
+    seo: { title: 'Patnitop Travel Guide | Jammu & Kashmir | The Apex Voyager', description: 'Plan a Patnitop stop on the Jammu–Srinagar highway — winter skiing at Madha Top, deodar forests, and easy mountain air.' },
+    travelTips: [
+      'Patnitop is a working highway-side hill station — expect through-traffic.',
+      'Ski-season snow conditions vary year to year — confirm current conditions with a local operator before planning specific dates.'
+    ],
+    matchScores: { adventure: 55, nature: 60, luxury: 30, crowds: 35, slowTravel: 45 },
+    seasonalNotes: {
+      Winter: 'December–February brings snow and the skiing season at Madha Top.',
+      Summer: 'April–June is green and mild.'
+    }
+  },
+  {
+    slug: 'bhaderwah',
+    title: 'Bhaderwah',
+    category: 'Offbeat',
+    description: 'A bowl-shaped valley town known regionally as "Mini Kashmir" for meadows, orchards and springs, with lighter tourism infrastructure than the Kashmir Valley.',
+    toursCount: 0,
+    image: images.destinationsHero,
+    region: 'Doda District',
+    state: 'Jammu & Kashmir',
+    editorialDescription: 'Bhaderwah sits in a valley ringed by snow-capped peaks, pine forest and apple orchards. The J&K Directorate of Tourism itself describes it as topographically and culturally similar to the Kashmir Valley — which is where the long-standing "Mini Kashmir" name comes from — though tourism infrastructure here remains lighter than in Kashmir itself.',
+    bestTime: 'April – June, September – October',
+    idealDuration: '2–3 Days',
+    altitude: '1,613 m',
+    travelStyles: ['Nature', 'Offbeat', 'Slow travel'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Couples', 'Solo Travelers'],
+    highlights: [
+      { title: 'A bowl-shaped valley setting', description: 'Snow-capped peaks ring the town on most sides.' },
+      { title: 'Orchards and springs', description: 'Apple and walnut orchards, and several natural springs, dot the valley floor.' },
+      { title: 'Known regionally as "Mini Kashmir"', description: 'A description used by the J&K Directorate of Tourism itself for the valley’s Kashmir-like setting.' }
+    ],
+    places: [
+      { title: 'Jamia Masjid, Bhaderwah', description: 'A well-known mosque in the town centre.' },
+      { title: 'Chinta Valley', description: 'A meadow valley a short distance from the town.' },
+      { title: 'Padri Pass', description: 'A high pass toward Chamba, HP — seasonal; confirm current road status before planning it as a route.' }
+    ],
+    experiences: ['Meadow walks', 'Orchard-season visits', 'Photography'],
+    relatedSlugs: ['patnitop', 'jammu'],
+    seo: { title: 'Bhaderwah Travel Guide | Jammu & Kashmir | The Apex Voyager', description: 'Plan a Bhaderwah trip — the valley known regionally as "Mini Kashmir," orchards, springs, and quiet Himalayan scenery.' },
+    travelTips: [
+      'Padri Pass toward Chamba is a seasonal, high-altitude road — confirm current status before planning it as a route, not just a viewpoint.',
+      'Book accommodation ahead in peak season — infrastructure here is lighter than in more visited J&K hill stations.'
+    ],
+    matchScores: { adventure: 35, nature: 85, luxury: 20, crowds: 10, slowTravel: 80 },
+    seasonalNotes: {
+      Spring: 'April–May brings orchard blossom.',
+      Autumn: 'September–October is clear and cool.'
+    }
+  },
+  {
+    slug: 'ramnagar-corbett',
+    title: 'Ramnagar',
+    category: 'Wildlife',
+    accessType: 'road',
+    description: 'The gateway town to Corbett Tiger Reserve, India’s oldest national park.',
+    toursCount: 0,
+    image: images.destinations.ramnagarCorbett,
+    region: 'Nainital District',
+    state: 'Uttarakhand',
+    editorialDescription: 'Ramnagar itself is a workaday market town, but it’s also the gateway to Corbett Tiger Reserve — established in 1936 as Hailey National Park, India’s first national park, and the site where Project Tiger was launched in 1973. Most of what travelers come for happens through the reserve’s own gates and permit system, with Ramnagar as the town where you actually stay, eat and arrange a visit.',
+    bestTime: 'November – June (individual zones have their own seasonal access — confirm current status through the forest authorities)',
+    idealDuration: '2–3 Days',
+    travelStyles: ['Wildlife', 'Nature', 'Family'],
+    seasons: ['Winter', 'Spring', 'Summer'],
+    bestFor: ['Families', 'Friends & Groups'],
+    highlights: [
+      { title: 'Corbett Tiger Reserve', description: 'India’s first national park (established 1936), and the birthplace of Project Tiger (1973).' },
+      { title: 'Forest-department-regulated safari access', description: 'Entry is through specific gates and zones, controlled by the Uttarakhand Forest Department.' },
+      { title: 'A genuine gateway town', description: 'Ramnagar’s own identity is built around servicing the reserve.' }
+    ],
+    places: [
+      { title: 'Corbett Tiger Reserve entry gates', description: 'Several forest-department-controlled gates provide access to different zones; specific gates and their seasonal status vary and should be confirmed before travel.' }
+    ],
+    experiences: ['Jeep safari (permit required, arranged through the forest authorities)', 'Birdwatching', 'Forest rest-house stays (where available, booked through the forest department)'],
+    relatedSlugs: ['nainital', 'mukteshwar'],
+    seo: { title: 'Ramnagar & Corbett Travel Guide | Uttarakhand | The Apex Voyager', description: 'Plan a Corbett trip from Ramnagar — forest-regulated safaris and India’s oldest tiger reserve.' },
+    travelTips: [
+      'Safari access is regulated by the forest authorities; confirm current zones, permits and seasonal access through the official authority before travel.',
+      'Wildlife sightings, including tiger sightings, are never guaranteed on any safari — treat a visit as a forest and habitat experience, not a guaranteed encounter.'
+    ],
+    matchScores: { adventure: 60, nature: 90, luxury: 35, crowds: 45, slowTravel: 30 }
   }
 ];
 

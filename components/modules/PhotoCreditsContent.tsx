@@ -243,6 +243,47 @@ const credits: PhotoCredit[] = [
     license: 'CC BY-SA 4.0',
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Hemkund_Sahib_and_Lokpal_Lake.jpg'
+  },
+  {
+    destination: 'Kasauli',
+    title: 'CHRIST CHURCH, KASAULI',
+    creator: 'Suman Wadhwa',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:CHRIST_CHURCH,_KASAULI.JPG'
+  },
+  {
+    destination: 'McLeod Ganj',
+    title: 'Namgyal Monastery, India, Himachal Pradesh, Mc Leod Ganj',
+    creator: '"(in search for a new country of residence)" (Flickr)',
+    license: 'CC BY-SA 2.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/2.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Namgyal_Monastery_India_Himachal_Pradesh_Mc_Leod_Ganj.jpg'
+  },
+  {
+    destination: 'Jammu',
+    title: 'View of Bahu Fort from approach road',
+    creator: 'Nvvchar',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:View_of_Bahu_Fort_from_approach_road.jpg'
+  },
+  {
+    destination: 'Katra',
+    title: 'Katra railway station',
+    creator: 'Lillottama',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Katra_railway_station.jpg'
+  },
+  {
+    destination: 'Ramnagar (Corbett)',
+    title: 'Kosi River, Jim Corbett National Park, Ramnagar, Uttarakhand',
+    creator: 'Anamdas',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0',
+    sourceUrl:
+      'https://commons.wikimedia.org/wiki/File:Kosi_River,_Jim_Corbett_National_Park,_Ramnagar,_Uttarakhand.jpeg'
   }
 ];
 
