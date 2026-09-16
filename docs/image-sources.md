@@ -13,7 +13,8 @@ Date checked: 2026-09-09 (Gulmarg through Khajjiar, Phase 2B-2); 2026-09-09
 (Srinagar, Pahalgam, Sonamarg, Phase 2B-3B-A); 2026-09-10 (Badrinath, Gangotri,
 Phase 2B-3D-B); 2026-09-10 (Kedarnath, Yamunotri, Phase 2B-3D-C); 2026-09-10
 (Hemkund Sahib, Phase 2B-3D-D); 2026-09-16 (Kasauli, McLeod Ganj, Jammu, Katra,
-Ramnagar/Corbett — Destinations Batch A).
+Ramnagar/Corbett — Destinations Batch A); 2026-09-17 (Kufri, Narkanda, Sarahan,
+Naggar, Palampur, Kangra, Jawalamukhi — Destinations Batch B).
 
 ## Gulmarg
 
@@ -365,6 +366,87 @@ Ramnagar/Corbett — Destinations Batch A).
 - Attribution required: Yes
 - Attribution text: "Kosi River, Jim Corbett National Park, Ramnagar, Uttarakhand" by Anamdas, CC BY-SA 3.0, via Wikimedia Commons
 - Note: cropped from the original 4,160×3,120 frame to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Kufri
+
+- Local file: `public/images/destination-kufri.jpg`
+- Source: Wikimedia Commons — `File:Gateway - Kufri Fun World - Kufri 2014-05-08 1634.JPG`
+- Source page: https://commons.wikimedia.org/wiki/File:Gateway_-_Kufri_Fun_World_-_Kufri_2014-05-08_1634.JPG
+- Creator: Biswarup Ganguly
+- License: CC BY 3.0 (https://creativecommons.org/licenses/by/3.0) — also dual-licensed GFDL 1.2+ on the source page
+- Attribution required: Yes
+- Attribution text: "Gateway - Kufri Fun World - Kufri" by Biswarup Ganguly, CC BY 3.0, via Wikimedia Commons
+- Note: cropped from the original 4,000×6,016 portrait frame using a manually targeted region (not a simple auto-crop) to keep the "Kufri Fun World / Welcome" arch signage fully legible; no content added or removed.
+
+## Narkanda
+
+- Local file: `public/images/destination-narkanda.jpg`
+- Source: Wikimedia Commons — `File:HATU TEMPLE.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:HATU_TEMPLE.jpg
+- Creator: Chirag85 (Chirag Upadhyay)
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "HATU TEMPLE" by Chirag85, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original 4,272×2,848 frame to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Sarahan
+
+- Local file: `public/images/destination-sarahan.jpg`
+- Source: Wikimedia Commons — `File:Sarahan-Bhimakali-06-gje.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Sarahan-Bhimakali-06-gje.jpg
+- Creator: Gerd Eichmann
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Sarahan-Bhimakali-06-gje" by Gerd Eichmann, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original 7,473×3,638 frame to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Naggar
+
+- Local file: `public/images/destination-naggar.jpg`
+- Source: Wikimedia Commons — `File:Naggar Castle Kullu WLM22-4062.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Naggar_Castle_Kullu_WLM22-4062.jpg
+- Creator: Schwiki
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Naggar Castle Kullu WLM22-4062" by Schwiki, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original 4,922×2,815 frame to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Palampur
+
+- Local file: `public/images/destination-palampur.jpg`
+- Source: Wikimedia Commons — `File:Palampur tea plantation, Himachal Pradesh, India.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Palampur_tea_plantation,_Himachal_Pradesh,_India.jpg
+- Creator: UnpetitproleX
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Palampur tea plantation, Himachal Pradesh, India" by UnpetitproleX, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original 4,937×3,291 frame to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Kangra
+
+- Local file: `public/images/destination-kangra.jpg`
+- Source: Wikimedia Commons — `File:Kangra Fort08.JPG`
+- Source page: https://commons.wikimedia.org/wiki/File:Kangra_Fort08.JPG
+- Creator: Ashish3724
+- License: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0)
+- Attribution required: Yes
+- Attribution text: "Kangra Fort08" by Ashish3724, CC BY-SA 3.0, via Wikimedia Commons
+- Note: cropped from the original 4,000×3,000 frame to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Jawalamukhi
+
+- Local file: `public/images/destination-jawalamukhi.jpg`
+- Source: Wikimedia Commons — `File:Jwalamukhi temple,kangra, himachal pradesh..JPG`
+- Source page: https://commons.wikimedia.org/wiki/File:Jwalamukhi_temple,kangra,_himachal_pradesh..JPG
+- Creator: Nswn03
+- License: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0)
+- Attribution required: Yes
+- Attribution text: "Jwalamukhi temple, kangra, himachal pradesh." by Nswn03, CC BY-SA 3.0, via Wikimedia Commons
+- Note: cropped from the original 2,816×2,112 frame, biased toward the top to keep the temple's gold dome fully in frame; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Kullu, Pragpur — no verified image yet
+
+No rights-cleared, identity-verified photograph of Kullu or Pragpur was approved during Destinations Batch B sourcing. The only Kullu candidate found (a Kullu Dussehra procession photo) has a genuine hillside townscape visible in the background but is dominated by a generic festival crowd in the foreground — not judged strong enough identity for a premium hero. No Pragpur candidate was found on Wikimedia Commons at all. Their `image` field points at the generic `destinationsHero` asset (never a misattributed specific-place photo) and both are listed in `config/destinationImageOverrides.ts`'s `DESTINATIONS_WITHOUT_VERIFIED_IMAGE` set, so the UI shows the honest neutral placeholder instead. Add a real entry here only once a verified photo is sourced and shipped.
 
 ## Chail, Patnitop, Bhaderwah — no verified image yet
 

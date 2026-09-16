@@ -2191,6 +2191,350 @@ export const destinations: Destination[] = [
       'Wildlife sightings, including tiger sightings, are never guaranteed on any safari — treat a visit as a forest and habitat experience, not a guaranteed encounter.'
     ],
     matchScores: { adventure: 60, nature: 90, luxury: 35, crowds: 45, slowTravel: 30 }
+  },
+  {
+    slug: 'kufri',
+    title: 'Kufri',
+    category: 'Adventure',
+    description: 'A Shimla-area hill stop built around a high-altitude nature park and family activity ground.',
+    toursCount: 0,
+    image: images.destinations.kufri,
+    region: 'Shimla District',
+    state: 'Himachal Pradesh',
+    altitude: '2,289 m',
+    editorialDescription: 'Kufri sits about 12 km from Shimla and is where the Shimla trip most families actually spend an afternoon — the Himalayan Nature Park, a high-altitude enclosure for regional wildlife at around 2,600 m, and the go-karting and rides at Kufri Fun World. It has its own hotels for travelers who’d rather base here than in Shimla itself.',
+    bestTime: 'March – June, October – February',
+    idealDuration: '1–2 Days',
+    travelStyles: ['Adventure', 'Family', 'Nature'],
+    seasons: ['Summer', 'Winter'],
+    bestFor: ['Families', 'Friends & Groups'],
+    highlights: [
+      { title: 'Himalayan Nature Park', description: 'A high-altitude wildlife enclosure at around 2,600 m, home to regional species like musk deer and snow leopard.' },
+      { title: 'Kufri Fun World', description: 'Go-karting and family rides, one of the area’s better-known activity stops.' },
+      { title: 'Mahasu Peak views', description: 'A nearby viewpoint reached on foot or pony, popular for winter snow.' }
+    ],
+    places: [
+      { title: 'Himalayan Nature Park', description: 'A forest-department wildlife enclosure with regional Himalayan species.' },
+      { title: 'Kufri Fun World', description: 'Go-karting and rides for families.' },
+      { title: 'Mahasu Peak', description: 'A short pony or walking route above the main village.' }
+    ],
+    experiences: ['Wildlife park visit', 'Go-karting', 'Pony rides (seasonal)', 'Winter snow activities'],
+    relatedSlugs: ['shimla', 'chail'],
+    seo: { title: 'Kufri Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Kufri trip — the Himalayan Nature Park, Kufri Fun World, and an easy Shimla-area base.' },
+    travelTips: [
+      'Kufri gets crowded with Shimla day-trippers on weekends — a weekday visit is quieter.',
+      'The nature park and Mahasu Peak both involve some walking or pony riding — wear comfortable shoes.'
+    ],
+    matchScores: { adventure: 45, nature: 60, luxury: 30, crowds: 55, slowTravel: 35 },
+    seasonalNotes: {
+      Summer: 'April–June is mild and clear.',
+      Winter: 'December–February often brings snow, popular for winter activities.'
+    }
+  },
+  {
+    slug: 'narkanda',
+    title: 'Narkanda',
+    category: 'Nature',
+    description: 'An apple-country hill town on the old Hindustan-Tibet road, and the base for Hatu Peak.',
+    toursCount: 0,
+    image: images.destinations.narkanda,
+    region: 'Shimla District',
+    state: 'Himachal Pradesh',
+    altitude: '2,708 m',
+    editorialDescription: 'Narkanda sits about 65 km beyond Shimla on the old Hindustan-Tibet road, in the heart of Himachal’s apple country. Samuel Evans Stokes introduced apple cultivation to the surrounding orchards in the 1910s, and that legacy still shapes the area. Hatu Peak, the region’s high point, rises just above the town.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '1–2 Days',
+    travelStyles: ['Nature', 'Slow travel'],
+    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
+    bestFor: ['Couples', 'Solo Travelers'],
+    highlights: [
+      { title: 'Hatu Peak', description: 'The area’s high point at around 3,400 m, about 8 km from town, with wide Himalayan views.' },
+      { title: 'Apple orchards', description: 'Orchards around Narkanda and Kotgarh mark one of Himachal’s oldest apple-growing belts.' },
+      { title: 'Tani Jubbar Lake', description: 'A small forest lake a short walk from the main road.' }
+    ],
+    places: [
+      { title: 'Hatu Peak', description: 'A small temple and viewpoint at the summit, reachable by a walkable trail.' },
+      { title: 'Tani Jubbar Lake', description: 'A quiet forest lake near the highway.' },
+      { title: 'Stokes Farm, Kotgarh', description: 'The orchard associated with Samuel Evans Stokes, who introduced apple cultivation to the region in the 1910s.' }
+    ],
+    experiences: ['Hatu Peak hike', 'Orchard-season visits', 'Winter skiing (Dhumri slopes, conditions vary)', 'Photography'],
+    relatedSlugs: ['shimla', 'kufri'],
+    seo: { title: 'Narkanda Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Narkanda trip — Hatu Peak, apple orchards, and the old Hindustan-Tibet road.' },
+    travelTips: [
+      'Roads can be snowbound in peak winter — check conditions before a December–February trip.',
+      'Orchard-season visits (September–October) coincide with the apple harvest.'
+    ],
+    matchScores: { adventure: 40, nature: 80, luxury: 25, crowds: 25, slowTravel: 70 },
+    seasonalNotes: {
+      Autumn: 'September–October is apple harvest season.',
+      Winter: 'December–February brings snow and occasional skiing at Dhumri.'
+    }
+  },
+  {
+    slug: 'sarahan',
+    title: 'Sarahan',
+    category: 'Pilgrimage',
+    accessType: 'road',
+    description: 'A temple town on the old Hindustan-Tibet road, built around the Bhimakali Temple and known as the gateway to Kinnaur.',
+    toursCount: 0,
+    image: images.destinations.sarahan,
+    region: 'Shimla District',
+    state: 'Himachal Pradesh',
+    altitude: '2,313 m',
+    editorialDescription: 'Sarahan sits above the Sutlej River, about 180 km from Shimla, and is built almost entirely around the Bhimakali Temple — one of the 51 Shaktipeethas of Hindu tradition. Most travelers heading into Kinnaur pass through or stay a night here, which has earned it the label "gateway to Kinnaur."',
+    bestTime: 'March – June, September – November',
+    idealDuration: '1–2 Days',
+    travelStyles: ['Pilgrimage', 'Culture'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Solo Travelers', 'Families'],
+    highlights: [
+      { title: 'Bhimakali Temple', description: 'A twin-towered temple complex, one of the 51 Shaktipeethas, combining Hindu and Buddhist architectural styles.' },
+      { title: 'Gateway to Kinnaur', description: 'The last major stop most travelers make before the road continues into Kinnaur proper.' },
+      { title: 'Sutlej Valley views', description: 'Wide valley views from the temple grounds and surrounding ridge.' }
+    ],
+    places: [
+      { title: 'Bhimakali Temple', description: 'The town’s central temple complex, an active place of worship.' },
+      { title: 'Sarahan bazaar', description: 'The small town market below the temple.' }
+    ],
+    experiences: ['Temple visit', 'Valley viewpoint walks', 'Photography'],
+    relatedSlugs: ['kinnaur', 'sangla-valley'],
+    seo: { title: 'Sarahan Travel Guide | Bhimakali Temple | The Apex Voyager', description: 'Plan a Sarahan stop — the Bhimakali Temple and the gateway to Kinnaur.' },
+    travelTips: [
+      'The temple is a working shrine — dress modestly and expect to remove footwear.',
+      'Roads beyond Sarahan into Kinnaur can be affected by monsoon landslides — check conditions before continuing.'
+    ],
+    matchScores: { adventure: 20, nature: 55, luxury: 20, crowds: 25, slowTravel: 65 },
+    seasonalNotes: {
+      Summer: 'June–August is accessible, though monsoon rain can affect the onward Kinnaur road.',
+      Autumn: 'September–October is clear and stable.'
+    }
+  },
+  {
+    slug: 'kullu',
+    title: 'Kullu',
+    category: 'Culture',
+    description: 'The valley’s administrative and religious center, home to the Raghunath Temple and the internationally recognized Kullu Dussehra festival.',
+    toursCount: 0,
+    image: images.destinationsHero,
+    region: 'Kullu District',
+    state: 'Himachal Pradesh',
+    editorialDescription: 'Kullu town sits at the confluence of the Beas and Sarvari rivers and functions as the valley’s practical and religious center — a role Manali, further up the valley, doesn’t play. The Raghunath Temple, established in the 17th century by Maharaja Jagat Singh, houses the deity considered presiding over the whole valley, and each October the town hosts the week-long Kullu Dussehra, recognized as an international-level fair.',
+    bestTime: 'March – June, October',
+    idealDuration: '2 Days',
+    travelStyles: ['Culture', 'Family'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Families', 'Couples'],
+    highlights: [
+      { title: 'Raghunath Temple', description: 'The valley’s presiding-deity temple, established in the 17th century.' },
+      { title: 'Kullu Dussehra', description: 'A week-long international-level fair each October, when Lord Raghunath’s chariot is drawn through Dhalpur ground.' },
+      { title: 'Beas–Sarvari confluence', description: 'The riverside setting the town is built around.' }
+    ],
+    places: [
+      { title: 'Raghunath Temple', description: 'The valley’s central temple, inside the old Kullu palace complex.' },
+      { title: 'Dhalpur Maidan', description: 'The open ground where Kullu Dussehra is held each October.' },
+      { title: 'Sarvari riverfront', description: 'The confluence area where the Sarvari meets the Beas.' }
+    ],
+    experiences: ['Temple visit', 'Dussehra festival (October)', 'Riverside walks', 'Local market browsing'],
+    relatedSlugs: ['manali', 'naggar'],
+    seo: { title: 'Kullu Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Kullu trip — the Raghunath Temple, Kullu Dussehra, and the valley’s practical center.' },
+    travelTips: [
+      'Kullu Dussehra (October) brings large crowds — book accommodation well ahead if visiting for the festival.',
+      'The Raghunath Temple is a working shrine — dress modestly.'
+    ],
+    matchScores: { adventure: 20, nature: 45, luxury: 30, crowds: 55, slowTravel: 45 },
+    seasonalNotes: {
+      Autumn: 'October is Kullu Dussehra season — the valley’s biggest annual event.',
+      Summer: 'April–June is warm and clear.'
+    }
+  },
+  {
+    slug: 'naggar',
+    title: 'Naggar',
+    category: 'Colonial Charm',
+    description: 'The former capital of the Kullu kingdom, home to a 15th-century castle and the Nicholas Roerich estate.',
+    toursCount: 0,
+    image: images.destinations.naggar,
+    region: 'Kullu District',
+    state: 'Himachal Pradesh',
+    altitude: '1,800 m',
+    editorialDescription: 'Naggar was the capital of the Kullu kingdom for centuries before the seat moved to Kullu and later Sultanpur. The castle built here around 1460 CE by Raja Sidh Singh survived the 1905 earthquake through its earthquake-resistant Kath-Kuni construction, and now runs as a heritage hotel. Above it, the Russian painter Nicholas Roerich lived from 1928 until his death in 1947; his estate is now an art museum.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '1–2 Days',
+    travelStyles: ['Culture', 'Slow travel'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Couples', 'Solo Travelers'],
+    highlights: [
+      { title: 'Naggar Castle', description: 'A ~1460 CE fort built in earthquake-resistant Kath-Kuni style, now a heritage hotel.' },
+      { title: 'Nicholas Roerich Art Gallery', description: 'The former home and studio of the Russian painter, who lived here 1928–1947.' },
+      { title: 'Former royal capital', description: 'Naggar was the seat of the Kullu kingdom for centuries before Kullu town.' }
+    ],
+    places: [
+      { title: 'Naggar Castle', description: 'The former royal fort, open to visitors and run as a heritage hotel.' },
+      { title: 'Nicholas Roerich Art Gallery', description: 'The painter’s estate, about 1 km above the castle, now a museum.' }
+    ],
+    experiences: ['Castle visit', 'Art gallery visit', 'Village walks'],
+    relatedSlugs: ['manali', 'kullu'],
+    seo: { title: 'Naggar Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Naggar trip — the 15th-century castle, the Nicholas Roerich estate, and the former Kullu capital.' },
+    travelTips: [
+      'The castle and art gallery are a short walk apart — plan a half-day for both.',
+      'Naggar makes a quieter overnight base than Manali if you want valley views without the crowds.'
+    ],
+    matchScores: { adventure: 15, nature: 60, luxury: 45, crowds: 20, slowTravel: 75 },
+    seasonalNotes: {
+      Summer: 'April–June is clear and mild.',
+      Autumn: 'September–November is quiet, with good visibility.'
+    }
+  },
+  {
+    slug: 'palampur',
+    title: 'Palampur',
+    category: 'Nature',
+    description: 'Himachal’s tea-growing town, built around plantations and the Neugal Khad gorge.',
+    toursCount: 0,
+    image: images.destinations.palampur,
+    region: 'Kangra Valley',
+    state: 'Himachal Pradesh',
+    altitude: '1,219 m',
+    editorialDescription: 'Palampur is Himachal’s tea country — cultivation here dates to 1849–1852, when the British botanist Dr. Jameson introduced Chinese Camellia sinensis plants, and working estates still shape the town’s identity today. On its edge, the Neugal Khad — a roughly 305 m wide, 100-metre-plus gorge — cuts across the plateau, with a café overlooking the drop.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '2 Days',
+    travelStyles: ['Nature', 'Slow travel'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Couples', 'Families'],
+    highlights: [
+      { title: 'Tea estates', description: 'Working tea gardens dating to the 1850s, walkable from town.' },
+      { title: 'Neugal Khad', description: 'A wide, deep gorge with a viewpoint café on its edge.' },
+      { title: 'Dhauladhar backdrop', description: 'The tea plateau sits directly below the Dhauladhar range.' }
+    ],
+    places: [
+      { title: 'Palampur tea gardens', description: 'Working estates open for walks, some offering tastings.' },
+      { title: 'Neugal Khad', description: 'The town’s landmark gorge, with a Himachal Tourism café on the rim.' }
+    ],
+    experiences: ['Tea estate walks', 'Neugal Khad viewpoint', 'Photography'],
+    relatedSlugs: ['dharamshala', 'pragpur'],
+    seo: { title: 'Palampur Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Palampur trip — tea estates, the Neugal Khad gorge, and Dhauladhar views.' },
+    travelTips: [
+      'Estate visits are best in the early morning when plantation workers are out picking.',
+      'Neugal Khad gets busy with day-trippers on weekends.'
+    ],
+    matchScores: { adventure: 15, nature: 75, luxury: 35, crowds: 35, slowTravel: 70 },
+    seasonalNotes: {
+      Summer: 'April–June is warm with clear Dhauladhar views.',
+      Autumn: 'September–November is cool and quiet.'
+    }
+  },
+  {
+    slug: 'pragpur',
+    title: 'Pragpur',
+    category: 'Colonial Charm',
+    description: 'India’s first officially declared Heritage Village, built by the Kuthiala Sud clan in the 17th century.',
+    toursCount: 0,
+    image: images.destinationsHero,
+    region: 'Kangra Valley',
+    state: 'Himachal Pradesh',
+    editorialDescription: 'Pragpur was declared India’s first Heritage Village by the Himachal Pradesh government in December 1997, and it earns the label — cobbled streets, a village pond (the Taal), and houses built in a genuine mix of Kangra, Rajput, British, Portuguese and Italian styles, laid out by the Kuthiala Sud clan from the 17th century onward. The Judge’s Court, a 1918 ancestral home turned heritage stay, anchors the village.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '1 Day',
+    travelStyles: ['Culture', 'Slow travel'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Couples', 'Families'],
+    highlights: [
+      { title: 'India’s first Heritage Village', description: 'Officially declared by the Himachal Pradesh government in December 1997.' },
+      { title: 'Mixed architectural styles', description: 'Kangra, Rajput, British, Portuguese and Italian influences sit side by side.' },
+      { title: 'The Judge’s Court', description: 'A 1918 ancestral home, now a heritage hotel, a short walk from the village core.' }
+    ],
+    places: [
+      { title: 'The Taal', description: 'The village’s traditional pond, at the heart of the old core.' },
+      { title: 'The Judge’s Court', description: 'A restored 1918 heritage home open as a hotel.' },
+      { title: 'Village core streets', description: 'Cobbled lanes lined with the village’s mixed-style architecture.' }
+    ],
+    experiences: ['Heritage walking tour', 'Architecture photography', 'Village-core stroll'],
+    relatedSlugs: ['palampur', 'dharamshala'],
+    seo: { title: 'Pragpur Travel Guide | India’s First Heritage Village | The Apex Voyager', description: 'Plan a Pragpur visit — India’s first officially declared Heritage Village, in Himachal’s Kangra Valley.' },
+    travelTips: [
+      'The village core is small — a couple of hours on foot covers it well.',
+      'Combine with nearby Garli, part of the same Heritage Zone, for a fuller day.'
+    ],
+    matchScores: { adventure: 10, nature: 40, luxury: 40, crowds: 20, slowTravel: 80 },
+    seasonalNotes: {
+      Summer: 'April–June is warm and clear.',
+      Autumn: 'September–November is cool, good for walking.'
+    }
+  },
+  {
+    slug: 'kangra',
+    title: 'Kangra',
+    category: 'Pilgrimage',
+    accessType: 'road',
+    description: 'A historic fort-and-temple town, home to the largest fort in the Indian Himalayas and the Brajeshwari Devi Temple.',
+    toursCount: 0,
+    image: images.destinations.kangra,
+    region: 'Kangra Valley',
+    state: 'Himachal Pradesh',
+    editorialDescription: 'Kangra town, about 20 km from Dharamshala, is built around two genuinely major landmarks: Kangra Fort — the largest fort in the Indian Himalayas, held by the Katoch dynasty and with historical references stretching back millennia — and the Brajeshwari Devi Temple, a major pilgrimage site dedicated to Durga as Vajreshwari. It’s a distinct heritage stop from Dharamshala’s own gateway-town identity.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '1–2 Days',
+    travelStyles: ['Culture', 'Pilgrimage'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Families', 'Couples'],
+    highlights: [
+      { title: 'Kangra Fort', description: 'The largest fort in the Indian Himalayas, built by the Katoch dynasty.' },
+      { title: 'Brajeshwari Devi Temple', description: 'A major temple dedicated to Durga as Vajreshwari, near the fort.' },
+      { title: 'A historic Kangra Valley town', description: 'Distinct from Dharamshala, about 20 km away.' }
+    ],
+    places: [
+      { title: 'Kangra Fort', description: 'A massive hilltop fortification with centuries of history.' },
+      { title: 'Brajeshwari Devi Temple', description: 'The town’s principal temple, a working pilgrimage site.' }
+    ],
+    experiences: ['Fort visit', 'Temple visit', 'Local market walk'],
+    relatedSlugs: ['dharamshala', 'jawalamukhi'],
+    seo: { title: 'Kangra Travel Guide | Fort & Temple Town | The Apex Voyager', description: 'Plan a Kangra trip — the largest fort in the Himalayas and the Brajeshwari Devi Temple.' },
+    travelTips: [
+      'The fort involves some climbing on uneven stone — comfortable footwear helps.',
+      'The temple is a working shrine — dress modestly.'
+    ],
+    matchScores: { adventure: 25, nature: 35, luxury: 25, crowds: 35, slowTravel: 55 },
+    seasonalNotes: {
+      Summer: 'April–June is warm and clear.',
+      Autumn: 'September–November is cool and comfortable.'
+    }
+  },
+  {
+    slug: 'jawalamukhi',
+    title: 'Jawalamukhi',
+    category: 'Pilgrimage',
+    accessType: 'road',
+    description: 'A Shakti Peeth pilgrimage town built around the Jwalamukhi Temple and its natural flame.',
+    toursCount: 0,
+    image: images.destinations.jawalamukhi,
+    region: 'Kangra Valley',
+    state: 'Himachal Pradesh',
+    editorialDescription: 'Jawalamukhi is a pilgrimage town in the Shivalik foothills of Kangra district, built around the Jwalamukhi Temple — one of the 51 Shakti Peethas of Hindu tradition. Inside the sanctum, natural flames burn continuously from crevices in the rock rather than from a conventional idol; geologists attribute this to natural gas seeping from deposits beneath the site, while for pilgrims the flames are the goddess’s own manifestation. The town’s market and accommodation are built entirely around the temple.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '1 Day',
+    travelStyles: ['Pilgrimage', 'Culture'],
+    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
+    bestFor: ['Families', 'Solo Travelers'],
+    highlights: [
+      { title: 'Jwalamukhi Temple', description: 'A Shakti Peeth where natural flames burn from rock crevices in the sanctum.' },
+      { title: 'A dedicated pilgrimage town', description: 'The town’s market and stays are built around the temple.' }
+    ],
+    places: [
+      { title: 'Jwalamukhi Temple', description: 'The town’s central shrine, with continuously burning natural flames.' },
+      { title: 'Temple bazaar', description: 'The market street leading to the temple entrance.' }
+    ],
+    experiences: ['Temple visit', 'Bazaar walk'],
+    relatedSlugs: ['kangra', 'dharamshala'],
+    seo: { title: 'Jawalamukhi Travel Guide | Shakti Peeth Temple | The Apex Voyager', description: 'Plan a Jawalamukhi visit — the Jwalamukhi Temple, one of the 51 Shakti Peethas, in Himachal’s Kangra Valley.' },
+    travelTips: [
+      'The temple is a working shrine with continuous pilgrim flow — dress modestly and expect queues on festival days.',
+      'The town is compact and walkable from most accommodation.'
+    ],
+    matchScores: { adventure: 5, nature: 25, luxury: 15, crowds: 50, slowTravel: 40 },
+    seasonalNotes: {
+      Spring: 'The Navratri festival periods bring the largest pilgrim crowds.',
+      Summer: 'April–June is warm; the temple itself is indoors.'
+    }
   }
 ];
 

@@ -10,6 +10,11 @@
  * was found during sourcing, so their `image` field points at the generic destinations-page
  * hero (never a misattributed specific-place photo) and is hidden behind this same
  * placeholder until real photography is sourced.
+ *
+ * Kullu and Pragpur (Destinations Batch B, September 2026) are added for the same reason:
+ * the only Kullu candidate found (a Dussehra festival crowd photo) doesn't carry strong
+ * enough destination-specific identity for a premium hero, and no rights-clear Pragpur
+ * candidate was found on Wikimedia Commons at all.
  */
 export const DESTINATIONS_WITHOUT_VERIFIED_IMAGE = new Set<string>([
   'tirthan-valley',
@@ -17,5 +22,7 @@ export const DESTINATIONS_WITHOUT_VERIFIED_IMAGE = new Set<string>([
   'sainj-valley',
   'chail',
   'patnitop',
-  'bhaderwah'
+  'bhaderwah',
+  'kullu',
+  'pragpur'
 ]);

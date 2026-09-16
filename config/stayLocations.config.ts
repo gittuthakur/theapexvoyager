@@ -14,7 +14,7 @@ export interface StayLocationRule {
   reason: string;
 }
 
-// Every one of the 46 public destinations (config/destinations.config.ts) gets an
+// Every one of the 55 public destinations (config/destinations.config.ts) gets an
 // explicit row here — see AGENTS.md Phase B, section 4: "Do NOT leave behavior
 // implicit." Built from each destination's own accessType/stayBaseLocations/roadHead
 // fields and editorialDescription/apexPicks copy already in destinations.config.ts,
@@ -132,5 +132,19 @@ export const STAY_LOCATION_RULES: StayLocationRule[] = [
     stayMode: 'destination',
     primaryStayLocation: 'Ramnagar',
     reason: 'Ramnagar town holds the accommodation; in-park Forest Rest House stays are a distinct, permit-gated booking channel through the forest department, not ordinary hotel inventory.'
+  },
+  { slug: 'kufri', stayMode: 'destination', primaryStayLocation: 'Kufri', reason: 'Has its own hotels; a genuine overnight base, not only a Shimla day trip.' },
+  { slug: 'narkanda', stayMode: 'destination', primaryStayLocation: 'Narkanda', reason: 'Own accommodation on the highway; not dependent on Shimla.' },
+  { slug: 'sarahan', stayMode: 'destination', primaryStayLocation: 'Sarahan', reason: 'HPTDC and private guesthouses in town, adjacent to the temple.' },
+  { slug: 'kullu', stayMode: 'destination', primaryStayLocation: 'Kullu', reason: 'District headquarters with its own hotel stock, distinct from Manali.' },
+  { slug: 'naggar', stayMode: 'destination', primaryStayLocation: 'Naggar', reason: 'The castle itself is a heritage hotel; additional guesthouses in the village.' },
+  { slug: 'palampur', stayMode: 'destination', primaryStayLocation: 'Palampur', reason: 'Established tea-country town with its own hotel stock.' },
+  { slug: 'pragpur', stayMode: 'destination', primaryStayLocation: 'Pragpur', reason: 'The Judge\'s Court and other heritage stays are in the village itself.' },
+  { slug: 'kangra', stayMode: 'destination', primaryStayLocation: 'Kangra', reason: 'Its own hotel stock; not dependent on Dharamshala.' },
+  {
+    slug: 'jawalamukhi',
+    stayMode: 'destination',
+    primaryStayLocation: 'Jawalamukhi',
+    reason: 'A dedicated pilgrimage town with guesthouses/dharamshalas built around the temple, same pattern as an ordinary road-accessible pilgrimage stop (cf. Badrinath/Gangotri).'
   }
 ];

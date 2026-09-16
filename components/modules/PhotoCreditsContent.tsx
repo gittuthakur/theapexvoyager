@@ -284,6 +284,62 @@ const credits: PhotoCredit[] = [
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0',
     sourceUrl:
       'https://commons.wikimedia.org/wiki/File:Kosi_River,_Jim_Corbett_National_Park,_Ramnagar,_Uttarakhand.jpeg'
+  },
+  {
+    destination: 'Kufri',
+    title: 'Gateway - Kufri Fun World - Kufri',
+    creator: 'Biswarup Ganguly',
+    license: 'CC BY 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/3.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Gateway_-_Kufri_Fun_World_-_Kufri_2014-05-08_1634.JPG'
+  },
+  {
+    destination: 'Narkanda',
+    title: 'HATU TEMPLE',
+    creator: 'Chirag85',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:HATU_TEMPLE.jpg'
+  },
+  {
+    destination: 'Sarahan',
+    title: 'Sarahan-Bhimakali-06-gje',
+    creator: 'Gerd Eichmann',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Sarahan-Bhimakali-06-gje.jpg'
+  },
+  {
+    destination: 'Naggar',
+    title: 'Naggar Castle Kullu WLM22-4062',
+    creator: 'Schwiki',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Naggar_Castle_Kullu_WLM22-4062.jpg'
+  },
+  {
+    destination: 'Palampur',
+    title: 'Palampur tea plantation, Himachal Pradesh, India',
+    creator: 'UnpetitproleX',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Palampur_tea_plantation,_Himachal_Pradesh,_India.jpg'
+  },
+  {
+    destination: 'Kangra',
+    title: 'Kangra Fort08',
+    creator: 'Ashish3724',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Kangra_Fort08.JPG'
+  },
+  {
+    destination: 'Jawalamukhi',
+    title: 'Jwalamukhi temple, kangra, himachal pradesh.',
+    creator: 'Nswn03',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Jwalamukhi_temple,kangra,_himachal_pradesh..JPG'
   }
 ];
 
