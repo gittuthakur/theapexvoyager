@@ -340,6 +340,78 @@ const credits: PhotoCredit[] = [
     license: 'CC BY-SA 3.0',
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Jwalamukhi_temple,kangra,_himachal_pradesh..JPG'
+  },
+  {
+    destination: 'Bharmour',
+    title: 'Chaurasi temple complex courtyard',
+    creator: 'Varun Shiv Kapur',
+    license: 'CC BY 2.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Chaurasi_temple_complex_courtyard_(6133049309).jpg'
+  },
+  {
+    destination: 'Tabo',
+    title: 'Adobe monuments in the Tabo Buddhist monastery and temples complex, Himachal Pradesh',
+    creator: 'Nivedita Ravishankar',
+    license: 'CC BY 2.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Adobe_monuments_in_the_Tabo_Buddhist_monastery_and_temples_complex,_Himachal_Pradesh.jpg'
+  },
+  {
+    destination: 'Dhankar',
+    title: 'View of Dhankar Gompa and Fort',
+    creator: 'Akhila Srikanta Rao',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:View_of_Dhankar_Gompa_and_Fort.jpg'
+  },
+  {
+    destination: 'Kibber',
+    title: 'Kibber-14-gje',
+    creator: 'Gerd Eichmann',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Kibber-14-gje.jpg'
+  },
+  {
+    destination: 'Keylong',
+    title: 'East Keylong Lahaul Himachal Oct22 A7C 04661',
+    creator: 'Timothy A. Gonsalves',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:East_Keylong_Lahaul_Himachal_Oct22_A7C_04661.jpg'
+  },
+  {
+    destination: 'Mandi',
+    title: 'Panchvaktra Temple, Mandi (FRONT VIEW) 01',
+    creator: 'Aranya Kar',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Panchvaktra_Temple,_Mandi_(FRONT_VIEW)_01.jpg'
+  },
+  {
+    destination: 'Rewalsar',
+    title: 'Rewalsar lake 01',
+    creator: 'Gannu03',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Rewalsar_lake_01.jpg'
+  },
+  {
+    destination: 'Renuka Ji',
+    title: 'Renuka ji temple, Himachal Pradesh',
+    creator: 'Harvinder Chandigarh',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Renuka_ji_temple,_Himachal_Pradesh.JPG'
+  },
+  {
+    destination: 'Paonta Sahib',
+    title: 'Ponta Sahib',
+    creator: 'Satdeep Gill',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Ponta_Sahib.JPG'
   }
 ];
 

@@ -57,7 +57,16 @@ export const images = {
     naggar: '/images/destination-naggar.jpg',
     palampur: '/images/destination-palampur.jpg',
     kangra: '/images/destination-kangra.jpg',
-    jawalamukhi: '/images/destination-jawalamukhi.jpg'
+    jawalamukhi: '/images/destination-jawalamukhi.jpg',
+    bharmour: '/images/destination-bharmour.jpg',
+    tabo: '/images/destination-tabo.jpg',
+    dhankar: '/images/destination-dhankar.jpg',
+    kibber: '/images/destination-kibber.jpg',
+    keylong: '/images/destination-keylong.jpg',
+    mandi: '/images/destination-mandi.jpg',
+    rewalsar: '/images/destination-rewalsar.jpg',
+    renukaJi: '/images/destination-renuka-ji.jpg',
+    paontaSahib: '/images/destination-paonta-sahib.jpg'
   },
   tours: {
     spitiCircuit: '/images/spiti-circuit.jpg',

@@ -14,7 +14,9 @@ Date checked: 2026-09-09 (Gulmarg through Khajjiar, Phase 2B-2); 2026-09-09
 Phase 2B-3D-B); 2026-09-10 (Kedarnath, Yamunotri, Phase 2B-3D-C); 2026-09-10
 (Hemkund Sahib, Phase 2B-3D-D); 2026-09-16 (Kasauli, McLeod Ganj, Jammu, Katra,
 Ramnagar/Corbett — Destinations Batch A); 2026-09-17 (Kufri, Narkanda, Sarahan,
-Naggar, Palampur, Kangra, Jawalamukhi — Destinations Batch B).
+Naggar, Palampur, Kangra, Jawalamukhi — Destinations Batch B); 2026-09-17
+(Bharmour, Tabo, Dhankar, Kibber, Keylong, Mandi, Rewalsar, Renuka Ji, Paonta
+Sahib — Destinations Batch C).
 
 ## Gulmarg
 
@@ -443,6 +445,105 @@ Naggar, Palampur, Kangra, Jawalamukhi — Destinations Batch B).
 - Attribution required: Yes
 - Attribution text: "Jwalamukhi temple, kangra, himachal pradesh." by Nswn03, CC BY-SA 3.0, via Wikimedia Commons
 - Note: cropped from the original 2,816×2,112 frame, biased toward the top to keep the temple's gold dome fully in frame; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Bharmour
+
+- Local file: `public/images/destination-bharmour.jpg`
+- Source: Wikimedia Commons — `File:Chaurasi temple complex courtyard (6133049309).jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Chaurasi_temple_complex_courtyard_(6133049309).jpg
+- Creator: Varun Shiv Kapur
+- License: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0)
+- Attribution required: Yes
+- Attribution text: "Chaurasi temple complex courtyard" by Varun Shiv Kapur, CC BY 2.0, via Wikimedia Commons
+- Note: originally sourced to Flickr and transferred to Commons via Flickr2Commons, license verified by FlickreviewR. Cropped from the original 2,048×1,536 frame to a centered 16:9 (1600×900) region; no content added or removed.
+
+## Tabo
+
+- Local file: `public/images/destination-tabo.jpg`
+- Source: Wikimedia Commons — `File:Adobe monuments in the Tabo Buddhist monastery and temples complex, Himachal Pradesh.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Adobe_monuments_in_the_Tabo_Buddhist_monastery_and_temples_complex,_Himachal_Pradesh.jpg
+- Creator: Nivedita Ravishankar
+- License: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0)
+- Attribution required: Yes
+- Attribution text: "Adobe monuments in the Tabo Buddhist monastery and temples complex, Himachal Pradesh" by Nivedita Ravishankar, CC BY 2.0, via Wikimedia Commons
+- Note: cropped from the original 2,048×1,536 frame to a centered 16:9 (1600×900) region; no content added or removed. The file's embedded GPS coordinates do not match Tabo's real location (a known geotagging error on this uploader's photos) — identity is instead corroborated by the file's specific caption, its Commons category, and the visually consistent modern-Tabo-village backdrop.
+
+## Dhankar
+
+- Local file: `public/images/destination-dhankar.jpg`
+- Source: Wikimedia Commons — `File:View of Dhankar Gompa and Fort.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:View_of_Dhankar_Gompa_and_Fort.jpg
+- Creator: Akhila Srikanta Rao
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "View of Dhankar Gompa and Fort" by Akhila Srikanta Rao, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original 4,000×1,824 frame to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary. Embedded GPS coordinates match Dhankar's real location.
+
+## Kibber
+
+- Local file: `public/images/destination-kibber.jpg`
+- Source: Wikimedia Commons — `File:Kibber-14-gje.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Kibber-14-gje.jpg
+- Creator: Gerd Eichmann
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Kibber-14-gje" by Gerd Eichmann, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original 5,045×2,530 frame to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Keylong
+
+- Local file: `public/images/destination-keylong.jpg`
+- Source: Wikimedia Commons — `File:East Keylong Lahaul Himachal Oct22 A7C 04661.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:East_Keylong_Lahaul_Himachal_Oct22_A7C_04661.jpg
+- Creator: Timothy A. Gonsalves
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "East Keylong Lahaul Himachal Oct22 A7C 04661" by Timothy A. Gonsalves, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original 6,000×4,000 frame to a 16:9 (1600×900) region, biased toward the bottom to keep the town in frame rather than the sky; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Mandi
+
+- Local file: `public/images/destination-mandi.jpg`
+- Source: Wikimedia Commons — `File:Panchvaktra Temple, Mandi (FRONT VIEW) 01.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Panchvaktra_Temple,_Mandi_(FRONT_VIEW)_01.jpg
+- Creator: Aranya Kar
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Panchvaktra Temple, Mandi (FRONT VIEW) 01" by Aranya Kar, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original 6,000×4,000 frame to a 16:9 (1600×900) region, biased toward the top to keep both temple spires in frame; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Rewalsar
+
+- Local file: `public/images/destination-rewalsar.jpg`
+- Source: Wikimedia Commons — `File:Rewalsar lake 01.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Rewalsar_lake_01.jpg
+- Creator: Gannu03
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Rewalsar lake 01" by Gannu03, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original 6,000×4,000 frame to a 16:9 (1600×900) region, biased toward the top to keep the lakeside shrine complex in frame; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Renuka Ji
+
+- Local file: `public/images/destination-renuka-ji.jpg`
+- Source: Wikimedia Commons — `File:Renuka ji temple, Himachal Pradesh.JPG`
+- Source page: https://commons.wikimedia.org/wiki/File:Renuka_ji_temple,_Himachal_Pradesh.JPG
+- Creator: Harvinder Chandigarh
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Renuka ji temple, Himachal Pradesh" by Harvinder Chandigarh, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original 4,608×3,456 frame to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary.
+
+## Paonta Sahib
+
+- Local file: `public/images/destination-paonta-sahib.jpg`
+- Source: Wikimedia Commons — `File:Ponta Sahib.JPG`
+- Source page: https://commons.wikimedia.org/wiki/File:Ponta_Sahib.JPG
+- Creator: Satdeep Gill
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Ponta Sahib" by Satdeep Gill, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original 2,350×1,644 frame to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary. Two other candidates from the same gurdwara (an interior weapons-museum display, and a tree-obstructed exterior) were rejected during Phase C2 sourcing in favor of this clearer dome view.
 
 ## Kullu, Pragpur — no verified image yet
 

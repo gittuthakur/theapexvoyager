@@ -14,7 +14,7 @@ export interface StayLocationRule {
   reason: string;
 }
 
-// Every one of the 55 public destinations (config/destinations.config.ts) gets an
+// Every one of the 64 public destinations (config/destinations.config.ts) gets an
 // explicit row here — see AGENTS.md Phase B, section 4: "Do NOT leave behavior
 // implicit." Built from each destination's own accessType/stayBaseLocations/roadHead
 // fields and editorialDescription/apexPicks copy already in destinations.config.ts,
@@ -146,5 +146,20 @@ export const STAY_LOCATION_RULES: StayLocationRule[] = [
     stayMode: 'destination',
     primaryStayLocation: 'Jawalamukhi',
     reason: 'A dedicated pilgrimage town with guesthouses/dharamshalas built around the temple, same pattern as an ordinary road-accessible pilgrimage stop (cf. Badrinath/Gangotri).'
-  }
+  },
+  { slug: 'bharmour', stayMode: 'destination', primaryStayLocation: 'Bharmour', reason: 'Own town accommodation; traditional base for the Manimahesh Yatra.' },
+  { slug: 'tabo', stayMode: 'destination', primaryStayLocation: 'Tabo', reason: 'Monastery-town guesthouses exist directly in the village.' },
+  { slug: 'dhankar', stayMode: 'destination', primaryStayLocation: 'Dhankar', reason: 'Basic homestays exist directly in the village, at the monastery itself.' },
+  { slug: 'kibber', stayMode: 'destination', primaryStayLocation: 'Kibber', reason: 'Village homestays exist directly in Kibber, used by wildlife-sanctuary visitors.' },
+  { slug: 'keylong', stayMode: 'destination', primaryStayLocation: 'Keylong', reason: 'District headquarters with its own hotel stock, independent of Manali.' },
+  { slug: 'mandi', stayMode: 'destination', primaryStayLocation: 'Mandi', reason: 'Established town with its own extensive hotel stock.' },
+  { slug: 'rewalsar', stayMode: 'destination', primaryStayLocation: 'Rewalsar', reason: 'Own guesthouses directly on the lake, distinct from Mandi’s town accommodation.' },
+  {
+    slug: 'renuka-ji',
+    stayMode: 'destination',
+    primaryStayLocation: 'Renuka Ji',
+    nearbyStayLocations: ['Renukaji'],
+    reason: 'Guesthouses directly at the lake; nearbyStayLocations covers the common alternate spelling ("Renukaji") so lake-adjacent listings under either name are captured.'
+  },
+  { slug: 'paonta-sahib', stayMode: 'destination', primaryStayLocation: 'Paonta Sahib', reason: 'Established town with its own hotel stock, on the Yamuna.' }
 ];

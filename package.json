@@ -11,6 +11,7 @@
     "db:seed": "tsx scripts/seed.ts",
     "db:sync-batch-a": "tsx scripts/syncDestinationBatchA.ts",
     "db:sync-batch-b": "tsx scripts/syncDestinationBatchB.ts",
+    "db:sync-batch-c": "tsx scripts/syncDestinationBatchC.ts",
     "db:backfill-region-refs": "tsx scripts/backfillRegionRefs.ts",
     "db:backfill-transport-service-type": "tsx scripts/backfillTransportServiceType.ts"
   },

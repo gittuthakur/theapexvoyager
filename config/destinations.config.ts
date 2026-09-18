@@ -155,7 +155,7 @@ export const destinations: Destination[] = [
       { title: 'Hikkim', description: 'Home to the world’s highest post office.' },
       { title: 'Langza', description: 'A fossil village watched over by a giant Buddha.' },
       { title: 'Chandratal', description: 'A seasonal moon lake beneath stark Himalayan peaks.' },
-      { title: 'Dhankar', description: 'A cliffside monastery and village above the confluence.' }
+      { title: 'Dhankar', description: 'A cliffside monastery village on the circuit — now its own destination page.' }
     ],
     experiences: ['Mountain road trips', 'Monastery visits', 'Stargazing', 'Village experiences', 'Trekking'],
     relatedSlugs: ['kinnaur', 'manali', 'tirthan-valley'],
@@ -2534,6 +2534,346 @@ export const destinations: Destination[] = [
     seasonalNotes: {
       Spring: 'The Navratri festival periods bring the largest pilgrim crowds.',
       Summer: 'April–June is warm; the temple itself is indoors.'
+    }
+  },
+  {
+    slug: 'bharmour',
+    title: 'Bharmour',
+    category: 'Pilgrimage',
+    description: 'A Budhil-valley temple town and the traditional base for the Manimahesh Kailash pilgrimage.',
+    toursCount: 0,
+    image: images.destinations.bharmour,
+    region: 'Chamba District',
+    state: 'Himachal Pradesh',
+    altitude: '2,100 m',
+    editorialDescription: 'Bharmour sits at around 2,100 m in the Budhil valley, between the Pir Panjal and Dhauladhar ranges. Its Chaurasi Temple complex — a cluster of shrines whose name refers to eighty-four — has been a centre of Gaddi community life for centuries, and the town is the traditional starting base for the Manimahesh Kailash pilgrimage each year.',
+    bestTime: 'May – October',
+    idealDuration: '1–2 Days',
+    travelStyles: ['Pilgrimage', 'Culture'],
+    seasons: ['Summer', 'Autumn'],
+    bestFor: ['Solo Travelers', 'Families'],
+    highlights: [
+      { title: 'Chaurasi Temple complex', description: 'A cluster of shrines including the Dharamraj (Dharmeshvar Mahadev) temple, a centre of Gaddi community worship.' },
+      { title: 'Manimahesh Yatra base', description: 'The traditional starting town for the pilgrimage to Manimahesh Lake.' },
+      { title: 'Gaddi community town', description: 'A Budhil-valley town shaped by generations of Gaddi shepherd culture.' }
+    ],
+    places: [
+      { title: 'Chaurasi Temple complex', description: 'The town’s central shrine cluster, including the Dharamraj temple.' },
+      { title: 'Bharmani Mata temple pool', description: 'A bathing pool about 4 km from town, part of the pilgrimage route.' }
+    ],
+    experiences: ['Temple complex visit', 'Manimahesh Yatra (seasonal)', 'Gaddi culture and crafts'],
+    relatedSlugs: ['chamba', 'dalhousie'],
+    seo: { title: 'Bharmour Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Bharmour trip — the Chaurasi Temple complex and the base for the Manimahesh Kailash pilgrimage.' },
+    travelTips: [
+      'The Manimahesh Yatra itself is seasonal and physically demanding — confirm current dates and conditions before planning around it.',
+      'The Chaurasi complex is an active place of worship — dress modestly.'
+    ],
+    matchScores: { adventure: 30, nature: 55, luxury: 15, crowds: 30, slowTravel: 60 },
+    seasonalNotes: {
+      Summer: 'June–August is the main pilgrimage season.',
+      Autumn: 'September–October is quieter and clear.'
+    }
+  },
+  {
+    slug: 'tabo',
+    title: 'Tabo',
+    category: 'Culture',
+    description: 'A thousand-year-old monastery town in Spiti, known for murals often compared to the Ajanta Caves.',
+    toursCount: 0,
+    image: images.destinations.tabo,
+    region: 'Lahaul and Spiti',
+    state: 'Himachal Pradesh',
+    altitude: '~3,050 m',
+    editorialDescription: 'Tabo Monastery was founded in 996 CE under the patronage of King Yeshe-Ö of Guge, and its murals and stucco sculptures have earned it the description "the Ajanta of the Himalayas." The monastery is still an active place of worship, set in the stark high-altitude landscape of the Spiti Valley.',
+    bestTime: 'May – October',
+    idealDuration: '1–2 Days',
+    travelStyles: ['Culture', 'Pilgrimage'],
+    seasons: ['Summer', 'Autumn'],
+    bestFor: ['Solo Travelers', 'Couples'],
+    highlights: [
+      { title: 'Tabo Monastery', description: 'Founded in 996 CE, known for murals and stucco work compared to the Ajanta Caves.' },
+      { title: 'Ancient manuscripts and murals', description: 'Centuries-old wall paintings and manuscripts housed within the monastery.' },
+      { title: 'A living monastery', description: 'Still an active centre of worship, not only a heritage site.' }
+    ],
+    places: [
+      { title: 'Tabo Monastery', description: 'The town’s central monastery complex, founded 996 CE.' },
+      { title: 'Monastery caves', description: 'Meditation caves in the cliffs above the monastery.' }
+    ],
+    experiences: ['Monastery visit', 'Photography', 'Village walks'],
+    relatedSlugs: ['spiti-valley', 'dhankar'],
+    seo: { title: 'Tabo Travel Guide | Ajanta of the Himalayas | The Apex Voyager', description: 'Plan a Tabo trip — a thousand-year-old monastery in Spiti Valley, known for its murals.' },
+    travelTips: [
+      'Photography inside the mural halls is often restricted — check current rules on arrival.',
+      'Nights are cold even in summer at this altitude — pack accordingly.'
+    ],
+    matchScores: { adventure: 25, nature: 60, luxury: 15, crowds: 20, slowTravel: 70 },
+    seasonalNotes: {
+      Summer: 'June–August is the most accessible window.',
+      Autumn: 'September–October is clear with fewer visitors.'
+    }
+  },
+  {
+    slug: 'dhankar',
+    title: 'Dhankar',
+    category: 'Adventure',
+    description: 'A cliffside monastery and village above the Spiti–Pin confluence, and the starting point for the Dhankar Lake trek.',
+    toursCount: 0,
+    image: images.destinations.dhankar,
+    region: 'Lahaul and Spiti',
+    state: 'Himachal Pradesh',
+    altitude: '3,894 m',
+    editorialDescription: 'Dhankar perches dramatically on a cliff above the confluence of the Spiti and Pin rivers — the name itself is said to combine "dhang" (cliff) and "kar" (fort). The monastery here is reckoned among the oldest in the valley, and a trek from the village climbs to Dhankar Lake, a high alpine lake above the settlement.',
+    bestTime: 'May – October',
+    idealDuration: '1–2 Days',
+    travelStyles: ['Adventure', 'Culture'],
+    seasons: ['Summer', 'Autumn'],
+    bestFor: ['Solo Travelers', 'Friends & Groups'],
+    highlights: [
+      { title: 'Dhankar Monastery', description: 'A cliffside monastery counted among the oldest in Spiti, with dramatic confluence views.' },
+      { title: 'Dhankar Lake trek', description: 'A moderate trek from the village to a high alpine lake above the monastery.' },
+      { title: 'Spiti–Pin confluence views', description: 'The village overlooks where the Pin river meets the Spiti river.' }
+    ],
+    places: [
+      { title: 'Dhankar Monastery', description: 'The cliffside monastery at the heart of the village.' },
+      { title: 'Dhankar Lake', description: 'A high alpine lake reached by a trek of roughly 45 minutes to a few hours from the monastery.' }
+    ],
+    experiences: ['Monastery visit', 'Dhankar Lake trek', 'Photography'],
+    relatedSlugs: ['spiti-valley', 'tabo'],
+    seo: { title: 'Dhankar Travel Guide | Spiti Valley | The Apex Voyager', description: 'Plan a Dhankar trip — a cliffside monastery above the Spiti–Pin confluence, and the Dhankar Lake trek.' },
+    travelTips: [
+      'The lake trek gains real altitude quickly — pace yourself and carry water.',
+      'Basic homestays exist in the village — book ahead in peak season.'
+    ],
+    matchScores: { adventure: 55, nature: 70, luxury: 10, crowds: 20, slowTravel: 55 },
+    seasonalNotes: {
+      Summer: 'June–August is the most reliable trekking window.',
+      Autumn: 'September–October is clear and cool.'
+    }
+  },
+  {
+    slug: 'kibber',
+    title: 'Kibber',
+    category: 'Wildlife',
+    description: 'One of the highest permanently inhabited villages in India, and the base for the Kibber Wildlife Sanctuary.',
+    toursCount: 0,
+    image: images.destinations.kibber,
+    region: 'Lahaul and Spiti',
+    state: 'Himachal Pradesh',
+    altitude: '4,270 m',
+    editorialDescription: 'Kibber sits at around 4,270 m, among the highest permanently inhabited villages in India, and is the base for the Kibber Wildlife Sanctuary — a cold-desert protected area established in 1999 and known as snow leopard habitat. Sightings are never guaranteed; winter (when the cats move to lower ground) offers the best chance.',
+    bestTime: 'May – October (general visits), November – February (snow leopard season)',
+    idealDuration: '1–2 Days',
+    travelStyles: ['Wildlife', 'Adventure'],
+    seasons: ['Summer', 'Winter'],
+    bestFor: ['Solo Travelers', 'Friends & Groups'],
+    highlights: [
+      { title: 'Kibber Wildlife Sanctuary', description: 'A cold-desert protected area established in 1999, known snow leopard habitat.' },
+      { title: 'One of India’s highest villages', description: 'A permanently inhabited settlement at around 4,270 m.' },
+      { title: 'Village monastery', description: 'A small monastery within the village itself.' }
+    ],
+    places: [
+      { title: 'Kibber Wildlife Sanctuary', description: 'The protected cold-desert habitat surrounding the village.' },
+      { title: 'Kibber village', description: 'Flat-roofed stone houses typical of high-Spiti architecture.' }
+    ],
+    experiences: ['Wildlife sanctuary visit', 'Winter snow leopard tracking (never guaranteed)', 'Village walks'],
+    relatedSlugs: ['spiti-valley', 'tabo'],
+    seo: { title: 'Kibber Travel Guide | Spiti Valley | The Apex Voyager', description: 'Plan a Kibber trip — one of India’s highest villages, and the Kibber Wildlife Sanctuary.' },
+    travelTips: [
+      'Snow leopard sightings are never guaranteed on any visit — treat it as a habitat experience, not a promised sighting.',
+      'The altitude here is serious — acclimatize in Kaza first rather than arriving directly.'
+    ],
+    matchScores: { adventure: 60, nature: 85, luxury: 10, crowds: 15, slowTravel: 55 },
+    seasonalNotes: {
+      Summer: 'June–August is the most accessible window for general visits.',
+      Winter: 'December–February is when snow leopards move to lower ground, improving sighting odds without guaranteeing one.'
+    }
+  },
+  {
+    slug: 'keylong',
+    title: 'Keylong',
+    category: 'Nature',
+    description: 'The district headquarters of Lahaul and Spiti, and a base for exploring the Lahaul valley.',
+    toursCount: 0,
+    image: images.destinations.keylong,
+    region: 'Lahaul and Spiti',
+    state: 'Himachal Pradesh',
+    altitude: '~3,080 m',
+    editorialDescription: 'Keylong is the administrative headquarters of the Lahaul and Spiti district, about 71 km from Manali via the Atal Tunnel. It has its own monasteries and a genuine town identity distinct from both Manali and the Spiti side of the district, and increasingly serves as a base for travelers exploring Lahaul specifically.',
+    bestTime: 'May – October',
+    idealDuration: '1–2 Days',
+    travelStyles: ['Nature', 'Culture'],
+    seasons: ['Summer', 'Autumn'],
+    bestFor: ['Solo Travelers', 'Couples'],
+    highlights: [
+      { title: 'Lahaul district headquarters', description: 'The administrative and practical base town for the Lahaul valley.' },
+      { title: 'Local monasteries', description: 'Several monasteries reflecting the valley’s Buddhist heritage.' },
+      { title: 'Atal Tunnel gateway', description: 'Reached from Manali in a fraction of the old over-the-pass driving time.' }
+    ],
+    places: [
+      { title: 'Keylong town', description: 'The district headquarters, with its own bazaar and administrative buildings.' },
+      { title: 'Khardong Monastery', description: 'A monastery in the hills above town.' }
+    ],
+    experiences: ['Monastery visits', 'Lahaul valley day trips', 'Local market walk'],
+    relatedSlugs: ['manali', 'spiti-valley'],
+    seo: { title: 'Keylong Travel Guide | Lahaul Valley | The Apex Voyager', description: 'Plan a Keylong trip — the Lahaul district headquarters and a base for exploring the valley.' },
+    travelTips: [
+      'The Atal Tunnel has made Keylong far more accessible year-round than the old Rohtang Pass route, though winter conditions still vary — check current status before travel.'
+    ],
+    matchScores: { adventure: 30, nature: 70, luxury: 20, crowds: 20, slowTravel: 65 },
+    seasonalNotes: {
+      Summer: 'June–August is the main travel season.',
+      Autumn: 'September is clear and quiet.'
+    }
+  },
+  {
+    slug: 'mandi',
+    title: 'Mandi',
+    category: 'Pilgrimage',
+    description: 'Known as "Chhoti Kashi" for its many temples, set at the confluence of the Suketi and Beas rivers.',
+    toursCount: 0,
+    image: images.destinations.mandi,
+    region: 'Mandi District',
+    state: 'Himachal Pradesh',
+    editorialDescription: 'Mandi has long been called "Chhoti Kashi" — the local claim is that where Kashi (Varanasi) has eighty temples, Mandi has eighty-one. The Panchvaktra Temple, at the confluence of the Suketi and Beas rivers, is a recognized heritage monument, and temples like Triloknath and Bhootnath are woven into the town’s everyday streets rather than set apart from them.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '1–2 Days',
+    travelStyles: ['Pilgrimage', 'Culture'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Families', 'Couples'],
+    highlights: [
+      { title: 'Panchvaktra Temple', description: 'A heritage-listed temple at the Suketi–Beas confluence, dedicated to five forms of Shiva.' },
+      { title: '"Chhoti Kashi"', description: 'A town known for its dense concentration of temples woven through its streets.' },
+      { title: 'Bhootnath and Triloknath temples', description: 'Among the town’s other well-known shrines.' }
+    ],
+    places: [
+      { title: 'Panchvaktra Temple', description: 'At the confluence of the Suketi and Beas, a recognized heritage monument.' },
+      { title: 'Bhootnath Temple', description: 'A well-known shrine in the Chouhata Bazaar area.' },
+      { title: 'Triloknath Temple', description: 'A temple in the Purani Mandi area of town.' }
+    ],
+    experiences: ['Temple walks', 'Old-town bazaar walk', 'Riverside evenings'],
+    relatedSlugs: ['rewalsar', 'kullu'],
+    seo: { title: 'Mandi Travel Guide | Chhoti Kashi | The Apex Voyager', description: 'Plan a Mandi trip — the town known as Chhoti Kashi for its many temples, at the Suketi–Beas confluence.' },
+    travelTips: [
+      'Rewalsar Lake is a well-known day trip from Mandi, about 24 km away.',
+      'The temples are working shrines — dress modestly.'
+    ],
+    matchScores: { adventure: 15, nature: 40, luxury: 30, crowds: 40, slowTravel: 55 },
+    seasonalNotes: {
+      Summer: 'April–June is warm; riverside areas offer some relief.',
+      Autumn: 'September–November is cool and comfortable.'
+    }
+  },
+  {
+    slug: 'rewalsar',
+    title: 'Rewalsar',
+    category: 'Pilgrimage',
+    description: 'A small lake revered by Hindus, Buddhists and Sikhs alike, known to Tibetan Buddhists as Tso Pema.',
+    toursCount: 0,
+    image: images.destinations.rewalsar,
+    region: 'Mandi District',
+    state: 'Himachal Pradesh',
+    editorialDescription: 'Rewalsar Lake — known as Tso Pema, the "Lotus Lake," to Tibetan Buddhists — is ringed by temples, monasteries and a gurdwara belonging to three different faiths. Buddhist tradition holds that Guru Padmasambhava meditated here before travelling to Tibet; the Gurdwara Rewalsar Sahib honours a visit by Guru Gobind Singh; and Hindu tradition associates the site with the sage Lomas.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '1 Day',
+    travelStyles: ['Pilgrimage', 'Culture'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Solo Travelers', 'Families'],
+    highlights: [
+      { title: 'A three-faith pilgrimage lake', description: 'Hindu, Buddhist and Sikh shrines share the lake’s periphery.' },
+      { title: 'Padmasambhava association', description: 'Tibetan Buddhist tradition holds Guru Rinpoche meditated here before travelling to Tibet.' },
+      { title: 'Gurdwara Rewalsar Sahib', description: 'A gurdwara associated with a visit by Guru Gobind Singh.' }
+    ],
+    places: [
+      { title: 'Rewalsar Lake', description: 'The small lake at the heart of the town, ringed by shrines of three faiths.' },
+      { title: 'Gurdwara Rewalsar Sahib', description: 'The town’s gurdwara, on the lake’s edge.' }
+    ],
+    experiences: ['Lake circumambulation', 'Multi-faith temple and monastery visits', 'Photography'],
+    relatedSlugs: ['mandi', 'kullu'],
+    seo: { title: 'Rewalsar Travel Guide | Tso Pema | The Apex Voyager', description: 'Plan a Rewalsar trip — the multi-faith lake known to Tibetan Buddhists as Tso Pema.' },
+    travelTips: [
+      'This is an active pilgrimage site for three faiths — dress modestly and be respectful around all the shrines, not only one.',
+      'Easily done as a day trip from Mandi, about 24 km away.'
+    ],
+    matchScores: { adventure: 10, nature: 50, luxury: 15, crowds: 30, slowTravel: 65 },
+    seasonalNotes: {
+      Summer: 'April–June is warm and clear.',
+      Autumn: 'September–November is cool and quiet.'
+    }
+  },
+  {
+    slug: 'renuka-ji',
+    title: 'Renuka Ji',
+    category: 'Pilgrimage',
+    description: 'Himachal’s largest natural lake, revered as the embodiment of the goddess Renuka, ringed by a wildlife sanctuary.',
+    toursCount: 0,
+    image: images.destinations.renukaJi,
+    region: 'Sirmaur District',
+    state: 'Himachal Pradesh',
+    editorialDescription: 'Renuka Lake, a Ramsar-listed wetland and Himachal’s largest natural lake, is held to be the embodiment of the goddess Renuka, mother of Lord Parshuram. Temples to both deities stand on its banks, and the surrounding Renuka Wildlife Sanctuary adds a forest and wildlife dimension to what is primarily a pilgrimage destination.',
+    bestTime: 'October – March (including the Renuka Ji Fair)',
+    idealDuration: '1–2 Days',
+    travelStyles: ['Pilgrimage', 'Nature'],
+    seasons: ['Autumn', 'Winter'],
+    bestFor: ['Families', 'Solo Travelers'],
+    highlights: [
+      { title: 'Renuka Lake', description: 'A Ramsar-listed wetland and Himachal’s largest natural lake.' },
+      { title: 'Renuka and Parshuram temples', description: 'Shrines on the lake bank dedicated to the goddess and her son.' },
+      { title: 'International Renuka Ji Fair', description: 'A five-day fair held after Diwali each November, with processions of local deities.' }
+    ],
+    places: [
+      { title: 'Renuka Lake', description: 'The lake at the centre of the site, with a circumference of roughly 2.5 km.' },
+      { title: 'Renuka Wildlife Sanctuary', description: 'The forest sanctuary surrounding the lake.' }
+    ],
+    experiences: ['Lake walk', 'Temple visits', 'Renuka Ji Fair (seasonal, November)', 'Wildlife sanctuary visit'],
+    relatedSlugs: ['paonta-sahib', 'kasauli'],
+    seo: { title: 'Renuka Ji Travel Guide | Himachal’s Largest Lake | The Apex Voyager', description: 'Plan a Renuka Ji trip — Himachal’s largest natural lake, its temples, and the surrounding wildlife sanctuary.' },
+    travelTips: [
+      'The International Renuka Ji Fair (a five-day event after Diwali, typically early-to-mid November) brings large crowds — book ahead if visiting then.',
+      'The temples are active shrines — dress modestly.'
+    ],
+    matchScores: { adventure: 15, nature: 65, luxury: 20, crowds: 35, slowTravel: 60 },
+    seasonalNotes: {
+      Autumn: 'Late October–November includes the Renuka Ji Fair.',
+      Winter: 'December–February is cool and clear.'
+    }
+  },
+  {
+    slug: 'paonta-sahib',
+    title: 'Paonta Sahib',
+    category: 'Pilgrimage',
+    accessType: 'road',
+    description: 'A Yamuna-riverside town founded by Guru Gobind Singh, and a significant Sikh pilgrimage site.',
+    toursCount: 0,
+    image: images.destinations.paontaSahib,
+    region: 'Sirmaur District',
+    state: 'Himachal Pradesh',
+    altitude: '397 m',
+    editorialDescription: 'Paonta Sahib was founded by Guru Gobind Singh in 1685, on land offered by the Raja of Nahan, and the Tenth Guru spent over four years here on the banks of the Yamuna. It was at Paonta that the Dasam Granth was composed, and the Gurdwara Paonta Sahib, along with a museum of weapons and manuscripts associated with the Guru, remains the town’s central identity.',
+    bestTime: 'October – March',
+    idealDuration: '1 Day',
+    travelStyles: ['Pilgrimage', 'Culture'],
+    seasons: ['Autumn', 'Winter', 'Spring'],
+    bestFor: ['Families', 'Solo Travelers'],
+    highlights: [
+      { title: 'Gurdwara Paonta Sahib', description: 'Built in memory of Guru Gobind Singh’s residence here from 1685.' },
+      { title: 'Dasam Granth composition site', description: 'The Tenth Guru composed this text during his years at Paonta.' },
+      { title: 'Yamuna riverside setting', description: 'The town sits directly on the river’s bank.' }
+    ],
+    places: [
+      { title: 'Gurdwara Paonta Sahib', description: 'The town’s central gurdwara, with an associated museum of the Guru’s weapons and manuscripts.' },
+      { title: 'Yamuna riverfront', description: 'The riverbank the town and gurdwara are built along.' }
+    ],
+    experiences: ['Gurdwara visit', 'Museum visit', 'Riverside walk'],
+    relatedSlugs: ['renuka-ji', 'kasauli'],
+    seo: { title: 'Paonta Sahib Travel Guide | Sikh Heritage on the Yamuna | The Apex Voyager', description: 'Plan a Paonta Sahib trip — the Gurdwara founded by Guru Gobind Singh, on the banks of the Yamuna.' },
+    travelTips: [
+      'The gurdwara’s langar serves free meals to all visitors — dress modestly and cover your head as is customary.',
+      'The weapons/manuscripts museum is compact — an hour is usually enough.'
+    ],
+    matchScores: { adventure: 10, nature: 30, luxury: 20, crowds: 35, slowTravel: 50 },
+    seasonalNotes: {
+      Winter: 'November–February is mild and comfortable.',
+      Autumn: 'October is clear and pleasant.'
     }
   }
 ];
