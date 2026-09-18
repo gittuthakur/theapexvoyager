@@ -14,7 +14,7 @@ export interface StayLocationRule {
   reason: string;
 }
 
-// Every one of the 64 public destinations (config/destinations.config.ts) gets an
+// Every one of the 70 public destinations (config/destinations.config.ts) gets an
 // explicit row here — see AGENTS.md Phase B, section 4: "Do NOT leave behavior
 // implicit." Built from each destination's own accessType/stayBaseLocations/roadHead
 // fields and editorialDescription/apexPicks copy already in destinations.config.ts,
@@ -161,5 +161,23 @@ export const STAY_LOCATION_RULES: StayLocationRule[] = [
     nearbyStayLocations: ['Renukaji'],
     reason: 'Guesthouses directly at the lake; nearbyStayLocations covers the common alternate spelling ("Renukaji") so lake-adjacent listings under either name are captured.'
   },
-  { slug: 'paonta-sahib', stayMode: 'destination', primaryStayLocation: 'Paonta Sahib', reason: 'Established town with its own hotel stock, on the Yamuna.' }
+  { slug: 'paonta-sahib', stayMode: 'destination', primaryStayLocation: 'Paonta Sahib', reason: 'Established town with its own hotel stock, on the Yamuna.' },
+  { slug: 'chintpurni', stayMode: 'destination', primaryStayLocation: 'Chintpurni', reason: 'Dedicated pilgrimage town with dharamshalas/guesthouses built around the temple, same pattern as Jawalamukhi.' },
+  { slug: 'naina-devi', stayMode: 'destination', primaryStayLocation: 'Naina Devi', reason: 'Lodging exists at the base/hill town, same Himachal Shakti Peeth pattern as Chintpurni/Jawalamukhi.' },
+  { slug: 'naldehra', stayMode: 'destination', primaryStayLocation: 'Naldehra', reason: 'A resort exists at Naldehra itself, a genuine overnight base distinct from day-tripping from Shimla.' },
+  {
+    slug: 'mashobra',
+    stayMode: 'destination',
+    primaryStayLocation: 'Mashobra',
+    nearbyStayLocations: ['Chharabra'],
+    reason: 'Village-level guesthouses exist in Mashobra itself; nearbyStayLocations covers Chharabra, the neighbouring locality where resort-level stays commonly marketed as "Mashobra" are actually sited.'
+  },
+  { slug: 'manikaran', stayMode: 'destination', primaryStayLocation: 'Manikaran', reason: 'Own hotels/guesthouses plus free gurdwara lodging, independent of Kasol\'s accommodation.' },
+  {
+    slug: 'pangi-valley',
+    stayMode: 'nearby',
+    primaryStayLocation: 'Killar',
+    nearbyStayLocations: ['Dharwas', 'Sural Bhatori'],
+    reason: 'Valley-level destination like Kinnaur — Killar is the sub-divisional hub with the real guesthouse stock; smaller villages further into the valley are homestay-only.'
+  }
 ];

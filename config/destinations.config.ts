@@ -303,7 +303,7 @@ export const destinations: Destination[] = [
       { title: 'The Ridge', description: 'An open viewpoint at the heart of the city.' },
       { title: 'Kufri', description: 'A nearby hill escape for wide views and seasonal snow.' },
       { title: 'Jakhoo', description: 'A forested hill crowned by a temple and panoramic outlook.' },
-      { title: 'Mashobra', description: 'A peaceful cedar retreat beyond the bustle.' }
+      { title: 'Mashobra', description: 'A peaceful cedar retreat beyond the bustle — now its own destination page.' }
     ],
     experiences: ['Heritage walks', 'Scenic rail journeys', 'Café hopping', 'Forest walks', 'Family escapes'],
     relatedSlugs: ['manali', 'tirthan-valley', 'spiti-valley'],
@@ -322,7 +322,6 @@ export const destinations: Destination[] = [
       moment: { title: 'Evening walk on the Ridge', description: 'Valley lights come on below as the crowd thins out.' }
     },
     hiddenGems: [
-      { title: 'Mashobra forest trails', description: 'Cedar walks minutes from town, far quieter than the Ridge.' },
       { title: 'Chadwick Falls', description: 'A forest waterfall walk most visitors skip entirely.' }
     ],
     travelTips: [
@@ -2874,6 +2873,241 @@ export const destinations: Destination[] = [
     seasonalNotes: {
       Winter: 'November–February is mild and comfortable.',
       Autumn: 'October is clear and pleasant.'
+    }
+  },
+  {
+    slug: 'chintpurni',
+    title: 'Chintpurni',
+    category: 'Pilgrimage',
+    accessType: 'road',
+    description: 'A Shakti Peeth pilgrimage town in Una district, built around the Mata Chintpurni Temple.',
+    toursCount: 0,
+    image: images.destinations.chintpurni,
+    region: 'Una District',
+    state: 'Himachal Pradesh',
+    altitude: '~980 m',
+    editorialDescription: 'Chintpurni is a pilgrimage town in Una district built entirely around the Mata Chintpurni Temple, dedicated to Chhinnamasta — one of the ten Mahavidyas and, by tradition, one of the 51 Shakti Peethas of Hindu belief. The site was known by the goddess\'s own name, Chhinnamastika, before the popular name "Chintpurni" (she who removes worry) took hold. Dharamshalas, guesthouses and a market built for pilgrim flow line the approach to the temple, and the town\'s two biggest Navratri fairs each year bring its largest crowds.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '1 Day',
+    travelStyles: ['Pilgrimage', 'Culture'],
+    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
+    bestFor: ['Families', 'Solo Travelers'],
+    highlights: [
+      { title: 'Mata Chintpurni Temple', description: 'The Chhinnamasta shrine at the heart of the town, traditionally counted among the 51 Shakti Peethas.' },
+      { title: 'Navratri fairs', description: 'Chaitra and Ashwin Navratri bring the town\'s largest pilgrim gatherings.' },
+      { title: 'A dedicated pilgrimage town', description: 'Dharamshalas, guesthouses and the market are all built around the temple.' }
+    ],
+    places: [
+      { title: 'Mata Chintpurni Temple', description: 'The town\'s central shrine, dedicated to the goddess Chhinnamasta.' },
+      { title: 'Temple bazaar', description: 'The market street leading to the temple entrance.' }
+    ],
+    experiences: ['Temple visit', 'Bazaar walk'],
+    relatedSlugs: ['jawalamukhi', 'naina-devi'],
+    seo: { title: 'Chintpurni Travel Guide | Shakti Peeth Temple | The Apex Voyager', description: 'Plan a Chintpurni visit — the Mata Chintpurni Temple, traditionally one of the 51 Shakti Peethas, in Himachal\'s Una district.' },
+    travelTips: [
+      'The temple is a working shrine with continuous pilgrim flow — dress modestly and expect queues on festival days.',
+      'Navratri periods bring the largest crowds; visit on an ordinary weekday for a quieter darshan.'
+    ],
+    matchScores: { adventure: 5, nature: 20, luxury: 15, crowds: 55, slowTravel: 35 },
+    seasonalNotes: {
+      Spring: 'Chaitra Navratri brings the year\'s first major pilgrim surge.',
+      Autumn: 'Ashwin Navratri is the second big fair period.'
+    }
+  },
+  {
+    slug: 'naina-devi',
+    title: 'Naina Devi',
+    category: 'Pilgrimage',
+    accessType: 'road',
+    description: 'A hilltop Shakti Peeth temple in Bilaspur district overlooking Gobind Sagar Lake — distinct from the Naina Devi Temple at Nainital, Uttarakhand.',
+    toursCount: 0,
+    image: images.destinations.nainaDevi,
+    region: 'Bilaspur District',
+    state: 'Himachal Pradesh',
+    editorialDescription: 'Shri Naina Devi Ji sits on a hilltop in Bilaspur district, high above the Gobind Sagar reservoir formed by the Bhakra Dam. By tradition it is one of the 51 Shakti Peethas of Hindu belief, reached either on foot up a stepped path or by a ropeway to the temple platform. It is often confused with the Naina Devi Temple beside Naini Lake in Nainital, Uttarakhand — a separate shrine with its own, distinct local legend. The Bilaspur temple is the one conventionally counted among the Shakti Peethas.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '1 Day',
+    travelStyles: ['Pilgrimage', 'Culture'],
+    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
+    bestFor: ['Families', 'Solo Travelers'],
+    highlights: [
+      { title: 'Shri Naina Devi Ji Temple', description: 'A hilltop shrine above Gobind Sagar Lake, traditionally one of the 51 Shakti Peethas.' },
+      { title: 'Ropeway to the temple', description: 'A cable car alternative to the stepped climb up the hill.' },
+      { title: 'Views over Gobind Sagar', description: 'The temple approach overlooks the Bhakra Dam reservoir.' }
+    ],
+    places: [
+      { title: 'Shri Naina Devi Ji Temple', description: 'The hilltop shrine at the centre of the town.' },
+      { title: 'Gobind Sagar viewpoint', description: 'Views over the reservoir from the temple hill.' }
+    ],
+    experiences: ['Temple visit', 'Ropeway ride'],
+    relatedSlugs: ['chintpurni', 'jawalamukhi'],
+    seo: { title: 'Naina Devi Travel Guide | Shakti Peeth Temple, Himachal Pradesh | The Apex Voyager', description: 'Plan a visit to Shri Naina Devi Ji — a hilltop Shakti Peeth temple in Bilaspur, Himachal Pradesh, distinct from the Naina Devi Temple at Nainital.' },
+    travelTips: [
+      'This is the Naina Devi in Himachal Pradesh\'s Bilaspur district — not the Naina Devi Temple at Nainital, Uttarakhand.',
+      'The temple sees very large crowds during Sawan and Navratri fairs — follow local crowd-management guidance during peak fair days.',
+      'The ropeway is a faster alternative to the stepped path if you\'d rather skip the climb.'
+    ],
+    matchScores: { adventure: 10, nature: 25, luxury: 10, crowds: 55, slowTravel: 30 },
+    seasonalNotes: {
+      Spring: 'Chaitra Navratri draws large crowds.',
+      Summer: 'The Sawan pilgrimage season (July–August) is one of the busiest times of year.'
+    }
+  },
+  {
+    slug: 'naldehra',
+    title: 'Naldehra',
+    category: 'Nature',
+    description: 'A forested meadow around one of North India\'s earliest hill-station golf courses, about 22 km from Shimla.',
+    toursCount: 0,
+    image: images.destinations.naldehra,
+    region: 'Shimla District',
+    state: 'Himachal Pradesh',
+    altitude: '~2,200 m',
+    editorialDescription: 'Naldehra centres on a wide, largely treeless meadow ringed by deodar forest, about 22 km from Shimla. Viceroy Lord Curzon is widely credited with laying out its golf course in 1905 after visiting the site — one of the earliest hill-station golf courses in North India, though not India\'s oldest overall (that distinction belongs to Kolkata\'s Royal Calcutta Golf Club, founded in 1829). Local folklore, recorded by the district\'s own tourism office, attributes the meadow\'s treeless character to a mythical battle between two local deities. Most visits are still a half-day or day trip from Shimla, though a resort at Naldehra itself now offers a genuine overnight base.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '1–2 Days',
+    travelStyles: ['Nature', 'Family'],
+    seasons: ['Summer', 'Autumn'],
+    bestFor: ['Couples', 'Families'],
+    highlights: [
+      { title: 'Naldehra Golf Course', description: 'A meadow golf course laid out in 1905, credited to Viceroy Lord Curzon.' },
+      { title: 'Deodar forest walks', description: 'Pine and deodar trails ring the open meadow.' },
+      { title: 'A quieter Shimla-area base', description: 'A resort at Naldehra itself offers an alternative to basing in Shimla.' }
+    ],
+    places: [
+      { title: 'Naldehra Golf Course', description: 'The meadow golf course at the heart of Naldehra.' },
+      { title: 'Mahunag Temple', description: 'A wooden hill temple on the Shimla–Mandi road, commonly visited as part of a Naldehra day trip.' }
+    ],
+    experiences: ['Golf', 'Forest walks', 'Horse riding'],
+    relatedSlugs: ['shimla', 'mashobra'],
+    seo: { title: 'Naldehra Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Naldehra trip — a meadow golf course and deodar forest walks a short drive from Shimla.' },
+    travelTips: [
+      'Most visitors day-trip from Shimla; book ahead if you want to stay overnight at Naldehra itself.',
+      'The golf course is playable rather than just a viewpoint — carry appropriate footwear if you plan to play.'
+    ],
+    matchScores: { adventure: 15, nature: 65, luxury: 40, crowds: 30, slowTravel: 55 },
+    seasonalNotes: {
+      Summer: 'April–June is the clearest, most reliable golfing weather.',
+      Autumn: 'September–November brings cool, clear days after the monsoon.'
+    }
+  },
+  {
+    slug: 'mashobra',
+    title: 'Mashobra',
+    category: 'Nature',
+    description: 'A cedar-forested hill town beyond Shimla\'s bustle, home to the Rashtrapati Niwas presidential retreat.',
+    toursCount: 0,
+    image: images.destinations.mashobra,
+    region: 'Shimla District',
+    state: 'Himachal Pradesh',
+    altitude: '~2,150 m',
+    editorialDescription: 'Mashobra is a genuine hill town in its own right, not just a resort marketing tag — it grew into a favoured weekend retreat for colonial-era Shimla by the late 19th century, and today mixes cedar forest, apple orchards and quiet village lanes about 11–13 km from Shimla. "The Retreat," the Rashtrapati Niwas presidential retreat, has stood here since 1850, though its estate spills toward the neighbouring hamlet of Chharabra — the same locality where the Oberoi\'s Wildflower Hall is officially sited, despite being widely marketed as "Mashobra." Genuine village-level guesthouses sit alongside a handful of higher-end resort properties in the wider area.',
+    bestTime: 'April – June, September – November',
+    idealDuration: '1–2 Days',
+    travelStyles: ['Nature', 'Slow travel'],
+    seasons: ['Summer', 'Autumn'],
+    bestFor: ['Couples', 'Families'],
+    highlights: [
+      { title: 'Cedar forest trails', description: 'Quiet deodar and pine walks minutes from the village.' },
+      { title: 'Rashtrapati Niwas (The Retreat)', description: 'A 19th-century estate used as a presidential retreat, on the Mashobra–Chharabra estate.' },
+      { title: 'Apple-country village life', description: 'Orchards and village lanes far quieter than central Shimla.' }
+    ],
+    places: [
+      { title: 'Mashobra village', description: 'The forested village centre, once a colonial-era weekend retreat.' },
+      { title: 'Sipur', description: 'A forest-trail hamlet below Mashobra with an old wooden Shiva temple.' }
+    ],
+    experiences: ['Forest walks', 'Orchard walks', 'Village life'],
+    relatedSlugs: ['shimla', 'naldehra'],
+    seo: { title: 'Mashobra Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Mashobra trip — cedar forest trails, orchard villages and a quieter alternative to central Shimla.' },
+    travelTips: [
+      'Wildflower Hall and other resorts marketed as "Mashobra" are technically sited in neighbouring Chharabra — confirm the exact property location before booking.',
+      'Forest trails to Sipur are a good half-day option if you\'d rather walk than drive.'
+    ],
+    matchScores: { adventure: 15, nature: 70, luxury: 55, crowds: 25, slowTravel: 65 },
+    seasonalNotes: {
+      Summer: 'April–June is mild and clear, the most popular season.',
+      Autumn: 'September–November is quiet and cool, good for forest walks.'
+    }
+  },
+  {
+    slug: 'manikaran',
+    title: 'Manikaran',
+    category: 'Pilgrimage',
+    accessType: 'road',
+    description: 'A Sikh–Hindu pilgrimage town in the Parvati Valley, built around hot springs and the Gurdwara Sri Manikaran Sahib.',
+    toursCount: 0,
+    image: images.destinations.manikaran,
+    region: 'Parvati Valley',
+    state: 'Himachal Pradesh',
+    altitude: '~1,760 m',
+    editorialDescription: 'Manikaran sits about 4 km from Kasol in the Parvati Valley, but its identity is entirely its own: a joint Sikh and Hindu pilgrimage town built around natural hot springs, the Gurdwara Sri Manikaran Sahib — commemorating a visit by Guru Nanak — and a cluster of temples to Rama, Krishna, Vishnu and Shiva. Pilgrims cook rice and langar meals in the spring water itself, a practice that continues around the clock. Local legend attributes the springs to Shiva and Parvati, and to the earth surfacing precious stones ("mani") to give the town its name — recounted here as legend, not history. Its own hotels, guesthouses and free gurdwara lodging make it a genuinely independent base from Kasol\'s backpacker-café scene, even as many Kasol-based travellers visit on a day trip.',
+    bestTime: 'March – June, September – November',
+    idealDuration: '1 Day',
+    travelStyles: ['Pilgrimage', 'Culture'],
+    seasons: ['Spring', 'Summer', 'Autumn'],
+    bestFor: ['Families', 'Solo Travelers'],
+    highlights: [
+      { title: 'Gurdwara Sri Manikaran Sahib', description: 'A major Sikh shrine commemorating a visit by Guru Nanak, with free pilgrim lodging.' },
+      { title: 'Natural hot springs', description: 'Springs hot enough that pilgrims cook rice and langar meals directly in the water.' },
+      { title: 'Rama and Shiva temples', description: 'A cluster of Hindu temples alongside the gurdwara, built into the same pilgrimage complex.' }
+    ],
+    places: [
+      { title: 'Gurdwara Sri Manikaran Sahib', description: 'The town\'s central Sikh shrine and langar.' },
+      { title: 'Hot spring bathing tanks', description: 'Public bathing tanks fed by the natural hot springs.' },
+      { title: 'Rama Temple', description: 'A Hindu temple beside the springs, traditionally linked to the Kullu ruler Raja Jagat Singh.' }
+    ],
+    experiences: ['Gurdwara visit', 'Hot spring bathing', 'Temple visit'],
+    relatedSlugs: ['kasol', 'tirthan-valley'],
+    seo: { title: 'Manikaran Travel Guide | Parvati Valley Pilgrimage | The Apex Voyager', description: 'Plan a Manikaran trip — the Gurdwara Sri Manikaran Sahib, natural hot springs and Parvati Valley pilgrimage town.' },
+    travelTips: [
+      'Cover your head at the gurdwara, and expect to remove shoes before entering temple/gurdwara areas.',
+      'The hot springs are genuinely hot — don\'t touch the water directly near the cooking areas.',
+      'Free langar and gurdwara lodging are open to all visitors, not only Sikh pilgrims.'
+    ],
+    matchScores: { adventure: 10, nature: 40, luxury: 15, crowds: 45, slowTravel: 45 },
+    seasonalNotes: {
+      Spring: 'March–April is quiet, before the main travel season picks up.',
+      Summer: 'May–June sees the heaviest pilgrim and day-tripper traffic.',
+      Autumn: 'September–November is clear and comfortable.'
+    }
+  },
+  {
+    slug: 'pangi-valley',
+    title: 'Pangi Valley',
+    category: 'Offbeat',
+    description: 'A remote, tribal Chenab-gorge valley in Chamba district, cut off from the world for much of the year.',
+    toursCount: 0,
+    image: images.destinationsHero,
+    region: 'Chamba District',
+    state: 'Himachal Pradesh',
+    altitude: '~2,500 m',
+    editorialDescription: 'Pangi is a remote sub-division of Chamba district on the far side of the Pir Panjal, cut off from the rest of the district for roughly six to eight months of the year once winter closes its access roads. It is home to the Pangwal tribal community and their own language, folk music and dance, in a landscape of stark Chenab-gorge terrain historically nicknamed "Kala Pani" for its isolation. Killar, the sub-divisional headquarters on the Chenab gorge, has basic guesthouses, a bank, a post office and a small hospital; smaller villages further into the valley rely on simple homestays and forest rest houses. Since the pandemic, Pangi has drawn a small but growing wave of offbeat and adventure travellers — this is genuine basic-infrastructure travel, not comfort tourism.',
+    bestTime: 'May – September',
+    idealDuration: '3–5 Days',
+    travelStyles: ['Adventure', 'Offbeat', 'Culture'],
+    seasons: ['Summer'],
+    bestFor: ['Solo Travelers', 'Friends & Groups'],
+    highlights: [
+      { title: 'Pangwal tribal culture', description: 'A distinct tribal community, language, and folk tradition shaped by generations of isolation.' },
+      { title: 'The Chenab gorge', description: 'Dramatic river-gorge terrain running the length of the valley.' },
+      { title: 'Killar', description: 'The valley\'s small headquarters town, with the region\'s only real infrastructure.' }
+    ],
+    places: [
+      { title: 'Killar', description: 'Pangi\'s sub-divisional headquarters, on the Chenab gorge.' },
+      { title: 'Sach Pass', description: 'The seasonal high pass connecting Pangi to Chamba town, closed roughly mid-October to late spring.' },
+      { title: 'Dharwas and Sural Bhatori', description: 'Smaller villages further into the valley, with basic homestays.' }
+    ],
+    experiences: ['Village homestays', 'Scenic drives', 'Cultural immersion'],
+    relatedSlugs: ['chamba', 'bharmour'],
+    seo: { title: 'Pangi Valley Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Pangi Valley trip — a remote, tribal Chenab-gorge valley in Chamba district for offbeat travellers.' },
+    travelTips: [
+      'Sach Pass typically closes for winter around mid-October and reopens sometime in spring depending on snow clearance — exact dates vary year to year, so confirm current road status before travelling.',
+      'Infrastructure is basic throughout the valley — carry cash, and don\'t expect reliable mobile network beyond Killar.',
+      'The alternate route via Kishtwar is a genuinely difficult mountain road — only attempt it in good conditions and season.'
+    ],
+    matchScores: { adventure: 80, nature: 85, luxury: 5, crowds: 5, slowTravel: 50 },
+    seasonalNotes: {
+      Summer: 'May–September is the only realistic visiting window, once Sach Pass is open.'
     }
   }
 ];

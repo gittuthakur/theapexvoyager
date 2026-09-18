@@ -16,7 +16,8 @@ Phase 2B-3D-B); 2026-09-10 (Kedarnath, Yamunotri, Phase 2B-3D-C); 2026-09-10
 Ramnagar/Corbett — Destinations Batch A); 2026-09-17 (Kufri, Narkanda, Sarahan,
 Naggar, Palampur, Kangra, Jawalamukhi — Destinations Batch B); 2026-09-17
 (Bharmour, Tabo, Dhankar, Kibber, Keylong, Mandi, Rewalsar, Renuka Ji, Paonta
-Sahib — Destinations Batch C).
+Sahib — Destinations Batch C); 2026-09-18 (Chintpurni, Naina Devi, Naldehra,
+Mashobra, Manikaran — Destinations Batch D, Phase D2).
 
 ## Gulmarg
 
@@ -552,6 +553,65 @@ No rights-cleared, identity-verified photograph of Kullu or Pragpur was approved
 ## Chail, Patnitop, Bhaderwah — no verified image yet
 
 No rights-cleared, identity-verified photograph of Chail, Patnitop, or Bhaderwah was found during Destinations Batch A sourcing (three search passes across Wikimedia Commons, Unsplash, Pexels, Flickr, and official J&K/Himachal tourism media — none cleared license + identity + resolution + no-watermark simultaneously). Their `image` field points at the generic `destinationsHero` asset (never a misattributed specific-place photo) and all three are listed in `config/destinationImageOverrides.ts`'s `DESTINATIONS_WITHOUT_VERIFIED_IMAGE` set, so the UI shows the honest neutral placeholder instead. Add a real entry here only once a verified photo is sourced and shipped.
+
+## Chintpurni
+
+- Local file: `public/images/destination-chintpurni.jpg`
+- Source: Wikimedia Commons — `File:Jai Mata Di...Maa Chintpurni's Durbar as seen from the ancient havan kund on left.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Jai_Mata_Di...Maa_Chintpurni%27s_Durbar_as_seen_from_the_ancient_havan_kund_on_left.jpg
+- Creator: Gopal Aggarwal
+- License: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0)
+- Attribution required: Yes
+- Attribution text: "Jai Mata Di...Maa Chintpurni's Durbar as seen from the ancient havan kund on left" by Gopal Aggarwal, CC BY 2.0, via Wikimedia Commons
+- Note: cropped from the original 3,072×2,304 frame to a centered 16:9 (1600×900) region; no content added or removed. A first candidate (`Chintpurni.jpg`, CC BY-SA 4.0, Hemant banswal) was rejected after cropping and visual inspection — its portrait 3,000×4,000 frame produced an unusable tight, blurry close-up of the sanctum grille rather than a usable hero image, despite passing license/identity checks on paper.
+
+## Naina Devi
+
+- Local file: `public/images/destination-naina-devi.jpg`
+- Source: Wikimedia Commons — `File:Shri Naina Devi Ji Temple situated on a hilltop in the Bilaspur Distt.,Jan2013.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Shri_Naina_Devi_Ji_Temple_situated_on_a_hilltop_in_the_Bilaspur_Distt.,Jan2013.jpg
+- Creator: Invictus27
+- License: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0), also dual-licensed under GFDL 1.2+
+- Attribution required: Yes
+- Attribution text: "Shri Naina Devi Ji Temple situated on a hilltop in the Bilaspur Distt.,Jan2013" by Invictus27, CC BY-SA 3.0, via Wikimedia Commons
+- Note: cropped from the original 2,736×3,648 frame (EXIF-rotated before cropping) to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary. **Identity note**: this file's title explicitly states "Bilaspur Distt.," unambiguously confirming it is the Himachal Pradesh Naina Devi (a hilltop Shakti Peeth above Gobind Sagar Lake) and not the separate, unrelated Naina Devi Temple beside Naini Lake in Nainital, Uttarakhand. A first candidate (`Naina Devi.jpg`, Iamharishjoshi) was rejected specifically because its caption gave no way to confirm which of the two temples it depicted.
+
+## Naldehra
+
+- Local file: `public/images/destination-naldehra.jpg`
+- Source: Wikimedia Commons — `File:Naldehra Golf Course, Shimla.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Naldehra_Golf_Course,_Shimla.jpg
+- Creator: Greenpenguin3459
+- License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0)
+- Attribution required: Yes
+- Attribution text: "Naldehra Golf Course, Shimla" by Greenpenguin3459, CC BY 4.0, via Wikimedia Commons
+- Note: cropped from the original 3,648×2,736 frame to a centered 16:9 (1600×900) region; no content added or removed.
+
+## Mashobra
+
+- Local file: `public/images/destination-mashobra.jpg`
+- Source: Wikimedia Commons — `File:Mashobra 2.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Mashobra_2.jpg
+- Creator: Supreetin
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Mashobra 2" by Supreetin, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original 5,184×3,456 frame to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary. This file is also used as the infobox photo on the English Wikipedia "Mashobra" article. It depicts Mashobra itself, not the neighbouring locality of Chharabra (where Wildflower Hall and other resorts commonly marketed as "Mashobra" are actually sited) — no Chharabra-tagged image was used.
+
+## Manikaran
+
+- Local file: `public/images/destination-manikaran.jpg`
+- Source: Wikimedia Commons — `File:Gurdwara Manikaran.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Gurdwara_Manikaran.jpg
+- Creator: Shrayash29
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
+- Attribution required: Yes
+- Attribution text: "Gurdwara Manikaran" by Shrayash29, CC BY-SA 4.0, via Wikimedia Commons
+- Note: cropped from the original 4,608×3,456 frame to a centered 16:9 (1600×900) region; no content added or removed. Derivative is itself CC BY-SA — not represented as proprietary. Shows both the gurdwara building and hot-spring steam in one frame — distinct from Kasol, a separate destination.
+
+## Pangi Valley — no verified image yet
+
+No rights-cleared, identity-verified photograph of Pangi Valley was approved during Destinations Batch D (Phase D2) sourcing. Every Commons candidate found either fell short of the 1,600px hero-image floor, or lacked independently corroborated identity evidence (a Commons category, GPS coordinates, or third-party usage) strong enough for a valley this easy to misattribute — including one candidate that met the resolution floor by exactly 1,600px but had no supporting category or coordinates, and an 1860s archival public-domain print with the strongest identity evidence of the set that fell 64px short of the floor. Its `image` field points at the generic `destinationsHero` asset (never a misattributed specific-place photo) and it is listed in `config/destinationImageOverrides.ts`'s `DESTINATIONS_WITHOUT_VERIFIED_IMAGE` set, so the UI shows the honest neutral placeholder instead. Add a real entry here only once a verified photo is sourced and shipped.
 
 ## On-site attribution
 

@@ -412,6 +412,46 @@ const credits: PhotoCredit[] = [
     license: 'CC BY-SA 4.0',
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Ponta_Sahib.JPG'
+  },
+  {
+    destination: 'Chintpurni',
+    title: 'Jai Mata Di...Maa Chintpurni\'s Durbar as seen from the ancient havan kund on left',
+    creator: 'Gopal Aggarwal',
+    license: 'CC BY 2.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Jai_Mata_Di...Maa_Chintpurni%27s_Durbar_as_seen_from_the_ancient_havan_kund_on_left.jpg'
+  },
+  {
+    destination: 'Naina Devi',
+    title: 'Shri Naina Devi Ji Temple situated on a hilltop in the Bilaspur Distt.,Jan2013',
+    creator: 'Invictus27',
+    license: 'CC BY-SA 3.0 (also dual-licensed GFDL 1.2+)',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Shri_Naina_Devi_Ji_Temple_situated_on_a_hilltop_in_the_Bilaspur_Distt.,Jan2013.jpg'
+  },
+  {
+    destination: 'Naldehra',
+    title: 'Naldehra Golf Course, Shimla',
+    creator: 'Greenpenguin3459',
+    license: 'CC BY 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Naldehra_Golf_Course,_Shimla.jpg'
+  },
+  {
+    destination: 'Mashobra',
+    title: 'Mashobra 2',
+    creator: 'Supreetin',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Mashobra_2.jpg'
+  },
+  {
+    destination: 'Manikaran',
+    title: 'Gurdwara Manikaran',
+    creator: 'Shrayash29',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Gurdwara_Manikaran.jpg'
   }
 ];
 

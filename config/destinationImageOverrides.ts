@@ -15,6 +15,11 @@
  * the only Kullu candidate found (a Dussehra festival crowd photo) doesn't carry strong
  * enough destination-specific identity for a premium hero, and no rights-clear Pragpur
  * candidate was found on Wikimedia Commons at all.
+ *
+ * Pangi Valley (Destinations Batch D, September 2026) is added for the same reason: every
+ * Commons candidate found either fell short of the 1600px hero-image floor or lacked
+ * independently corroborated identity evidence strong enough for this valley's high
+ * misattribution risk (see docs/image-sources.md).
  */
 export const DESTINATIONS_WITHOUT_VERIFIED_IMAGE = new Set<string>([
   'tirthan-valley',
@@ -24,5 +29,6 @@ export const DESTINATIONS_WITHOUT_VERIFIED_IMAGE = new Set<string>([
   'patnitop',
   'bhaderwah',
   'kullu',
-  'pragpur'
+  'pragpur',
+  'pangi-valley'
 ]);

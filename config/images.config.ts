@@ -66,7 +66,12 @@ export const images = {
     mandi: '/images/destination-mandi.jpg',
     rewalsar: '/images/destination-rewalsar.jpg',
     renukaJi: '/images/destination-renuka-ji.jpg',
-    paontaSahib: '/images/destination-paonta-sahib.jpg'
+    paontaSahib: '/images/destination-paonta-sahib.jpg',
+    chintpurni: '/images/destination-chintpurni.jpg',
+    nainaDevi: '/images/destination-naina-devi.jpg',
+    naldehra: '/images/destination-naldehra.jpg',
+    mashobra: '/images/destination-mashobra.jpg',
+    manikaran: '/images/destination-manikaran.jpg'
   },
   tours: {
     spitiCircuit: '/images/spiti-circuit.jpg',
