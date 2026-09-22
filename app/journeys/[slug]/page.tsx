@@ -27,6 +27,43 @@ interface JourneyDetailPageProps {
 
 const RELATED_JOURNEYS_LIMIT = 3;
 
+const CHANDIGARH_PICKUP_NOTE =
+  'Pickup is available from Chandigarh Airport, Chandigarh Railway Station, ISBT Sector 43, or a confirmed hotel/location within Chandigarh. Exact pickup time and additional charges, if applicable, are confirmed at the time of booking.';
+
+interface JourneySeoOverride {
+  title: string;
+  h1: string;
+  description: string;
+  pickupNote: string;
+}
+
+// SEO copy for the two journeys targeting Chandigarh-origin search intent (Phase 2 of
+// the Chandigarh keyword-mapping work — see the Phase 1 audit). Deliberately does NOT
+// touch `pkg.name` itself: that field also drives the card title on the homepage,
+// /journeys listing and related-journey cards site-wide, and changing it there would
+// push this longer SEO text onto every one of those surfaces, not just these two detail
+// pages. Every other journey falls through to the existing `${pkg.name} | ...` template
+// below, completely unaffected.
+const JOURNEY_SEO_OVERRIDES: Record<string, JourneySeoOverride> = {
+  'manali-premium-escape': {
+    title: 'Manali Tour Package from Chandigarh | 5D/4N',
+    h1: 'Manali Tour Package from Chandigarh',
+    description:
+      'Book a 5D/4N Manali tour package from Chandigarh with Solang Valley adventure, Old Manali cafes, Hadimba Temple and a seasonal Rohtang Pass excursion.',
+    pickupNote: CHANDIGARH_PICKUP_NOTE
+  },
+  'spiti-valley-adventure': {
+    // Kinnaur, not just Spiti — Day 1 (Kalpa) and Day 2 (Nako) of this journey's real
+    // itinerary are both Kinnaur-district stops, so this reflects the actual route
+    // rather than marketing a separate Kinnaur-only product.
+    title: 'Kinnaur Spiti Tour from Chandigarh | 7D/6N',
+    h1: 'Kinnaur & Spiti Valley Tour from Chandigarh',
+    description:
+      'Book a 7D/6N Kinnaur & Spiti tour from Chandigarh via Kalpa and Nako to Key Monastery, Kaza, Hikkim and Langza on a real high-altitude circuit.',
+    pickupNote: CHANDIGARH_PICKUP_NOTE
+  }
+};
+
 export async function generateMetadata({ params }: JourneyDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const pkg = await getPackageBySlug(slug);
@@ -43,8 +80,9 @@ export async function generateMetadata({ params }: JourneyDetailPageProps): Prom
   // link produced a homepage-branded preview card instead of that journey's own.
   // `alternates.canonical` is relative and carries no query string, so a `?book=1`
   // variant of this same URL canonicalizes back to the bare journey URL automatically.
-  const title = `${pkg.name} | The Apex Voyager India`;
-  const description = pkg.shortDescription;
+  const seoOverride = JOURNEY_SEO_OVERRIDES[pkg.slug];
+  const title = seoOverride ? `${seoOverride.title} | The Apex Voyager India` : `${pkg.name} | The Apex Voyager India`;
+  const description = seoOverride ? seoOverride.description : pkg.shortDescription;
   const canonicalPath = `/journeys/${pkg.slug}`;
   return {
     title,
@@ -100,6 +138,8 @@ export default async function JourneyDetailPage({ params, searchParams }: Journe
       <PackageDetailContent
         pkg={pkg}
         autoOpenBooking={book === '1'}
+        heroTitleOverride={JOURNEY_SEO_OVERRIDES[pkg.slug]?.h1}
+        pickupNote={JOURNEY_SEO_OVERRIDES[pkg.slug]?.pickupNote}
         relatedJourneys={relatedJourneys}
         relatedJourneyRegionLabels={relatedJourneyRegionLabels}
       />

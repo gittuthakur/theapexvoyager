@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Car, Check, Gem, X as XIcon } from 'lucide-react';
+import { Car, Check, Gem, MapPin, X as XIcon } from 'lucide-react';
 import BackButton from '@/components/ui/BackButton';
 import DetailPageContainer from '@/components/modules/detail/DetailPageContainer';
 import PackageBookingModal from '@/components/modules/PackageBookingModal';
@@ -16,6 +16,13 @@ import type { TravelPackage } from '@/types/package';
 export interface PackageDetailContentProps {
   pkg: TravelPackage;
   autoOpenBooking?: boolean;
+  /** SEO-driven H1 override for a specific journey — see JourneyHero's own prop doc. */
+  heroTitleOverride?: string;
+  /** Real, static pickup/departure copy for a specific journey (e.g. Chandigarh pickup
+   *  points) — renders as its own "Departing from Chandigarh" section when present.
+   *  Absent for every journey that doesn't set one, so the rest of the catalog is
+   *  unaffected. */
+  pickupNote?: string;
   /** Same-catalog journeys to surface at the bottom of the page — real data only, see app/journeys/[slug]/page.tsx. */
   relatedJourneys?: TravelPackage[];
   /** Region badge per related journey slug (same derivation as /journeys' own PackageCard) — see app/journeys/[slug]/page.tsx. */
@@ -25,6 +32,8 @@ export interface PackageDetailContentProps {
 export default function PackageDetailContent({
   pkg,
   autoOpenBooking = false,
+  heroTitleOverride,
+  pickupNote,
   relatedJourneys = [],
   relatedJourneyRegionLabels
 }: PackageDetailContentProps) {
@@ -43,7 +52,7 @@ export default function PackageDetailContent({
     <DetailPageContainer mainClassName="pb-28 lg:pb-14">
       <BackButton fallbackHref="/journeys" label="Back to Journeys" />
 
-      <JourneyHero pkg={pkg} />
+      <JourneyHero pkg={pkg} titleOverride={heroTitleOverride} />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_340px] lg:gap-8">
           <div className="space-y-6">
@@ -57,6 +66,16 @@ export default function PackageDetailContent({
                       <span className="text-sm text-slate-700">{highlight}</span>
                     </div>
                   ))}
+                </div>
+              </JourneySection>
+            ) : null}
+
+            {/* Departing from Chandigarh */}
+            {pickupNote ? (
+              <JourneySection title="Departing from Chandigarh">
+                <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <MapPin size={18} className="mt-0.5 shrink-0 text-apex-300" />
+                  <span className="text-sm text-slate-700">{pickupNote}</span>
                 </div>
               </JourneySection>
             ) : null}

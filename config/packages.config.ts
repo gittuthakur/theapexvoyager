@@ -147,7 +147,12 @@ export const packages: TravelPackage[] = [
     slug: 'spiti-valley-adventure',
     name: 'Spiti Circuit Expedition',
     destination: 'Spiti Valley, Himachal Pradesh',
-    destinationSlugs: ['spiti-valley'],
+    // 'kinnaur' added alongside the existing 'spiti-valley' value (Chandigarh SEO
+    // Phase 2) — Day 1 (Kalpa) and Day 2 (Nako) of this journey's real itinerary below
+    // are both Kinnaur-district stops, so /destinations/kinnaur now correctly surfaces
+    // this journey via the same getPackagesByDestinationSlug mechanism /destinations/
+    // spiti-valley already uses. Not a new/separate Kinnaur-only product.
+    destinationSlugs: ['spiti-valley', 'kinnaur'],
     image: images.packages.spitiValleyAdventure,
     duration: '7 Days / 6 Nights',
     price: 18999,
