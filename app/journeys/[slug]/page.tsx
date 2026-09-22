@@ -61,6 +61,16 @@ const JOURNEY_SEO_OVERRIDES: Record<string, JourneySeoOverride> = {
     description:
       'Book a 7D/6N Kinnaur & Spiti tour from Chandigarh via Kalpa and Nako to Key Monastery, Kaza, Hikkim and Langza on a real high-altitude circuit.',
     pickupNote: CHANDIGARH_PICKUP_NOTE
+  },
+  'himachal-himalayan-explorer': {
+    // Shimla (Days 1-3) and Manali (Days 3-8) are both genuinely, substantively
+    // covered by this journey's real itinerary — not passing mentions — and the
+    // content is already couple-framed throughout (category: 'Honeymoon').
+    title: 'Himachal Honeymoon Package from Chandigarh | 8D/7N',
+    h1: 'Himachal Honeymoon Package from Chandigarh',
+    description:
+      'Book an 8D/7N Himachal honeymoon package from Chandigarh covering Shimla and Manali, with a candlelight dinner on Mall Road and Manikaran hot springs for two.',
+    pickupNote: CHANDIGARH_PICKUP_NOTE
   }
 };
 
