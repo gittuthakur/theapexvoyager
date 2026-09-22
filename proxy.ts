@@ -3,31 +3,41 @@ import type { NextRequest } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { Destination } from '@/models/Destination';
 import { Region } from '@/models/Region';
+import { Journey } from '@/models/Journey';
 
-// Guards /destinations/[slug] and /regions/[slug] against soft 404s. Both routes'
-// page.tsx already call notFound() for an unknown slug, but that segment also has a
-// loading.tsx — and that Suspense boundary, it turns out, isn't scoped to just this
-// segment's own page.tsx: a *parent* segment's loading.tsx (app/destinations/loading.tsx,
-// for the /destinations listing route) was found to also flush its fallback — with a
-// committed 200 status — before this nested [slug] route's own notFound() check ever
-// resolved. An earlier attempt moved the existence check into a [slug]/layout.tsx (which
-// Next.js documents as sitting outside that segment's own loading.tsx boundary), and that
-// alone was enough to fix /regions/[slug] (no parent-level loading.tsx there to interfere)
-// but not /destinations/[slug] (which does have one) — confirming the cross-segment
-// inheritance rather than a same-segment one. Rather than chase or fragilize that loading
-// hierarchy further, this runs the same existence check in Proxy instead: Proxy resolves
-// entirely before any route rendering begins, so no Suspense boundary at any level — this
+// Guards /destinations/[slug], /regions/[slug] and /journeys/[slug] against soft 404s.
+// All three routes' page.tsx already call notFound() for an unknown slug, but each
+// segment also has a loading.tsx — and that Suspense boundary, it turns out, isn't
+// scoped to just this segment's own page.tsx: a *parent* segment's loading.tsx
+// (app/destinations/loading.tsx and app/journeys/loading.tsx, for the /destinations and
+// /journeys listing routes) was found to also flush its fallback — with a committed 200
+// status — before this nested [slug] route's own notFound() check ever resolved. An
+// earlier attempt moved the existence check into a [slug]/layout.tsx (which Next.js
+// documents as sitting outside that segment's own loading.tsx boundary), and that alone
+// was enough to fix /regions/[slug] (no parent-level loading.tsx there to interfere) but
+// not /destinations/[slug] (which does have one) — confirming the cross-segment
+// inheritance rather than a same-segment one. /journeys/[slug] has the identical
+// parent-loading.tsx topology as /destinations/[slug] (see app/journeys/loading.tsx), so
+// the same layout-only approach was never re-attempted there and it goes straight to this
+// already-proven mechanism instead. Rather than chase or fragilize that loading hierarchy
+// further, this runs the same existence check in Proxy instead: Proxy resolves entirely
+// before any route rendering begins, so no Suspense boundary at any level — this
 // segment's own or a parent's — can commit a response before the check completes. This
 // matches the Next.js docs' own guidance (see notFound()'s "Calling notFound() after
 // streaming has started" and loading.js's "Status Codes" sections): once a route is
 // streaming a static shell first, the fix is to validate in Proxy, not deeper in the tree.
 //
-// Deliberately minimal and self-contained (queries the same Destination/Region collections
-// directly rather than reusing the cache()-wrapped lib helpers, since those are designed
-// for React's per-render request memoization, not a call site outside any render) — no
-// second source of truth, same runtime DB authority every other lookup of these slugs uses.
+// Deliberately minimal and self-contained (queries the same Destination/Region/Journey
+// collections directly rather than reusing the cache()-wrapped lib helpers, since those
+// are designed for React's per-render request memoization, not a call site outside any
+// render) — no second source of truth, same runtime DB authority every other lookup of
+// these slugs uses. The legacy /journeys/sikkim-mountain-escape and
+// /journeys/shimla-manali-tour-package-from-chandigarh redirects in next.config.mjs are
+// unaffected: next.config.js redirects run before Proxy in Next's execution order (see
+// proxy.js's own "Execution order" docs), so those two paths are already redirected away
+// before Proxy ever sees them — no Journey lookup happens for either.
 export const config = {
-  matcher: ['/destinations/:slug', '/regions/:slug']
+  matcher: ['/destinations/:slug', '/regions/:slug', '/journeys/:slug']
 };
 
 export default async function proxy(request: NextRequest) {
@@ -53,6 +63,19 @@ export default async function proxy(request: NextRequest) {
     const slug = decodeURIComponent(regionMatch[1]);
     await connectDB();
     const exists = await Region.exists({ slug, status: 'published' });
+    if (!exists) {
+      return NextResponse.rewrite(new URL('/__not-found__', request.url));
+    }
+    return NextResponse.next();
+  }
+
+  const journeyMatch = pathname.match(/^\/journeys\/([^/]+)$/);
+  if (journeyMatch) {
+    const slug = decodeURIComponent(journeyMatch[1]);
+    await connectDB();
+    // No status/publish filter — matches lib/packages.ts's getPackageBySlug exactly
+    // (Journey.findOne({ slug }), no extra filter): the Journey schema has no such field.
+    const exists = await Journey.exists({ slug });
     if (!exists) {
       return NextResponse.rewrite(new URL('/__not-found__', request.url));
     }
