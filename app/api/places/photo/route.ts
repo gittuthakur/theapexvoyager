@@ -45,11 +45,22 @@ export async function GET(request: Request) {
   }
 
   try {
-    const googleUrl = `${PLACES_API_BASE}/${name}/media?maxWidthPx=${maxWidthPx}&key=${apiKey}`;
-    // next.revalidate lets Next.js's own Data Cache dedupe/short-circuit this fetch
-    // server-side; the Cache-Control header below is what makes repeat requests from
-    // the *browser* (and any CDN in front of this route) skip the network entirely.
-    const res = await fetch(googleUrl, { signal: AbortSignal.timeout(8000), next: { revalidate: 86400 } });
+    // The key travels only in the X-Goog-Api-Key request header (same convention as
+    // lib/googlePlaces.ts's Text Search calls) — never in the URL itself, so it can't
+    // leak into server logs, error messages, or Referer headers the way a `?key=...`
+    // query string can.
+    const googleUrl = `${PLACES_API_BASE}/${name}/media?maxWidthPx=${maxWidthPx}`;
+    // cache: 'no-store' — Next.js's Data Cache caps a single entry at 2MB, and Places
+    // photo bytes routinely exceed that (logged as "items over 2MB cannot be cached").
+    // Opting this one binary fetch out of the Data Cache avoids that warning; the
+    // Cache-Control header below is what actually makes repeat requests from the
+    // *browser* (and any CDN in front of this route) skip the network entirely, so no
+    // real caching behavior is lost.
+    const res = await fetch(googleUrl, {
+      signal: AbortSignal.timeout(8000),
+      cache: 'no-store',
+      headers: { 'X-Goog-Api-Key': apiKey }
+    });
 
     if (!res.ok) {
       return NextResponse.json({ error: 'Failed to fetch photo' }, { status: res.status });
