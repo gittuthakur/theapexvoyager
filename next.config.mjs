@@ -18,6 +18,11 @@ const nextConfig = {
         source: '/journeys/sikkim-mountain-escape',
         destination: '/journeys/uttarakhand-explorer',
         permanent: true
+      },
+      {
+        source: '/journeys/shimla-manali-tour-package-from-chandigarh',
+        destination: '/journeys/himachal-himalayan-explorer',
+        permanent: true
       }
     ];
   },
