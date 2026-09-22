@@ -87,51 +87,51 @@ function FooterLogoMark({ className }: { className?: string }) {
       <path d="M177.473 57.0701H67.5112V58.0892H177.473V57.0701Z" fill="white"/>
       <defs>
       <linearGradient id="paint0_linear_615_748" x1="65.2919" y1="82.721" x2="28.9402" y2="17.8066" gradientUnits="userSpaceOnUse">
-      <stop stop-color="white"/>
-      <stop offset="0.05" stop-color="#F8FAFD"/>
-      <stop offset="0.22" stop-color="#E7F1FA"/>
-      <stop offset="0.35" stop-color="#E2EEF9"/>
-      <stop offset="0.6" stop-color="#C2C4E3"/>
-      <stop offset="0.61" stop-color="#C5C7E4"/>
-      <stop offset="0.69" stop-color="#E1E4F2"/>
-      <stop offset="0.76" stop-color="#F1F5FA"/>
-      <stop offset="0.82" stop-color="#F8FCFE"/>
+      <stop stopColor="white"/>
+      <stop offset="0.05" stopColor="#F8FAFD"/>
+      <stop offset="0.22" stopColor="#E7F1FA"/>
+      <stop offset="0.35" stopColor="#E2EEF9"/>
+      <stop offset="0.6" stopColor="#C2C4E3"/>
+      <stop offset="0.61" stopColor="#C5C7E4"/>
+      <stop offset="0.69" stopColor="#E1E4F2"/>
+      <stop offset="0.76" stopColor="#F1F5FA"/>
+      <stop offset="0.82" stopColor="#F8FCFE"/>
       </linearGradient>
       <linearGradient id="paint1_linear_615_748" x1="49.2906" y1="2.06029" x2="-6.49158" y2="93.8525" gradientUnits="userSpaceOnUse">
-      <stop stop-color="white"/>
-      <stop offset="0.05" stop-color="#F8FAFD"/>
-      <stop offset="0.22" stop-color="#E7F1FA"/>
-      <stop offset="0.35" stop-color="#E2EEF9"/>
-      <stop offset="0.6" stop-color="#C2C4E3"/>
-      <stop offset="0.61" stop-color="#C5C7E4"/>
-      <stop offset="0.69" stop-color="#E1E4F2"/>
-      <stop offset="0.76" stop-color="#F1F5FA"/>
-      <stop offset="0.82" stop-color="#F8FCFE"/>
-      <stop offset="1" stop-color="#F2F8FD"/>
+      <stop stopColor="white"/>
+      <stop offset="0.05" stopColor="#F8FAFD"/>
+      <stop offset="0.22" stopColor="#E7F1FA"/>
+      <stop offset="0.35" stopColor="#E2EEF9"/>
+      <stop offset="0.6" stopColor="#C2C4E3"/>
+      <stop offset="0.61" stopColor="#C5C7E4"/>
+      <stop offset="0.69" stopColor="#E1E4F2"/>
+      <stop offset="0.76" stopColor="#F1F5FA"/>
+      <stop offset="0.82" stopColor="#F8FCFE"/>
+      <stop offset="1" stopColor="#F2F8FD"/>
       </linearGradient>
       <linearGradient id="paint2_linear_615_748" x1="16.2711" y1="55.0977" x2="66.8631" y2="82.0804" gradientUnits="userSpaceOnUse">
-      <stop stop-color="white"/>
-      <stop offset="0.05" stop-color="#F8FAFD"/>
-      <stop offset="0.22" stop-color="#E7F1FA"/>
-      <stop offset="0.35" stop-color="#E2EEF9"/>
-      <stop offset="0.6" stop-color="#C2C4E3"/>
-      <stop offset="0.61" stop-color="#C5C7E4"/>
-      <stop offset="0.69" stop-color="#E1E4F2"/>
-      <stop offset="0.76" stop-color="#F1F5FA"/>
-      <stop offset="0.82" stop-color="#F8FCFE"/>
-      <stop offset="1" stop-color="#F2F8FD"/>
+      <stop stopColor="white"/>
+      <stop offset="0.05" stopColor="#F8FAFD"/>
+      <stop offset="0.22" stopColor="#E7F1FA"/>
+      <stop offset="0.35" stopColor="#E2EEF9"/>
+      <stop offset="0.6" stopColor="#C2C4E3"/>
+      <stop offset="0.61" stopColor="#C5C7E4"/>
+      <stop offset="0.69" stopColor="#E1E4F2"/>
+      <stop offset="0.76" stopColor="#F1F5FA"/>
+      <stop offset="0.82" stopColor="#F8FCFE"/>
+      <stop offset="1" stopColor="#F2F8FD"/>
       </linearGradient>
       <linearGradient id="paint3_linear_615_748" x1="-5.45043" y1="80.9616" x2="49.238" y2="44.1726" gradientUnits="userSpaceOnUse">
-      <stop stop-color="white"/>
-      <stop offset="0.05" stop-color="#F8FAFD"/>
-      <stop offset="0.22" stop-color="#E7F1FA"/>
-      <stop offset="0.35" stop-color="#E2EEF9"/>
-      <stop offset="0.6" stop-color="#C2C4E3"/>
-      <stop offset="0.61" stop-color="#C5C7E4"/>
-      <stop offset="0.69" stop-color="#E1E4F2"/>
-      <stop offset="0.76" stop-color="#F1F5FA"/>
-      <stop offset="0.82" stop-color="#F8FCFE"/>
-      <stop offset="1" stop-color="#F2F8FD"/>
+      <stop stopColor="white"/>
+      <stop offset="0.05" stopColor="#F8FAFD"/>
+      <stop offset="0.22" stopColor="#E7F1FA"/>
+      <stop offset="0.35" stopColor="#E2EEF9"/>
+      <stop offset="0.6" stopColor="#C2C4E3"/>
+      <stop offset="0.61" stopColor="#C5C7E4"/>
+      <stop offset="0.69" stopColor="#E1E4F2"/>
+      <stop offset="0.76" stopColor="#F1F5FA"/>
+      <stop offset="0.82" stopColor="#F8FCFE"/>
+      <stop offset="1" stopColor="#F2F8FD"/>
       </linearGradient>
       </defs>
     </svg>
