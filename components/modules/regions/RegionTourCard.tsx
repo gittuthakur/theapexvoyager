@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Clock } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { getDestinationTitleBySlug } from '@/config/destinations.config';
 import type { TourPackage } from '@/types/tour';
 
 export interface RegionTourCardProps {
@@ -11,14 +12,15 @@ export interface RegionTourCardProps {
 // function inside components/modules/FeatureGrid.tsx and isn't reusable standalone,
 // so this is a presentational-only variant visually consistent with PackageCard
 // (same rounded-corner/shadow/price-badge language) but with no carousel/selection props.
-// Links to /tours/[slug] — a real, existing route (see app/tours/[slug]/page.tsx) that
-// redirects each tour to its own destination-filtered Journeys view where mappable, or
-// an honest unfiltered /journeys listing otherwise. This is this tour's own identity,
-// not a generic listing every card would otherwise share.
+// Links straight to the same destination-filtered Journeys view app/tours/[slug]/page.tsx
+// would redirect to, rather than through that now-deprecated /tours/[slug] redirect hop —
+// same destinationSlug→title resolution, one fewer redirect for users and crawlers alike.
 export default function RegionTourCard({ tour }: RegionTourCardProps) {
+  const destinationTitle = tour.destinationSlug ? getDestinationTitleBySlug(tour.destinationSlug) : undefined;
+  const href = destinationTitle ? `/journeys?destination=${encodeURIComponent(destinationTitle)}` : '/journeys';
   return (
     <Link
-      href={`/tours/${tour.slug}`}
+      href={href}
       className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg transition-all duration-300 ease-in-out hover:-translate-y-1.5 hover:shadow-xl"
     >
       <div className="relative h-48 w-full overflow-hidden bg-slate-100">

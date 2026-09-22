@@ -48,7 +48,7 @@ const SECTIONS: { heading: string; body: React.ReactNode }[] = [
     heading: '5. Itinerary Changes',
     body: (
       <p>
-        Where The Apex Voyager needs to change part of your itinerary due to availability or safety reasons, we
+        Where The Apex Voyager India needs to change part of your itinerary due to availability or safety reasons, we
         will work with you to find a suitable alternative wherever possible.
       </p>
     )
@@ -66,7 +66,7 @@ const SECTIONS: { heading: string; body: React.ReactNode }[] = [
     heading: '7. Force Majeure',
     body: (
       <p>
-        The Apex Voyager is not responsible for cancellations or changes arising from events beyond our reasonable
+        The Apex Voyager India is not responsible for cancellations or changes arising from events beyond our reasonable
         control, including natural disasters, extreme weather, or government restrictions.
       </p>
     )
@@ -107,7 +107,7 @@ export default function CancellationPolicyContent() {
           </h1>
           <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
             General guidance on how cancellations, date changes, and refunds are handled for journeys, stays, and
-            transport booked through The Apex Voyager.
+            transport booked through The Apex Voyager India.
           </p>
           <p className="text-xs text-slate-400">
             Last updated: <span className={pendingClass}>[DATE TO BE CONFIRMED]</span>

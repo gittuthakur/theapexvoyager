@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { CalendarCheck, CreditCard, Home, Mail, Map, Phone, Sparkles, Truck } from 'lucide-react';
 import { siteConfig } from '@/config/site.config';
+import { buildFaqPageSchema } from '@/lib/schema';
+import JsonLd from '@/components/seo/JsonLd';
 
 interface FaqCategory {
   heading: string;
@@ -14,7 +16,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
     icon: CreditCard,
     faqs: [
       {
-        question: 'How do I book a trip with The Apex Voyager?',
+        question: 'How do I book a trip with The Apex Voyager India?',
         answer:
           'Browse a journey, stay, or transport option and submit a request from the booking form. Our travel experts confirm availability and pricing with you directly on WhatsApp or by phone before any payment is taken.'
       },
@@ -85,9 +87,15 @@ const FAQ_CATEGORIES: FaqCategory[] = [
   }
 ];
 
+// Built directly from FAQ_CATEGORIES above — the exact questions/answers rendered
+// below, never a separate/fabricated set (Google's FAQPage guidelines require the
+// markup to match what's actually visible on the page).
+const faqPageSchema = buildFaqPageSchema(FAQ_CATEGORIES.flatMap((category) => category.faqs));
+
 export default function FaqsContent() {
   return (
     <main id="main-content" className="min-h-screen bg-white px-4 pb-20 pt-24 text-slate-900 sm:px-6 lg:px-8">
+      <JsonLd data={faqPageSchema} />
       <div className="mx-auto w-full max-w-5xl space-y-14">
         <section className="space-y-5 text-center">
           <div className="inline-flex items-center gap-2.5 rounded-full border border-apex-200 bg-apex-50 px-3.5 py-1.5 text-sm font-semibold uppercase tracking-wider text-apex-600">

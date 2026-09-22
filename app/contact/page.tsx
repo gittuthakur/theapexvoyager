@@ -1,5 +1,18 @@
+import type { Metadata } from 'next';
 import ContactForm from '@/components/modules/ContactForm';
 import { GlassCard } from '@/components/ui/GlassCard';
+import { images } from '@/config/images.config';
+
+const title = 'Contact Us | The Apex Voyager India';
+const description = 'Get in touch with The Apex Voyager India to plan a custom Himalayan journey, stay, or transport booking.';
+
+export const metadata: Metadata = {
+  title,
+  description,
+  alternates: { canonical: '/contact' },
+  openGraph: { title, description, url: '/contact', images: [{ url: images.hero, alt: 'Himalayan peaks at first light' }] },
+  twitter: { card: 'summary_large_image', title, description, images: [images.hero] }
+};
 
 export default function ContactPage() {
   return (

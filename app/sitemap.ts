@@ -6,6 +6,7 @@ import { Journey } from '@/models/Journey';
 import { Experience } from '@/models/Experience';
 import { Expert } from '@/models/Expert';
 import { siteConfig } from '@/config/site.config';
+import { stayTypes } from '@/config/stayTypes.config';
 
 interface SlugRecord {
   slug: string;
@@ -56,8 +57,43 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteConfig.url}/stays`, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${siteConfig.url}/experiences`, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${siteConfig.url}/transport`, changeFrequency: 'weekly', priority: 0.9 },
-    { url: `${siteConfig.url}/experts`, changeFrequency: 'weekly', priority: 0.9 }
+    { url: `${siteConfig.url}/experts`, changeFrequency: 'weekly', priority: 0.9 },
+    // Real, static, indexable pages with no DB-driven counterpart — previously absent
+    // from this sitemap entirely despite each having its own metadata/canonical.
+    { url: `${siteConfig.url}/about`, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${siteConfig.url}/why-the-apex-voyager`, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${siteConfig.url}/faqs`, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${siteConfig.url}/careers`, changeFrequency: 'monthly', priority: 0.3 },
+    { url: `${siteConfig.url}/privacy`, changeFrequency: 'yearly', priority: 0.2 },
+    { url: `${siteConfig.url}/terms`, changeFrequency: 'yearly', priority: 0.2 },
+    { url: `${siteConfig.url}/cancellation-policy`, changeFrequency: 'yearly', priority: 0.2 },
+    { url: `${siteConfig.url}/accessibility-policy`, changeFrequency: 'yearly', priority: 0.2 },
+    { url: `${siteConfig.url}/photo-credits`, changeFrequency: 'monthly', priority: 0.2 },
+    { url: `${siteConfig.url}/plan-my-journey`, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${siteConfig.url}/contact`, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${siteConfig.url}/transport/partner`, changeFrequency: 'monthly', priority: 0.3 }
   ];
+
+  // Real, stable, curated /stays/[typeSlug] pages only (see
+  // app/stays/[...segments]/page.tsx's resolveSegments) — a finite, known set of
+  // category pages with genuinely distinct content (a real per-category description
+  // from config/stayTypes.config.ts and a different underlying stay listing each).
+  //
+  // /stays/[destinationSlug] pages were previously added here too, but a pre-commit
+  // audit (Phase 1) found that after normalizing out the destination name, two of
+  // them were byte-for-byte identical — H1 "Stays in {X}" plus an otherwise fully
+  // templated body, backed only by unstable Google-Places-cache results. That's thin/
+  // duplicate content by Google's own definition, so they were removed from here and
+  // given `robots: { index: false, follow: true }` instead (see
+  // app/stays/[...segments]/page.tsx's generateMetadata) — still linkable/crawlable
+  // for discovery, just not submitted for indexing. The 2-segment [destination]/[type]
+  // matrix and the Google-Places-backed /stays/property/[placeId] pages remain
+  // excluded from the sitemap for the same reasons as before.
+  const stayTypeEntries: MetadataRoute.Sitemap = stayTypes.map((type) => ({
+    url: `${siteConfig.url}/stays/${type.slug}`,
+    changeFrequency: 'weekly',
+    priority: 0.6
+  }));
 
   const destinationEntries: MetadataRoute.Sitemap = destinations.map((destination) => ({
     url: `${siteConfig.url}/destinations/${destination.slug}`,
@@ -94,5 +130,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8
   }));
 
-  return [...staticEntries, ...regionEntries, ...destinationEntries, ...journeyEntries, ...experienceEntries, ...expertEntries];
+  return [
+    ...staticEntries,
+    ...regionEntries,
+    ...destinationEntries,
+    ...journeyEntries,
+    ...experienceEntries,
+    ...expertEntries,
+    ...stayTypeEntries
+  ];
 }

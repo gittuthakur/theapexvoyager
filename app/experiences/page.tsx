@@ -18,7 +18,7 @@ import type { Metadata } from 'next';
 // description never vary by query string, since every filter combination
 // canonicalizes back to this one URL. `images.hero` is reused as-is rather than
 // invented — it's the same image ExperiencesHero already renders atop this exact page.
-const title = 'Curated Himalayan Experiences | The Apex Voyager';
+const title = 'Curated Himalayan Experiences | The Apex Voyager India';
 const description =
   'Bookable Himalayan experiences — treks, village stays, food, wellness and offbeat adventures across Himachal Pradesh, Jammu & Kashmir and Uttarakhand.';
 
@@ -26,7 +26,8 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: '/experiences' },
-  openGraph: { type: 'website', title, description, url: '/experiences', images: [{ url: images.hero, alt: 'Himalayan peaks at first light' }] }
+  openGraph: { type: 'website', title, description, url: '/experiences', images: [{ url: images.hero, alt: 'Himalayan peaks at first light' }] },
+  twitter: { card: 'summary_large_image', title, description, images: [images.hero] }
 };
 
 interface ExperiencesPageProps {

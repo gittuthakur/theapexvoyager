@@ -16,7 +16,7 @@ export default function ExpertTravelSupport() {
       <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">More Than Booking. Real Travel Guidance.</h2>
       <p className="mt-3 text-slate-600">
         Experts don&apos;t work in isolation — they draw on the same journeys, transport, stays and experiences already on
-        The Apex Voyager.
+        The Apex Voyager India.
       </p>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {supportLinks.map(({ label, description, href, icon: Icon }) => (

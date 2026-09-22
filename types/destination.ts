@@ -40,7 +40,7 @@ export interface DestinationMatchScores {
 export type DestinationAccessType = 'road' | 'trek-gated' | 'trek-and-helicopter';
 
 /** Points at the one authoritative registration channel for a destination (e.g. a Char Dham
- *  yatra registration portal) — never a form The Apex Voyager itself collects submissions
+ *  yatra registration portal) — never a form The Apex Voyager India itself collects submissions
  *  through. `required` and `note` are editorial, not live status. */
 export interface DestinationRegistrationInfo {
   required: boolean;

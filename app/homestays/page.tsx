@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 import type { HotelCategory } from '@/types';
 
 // /homestays is kept as a permanent redirect to the Apex Stays vertical (/stays) —
@@ -29,7 +29,7 @@ export default async function HomestaysRedirect({ searchParams }: HomestaysRedir
 
   const staySlug = category ? CATEGORY_TO_STAY_SLUG[category as HotelCategory] : undefined;
   if (staySlug) {
-    redirect(`/stays/${staySlug}`);
+    permanentRedirect(`/stays/${staySlug}`);
   }
 
   const query = new URLSearchParams();
@@ -38,5 +38,5 @@ export default async function HomestaysRedirect({ searchParams }: HomestaysRedir
   if (checkOut) query.set('checkOut', checkOut);
   if (guests) query.set('guests', guests);
   const qs = query.toString();
-  redirect(qs ? `/stays/search?${qs}` : '/stays');
+  permanentRedirect(qs ? `/stays/search?${qs}` : '/stays');
 }

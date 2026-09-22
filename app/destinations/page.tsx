@@ -19,7 +19,7 @@ import type { RegionId } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
-const title = 'Explore the Himalayas | The Apex Voyager';
+const title = 'Explore the Himalayas | The Apex Voyager India';
 const description =
   'Discover handpicked destinations across Himachal Pradesh, Jammu & Kashmir and Uttarakhand — from iconic valleys to places most travelers never find.';
 
@@ -36,7 +36,8 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: '/destinations' },
-  openGraph: { title, description, url: '/destinations', images: [{ url: images.destinationsHero, alt: 'Explore Himalayan destinations' }] }
+  openGraph: { title, description, url: '/destinations', images: [{ url: images.destinationsHero, alt: 'Explore Himalayan destinations' }] },
+  twitter: { card: 'summary_large_image', title, description, images: [images.destinationsHero] }
 };
 
 // The editorial "beyond the trail" picks — deliberately a fixed, curated slug list

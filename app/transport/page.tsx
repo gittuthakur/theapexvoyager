@@ -31,9 +31,9 @@ import { categoriesForMotorcycleType, serviceTypeFromUrlSlug, SERVICE_TYPE_UI } 
 // back to the bare `/transport` page rather than each query-string combination being
 // treated as its own indexable URL. `images.toursHero` is reused as-is — it's the same
 // image this page's own InnerHeroBanner already renders (see `bgImage` below).
-const transportTitle = 'Travel Transport & Private Transfers | The Apex Voyager';
+const transportTitle = 'Travel Transport & Private Transfers | The Apex Voyager India';
 const transportDescription =
-  'Book private transfers, SUVs, group vehicles and customised Himalayan transport with The Apex Voyager.';
+  'Book private transfers, SUVs, group vehicles and customised Himalayan transport with The Apex Voyager India.';
 
 export const metadata: Metadata = {
   title: transportTitle,
@@ -46,6 +46,7 @@ export const metadata: Metadata = {
     url: '/transport',
     images: [{ url: images.toursHero, alt: 'Himalayan transport and private transfers' }]
   },
+  twitter: { card: 'summary_large_image', title: transportTitle, description: transportDescription, images: [images.toursHero] },
   robots: { index: true, follow: true }
 };
 

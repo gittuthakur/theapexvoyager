@@ -76,7 +76,7 @@ async function main() {
           localTransport: 'Private cabs, shared taxis and local buses connect most towns.'
         },
         seo: {
-          title: `${region.name} Travel Guide | The Apex Voyager`,
+          title: `${region.name} Travel Guide | The Apex Voyager India`,
           description: region.description
         },
         sortOrder: regions.indexOf(region),

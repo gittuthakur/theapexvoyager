@@ -28,7 +28,7 @@ export default async function AboutPage() {
             <section className="max-w-4xl mx-auto space-y-6 pt-4">
               <div className="space-y-4 text-sm sm:text-base text-slate-600 leading-relaxed font-normal text-left px-0">
                 <p>
-                  Founded with a core passion to bridge the exact gap between modern urban explorers and unscripted, breathtaking mountain trails, <strong className="text-slate-900 font-semibold">The Apex Voyager</strong> seamlessly combines cutting-edge travel technology with deep-rooted local hospitality. We strongly believe that every single journey should be entirely effortless, deeply immersive, and forever unforgettable.
+                  Founded with a core passion to bridge the exact gap between modern urban explorers and unscripted, breathtaking mountain trails, <strong className="text-slate-900 font-semibold">The Apex Voyager India</strong> seamlessly combines cutting-edge travel technology with deep-rooted local hospitality. We strongly believe that every single journey should be entirely effortless, deeply immersive, and forever unforgettable.
                 </p>
                 <p>
                   What started as a vision to redefine mountain expeditions has evolved into a trusted platform. We empower travelers by eliminating hassles through smart configuration tools, real-time pricing transparency, and handpicked local experiences that standard travel portals often miss. From the winding roads of Himachal to cozy heritage stays, we take care of the details so you can live the experience.
@@ -99,7 +99,7 @@ export default async function AboutPage() {
           <div className="space-y-2 max-w-xl">
             <h2 className="text-2xl font-bold text-slate-900">Ready to experience the extraordinary?</h2>
             <p className="text-sm text-slate-600">
-              Join the modern travelers who trust The Apex Voyager for their unforgettable mountain getaways.
+              Join the modern travelers who trust The Apex Voyager India for their unforgettable mountain getaways.
             </p>
           </div>
 

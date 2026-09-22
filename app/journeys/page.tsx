@@ -19,15 +19,16 @@ import { images } from '@/config/images.config';
 // export (not generateMetadata) is correct here, matching app/destinations/page.tsx:
 // this page's own title/description never vary by query string, since every filter
 // combination canonicalizes back to this one URL.
-const title = 'Himalayan Tour Packages & Curated Journeys | The Apex Voyager';
+const title = 'Himalayan Tour Packages & Curated Journeys | The Apex Voyager India';
 const description =
-  'Explore curated Himalayan tour packages across Himachal Pradesh, Jammu & Kashmir and Uttarakhand, with personalised itineraries, stays and private transport.';
+  'Explore curated Himalayan tour packages across Himachal Pradesh, Jammu & Kashmir and Uttarakhand — personalised itineraries, stays and private transport.';
 
 export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: '/journeys' },
-  openGraph: { type: 'website', title, description, url: '/journeys', images: [{ url: images.toursHero, alt: 'Curated Himalayan travel journeys' }] }
+  openGraph: { type: 'website', title, description, url: '/journeys', images: [{ url: images.toursHero, alt: 'Curated Himalayan travel journeys' }] },
+  twitter: { card: 'summary_large_image', title, description, images: [images.toursHero] }
 };
 
 const journeysHeroData: HeroSectionData = {

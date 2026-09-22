@@ -77,7 +77,7 @@ const SECTIONS: Section[] = [
     heading: '3. WhatsApp Communication',
     body: (
       <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
-        You may choose to communicate with The Apex Voyager over WhatsApp using the number listed on our website.
+        You may choose to communicate with The Apex Voyager India over WhatsApp using the number listed on our website.
         Information you share with us this way is used only to assist with your enquiry or booking, in the same
         way as information shared by phone or email. We do not access any information from your WhatsApp account
         beyond what you choose to send us directly.
@@ -155,7 +155,7 @@ export default function PrivacyPolicyContent() {
             </span>
           </h1>
           <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
-            The Apex Voyager respects your privacy and is committed to protecting the information you share with us
+            The Apex Voyager India respects your privacy and is committed to protecting the information you share with us
             when you explore our website, enquire about a journey, or communicate with our travel team.
           </p>
           <p className="text-xs text-slate-400">

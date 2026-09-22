@@ -5,6 +5,9 @@ import { getAllPackages, getPackageBySlug } from '@/lib/packages';
 import { getCuratedDestinations } from '@/lib/destinations';
 import { getPackageRegionIds } from '@/lib/packageFilters';
 import { getAllRegions } from '@/lib/regions';
+import { siteConfig } from '@/config/site.config';
+import { buildBreadcrumbListSchema } from '@/lib/schema';
+import JsonLd from '@/components/seo/JsonLd';
 
 // The 'sikkim-mountain-escape' → 'uttarakhand-explorer' legacy-slug redirect (this
 // journey's content was always Rishikesh/Haridwar/Mussoorie, Uttarakhand —
@@ -40,14 +43,15 @@ export async function generateMetadata({ params }: JourneyDetailPageProps): Prom
   // link produced a homepage-branded preview card instead of that journey's own.
   // `alternates.canonical` is relative and carries no query string, so a `?book=1`
   // variant of this same URL canonicalizes back to the bare journey URL automatically.
-  const title = `${pkg.name} | The Apex Voyager`;
+  const title = `${pkg.name} | The Apex Voyager India`;
   const description = pkg.shortDescription;
   const canonicalPath = `/journeys/${pkg.slug}`;
   return {
     title,
     description,
     alternates: { canonical: canonicalPath },
-    openGraph: { type: 'website', title, description, url: canonicalPath, images: [{ url: pkg.image, alt: pkg.name }] }
+    openGraph: { type: 'website', title, description, url: canonicalPath, images: [{ url: pkg.image, alt: pkg.name }] },
+    twitter: { card: 'summary_large_image', title, description, images: [pkg.image] }
   };
 }
 
@@ -85,11 +89,20 @@ export default async function JourneyDetailPage({ params, searchParams }: Journe
   }
 
   return (
-    <PackageDetailContent
-      pkg={pkg}
-      autoOpenBooking={book === '1'}
-      relatedJourneys={relatedJourneys}
-      relatedJourneyRegionLabels={relatedJourneyRegionLabels}
-    />
+    <>
+      <JsonLd
+        data={buildBreadcrumbListSchema([
+          { name: 'Home', url: siteConfig.url },
+          { name: 'Journeys', url: `${siteConfig.url}/journeys` },
+          { name: pkg.name, url: `${siteConfig.url}/journeys/${pkg.slug}` }
+        ])}
+      />
+      <PackageDetailContent
+        pkg={pkg}
+        autoOpenBooking={book === '1'}
+        relatedJourneys={relatedJourneys}
+        relatedJourneyRegionLabels={relatedJourneyRegionLabels}
+      />
+    </>
   );
 }

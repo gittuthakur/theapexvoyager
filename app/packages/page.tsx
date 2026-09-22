@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 
 // /packages is kept as a permanent redirect to /journeys — the real canonical
 // route now — so any existing bookmarks/links to /packages keep working.
@@ -13,5 +13,5 @@ export default async function PackagesRedirect({ searchParams }: PackagesRedirec
     if (typeof value === 'string') query.set(key, value);
   }
   const qs = query.toString();
-  redirect(qs ? `/journeys?${qs}` : '/journeys');
+  permanentRedirect(qs ? `/journeys?${qs}` : '/journeys');
 }

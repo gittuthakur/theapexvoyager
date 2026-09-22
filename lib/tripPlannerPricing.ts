@@ -14,7 +14,7 @@ const MEALS_PER_PERSON_PER_NIGHT = 900;
 const GUIDE_FLAT_PER_NIGHT = 2500;
 const DEFAULT_NIGHTS = 5;
 // No planner-specific maximum existed before this — chosen from the longest duration
-// The Apex Voyager already sells (config/tours.config.ts's longest itinerary is
+// The Apex Voyager India already sells (config/tours.config.ts's longest itinerary is
 // "10 Days / 9 Nights"), not invented from scratch. Enforced both here (client-side
 // preview pricing) and again in app/api/booking-requests/route.ts (server-authoritative).
 export const MAX_NIGHTS = 9;

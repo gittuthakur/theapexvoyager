@@ -1,7 +1,7 @@
 import type { NavItem } from '@/types';
 
 export const siteConfig = {
-  name: 'The Apex Voyager',
+  name: 'The Apex Voyager India',
   tagline: 'Beyond Destinations Into Experience',
   description: 'Luxury expedition travel experiences across the Himalayas.',
   url: 'https://www.theapexvoyager.in',
@@ -29,7 +29,7 @@ export const navRoutes: NavItem[] = [
 
 export const footerLinks: NavItem[] = [
   { label: 'About Us', href: '/about' },
-  { label: 'Why The Apex Voyager', href: '/why-the-apex-voyager' },
+  { label: 'Why The Apex Voyager India', href: '/why-the-apex-voyager' },
   { label: 'Careers', href: '/careers' },
   { label: 'Privacy Policy', href: '/privacy' },
   { label: 'Contact Us', href: '/contact' },

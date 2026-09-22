@@ -112,7 +112,7 @@ export async function POST(request: Request) {
       html: `
       <p>Hi ${safeName},</p>
       <p>Thanks for reaching out. We received your message and will be in touch shortly.</p>
-      <p>— The Apex Voyager Team</p>
+      <p>— The Apex Voyager India Team</p>
     `
     };
 

@@ -8,7 +8,7 @@ export default function WhyTheApexVoyagerContent() {
   return (
     <main id="main-content">
       <InnerHeroBanner
-        eyebrow="Why The Apex Voyager"
+        eyebrow="Why The Apex Voyager India"
         title="Built for the way"
         highlite="you actually want to travel"
         subtitle="No cookie-cutter itineraries — every journey is planned with local expertise, transparent pricing, and support that stays with you from booking to the last mile home."

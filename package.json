@@ -14,7 +14,8 @@
     "db:sync-batch-c": "tsx scripts/syncDestinationBatchC.ts",
     "db:sync-batch-d": "tsx scripts/syncDestinationBatchD.ts",
     "db:backfill-region-refs": "tsx scripts/backfillRegionRefs.ts",
-    "db:backfill-transport-service-type": "tsx scripts/backfillTransportServiceType.ts"
+    "db:backfill-transport-service-type": "tsx scripts/backfillTransportServiceType.ts",
+    "db:backfill-brand-name-seo": "tsx scripts/backfillBrandNameSeo.ts"
   },
   "dependencies": {
     "@studio-freight/lenis": "^1.0.42",

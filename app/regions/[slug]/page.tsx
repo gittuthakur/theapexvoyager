@@ -15,6 +15,9 @@ import RegionTravelGuide from '@/components/modules/regions/RegionTravelGuide';
 import RegionExperts from '@/components/modules/regions/RegionExperts';
 import RegionFinalCTA from '@/components/modules/regions/RegionFinalCTA';
 import { getRegionHubData, getRegionProfileBySlug } from '@/services/regions/regionHub.service';
+import { siteConfig } from '@/config/site.config';
+import { buildBreadcrumbListSchema } from '@/lib/schema';
+import JsonLd from '@/components/seo/JsonLd';
 
 // Matches every sibling detail route (app/destinations/[slug]/page.tsx,
 // app/journeys/[slug]/page.tsx) — Region content is admin-edited in MongoDB and should
@@ -34,7 +37,7 @@ export async function generateMetadata({ params }: RegionHubPageProps): Promise<
   // runs for the page body — getRegionProfileBySlug is the same lightweight, React.cache()-
   // memoized lookup lib/bookingContext.ts already uses for exactly this reason.
   const region = await getRegionProfileBySlug(slug);
-  if (!region) return { title: 'Region Not Found | The Apex Voyager' };
+  if (!region) return { title: 'Region Not Found | The Apex Voyager India', robots: { index: false, follow: false } };
 
   const title = region.seo.title;
   const description = region.seo.description;
@@ -51,7 +54,8 @@ export async function generateMetadata({ params }: RegionHubPageProps): Promise<
       description,
       url: `/regions/${region.slug}`,
       images: ogImage ? [{ url: ogImage, alt: region.name }] : undefined
-    }
+    },
+    twitter: { card: 'summary_large_image', title, description, images: ogImage ? [ogImage] : undefined }
   };
 }
 
@@ -90,6 +94,12 @@ export default async function RegionHubPage({ params }: RegionHubPageProps) {
 
   return (
     <>
+      <JsonLd
+        data={buildBreadcrumbListSchema([
+          { name: 'Home', url: siteConfig.url },
+          { name: region.name, url: `${siteConfig.url}/regions/${region.slug}` }
+        ])}
+      />
       <DetailPageContainer>
         <BackButton fallbackHref="/destinations" label="Back to Destinations" />
 

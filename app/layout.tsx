@@ -13,6 +13,9 @@ import { WhatsAppInquiryProvider } from '@/components/modules/WhatsAppInquiryMod
 import { BookingRequestProvider } from '@/components/modules/BookingRequestModal';
 import { siteConfig } from '@/config/site.config';
 import { images } from '@/config/images.config';
+import { socialLinks } from '@/config/footer.config';
+import { buildTravelAgencySchema, buildWebSiteSchema } from '@/lib/schema';
+import JsonLd from '@/components/seo/JsonLd';
 
 // Poppins has no variable-weight axis on Google Fonts, so each of these 5 weights is a
 // separate static .woff2 file, and next/font preloads all of them on every route (this
@@ -53,6 +56,18 @@ export const metadata: Metadata = {
   }
 };
 
+// Site-wide structured data — rendered once here rather than per-page. No address is
+// included (see lib/schema.ts's buildTravelAgencySchema comment): no verified business
+// address exists in the codebase to publish.
+const travelAgencySchema = buildTravelAgencySchema({
+  name: siteConfig.name,
+  url: siteConfig.url,
+  telephone: siteConfig.contactPhone,
+  email: siteConfig.contactEmail,
+  sameAs: socialLinks.map((link) => link.href)
+});
+const webSiteSchema = buildWebSiteSchema({ name: siteConfig.name, url: siteConfig.url });
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={poppins.variable} suppressHydrationWarning>
@@ -74,6 +89,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
+        <JsonLd data={travelAgencySchema} />
+        <JsonLd data={webSiteSchema} />
         <Script id="google-ads-init" strategy="afterInteractive">
           {`window.dataLayer = window.dataLayer || [];
 window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};

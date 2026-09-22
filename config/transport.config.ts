@@ -5,7 +5,7 @@ import type { VehicleOption } from '@/types/transport';
  * Demo transport catalog — seeded into the TransportVehicle collection by scripts/seed.ts
  * and used as lib/transport.ts's fallback when the DB is empty/unreachable. Prices are
  * illustrative "Estimated from" starting figures for this demo, not live/externally-sourced
- * rates — final pricing is confirmed by The Apex Voyager team over WhatsApp.
+ * rates — final pricing is confirmed by The Apex Voyager India team over WhatsApp.
  */
 export const SERVICE_AREAS = ['Himachal Pradesh', 'Jammu & Kashmir', 'Uttarakhand', 'Chandigarh', 'Delhi'];
 

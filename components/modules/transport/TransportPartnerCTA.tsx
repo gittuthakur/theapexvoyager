@@ -8,7 +8,7 @@ export default function TransportPartnerCTA() {
         <p className="text-sm font-semibold uppercase tracking-[0.24em] text-apex-600">Transport partners</p>
         <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">Own a Cab, Traveller or Rental Fleet?</h2>
         <p className="mt-3 max-w-2xl text-slate-600">
-          Partner with The Apex Voyager and connect with travellers looking for reliable transport across the Himalayas.
+          Partner with The Apex Voyager India and connect with travellers looking for reliable transport across the Himalayas.
         </p>
         <Link
           href="/transport/partner"

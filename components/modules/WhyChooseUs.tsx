@@ -64,7 +64,7 @@ const defaultItems: WhyChooseUsItem[] = [
 export default function WhyChooseUs({
   eyebrow = 'The Apex difference',
   title = 'Why travel with',
-  highlight = 'The Apex Voyager?',
+  highlight = 'The Apex Voyager India?',
   description = "We don't just book trips. We build experiences grounded in local knowledge, responsible travel, and genuine care for every guest, from first inquiry to farewell.",
   ctaLabel = 'Learn About Us',
   ctaHref = '/about',

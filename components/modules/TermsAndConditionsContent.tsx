@@ -9,7 +9,7 @@ const SECTIONS: { heading: string; body: React.ReactNode }[] = [
     heading: '1. General',
     body: (
       <p>
-        These Terms &amp; Conditions govern your use of The Apex Voyager website and any journeys, stays,
+        These Terms &amp; Conditions govern your use of The Apex Voyager India website and any journeys, stays,
         transport, or experiences booked through us. By enquiring about or booking a trip with us, you agree to
         these terms.
       </p>
@@ -29,7 +29,7 @@ const SECTIONS: { heading: string; body: React.ReactNode }[] = [
     heading: '3. Bookings',
     body: (
       <p>
-        A booking is considered confirmed only once it has been explicitly confirmed by The Apex Voyager, typically
+        A booking is considered confirmed only once it has been explicitly confirmed by The Apex Voyager India, typically
         following receipt of any required advance payment.
       </p>
     )
@@ -115,7 +115,7 @@ const SECTIONS: { heading: string; body: React.ReactNode }[] = [
     heading: '12. Force Majeure',
     body: (
       <p>
-        The Apex Voyager is not liable for delays, changes, or cancellations arising from events beyond our
+        The Apex Voyager India is not liable for delays, changes, or cancellations arising from events beyond our
         reasonable control, including natural disasters, extreme weather, road closures, or government
         restrictions.
       </p>

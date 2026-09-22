@@ -27,7 +27,7 @@ export default function AccessibilityPolicyContent() {
             <span className="bg-gradient-to-r from-apex-500 via-apex-600 to-apex-700 bg-clip-text text-transparent">Policy</span>
           </h1>
           <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
-            The Apex Voyager is committed to making the Himalayas accessible to every traveler. From certified
+            The Apex Voyager India is committed to making the Himalayas accessible to every traveler. From certified
             service animals to on-ground support, our partner stays, hotels, and transport across Himachal Pradesh,
             Kashmir, and Uttarakhand are held to a single standard: equal access, without exception.
           </p>

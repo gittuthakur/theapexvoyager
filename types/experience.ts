@@ -72,7 +72,7 @@ export interface Experience {
   // --- Future business-model fields — deliberately typed now so the catalog can
   // later support partner/commission-based pricing, but NEVER read by customer-
   // facing UI. Keep these optional and out of every card/detail render. ---
-  /** What The Apex Voyager pays a local partner — internal only. */
+  /** What The Apex Voyager India pays a local partner — internal only. */
   basePrice?: number;
   /** Margin between basePrice and price, as a fraction — internal only. */
   commission?: number;

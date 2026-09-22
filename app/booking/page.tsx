@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 
 interface BookingRedirectProps {
   searchParams: Promise<{ tour?: string; destination?: string }>;
@@ -14,5 +14,5 @@ export default async function BookingRedirect({ searchParams }: BookingRedirectP
   if (tour) params.set('tour', tour);
   if (destination) params.set('destination', destination);
   const query = params.toString();
-  redirect(query ? `/plan-my-journey?${query}` : '/plan-my-journey');
+  permanentRedirect(query ? `/plan-my-journey?${query}` : '/plan-my-journey');
 }

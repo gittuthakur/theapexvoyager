@@ -165,7 +165,7 @@ export default function TestimonialSection({
   eyebrow = 'TRAVELER STORIES',
   title = 'Real Journeys.',
   highlight = 'Real Stories.',
-  subtitle = 'From quiet Himalayan villages to unforgettable road trips, hear from travelers who experienced the journey with The Apex Voyager.',
+  subtitle = 'From quiet Himalayan villages to unforgettable road trips, hear from travelers who experienced the journey with The Apex Voyager India.',
   ratingLabel,
   reviewCountLabel,
   recommendLabel,

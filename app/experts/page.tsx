@@ -21,15 +21,16 @@ import { getPackageBySlug } from '@/lib/packages';
 // never vary by query string, since every filter combination canonicalizes back to this
 // one URL. `images.hero` is reused as-is rather than invented — it's the same image this
 // page's own InnerHeroBanner already renders (see `bgImage={images.hero}` below).
-const title = 'Travel Experts & Custom Trip Planning | The Apex Voyager';
+const title = 'Travel Experts & Custom Trip Planning | The Apex Voyager India';
 const description =
-  'Connect with The Apex Voyager travel experts for personalised Himalayan journeys, transport, stays, experiences and custom trip planning.';
+  'Connect with The Apex Voyager India travel experts for personalised Himalayan journeys, transport, stays, experiences and custom trip planning.';
 
 export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: '/experts' },
-  openGraph: { type: 'website', title, description, url: '/experts', images: [{ url: images.hero, alt: 'Himalayan peaks at first light' }] }
+  openGraph: { type: 'website', title, description, url: '/experts', images: [{ url: images.hero, alt: 'Himalayan peaks at first light' }] },
+  twitter: { card: 'summary_large_image', title, description, images: [images.hero] }
 };
 
 const expertFaqs = [

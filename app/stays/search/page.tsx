@@ -26,14 +26,22 @@ export const dynamic = 'force-dynamic';
 // A static canonical/OG pair, not per-filter-combination — same pattern as
 // app/journeys/page.tsx: every filter combination on this listing canonicalizes
 // back to this one URL rather than indexing a separate page per query string.
-const title = 'Search Stays | Apex Stays — The Apex Voyager';
+const title = 'Search Stays | Apex Stays — The Apex Voyager India';
 const description = 'Search Himalayan hotels, resorts, homestays and unique stays by destination, dates and stay type.';
 
 export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: '/stays/search' },
-  openGraph: { title, description, url: '/stays/search', images: [{ url: images.experiences.riversideCamp, alt: 'Himalayan mountain-view stay overlooking a river valley' }] }
+  openGraph: { title, description, url: '/stays/search', images: [{ url: images.experiences.riversideCamp, alt: 'Himalayan mountain-view stay overlooking a river valley' }] },
+  twitter: { card: 'summary_large_image', title, description, images: [images.experiences.riversideCamp] },
+  // Not indexed — a query-string-driven results page (see app/sitemap.ts's matching
+  // note for why it's also absent from the sitemap), never submitted for indexing even
+  // though the canonical above already consolidates every filter combination onto this
+  // one URL. `follow` keeps every internal link on the page crawlable/discoverable —
+  // only indexing this specific URL is opted out, not the destination/property pages
+  // it links to.
+  robots: { index: false, follow: true }
 };
 
 interface StaySearchPageProps {

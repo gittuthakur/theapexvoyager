@@ -93,7 +93,7 @@ function buildBookingMessage(args: {
   if (children > 0) travellerLines.push(`${children} Child${children !== 1 ? 'ren' : ''}`);
 
   return [
-    'Hello The Apex Voyager,',
+    'Hello The Apex Voyager India,',
     '',
     'I would like to make a booking request.',
     '',
@@ -222,7 +222,7 @@ function PriceBreakdownPanel({ pkg, breakdown }: { pkg: TravelPackage; breakdown
       </div>
       <p className="mt-3 text-xs text-slate-500">
         This is dynamic pricing based on our configured package data for {pkg.name} — not external hotel/flight API
-        pricing. Final availability and pricing will be confirmed by The Apex Voyager team.
+        pricing. Final availability and pricing will be confirmed by The Apex Voyager India team.
       </p>
     </div>
   );
@@ -787,7 +787,7 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
           </div>
           <p className="text-xs text-slate-500">
             This is an Estimated Trip Price, not a confirmed booking. Final availability and pricing will be confirmed
-            by The Apex Voyager team.
+            by The Apex Voyager India team.
           </p>
           <button
             type="button"

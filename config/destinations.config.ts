@@ -37,7 +37,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Snow adventures', 'River rafting', 'Trekking', 'Café culture', 'Local sightseeing'],
     relatedSlugs: ['tirthan-valley', 'shimla', 'spiti-valley'],
-    seo: { title: 'Manali Travel Guide & Experiences | The Apex Voyager', description: 'Discover Manali: alpine adventure, Old Manali culture, mountain stays and curated Himalayan journeys.' },
+    seo: { title: 'Manali Travel Guide & Experiences | The Apex Voyager India', description: 'Discover Manali: alpine adventure, Old Manali culture, mountain stays and curated Himalayan journeys.' },
     isPopular: true,
     priority: 1,
     personality: 'ADVENTUROUS • SOCIAL • ACCESSIBLE',
@@ -96,7 +96,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Orchard walks', 'Village stays', 'Temple trails', 'Scenic drives', 'Photography'],
     relatedSlugs: ['spiti-valley', 'tirthan-valley', 'manali'],
-    seo: { title: 'Kinnaur Travel Guide & Experiences | The Apex Voyager', description: 'Explore Kinnaur’s apple valleys, mountain villages and Himalayan culture with The Apex Voyager.' },
+    seo: { title: 'Kinnaur Travel Guide & Experiences | The Apex Voyager India', description: 'Explore Kinnaur’s apple valleys, mountain villages and Himalayan culture with The Apex Voyager India.' },
     isPopular: true,
     priority: 3,
     personality: 'QUIET • ORCHARD-LINED • UNHURRIED',
@@ -159,7 +159,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Mountain road trips', 'Monastery visits', 'Stargazing', 'Village experiences', 'Trekking'],
     relatedSlugs: ['kinnaur', 'manali', 'tirthan-valley'],
-    seo: { title: 'Spiti Valley Travel Guide & Experiences | The Apex Voyager', description: 'Discover Spiti Valley’s monasteries, high-altitude villages and Himalayan adventures with The Apex Voyager.' },
+    seo: { title: 'Spiti Valley Travel Guide & Experiences | The Apex Voyager India', description: 'Discover Spiti Valley’s monasteries, high-altitude villages and Himalayan adventures with The Apex Voyager India.' },
     isPopular: true,
     priority: 2,
     personality: 'RAW • REMOTE • ADVENTUROUS',
@@ -216,7 +216,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Museum visit (Kangra Art Museum)', 'War Memorial walk', 'Kotwali Bazaar shopping', 'Cricket-stadium visit (match days seasonal)'],
     relatedSlugs: ['mcleod-ganj', 'bir-billing', 'chamba'],
-    seo: { title: 'Dharamshala Travel Guide | Kangra Valley Gateway | The Apex Voyager', description: 'Plan a Dharamshala stop — the Kangra Valley’s Dhauladhar-backed gateway town, Kangra Art Museum, and the road up to McLeod Ganj.' },
+    seo: { title: 'Dharamshala Travel Guide | Kangra Valley Gateway | The Apex Voyager India', description: 'Plan a Dharamshala stop — the Kangra Valley’s Dhauladhar-backed gateway town, Kangra Art Museum, and the road up to McLeod Ganj.' },
     travelTips: [
       'If you’re after the Tibetan-culture experience — cafes, monasteries, the Dalai Lama’s temple complex — that’s McLeod Ganj, a separate destination a real drive above this one.'
     ],
@@ -254,7 +254,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Monastery visits', 'Triund day hike', 'Tibetan cooking and culture', 'Café culture'],
     relatedSlugs: ['dharamshala', 'bir-billing'],
-    seo: { title: 'McLeod Ganj Travel Guide | Tibetan Culture, Kangra Valley | The Apex Voyager', description: 'Plan a McLeod Ganj trip — the Dalai Lama’s temple complex, Tibetan culture, cafes and the Triund trailhead.' },
+    seo: { title: 'McLeod Ganj Travel Guide | Tibetan Culture, Kangra Valley | The Apex Voyager India', description: 'Plan a McLeod Ganj trip — the Dalai Lama’s temple complex, Tibetan culture, cafes and the Triund trailhead.' },
     apexPicks: {
       stay: { title: 'McLeod Ganj hillside guesthouse', description: 'Simple rooms with valley or mountain views, a short walk from the main square.' },
       experience: { title: 'Morning at the Tsuglagkhang Complex', description: 'The Dalai Lama’s temple complex before the day’s crowds arrive.' },
@@ -307,7 +307,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Heritage walks', 'Scenic rail journeys', 'Café hopping', 'Forest walks', 'Family escapes'],
     relatedSlugs: ['manali', 'tirthan-valley', 'spiti-valley'],
-    seo: { title: 'Shimla Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Shimla escape with heritage walks, cedar forests and curated Himalayan journeys.' },
+    seo: { title: 'Shimla Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Shimla escape with heritage walks, cedar forests and curated Himalayan journeys.' },
     isPopular: true,
     priority: 4,
     personality: 'HERITAGE • EASY • FAMILY-FRIENDLY',
@@ -365,7 +365,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Forest walks', 'Trout fishing', 'Riverside stays', 'Trekking', 'Village experiences'],
     relatedSlugs: ['manali', 'shimla', 'kinnaur'],
-    seo: { title: 'Tirthan Valley Travel Guide & Experiences | The Apex Voyager', description: 'Discover Tirthan Valley’s forests, riverside stays and quiet Himalayan village life.' },
+    seo: { title: 'Tirthan Valley Travel Guide & Experiences | The Apex Voyager India', description: 'Discover Tirthan Valley’s forests, riverside stays and quiet Himalayan village life.' },
     hiddenGems: [
       { title: 'Chhoie Waterfall', description: 'A short forest walk to a waterfall just outside Gushaini, easy to miss on a map.' },
       { title: 'Bahu village', description: 'A quiet wooden-house hamlet across the river, rarely visited by day-trippers.' }
@@ -417,7 +417,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Waterfall walks', 'Café mornings', 'Village photography', 'Day trip to Jalori Pass'],
     relatedSlugs: ['tirthan-valley', 'sainj-valley'],
-    seo: { title: 'Jibhi Travel Guide & Experiences | The Apex Voyager', description: 'Discover Jibhi: a quiet Banjar Valley hamlet of wooden cottages, waterfall walks and easy access to Jalori Pass.' },
+    seo: { title: 'Jibhi Travel Guide & Experiences | The Apex Voyager India', description: 'Discover Jibhi: a quiet Banjar Valley hamlet of wooden cottages, waterfall walks and easy access to Jalori Pass.' },
     hiddenGems: [
       { title: 'Jibhi Waterfall', description: 'A short, easy walk from the village lanes to a forest waterfall.' },
       { title: 'Chehni Kothi', description: 'A centuries-old timber-and-stone watchtower above the valley, rarely crowded.' }
@@ -462,7 +462,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Riverside walks', 'Village photography', 'Baspa Valley road trip', 'Orchard-season visits'],
     relatedSlugs: ['sangla-valley', 'kinnaur'],
-    seo: { title: 'Chitkul Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Chitkul trip — the Baspa Valley’s furthest village, best reached as an extension of Sangla.' },
+    seo: { title: 'Chitkul Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Chitkul trip — the Baspa Valley’s furthest village, best reached as an extension of Sangla.' },
     hiddenGems: [
       { title: 'Last Dhaba of India', description: 'A tin-roofed roadside dhaba at the literal end of the road — a rite of passage for Kinnaur travelers.' },
       { title: 'Batseri village', description: 'A quieter orchard village a short drive before Chitkul, often skipped entirely.' }
@@ -505,7 +505,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Meadow walks', 'Village stays', 'Birdwatching', 'Forest walks'],
     relatedSlugs: ['tirthan-valley', 'jibhi'],
-    seo: { title: 'Sainj Valley Travel Guide & Experiences | The Apex Voyager', description: 'Discover Sainj Valley and Shangarh — a quiet meadow village on the Great Himalayan National Park buffer.' },
+    seo: { title: 'Sainj Valley Travel Guide & Experiences | The Apex Voyager India', description: 'Discover Sainj Valley and Shangarh — a quiet meadow village on the Great Himalayan National Park buffer.' },
     hiddenGems: [
       { title: 'Shangarh meadow temple', description: 'A centuries-old wooden temple at the edge of the meadow, easy to miss without a local pointing it out.' }
     ],
@@ -548,7 +548,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Paragliding (weather permitting)', 'Monastery visits', 'Café culture', 'Cycling routes'],
     relatedSlugs: ['dharamshala'],
-    seo: { title: 'Bir Billing Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Bir Billing trip — paragliding at Billing, Tibetan culture in Bir, and a relaxed Kangra Valley base.' },
+    seo: { title: 'Bir Billing Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Bir Billing trip — paragliding at Billing, Tibetan culture in Bir, and a relaxed Kangra Valley base.' },
     hiddenGems: [
       { title: 'Bir Road Tea Estate', description: 'Working tea gardens on the approach to Bir, a quiet stop most travelers drive straight past.' },
       { title: 'Chowgan back lanes', description: 'Quieter cafe lanes a short walk from the main landing field.' }
@@ -593,7 +593,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Orchard walks', 'Kamru Fort visit', 'Baspa Valley road trip', 'Local market browsing'],
     relatedSlugs: ['chitkul', 'kinnaur'],
-    seo: { title: 'Sangla Valley Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Sangla Valley trip — Kamru Fort, Baspa river orchards, and the gateway to Chitkul.' },
+    seo: { title: 'Sangla Valley Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Sangla Valley trip — Kamru Fort, Baspa river orchards, and the gateway to Chitkul.' },
     hiddenGems: [
       { title: 'Kamru village lanes', description: 'The old village below the fort, quieter than the main bazaar.' },
       { title: 'Rakcham village', description: 'A smaller orchard hamlet on the road between Sangla and Chitkul.' }
@@ -637,7 +637,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Temple visits', 'Museum visit', 'Old-town walks', 'Riverside evenings on the Chaugan'],
     relatedSlugs: ['dalhousie', 'khajjiar'],
-    seo: { title: 'Chamba Travel Guide & Experiences | The Apex Voyager', description: 'Discover Chamba — a 1,000-year-old Himalayan princely town of temples, museums and the Ravi River.' },
+    seo: { title: 'Chamba Travel Guide & Experiences | The Apex Voyager India', description: 'Discover Chamba — a 1,000-year-old Himalayan princely town of temples, museums and the Ravi River.' },
     hiddenGems: [
       { title: 'Rang Mahal', description: 'A former royal palace with distinctive Pahari-style painted interiors, quieter than the main temple complex.' }
     ],
@@ -680,7 +680,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Ridge walks between hills', 'Colonial church visits', 'Forest photography', 'Day trip to Khajjiar'],
     relatedSlugs: ['khajjiar', 'chamba'],
-    seo: { title: 'Dalhousie Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Dalhousie trip — colonial-era churches, five interconnected hills, and easy access to Khajjiar.' },
+    seo: { title: 'Dalhousie Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Dalhousie trip — colonial-era churches, five interconnected hills, and easy access to Khajjiar.' },
     hiddenGems: [
       { title: 'Panchpula', description: 'A quiet forest stream and memorial spot, a short walk from the main bazaar.' },
       { title: 'Bakrota Hill walking loop', description: 'A circular forest walk with valley views, far less busy than the main mall road.' }
@@ -722,7 +722,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Meadow walks', 'Temple visit', 'Photography stop'],
     relatedSlugs: ['dalhousie', 'chamba'],
-    seo: { title: 'Khajjiar Travel Guide | The Apex Voyager', description: 'Plan a Khajjiar stop — meadow, lake and forest between Dalhousie and Chamba.' },
+    seo: { title: 'Khajjiar Travel Guide | The Apex Voyager India', description: 'Plan a Khajjiar stop — meadow, lake and forest between Dalhousie and Chamba.' },
     hiddenGems: [
       { title: 'Khajjiar’s small golf course', description: 'A modest putting course beside the lake that most day-trippers walk straight past.' }
     ],
@@ -759,7 +759,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Skiing & snowboarding', 'Gondola ride', 'Meadow walks', 'Golf (summer)', 'Photography'],
     relatedSlugs: ['srinagar', 'pahalgam', 'sonamarg'],
-    seo: { title: 'Gulmarg Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Gulmarg escape — the Gondola, skiing, and Kashmir’s most cinematic alpine meadow.' },
+    seo: { title: 'Gulmarg Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Gulmarg escape — the Gondola, skiing, and Kashmir’s most cinematic alpine meadow.' },
     isPopular: true,
     priority: 5,
     personality: 'ALPINE • CINEMATIC • SNOW-BOUND',
@@ -816,7 +816,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['White-water rafting', 'Yoga & meditation retreats', 'Ganga aarti', 'Ashram stays', 'Riverside cafes'],
     relatedSlugs: ['haridwar', 'dehradun', 'mussoorie'],
-    seo: { title: 'Rishikesh Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Rishikesh trip — Ganga aartis, yoga retreats, and Himalayan white-water rafting.' },
+    seo: { title: 'Rishikesh Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Rishikesh trip — Ganga aartis, yoga retreats, and Himalayan white-water rafting.' },
     isPopular: true,
     priority: 6,
     personality: 'SPIRITUAL • ADVENTUROUS • RIVERSIDE',
@@ -875,7 +875,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['River-café culture', 'Trekking', 'Village walks', 'Photography', 'Riverside camping'],
     relatedSlugs: ['tirthan-valley', 'manali'],
-    seo: { title: 'Kasol Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Kasol trip — riverside cafes, Parvati Valley treks, and laid-back mountain life.' },
+    seo: { title: 'Kasol Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Kasol trip — riverside cafes, Parvati Valley treks, and laid-back mountain life.' },
     isPopular: true,
     priority: 7,
     personality: 'LAID-BACK • BACKPACKER • RIVERSIDE',
@@ -933,7 +933,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Ganga aarti', 'Temple visits', 'Old-bazaar food walks', 'Ropeway rides'],
     relatedSlugs: ['rishikesh', 'dehradun', 'lansdowne'],
-    seo: { title: 'Haridwar Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Haridwar visit — the Har Ki Pauri aarti and one of Hinduism’s seven holiest cities.' },
+    seo: { title: 'Haridwar Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Haridwar visit — the Har Ki Pauri aarti and one of Hinduism’s seven holiest cities.' },
     isPopular: true,
     priority: 8,
     personality: 'SACRED • TIMELESS • RIVERSIDE',
@@ -1004,7 +1004,7 @@ export const destinations: Destination[] = [
       Autumn: 'September–November is the other reliable window, with cool, settled weather for the Khaliya Top hike.'
     },
     relatedSlugs: ['rishikesh', 'almora'],
-    seo: { title: 'Munsiyari Travel Guide & Experiences | The Apex Voyager', description: 'Discover Munsiyari — Panchachuli views and Uttarakhand’s quietest Himalayan valley.' }
+    seo: { title: 'Munsiyari Travel Guide & Experiences | The Apex Voyager India', description: 'Discover Munsiyari — Panchachuli views and Uttarakhand’s quietest Himalayan valley.' }
   },
   {
     slug: 'srinagar',
@@ -1035,7 +1035,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Shikara rides on Dal Lake', 'Mughal garden walks', 'Old city heritage walks', 'Kashmiri cuisine', 'Houseboat stays'],
     relatedSlugs: ['gulmarg', 'pahalgam', 'sonamarg'],
-    seo: { title: 'Srinagar Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Srinagar trip — Dal Lake, Mughal gardens and the valley’s old city, Kashmir’s travel hub.' },
+    seo: { title: 'Srinagar Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Srinagar trip — Dal Lake, Mughal gardens and the valley’s old city, Kashmir’s travel hub.' },
     apexPicks: {
       view: { title: 'Shalimar Bagh at golden hour', description: 'Terraced fountains and chinar trees catching the evening light.' },
       stay: { title: 'A houseboat on Dal Lake', description: 'Carved-walnut interiors and a private deck a few oar-strokes from the shore.' },
@@ -1088,7 +1088,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Riverside pony treks', 'Valley sightseeing (Aru, Betaab, Chandanwari)', 'Trekking toward Kolahoi Glacier', 'Fishing on the Lidder River'],
     relatedSlugs: ['srinagar', 'gulmarg', 'sonamarg'],
-    seo: { title: 'Pahalgam Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Pahalgam trip — the Lidder Valley, Aru and Betaab, and Kashmir’s classic mountain base.' },
+    seo: { title: 'Pahalgam Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Pahalgam trip — the Lidder Valley, Aru and Betaab, and Kashmir’s classic mountain base.' },
     apexPicks: {
       view: { title: 'The Lidder River valley at dawn', description: 'Mist over the pine forest before the day’s traffic reaches the valley road.' },
       stay: { title: 'A riverside hotel on the Lidder', description: 'Rooms with a private view of the river, a short walk from town.' },
@@ -1140,7 +1140,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Trekking toward Thajiwas', 'Pony rides', 'High-altitude lake treks (multi-day)', 'Valley photography'],
     relatedSlugs: ['srinagar', 'gulmarg', 'pahalgam'],
-    seo: { title: 'Sonamarg Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Sonamarg trip — the Sindh Valley, Thajiwas, and Kashmir’s gateway to the high mountains.' },
+    seo: { title: 'Sonamarg Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Sonamarg trip — the Sindh Valley, Thajiwas, and Kashmir’s gateway to the high mountains.' },
     apexPicks: {
       view: { title: 'The Sindh Valley floor', description: 'Braided river channels against a backdrop of pine and high ridgelines.' },
       stay: { title: 'A valley-facing hotel on the Srinagar–Leh road', description: 'Simple, mountain-facing rooms a short walk from the river.' },
@@ -1193,7 +1193,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Forest Research Institute visit', 'Robber\'s Cave wade', 'City heritage walk', 'Sahastradhara day trip'],
     relatedSlugs: ['mussoorie', 'rishikesh', 'haridwar'],
-    seo: { title: 'Dehradun Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Dehradun stop — the Forest Research Institute, Robber\'s Cave, and Garhwal\'s main gateway city.' },
+    seo: { title: 'Dehradun Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Dehradun stop — the Forest Research Institute, Robber\'s Cave, and Garhwal\'s main gateway city.' },
     hiddenGems: [
       { title: 'Tapkeshwar Temple', description: 'A cave temple on the Tons riverbed, quieter than the city\'s better-known sights.' }
     ],
@@ -1238,7 +1238,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Mall Road evening walk', 'Gun Hill ropeway ride', 'Landour heritage walk', 'Kempty Falls day trip'],
     relatedSlugs: ['dehradun', 'rishikesh'],
-    seo: { title: 'Mussoorie Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Mussoorie trip — Mall Road, Landour\'s quieter lanes, and Doon Valley viewpoints.' },
+    seo: { title: 'Mussoorie Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Mussoorie trip — Mall Road, Landour\'s quieter lanes, and Doon Valley viewpoints.' },
     hiddenGems: [
       { title: 'Camel\'s Back Road', description: 'A quiet walking and horse-riding road looping past Landour, far less crowded than Mall Road.' }
     ],
@@ -1282,7 +1282,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Auli ropeway access', 'Narsingh Temple visit', 'Regional trekking base'],
     relatedSlugs: ['auli', 'rishikesh', 'badrinath'],
-    seo: { title: 'Joshimath Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Joshimath stop — the base for Auli, Narsingh Temple, and upper Garhwal\'s mountain roads.' },
+    seo: { title: 'Joshimath Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Joshimath stop — the base for Auli, Narsingh Temple, and upper Garhwal\'s mountain roads.' },
     travelTips: [
       'Joshimath has had documented land-subsidence concerns in recent years — check current official advisories before booking accommodation, and avoid assuming every hotel listed is unaffected.',
       'Roads beyond Joshimath toward the upper valley are seasonal and weather-dependent — do not assume year-round or same-day access.',
@@ -1323,7 +1323,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Skiing & snowboarding (seasonal)', 'Ropeway ride', 'Meadow walks (summer)'],
     relatedSlugs: ['joshimath'],
-    seo: { title: 'Auli Travel Guide & Experiences | The Apex Voyager', description: 'Plan an Auli trip — the Joshimath ropeway, seasonal skiing, and summer meadow views.' },
+    seo: { title: 'Auli Travel Guide & Experiences | The Apex Voyager India', description: 'Plan an Auli trip — the Joshimath ropeway, seasonal skiing, and summer meadow views.' },
     travelTips: [
       'Skiing and ropeway operation depend on current snow and weather conditions — confirm before building a trip around them.',
       'Base your stay in Joshimath if Auli\'s limited on-slope lodging is full.',
@@ -1363,7 +1363,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Tungnath & Chandrashila trek', 'Deoriatal day trek', 'Meadow camping'],
     relatedSlugs: ['rishikesh', 'joshimath'],
-    seo: { title: 'Chopta Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Chopta trip — the trek base for Tungnath, Chandrashila, and Deoriatal.' },
+    seo: { title: 'Chopta Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Chopta trip — the trek base for Tungnath, Chandrashila, and Deoriatal.' },
     travelTips: [
       'The Tungnath trail and temple access depend on season and weather — confirm current trail conditions before you commit to the trek.',
       'Snow can close the upper trail outside the main April–November window; do not assume year-round access.',
@@ -1404,7 +1404,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Forest walking trails', 'War Memorial museum visit', 'Boating at Bhulla Tal'],
     relatedSlugs: ['dehradun', 'haridwar'],
-    seo: { title: 'Lansdowne Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Lansdowne trip — forest walks, the Garhwal Rifles War Memorial, and a quiet short break.' },
+    seo: { title: 'Lansdowne Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Lansdowne trip — forest walks, the Garhwal Rifles War Memorial, and a quiet short break.' },
     travelTips: [
       'Some cantonment areas are restricted to civilians — stick to the marked public viewpoints and roads.',
       'Carry cash — card acceptance is patchy in the smaller shops and dhabas.',
@@ -1446,7 +1446,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Boating on Naini Lake', 'Mall Road walk', 'Snow View ropeway ride', 'Naina Devi Temple visit'],
     relatedSlugs: ['mukteshwar', 'almora'],
-    seo: { title: 'Nainital Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Nainital trip — Naini Lake, Mall Road and Kumaon\'s best-known hill-town base.' },
+    seo: { title: 'Nainital Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Nainital trip — Naini Lake, Mall Road and Kumaon\'s best-known hill-town base.' },
     hiddenGems: [
       { title: 'Naina Peak (China Peak)', description: 'The highest point above town, a genuine trek beyond the Snow View crowds.' }
     ],
@@ -1490,7 +1490,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Chauli ki Jali viewpoint visit', 'Temple visit', 'Orchard walks'],
     relatedSlugs: ['nainital'],
-    seo: { title: 'Mukteshwar Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Mukteshwar trip — Chauli ki Jali, orchard country, and a quiet Kumaon ridge village.' },
+    seo: { title: 'Mukteshwar Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Mukteshwar trip — Chauli ki Jali, orchard country, and a quiet Kumaon ridge village.' },
     travelTips: [
       'Himalayan visibility from Chauli ki Jali depends on the weather — clear mornings are the best bet, not guaranteed.',
       'Stays are limited and small-scale — book ahead in peak season.',
@@ -1532,7 +1532,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Heritage bazaar walk', 'Bright End Corner sunset', 'Nanda Devi Temple visit'],
     relatedSlugs: ['kausani', 'ranikhet', 'munsiyari'],
-    seo: { title: 'Almora Travel Guide & Experiences | The Apex Voyager', description: 'Plan an Almora trip — Kumaon\'s historic hill capital, its bazaar, and the base for Kausani and Binsar.' },
+    seo: { title: 'Almora Travel Guide & Experiences | The Apex Voyager India', description: 'Plan an Almora trip — Kumaon\'s historic hill capital, its bazaar, and the base for Kausani and Binsar.' },
     hiddenGems: [
       { title: 'Kasar Devi Temple', description: 'A hilltop temple a short drive from town, known for sweeping views and a long history as a quiet retreat.' }
     ],
@@ -1576,7 +1576,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Himalayan viewpoint walk', 'Anasakti Ashram visit', 'Tea estate visit'],
     relatedSlugs: ['almora', 'ranikhet'],
-    seo: { title: 'Kausani Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Kausani trip — the Himalayan panorama, Anasakti Ashram, and Kumaon\'s quietest viewpoint town.' },
+    seo: { title: 'Kausani Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Kausani trip — the Himalayan panorama, Anasakti Ashram, and Kumaon\'s quietest viewpoint town.' },
     travelTips: [
       'The Himalayan view depends on the weather and season — October–March gives the clearest odds, but it\'s never guaranteed.',
       'Kausani is genuinely small — a day covers the town itself, with Rudradhari Falls as an easy add-on.',
@@ -1617,7 +1617,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Chaubatia orchard walk', 'Regimental museum visit', 'Jhula Devi Temple visit'],
     relatedSlugs: ['almora', 'kausani'],
-    seo: { title: 'Ranikhet Travel Guide & Experiences | The Apex Voyager', description: 'Plan a Ranikhet trip — Chaubatia orchards, the Kumaon Regiment Centre, and Uttarakhand\'s quietest cantonment town.' },
+    seo: { title: 'Ranikhet Travel Guide & Experiences | The Apex Voyager India', description: 'Plan a Ranikhet trip — Chaubatia orchards, the Kumaon Regiment Centre, and Uttarakhand\'s quietest cantonment town.' },
     travelTips: [
       'Ranikhet is a working cantonment — some areas are restricted to civilians, so stick to the marked public roads and gardens.',
       'There\'s no single must-see sight here — plan a relaxed two days rather than a packed itinerary.',
@@ -1660,7 +1660,7 @@ export const destinations: Destination[] = [
     experiences: ['Badrinath Temple darshan', 'Mana village visit', 'Tapt Kund hot spring'],
     relatedSlugs: ['joshimath', 'auli', 'rishikesh'],
     seo: {
-      title: 'Badrinath Travel Guide | Uttarakhand Char Dham | The Apex Voyager',
+      title: 'Badrinath Travel Guide | Uttarakhand Char Dham | The Apex Voyager India',
       description: 'Plan a Badrinath trip — the road-accessible Char Dham temple beyond Joshimath, Mana village, and seasonal travel planning.'
     },
     travelTips: [
@@ -1671,7 +1671,7 @@ export const destinations: Destination[] = [
     registrationInfo: {
       required: true,
       url: 'https://registrationandtouristcare.uk.gov.in/',
-      note: 'Official Uttarakhand Char Dham Yatra registration portal — registration is required and free; it is never collected by The Apex Voyager or any third party.'
+      note: 'Official Uttarakhand Char Dham Yatra registration portal — registration is required and free; it is never collected by The Apex Voyager India or any third party.'
     },
     matchScores: { adventure: 20, nature: 45, luxury: 25, crowds: 65, slowTravel: 30 },
     seasonalNotes: {
@@ -1710,7 +1710,7 @@ export const destinations: Destination[] = [
     experiences: ['Gangotri Temple darshan', 'Harsil valley stop'],
     relatedSlugs: ['rishikesh', 'dehradun', 'mussoorie'],
     seo: {
-      title: 'Gangotri Travel Guide | Uttarakhand Char Dham | The Apex Voyager',
+      title: 'Gangotri Travel Guide | Uttarakhand Char Dham | The Apex Voyager India',
       description: 'Plan a Gangotri trip — the road-accessible Char Dham temple, Harsil, and the separately permitted Gaumukh trek.'
     },
     travelTips: [
@@ -1721,7 +1721,7 @@ export const destinations: Destination[] = [
     registrationInfo: {
       required: true,
       url: 'https://registrationandtouristcare.uk.gov.in/',
-      note: 'Official Uttarakhand Char Dham Yatra registration portal — registration is required and free; it is never collected by The Apex Voyager or any third party.'
+      note: 'Official Uttarakhand Char Dham Yatra registration portal — registration is required and free; it is never collected by The Apex Voyager India or any third party.'
     },
     matchScores: { adventure: 25, nature: 55, luxury: 20, crowds: 55, slowTravel: 35 },
     seasonalNotes: {
@@ -1767,7 +1767,7 @@ export const destinations: Destination[] = [
     roadHead: 'Sonprayag',
     stayBaseLocations: ['Guptkashi', 'Sonprayag'],
     seo: {
-      title: 'Kedarnath Travel Guide | Uttarakhand Char Dham | The Apex Voyager',
+      title: 'Kedarnath Travel Guide | Uttarakhand Char Dham | The Apex Voyager India',
       description: 'Plan a Kedarnath trip — the trek-gated Char Dham shrine beyond Gaurikund, the seasonal helicopter option, and honest trip planning.'
     },
     travelTips: [
@@ -1779,7 +1779,7 @@ export const destinations: Destination[] = [
     registrationInfo: {
       required: true,
       url: 'https://registrationandtouristcare.uk.gov.in/',
-      note: 'Official Uttarakhand Char Dham Yatra registration portal — registration is required and free; it is never collected by The Apex Voyager or any third party.'
+      note: 'Official Uttarakhand Char Dham Yatra registration portal — registration is required and free; it is never collected by The Apex Voyager India or any third party.'
     },
     accessJourney: {
       stages: [
@@ -1832,7 +1832,7 @@ export const destinations: Destination[] = [
     roadHead: 'Janki Chatti',
     stayBaseLocations: ['Barkot'],
     seo: {
-      title: 'Yamunotri Travel Guide | Uttarakhand Char Dham | The Apex Voyager',
+      title: 'Yamunotri Travel Guide | Uttarakhand Char Dham | The Apex Voyager India',
       description: 'Plan a Yamunotri trip — the trek-gated Char Dham shrine beyond Janki Chatti, Kharsali, and honest trip planning.'
     },
     travelTips: [
@@ -1844,7 +1844,7 @@ export const destinations: Destination[] = [
     registrationInfo: {
       required: true,
       url: 'https://registrationandtouristcare.uk.gov.in/',
-      note: 'Official Uttarakhand Char Dham Yatra registration portal — registration is required and free; it is never collected by The Apex Voyager or any third party.'
+      note: 'Official Uttarakhand Char Dham Yatra registration portal — registration is required and free; it is never collected by The Apex Voyager India or any third party.'
     },
     accessJourney: {
       stages: [
@@ -1895,7 +1895,7 @@ export const destinations: Destination[] = [
     roadHead: 'Govindghat',
     stayBaseLocations: ['Ghangaria'],
     seo: {
-      title: 'Hemkund Sahib Travel Guide | Uttarakhand Pilgrimage | The Apex Voyager',
+      title: 'Hemkund Sahib Travel Guide | Uttarakhand Pilgrimage | The Apex Voyager India',
       description: 'Plan a Hemkund Sahib trip — the trek-gated Gurudwara beyond Ghangaria, the shared Valley of Flowers base, and honest trip planning.'
     },
     travelTips: [
@@ -1907,7 +1907,7 @@ export const destinations: Destination[] = [
     registrationInfo: {
       required: true,
       url: 'https://registrationandtouristcare.uk.gov.in/',
-      note: 'Official Uttarakhand Tourist Care registration portal — also used for Hemkund Sahib Yatra registration; required and free, never collected by The Apex Voyager or any third party.'
+      note: 'Official Uttarakhand Tourist Care registration portal — also used for Hemkund Sahib Yatra registration; required and free, never collected by The Apex Voyager India or any third party.'
     },
     accessJourney: {
       stages: [
@@ -1951,7 +1951,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Heritage walks', 'Forest walks', 'Photography', 'Day trip to Kufri'],
     relatedSlugs: ['shimla', 'kasauli'],
-    seo: { title: 'Chail Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Chail trip — the Maharaja’s summer palace, a historic hillside cricket ground, and quiet Shivalik forest.' },
+    seo: { title: 'Chail Travel Guide | Himachal Pradesh | The Apex Voyager India', description: 'Plan a Chail trip — the Maharaja’s summer palace, a historic hillside cricket ground, and quiet Shivalik forest.' },
     travelTips: [
       'Chail Palace’s grounds charge a small entry fee for non-guests — confirm the current amount locally.',
       'The road from Shimla is narrow in places — comfortable for a half-day drive, not a rushed one.'
@@ -1990,7 +1990,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Heritage walks', 'Forest trail walks', 'Café mornings', 'Photography'],
     relatedSlugs: ['chail', 'shimla'],
-    seo: { title: 'Kasauli Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Kasauli trip — colonial churches, forest trails and an easy Shivalik hill-town break.' },
+    seo: { title: 'Kasauli Travel Guide | Himachal Pradesh | The Apex Voyager India', description: 'Plan a Kasauli trip — colonial churches, forest trails and an easy Shivalik hill-town break.' },
     travelTips: [
       'Kasauli is a working cantonment town — some areas require ID and have restricted timings; confirm current rules locally.',
       'It’s a popular weekend trip from Chandigarh — weekdays are noticeably quieter.'
@@ -2028,7 +2028,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Temple visits', 'Fort and garden walks', 'Old-city bazaar walks'],
     relatedSlugs: ['katra', 'patnitop'],
-    seo: { title: 'Jammu Travel Guide | Jammu & Kashmir | The Apex Voyager', description: 'Plan a Jammu stop — the Raghunath Temple complex, Bahu Fort, and the gateway to Katra and Kashmir.' },
+    seo: { title: 'Jammu Travel Guide | Jammu & Kashmir | The Apex Voyager India', description: 'Plan a Jammu stop — the Raghunath Temple complex, Bahu Fort, and the gateway to Katra and Kashmir.' },
     travelTips: [
       'Most itineraries treat Jammu as a 1-night stop before Katra or Srinagar — it works well as a deliberate day too.',
       'The Raghunath Temple is a working shrine — dress modestly.'
@@ -2067,7 +2067,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Vaishno Devi pilgrimage route', 'Helicopter service (subject to booking/weather)', 'Pony/palki hire'],
     relatedSlugs: ['jammu', 'patnitop'],
-    seo: { title: 'Katra Travel Guide | Vaishno Devi Base | The Apex Voyager', description: 'Plan a Vaishno Devi yatra from Katra — registration, the route to the Bhawan, and honest trip planning.' },
+    seo: { title: 'Katra Travel Guide | Vaishno Devi Base | The Apex Voyager India', description: 'Plan a Vaishno Devi yatra from Katra — registration, the route to the Bhawan, and honest trip planning.' },
     registrationInfo: { required: true, url: 'https://www.maavaishnodevi.org', note: 'Official Shri Mata Vaishno Devi Shrine Board site — the sole statutory registration authority; free, with an RFID Yatra Access Card issued at Katra bus stand.' },
     accessJourney: { stages: [
       { title: 'Katra — road head and main stay base', description: 'Reached by road or rail; most accommodation and all registration is here.' },
@@ -2108,7 +2108,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Skiing at Madha Top (winter)', 'Forest walks', 'Photography'],
     relatedSlugs: ['jammu', 'bhaderwah'],
-    seo: { title: 'Patnitop Travel Guide | Jammu & Kashmir | The Apex Voyager', description: 'Plan a Patnitop stop on the Jammu–Srinagar highway — winter skiing at Madha Top, deodar forests, and easy mountain air.' },
+    seo: { title: 'Patnitop Travel Guide | Jammu & Kashmir | The Apex Voyager India', description: 'Plan a Patnitop stop on the Jammu–Srinagar highway — winter skiing at Madha Top, deodar forests, and easy mountain air.' },
     travelTips: [
       'Patnitop is a working highway-side hill station — expect through-traffic.',
       'Ski-season snow conditions vary year to year — confirm current conditions with a local operator before planning specific dates.'
@@ -2147,7 +2147,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Meadow walks', 'Orchard-season visits', 'Photography'],
     relatedSlugs: ['patnitop', 'jammu'],
-    seo: { title: 'Bhaderwah Travel Guide | Jammu & Kashmir | The Apex Voyager', description: 'Plan a Bhaderwah trip — the valley known regionally as "Mini Kashmir," orchards, springs, and quiet Himalayan scenery.' },
+    seo: { title: 'Bhaderwah Travel Guide | Jammu & Kashmir | The Apex Voyager India', description: 'Plan a Bhaderwah trip — the valley known regionally as "Mini Kashmir," orchards, springs, and quiet Himalayan scenery.' },
     travelTips: [
       'Padri Pass toward Chamba is a seasonal, high-altitude road — confirm current status before planning it as a route, not just a viewpoint.',
       'Book accommodation ahead in peak season — infrastructure here is lighter than in more visited J&K hill stations.'
@@ -2184,7 +2184,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Jeep safari (permit required, arranged through the forest authorities)', 'Birdwatching', 'Forest rest-house stays (where available, booked through the forest department)'],
     relatedSlugs: ['nainital', 'mukteshwar'],
-    seo: { title: 'Ramnagar & Corbett Travel Guide | Uttarakhand | The Apex Voyager', description: 'Plan a Corbett trip from Ramnagar — forest-regulated safaris and India’s oldest tiger reserve.' },
+    seo: { title: 'Ramnagar & Corbett Travel Guide | Uttarakhand | The Apex Voyager India', description: 'Plan a Corbett trip from Ramnagar — forest-regulated safaris and India’s oldest tiger reserve.' },
     travelTips: [
       'Safari access is regulated by the forest authorities; confirm current zones, permits and seasonal access through the official authority before travel.',
       'Wildlife sightings, including tiger sightings, are never guaranteed on any safari — treat a visit as a forest and habitat experience, not a guaranteed encounter.'
@@ -2219,7 +2219,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Wildlife park visit', 'Go-karting', 'Pony rides (seasonal)', 'Winter snow activities'],
     relatedSlugs: ['shimla', 'chail'],
-    seo: { title: 'Kufri Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Kufri trip — the Himalayan Nature Park, Kufri Fun World, and an easy Shimla-area base.' },
+    seo: { title: 'Kufri Travel Guide | Himachal Pradesh | The Apex Voyager India', description: 'Plan a Kufri trip — the Himalayan Nature Park, Kufri Fun World, and an easy Shimla-area base.' },
     travelTips: [
       'Kufri gets crowded with Shimla day-trippers on weekends — a weekday visit is quieter.',
       'The nature park and Mahasu Peak both involve some walking or pony riding — wear comfortable shoes.'
@@ -2258,7 +2258,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Hatu Peak hike', 'Orchard-season visits', 'Winter skiing (Dhumri slopes, conditions vary)', 'Photography'],
     relatedSlugs: ['shimla', 'kufri'],
-    seo: { title: 'Narkanda Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Narkanda trip — Hatu Peak, apple orchards, and the old Hindustan-Tibet road.' },
+    seo: { title: 'Narkanda Travel Guide | Himachal Pradesh | The Apex Voyager India', description: 'Plan a Narkanda trip — Hatu Peak, apple orchards, and the old Hindustan-Tibet road.' },
     travelTips: [
       'Roads can be snowbound in peak winter — check conditions before a December–February trip.',
       'Orchard-season visits (September–October) coincide with the apple harvest.'
@@ -2297,7 +2297,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Temple visit', 'Valley viewpoint walks', 'Photography'],
     relatedSlugs: ['kinnaur', 'sangla-valley'],
-    seo: { title: 'Sarahan Travel Guide | Bhimakali Temple | The Apex Voyager', description: 'Plan a Sarahan stop — the Bhimakali Temple and the gateway to Kinnaur.' },
+    seo: { title: 'Sarahan Travel Guide | Bhimakali Temple | The Apex Voyager India', description: 'Plan a Sarahan stop — the Bhimakali Temple and the gateway to Kinnaur.' },
     travelTips: [
       'The temple is a working shrine — dress modestly and expect to remove footwear.',
       'Roads beyond Sarahan into Kinnaur can be affected by monsoon landslides — check conditions before continuing.'
@@ -2335,7 +2335,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Temple visit', 'Dussehra festival (October)', 'Riverside walks', 'Local market browsing'],
     relatedSlugs: ['manali', 'naggar'],
-    seo: { title: 'Kullu Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Kullu trip — the Raghunath Temple, Kullu Dussehra, and the valley’s practical center.' },
+    seo: { title: 'Kullu Travel Guide | Himachal Pradesh | The Apex Voyager India', description: 'Plan a Kullu trip — the Raghunath Temple, Kullu Dussehra, and the valley’s practical center.' },
     travelTips: [
       'Kullu Dussehra (October) brings large crowds — book accommodation well ahead if visiting for the festival.',
       'The Raghunath Temple is a working shrine — dress modestly.'
@@ -2373,7 +2373,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Castle visit', 'Art gallery visit', 'Village walks'],
     relatedSlugs: ['manali', 'kullu'],
-    seo: { title: 'Naggar Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Naggar trip — the 15th-century castle, the Nicholas Roerich estate, and the former Kullu capital.' },
+    seo: { title: 'Naggar Travel Guide | Himachal Pradesh | The Apex Voyager India', description: 'Plan a Naggar trip — the 15th-century castle, the Nicholas Roerich estate, and the former Kullu capital.' },
     travelTips: [
       'The castle and art gallery are a short walk apart — plan a half-day for both.',
       'Naggar makes a quieter overnight base than Manali if you want valley views without the crowds.'
@@ -2411,7 +2411,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Tea estate walks', 'Neugal Khad viewpoint', 'Photography'],
     relatedSlugs: ['dharamshala', 'pragpur'],
-    seo: { title: 'Palampur Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Palampur trip — tea estates, the Neugal Khad gorge, and Dhauladhar views.' },
+    seo: { title: 'Palampur Travel Guide | Himachal Pradesh | The Apex Voyager India', description: 'Plan a Palampur trip — tea estates, the Neugal Khad gorge, and Dhauladhar views.' },
     travelTips: [
       'Estate visits are best in the early morning when plantation workers are out picking.',
       'Neugal Khad gets busy with day-trippers on weekends.'
@@ -2449,7 +2449,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Heritage walking tour', 'Architecture photography', 'Village-core stroll'],
     relatedSlugs: ['palampur', 'dharamshala'],
-    seo: { title: 'Pragpur Travel Guide | India’s First Heritage Village | The Apex Voyager', description: 'Plan a Pragpur visit — India’s first officially declared Heritage Village, in Himachal’s Kangra Valley.' },
+    seo: { title: 'Pragpur Travel Guide | India’s First Heritage Village | The Apex Voyager India', description: 'Plan a Pragpur visit — India’s first officially declared Heritage Village, in Himachal’s Kangra Valley.' },
     travelTips: [
       'The village core is small — a couple of hours on foot covers it well.',
       'Combine with nearby Garli, part of the same Heritage Zone, for a fuller day.'
@@ -2487,7 +2487,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Fort visit', 'Temple visit', 'Local market walk'],
     relatedSlugs: ['dharamshala', 'jawalamukhi'],
-    seo: { title: 'Kangra Travel Guide | Fort & Temple Town | The Apex Voyager', description: 'Plan a Kangra trip — the largest fort in the Himalayas and the Brajeshwari Devi Temple.' },
+    seo: { title: 'Kangra Travel Guide | Fort & Temple Town | The Apex Voyager India', description: 'Plan a Kangra trip — the largest fort in the Himalayas and the Brajeshwari Devi Temple.' },
     travelTips: [
       'The fort involves some climbing on uneven stone — comfortable footwear helps.',
       'The temple is a working shrine — dress modestly.'
@@ -2524,7 +2524,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Temple visit', 'Bazaar walk'],
     relatedSlugs: ['kangra', 'dharamshala'],
-    seo: { title: 'Jawalamukhi Travel Guide | Shakti Peeth Temple | The Apex Voyager', description: 'Plan a Jawalamukhi visit — the Jwalamukhi Temple, one of the 51 Shakti Peethas, in Himachal’s Kangra Valley.' },
+    seo: { title: 'Jawalamukhi Travel Guide | Shakti Peeth Temple | The Apex Voyager India', description: 'Plan a Jawalamukhi visit — the Jwalamukhi Temple, one of the 51 Shakti Peethas, in Himachal’s Kangra Valley.' },
     travelTips: [
       'The temple is a working shrine with continuous pilgrim flow — dress modestly and expect queues on festival days.',
       'The town is compact and walkable from most accommodation.'
@@ -2562,7 +2562,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Temple complex visit', 'Manimahesh Yatra (seasonal)', 'Gaddi culture and crafts'],
     relatedSlugs: ['chamba', 'dalhousie'],
-    seo: { title: 'Bharmour Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Bharmour trip — the Chaurasi Temple complex and the base for the Manimahesh Kailash pilgrimage.' },
+    seo: { title: 'Bharmour Travel Guide | Himachal Pradesh | The Apex Voyager India', description: 'Plan a Bharmour trip — the Chaurasi Temple complex and the base for the Manimahesh Kailash pilgrimage.' },
     travelTips: [
       'The Manimahesh Yatra itself is seasonal and physically demanding — confirm current dates and conditions before planning around it.',
       'The Chaurasi complex is an active place of worship — dress modestly.'
@@ -2600,7 +2600,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Monastery visit', 'Photography', 'Village walks'],
     relatedSlugs: ['spiti-valley', 'dhankar'],
-    seo: { title: 'Tabo Travel Guide | Ajanta of the Himalayas | The Apex Voyager', description: 'Plan a Tabo trip — a thousand-year-old monastery in Spiti Valley, known for its murals.' },
+    seo: { title: 'Tabo Travel Guide | Ajanta of the Himalayas | The Apex Voyager India', description: 'Plan a Tabo trip — a thousand-year-old monastery in Spiti Valley, known for its murals.' },
     travelTips: [
       'Photography inside the mural halls is often restricted — check current rules on arrival.',
       'Nights are cold even in summer at this altitude — pack accordingly.'
@@ -2638,7 +2638,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Monastery visit', 'Dhankar Lake trek', 'Photography'],
     relatedSlugs: ['spiti-valley', 'tabo'],
-    seo: { title: 'Dhankar Travel Guide | Spiti Valley | The Apex Voyager', description: 'Plan a Dhankar trip — a cliffside monastery above the Spiti–Pin confluence, and the Dhankar Lake trek.' },
+    seo: { title: 'Dhankar Travel Guide | Spiti Valley | The Apex Voyager India', description: 'Plan a Dhankar trip — a cliffside monastery above the Spiti–Pin confluence, and the Dhankar Lake trek.' },
     travelTips: [
       'The lake trek gains real altitude quickly — pace yourself and carry water.',
       'Basic homestays exist in the village — book ahead in peak season.'
@@ -2676,7 +2676,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Wildlife sanctuary visit', 'Winter snow leopard tracking (never guaranteed)', 'Village walks'],
     relatedSlugs: ['spiti-valley', 'tabo'],
-    seo: { title: 'Kibber Travel Guide | Spiti Valley | The Apex Voyager', description: 'Plan a Kibber trip — one of India’s highest villages, and the Kibber Wildlife Sanctuary.' },
+    seo: { title: 'Kibber Travel Guide | Spiti Valley | The Apex Voyager India', description: 'Plan a Kibber trip — one of India’s highest villages, and the Kibber Wildlife Sanctuary.' },
     travelTips: [
       'Snow leopard sightings are never guaranteed on any visit — treat it as a habitat experience, not a promised sighting.',
       'The altitude here is serious — acclimatize in Kaza first rather than arriving directly.'
@@ -2714,7 +2714,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Monastery visits', 'Lahaul valley day trips', 'Local market walk'],
     relatedSlugs: ['manali', 'spiti-valley'],
-    seo: { title: 'Keylong Travel Guide | Lahaul Valley | The Apex Voyager', description: 'Plan a Keylong trip — the Lahaul district headquarters and a base for exploring the valley.' },
+    seo: { title: 'Keylong Travel Guide | Lahaul Valley | The Apex Voyager India', description: 'Plan a Keylong trip — the Lahaul district headquarters and a base for exploring the valley.' },
     travelTips: [
       'The Atal Tunnel has made Keylong far more accessible year-round than the old Rohtang Pass route, though winter conditions still vary — check current status before travel.'
     ],
@@ -2751,7 +2751,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Temple walks', 'Old-town bazaar walk', 'Riverside evenings'],
     relatedSlugs: ['rewalsar', 'kullu'],
-    seo: { title: 'Mandi Travel Guide | Chhoti Kashi | The Apex Voyager', description: 'Plan a Mandi trip — the town known as Chhoti Kashi for its many temples, at the Suketi–Beas confluence.' },
+    seo: { title: 'Mandi Travel Guide | Chhoti Kashi | The Apex Voyager India', description: 'Plan a Mandi trip — the town known as Chhoti Kashi for its many temples, at the Suketi–Beas confluence.' },
     travelTips: [
       'Rewalsar Lake is a well-known day trip from Mandi, about 24 km away.',
       'The temples are working shrines — dress modestly.'
@@ -2788,7 +2788,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Lake circumambulation', 'Multi-faith temple and monastery visits', 'Photography'],
     relatedSlugs: ['mandi', 'kullu'],
-    seo: { title: 'Rewalsar Travel Guide | Tso Pema | The Apex Voyager', description: 'Plan a Rewalsar trip — the multi-faith lake known to Tibetan Buddhists as Tso Pema.' },
+    seo: { title: 'Rewalsar Travel Guide | Tso Pema | The Apex Voyager India', description: 'Plan a Rewalsar trip — the multi-faith lake known to Tibetan Buddhists as Tso Pema.' },
     travelTips: [
       'This is an active pilgrimage site for three faiths — dress modestly and be respectful around all the shrines, not only one.',
       'Easily done as a day trip from Mandi, about 24 km away.'
@@ -2825,7 +2825,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Lake walk', 'Temple visits', 'Renuka Ji Fair (seasonal, November)', 'Wildlife sanctuary visit'],
     relatedSlugs: ['paonta-sahib', 'kasauli'],
-    seo: { title: 'Renuka Ji Travel Guide | Himachal’s Largest Lake | The Apex Voyager', description: 'Plan a Renuka Ji trip — Himachal’s largest natural lake, its temples, and the surrounding wildlife sanctuary.' },
+    seo: { title: 'Renuka Ji Travel Guide | Himachal’s Largest Lake | The Apex Voyager India', description: 'Plan a Renuka Ji trip — Himachal’s largest natural lake, its temples, and the surrounding wildlife sanctuary.' },
     travelTips: [
       'The International Renuka Ji Fair (a five-day event after Diwali, typically early-to-mid November) brings large crowds — book ahead if visiting then.',
       'The temples are active shrines — dress modestly.'
@@ -2864,7 +2864,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Gurdwara visit', 'Museum visit', 'Riverside walk'],
     relatedSlugs: ['renuka-ji', 'kasauli'],
-    seo: { title: 'Paonta Sahib Travel Guide | Sikh Heritage on the Yamuna | The Apex Voyager', description: 'Plan a Paonta Sahib trip — the Gurdwara founded by Guru Gobind Singh, on the banks of the Yamuna.' },
+    seo: { title: 'Paonta Sahib Travel Guide | Sikh Heritage on the Yamuna | The Apex Voyager India', description: 'Plan a Paonta Sahib trip — the Gurdwara founded by Guru Gobind Singh, on the banks of the Yamuna.' },
     travelTips: [
       'The gurdwara’s langar serves free meals to all visitors — dress modestly and cover your head as is customary.',
       'The weapons/manuscripts museum is compact — an hour is usually enough.'
@@ -2903,7 +2903,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Temple visit', 'Bazaar walk'],
     relatedSlugs: ['jawalamukhi', 'naina-devi'],
-    seo: { title: 'Chintpurni Travel Guide | Shakti Peeth Temple | The Apex Voyager', description: 'Plan a Chintpurni visit — the Mata Chintpurni Temple, traditionally one of the 51 Shakti Peethas, in Himachal\'s Una district.' },
+    seo: { title: 'Chintpurni Travel Guide | Shakti Peeth Temple | The Apex Voyager India', description: 'Plan a Chintpurni visit — the Mata Chintpurni Temple, traditionally one of the 51 Shakti Peethas, in Himachal\'s Una district.' },
     travelTips: [
       'The temple is a working shrine with continuous pilgrim flow — dress modestly and expect queues on festival days.',
       'Navratri periods bring the largest crowds; visit on an ordinary weekday for a quieter darshan.'
@@ -2941,7 +2941,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Temple visit', 'Ropeway ride'],
     relatedSlugs: ['chintpurni', 'jawalamukhi'],
-    seo: { title: 'Naina Devi Travel Guide | Shakti Peeth Temple, Himachal Pradesh | The Apex Voyager', description: 'Plan a visit to Shri Naina Devi Ji — a hilltop Shakti Peeth temple in Bilaspur, Himachal Pradesh, distinct from the Naina Devi Temple at Nainital.' },
+    seo: { title: 'Naina Devi Travel Guide | Shakti Peeth Temple, Himachal Pradesh | The Apex Voyager India', description: 'Plan a visit to Shri Naina Devi Ji — a hilltop Shakti Peeth temple in Bilaspur, Himachal Pradesh, distinct from the Naina Devi Temple at Nainital.' },
     travelTips: [
       'This is the Naina Devi in Himachal Pradesh\'s Bilaspur district — not the Naina Devi Temple at Nainital, Uttarakhand.',
       'The temple sees very large crowds during Sawan and Navratri fairs — follow local crowd-management guidance during peak fair days.',
@@ -2980,7 +2980,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Golf', 'Forest walks', 'Horse riding'],
     relatedSlugs: ['shimla', 'mashobra'],
-    seo: { title: 'Naldehra Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Naldehra trip — a meadow golf course and deodar forest walks a short drive from Shimla.' },
+    seo: { title: 'Naldehra Travel Guide | Himachal Pradesh | The Apex Voyager India', description: 'Plan a Naldehra trip — a meadow golf course and deodar forest walks a short drive from Shimla.' },
     travelTips: [
       'Most visitors day-trip from Shimla; book ahead if you want to stay overnight at Naldehra itself.',
       'The golf course is playable rather than just a viewpoint — carry appropriate footwear if you plan to play.'
@@ -3018,7 +3018,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Forest walks', 'Orchard walks', 'Village life'],
     relatedSlugs: ['shimla', 'naldehra'],
-    seo: { title: 'Mashobra Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Mashobra trip — cedar forest trails, orchard villages and a quieter alternative to central Shimla.' },
+    seo: { title: 'Mashobra Travel Guide | Himachal Pradesh | The Apex Voyager India', description: 'Plan a Mashobra trip — cedar forest trails, orchard villages and a quieter alternative to central Shimla.' },
     travelTips: [
       'Wildflower Hall and other resorts marketed as "Mashobra" are technically sited in neighbouring Chharabra — confirm the exact property location before booking.',
       'Forest trails to Sipur are a good half-day option if you\'d rather walk than drive.'
@@ -3058,7 +3058,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Gurdwara visit', 'Hot spring bathing', 'Temple visit'],
     relatedSlugs: ['kasol', 'tirthan-valley'],
-    seo: { title: 'Manikaran Travel Guide | Parvati Valley Pilgrimage | The Apex Voyager', description: 'Plan a Manikaran trip — the Gurdwara Sri Manikaran Sahib, natural hot springs and Parvati Valley pilgrimage town.' },
+    seo: { title: 'Manikaran Travel Guide | Parvati Valley Pilgrimage | The Apex Voyager India', description: 'Plan a Manikaran trip — the Gurdwara Sri Manikaran Sahib, natural hot springs and Parvati Valley pilgrimage town.' },
     travelTips: [
       'Cover your head at the gurdwara, and expect to remove shoes before entering temple/gurdwara areas.',
       'The hot springs are genuinely hot — don\'t touch the water directly near the cooking areas.',
@@ -3099,7 +3099,7 @@ export const destinations: Destination[] = [
     ],
     experiences: ['Village homestays', 'Scenic drives', 'Cultural immersion'],
     relatedSlugs: ['chamba', 'bharmour'],
-    seo: { title: 'Pangi Valley Travel Guide | Himachal Pradesh | The Apex Voyager', description: 'Plan a Pangi Valley trip — a remote, tribal Chenab-gorge valley in Chamba district for offbeat travellers.' },
+    seo: { title: 'Pangi Valley Travel Guide | Himachal Pradesh | The Apex Voyager India', description: 'Plan a Pangi Valley trip — a remote, tribal Chenab-gorge valley in Chamba district for offbeat travellers.' },
     travelTips: [
       'Sach Pass typically closes for winter around mid-October and reopens sometime in spring depending on snow clearance — exact dates vary year to year, so confirm current road status before travelling.',
       'Infrastructure is basic throughout the valley — carry cash, and don\'t expect reliable mobile network beyond Killar.',

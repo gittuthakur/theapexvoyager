@@ -49,3 +49,6 @@ __pycache__/
 test-results/
 playwright-report/
 blob-report/
+
+# Migration script rollback backups (generated pre-write exports, not source)
+scripts/backups/

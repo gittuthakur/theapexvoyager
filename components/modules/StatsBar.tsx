@@ -14,7 +14,7 @@ export interface StatsBarProps {
 
 export default function StatsBar({ items = statsItems, className }: StatsBarProps) {
   return (
-    <section aria-label="The Apex Voyager in numbers" className={cn('border-y border-slate-100 bg-slate-100', className)}>
+    <section aria-label="The Apex Voyager India in numbers" className={cn('border-y border-slate-100 bg-slate-100', className)}>
       <motion.ul
         initial="hidden"
         whileInView="visible"

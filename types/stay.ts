@@ -68,7 +68,7 @@ export interface Stay {
   updatedAt?: string;
   /** Which provider this record's identity and fields actually came from — required so
    *  the UI can label provenance honestly (e.g. "Google rating") instead of implying
-   *  The Apex Voyager verified externally-sourced data itself. No 'booking' value exists
+   *  The Apex Voyager India verified externally-sourced data itself. No 'booking' value exists
    *  yet: no live Booking.com integration exists (services/providers/booking/ is an
    *  unpopulated, credential-gated skeleton — see its own doc comments). */
   source: 'google' | 'curated';

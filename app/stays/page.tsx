@@ -29,14 +29,15 @@ import { images } from '@/config/images.config';
 
 export const dynamic = 'force-dynamic';
 
-const title = 'Apex Stays — Stay Somewhere Worth Remembering | The Apex Voyager';
+const title = 'Apex Stays — Stay Somewhere Worth Remembering | The Apex Voyager India';
 const description = 'From mountain-view hotels to hidden homestays, discover stays that make your Himalayan journey unforgettable.';
 
 export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: '/stays' },
-  openGraph: { title, description, url: '/stays', images: [{ url: images.experiences.riversideCamp, alt: 'Himalayan mountain-view stay overlooking a river valley' }] }
+  openGraph: { title, description, url: '/stays', images: [{ url: images.experiences.riversideCamp, alt: 'Himalayan mountain-view stay overlooking a river valley' }] },
+  twitter: { card: 'summary_large_image', title, description, images: [images.experiences.riversideCamp] }
 };
 
 // Same signature banner treatment as the Journeys hero — full-bleed mountain image,

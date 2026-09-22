@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 
 // /homestays/[slug] is kept as a permanent redirect to /stays/[slug] — the Hotel
 // model is shared between the old Homestays vertical and the new Apex Stays
@@ -17,5 +17,5 @@ export default async function HotelDetailRedirect({ params, searchParams }: Hote
   if (checkOut) query.set('checkOut', checkOut);
   if (guests) query.set('guests', guests);
   const qs = query.toString();
-  redirect(qs ? `/stays/${slug}?${qs}` : `/stays/${slug}`);
+  permanentRedirect(qs ? `/stays/${slug}?${qs}` : `/stays/${slug}`);
 }

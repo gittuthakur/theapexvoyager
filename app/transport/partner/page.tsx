@@ -1,9 +1,16 @@
 import type { Metadata } from 'next';
 import TransportPartnerForm from '@/components/modules/transport/TransportPartnerForm';
+import { images } from '@/config/images.config';
+
+const title = 'Become a Transport Partner | The Apex Voyager India';
+const description = 'Register your cab, traveller or rental fleet with The Apex Voyager India.';
 
 export const metadata: Metadata = {
-  title: 'Become a Transport Partner | The Apex Voyager',
-  description: 'Register your cab, traveller or rental fleet with The Apex Voyager.'
+  title,
+  description,
+  alternates: { canonical: '/transport/partner' },
+  openGraph: { title, description, url: '/transport/partner', images: [{ url: images.hero, alt: 'Himalayan peaks at first light' }] },
+  twitter: { card: 'summary_large_image', title, description, images: [images.hero] }
 };
 
 export default function TransportPartnerPage() {

@@ -43,7 +43,7 @@ export default function WhyBookTransport() {
   return (
     <section className="mx-auto max-w-[1440px] px-6">
       <p className="text-sm font-semibold uppercase tracking-[0.24em] text-apex-600">Why book with us</p>
-      <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">Why Book Transport Through The Apex Voyager?</h2>
+      <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">Why Book Transport Through The Apex Voyager India?</h2>
 
       <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {VALUE_PROPS.map(({ icon: Icon, title, description }) => (

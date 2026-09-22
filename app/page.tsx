@@ -40,9 +40,9 @@ export const dynamic = 'force-dynamic';
 // nor the verticals this is the entry point to. Static (not generateMetadata) since
 // none of this varies by request — Home's own content is server-rendered fresh per
 // request regardless (see `dynamic = 'force-dynamic'` above), but its metadata is not.
-const title = 'The Apex Voyager | Himalayan Journeys & Travel Planning';
+const title = 'Himachal Tour Packages from Chandigarh | The Apex Voyager India';
 const description =
-  'Plan curated journeys, stays, experiences and transport across Himachal Pradesh, Jammu & Kashmir and Uttarakhand with The Apex Voyager.';
+  'Book customized Himachal tour packages from Chandigarh for Manali, Shimla, Kinnaur and Spiti Valley. Hotels, private cabs and personalized itineraries.';
 
 export const metadata: Metadata = {
   title,
@@ -149,9 +149,9 @@ export default async function HomePage() {
       icon: <Compass size={16} className="text-apex-600" />,
       text: 'Real Himalayas. Rarely Found.'
     },
-    titleTop: 'Himalayan Journeys, ',
-    titleBottomPrefix: 'Beyond the ',
-    titleHighlight: 'Guidebook.',
+    titleTop: 'Customized Himachal Tour Packages ',
+    titleBottomPrefix: 'from ',
+    titleHighlight: 'Chandigarh',
     subtitle:
       'Handpicked stays, remote valleys and thoughtfully planned journeys across Himachal Pradesh, Jammu & Kashmir and Uttarakhand — for travelers who want to see more than the usual route.',
     media: {
@@ -159,7 +159,7 @@ export default async function HomePage() {
       alt: 'Luxury Himalayan expedition trek through Spiti Valley and Manali tour packages, Himachal Pradesh, at dusk'
     },
     schema: buildTouristTripSchema({
-      name: 'Himalayan Expedition Tours — The Apex Voyager',
+      name: 'Himalayan Expedition Tours — The Apex Voyager India',
       description:
         'Curated destinations, stays, experiences and trusted local experts across Himachal Pradesh, Kashmir and Uttarakhand.',
       image: `${siteConfig.url}${images.hero}`,

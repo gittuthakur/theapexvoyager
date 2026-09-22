@@ -18,6 +18,9 @@ import BackButton from '@/components/ui/BackButton';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { formatINR } from '@/lib/pricing';
 import { getExperienceBySlug } from '@/lib/experiences';
+import { siteConfig } from '@/config/site.config';
+import { buildBreadcrumbListSchema } from '@/lib/schema';
+import JsonLd from '@/components/seo/JsonLd';
 import type { Metadata } from 'next';
 
 interface ExperienceDetailPageProps {
@@ -27,7 +30,7 @@ interface ExperienceDetailPageProps {
 export async function generateMetadata({ params }: ExperienceDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const experience = await getExperienceBySlug(slug);
-  if (!experience) return { title: 'Experience Not Found | The Apex Voyager' };
+  if (!experience) return { title: 'Experience Not Found | The Apex Voyager India', robots: { index: false, follow: false } };
   // Previously only title/description were set, so canonical and every Open Graph tag
   // silently inherited the root layout's generic homepage defaults (title "The Apex
   // Voyager", the homepage description/URL, no image) — sharing any specific
@@ -36,14 +39,15 @@ export async function generateMetadata({ params }: ExperienceDetailPageProps): P
   // so any future query-string variant of this same URL canonicalizes back to the bare
   // experience URL automatically (matching app/journeys/[slug]/page.tsx's `?book=1`
   // precedent).
-  const title = `${experience.title} | The Apex Voyager`;
+  const title = `${experience.title} | The Apex Voyager India`;
   const description = experience.shortDescription;
   const canonicalPath = `/experiences/${experience.slug}`;
   return {
     title,
     description,
     alternates: { canonical: canonicalPath },
-    openGraph: { type: 'website', title, description, url: canonicalPath, images: [{ url: experience.image, alt: experience.title }] }
+    openGraph: { type: 'website', title, description, url: canonicalPath, images: [{ url: experience.image, alt: experience.title }] },
+    twitter: { card: 'summary_large_image', title, description, images: [experience.image] }
   };
 }
 
@@ -59,6 +63,13 @@ export default async function ExperienceDetailPage({ params }: ExperienceDetailP
 
   return (
     <DetailPageContainer>
+      <JsonLd
+        data={buildBreadcrumbListSchema([
+          { name: 'Home', url: siteConfig.url },
+          { name: 'Experiences', url: `${siteConfig.url}/experiences` },
+          { name: experience.title, url: `${siteConfig.url}/experiences/${experience.slug}` }
+        ])}
+      />
       <BackButton fallbackHref="/experiences" label="Back to Experiences" />
 
       <ExperienceHero experience={experience} image={gallery[0]} />

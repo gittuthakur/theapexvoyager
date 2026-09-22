@@ -34,7 +34,7 @@ export default function TrustBadges({ items = defaultBadges, className }: TrustB
       whileInView="visible"
       viewport={viewportOnce}
       variants={staggerContainer}
-      aria-label="Why travelers book with The Apex Voyager"
+      aria-label="Why travelers book with The Apex Voyager India"
       className={cn('grid grid-cols-1 sm:grid-cols-2 gap-3 list-none xl:grid-cols-4', className)}
     >
       {items.map(({ icon: Icon, title, description }) => (

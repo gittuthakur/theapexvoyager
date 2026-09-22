@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Mail, MapPin, Phone } from 'lucide-react';
+import { Mail, Phone } from 'lucide-react';
 import { footerColumns, socialLinks } from '@/config/footer.config';
 import { siteConfig } from '@/config/site.config';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
@@ -142,13 +142,11 @@ function FooterLogoMark({ className }: { className?: string }) {
 export interface FooterProps {
   columns?: FooterColumn[];
   social?: SocialLink[];
-  address?: string;
 }
 
 export default function Footer({
   columns = footerColumns,
-  social = socialLinks,
-  address = 'Mall Road, Manali, Himachal Pradesh 175131, India'
+  social = socialLinks
 }: FooterProps) {
   return (
     <footer className="border-t border-white/5 bg-slate-950">
@@ -188,7 +186,7 @@ export default function Footer({
               <li className="flex items-center gap-2">
                 <WhatsAppIcon size={15} className="text-apex-300" />
                 <WhatsAppLink
-                  href={buildWhatsAppLink({ messageText: 'Hi The Apex Voyager, I want to plan a custom Himalayan journey.' })}
+                  href={buildWhatsAppLink({ messageText: 'Hi The Apex Voyager India, I want to plan a custom Himalayan journey.' })}
                   target="_blank"
                   rel="noreferrer"
                   className="cursor-hover transition-colors duration-300 ease-in-out hover:text-white"
@@ -204,10 +202,6 @@ export default function Footer({
                 >
                   {siteConfig.contactEmail}
                 </a>
-              </li>
-              <li className="flex items-start gap-2">
-                <MapPin size={15} className="mt-0.5 shrink-0 text-apex-300" />
-                <span>{address}</span>
               </li>
             </ul>
             <div className="mt-5 flex items-center gap-3">

@@ -27,6 +27,9 @@ import { getRegionForState, getRegionHubSlug } from '@/lib/regions';
 import { formatINR } from '@/lib/pricing';
 import { images } from '@/config/images.config';
 import { DESTINATIONS_WITHOUT_VERIFIED_IMAGE } from '@/config/destinationImageOverrides';
+import { siteConfig } from '@/config/site.config';
+import { buildBreadcrumbListSchema } from '@/lib/schema';
+import JsonLd from '@/components/seo/JsonLd';
 import type { DestinationAccessType, DestinationMatchScores } from '@/types/destination';
 
 export const dynamic = 'force-dynamic';
@@ -38,9 +41,9 @@ interface DestinationDetailPageProps {
 export async function generateMetadata({ params }: DestinationDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const destination = await getCuratedDestinationBySlug(slug);
-  if (!destination) return { title: 'Destination Not Found | The Apex Voyager' };
+  if (!destination) return { title: 'Destination Not Found | The Apex Voyager India', robots: { index: false, follow: false } };
 
-  const title = destination.seo?.title ?? `${destination.title} Travel Guide | The Apex Voyager`;
+  const title = destination.seo?.title ?? `${destination.title} Travel Guide | The Apex Voyager India`;
   const description = destination.seo?.description ?? destination.description;
   // This destination's configured image was found to actually depict a different place
   // (see config/destinationImageOverrides.ts) — the generic site-wide hero image is used
@@ -51,7 +54,8 @@ export async function generateMetadata({ params }: DestinationDetailPageProps): 
     title,
     description,
     alternates: { canonical: `/destinations/${destination.slug}` },
-    openGraph: { title, description, url: `/destinations/${destination.slug}`, images: [{ url: ogImage, alt: destination.title }] }
+    openGraph: { title, description, url: `/destinations/${destination.slug}`, images: [{ url: ogImage, alt: destination.title }] },
+    twitter: { card: 'summary_large_image', title, description, images: [ogImage] }
   };
 }
 
@@ -140,6 +144,13 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
 
   return (
     <DetailPageContainer>
+      <JsonLd
+        data={buildBreadcrumbListSchema([
+          { name: 'Home', url: siteConfig.url },
+          { name: 'Destinations', url: `${siteConfig.url}/destinations` },
+          { name: destination.title, url: `${siteConfig.url}/destinations/${destination.slug}` }
+        ])}
+      />
       <BackButton fallbackHref={parentRegion ? `/regions/${getRegionHubSlug(parentRegion.id)}` : '/destinations'} label="Back to Destinations" />
 
       <DestinationHero destination={destination} rating={destinationRating} />

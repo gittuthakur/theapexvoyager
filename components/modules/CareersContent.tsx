@@ -32,12 +32,12 @@ export default function CareersContent() {
       <div className="mx-auto w-full max-w-5xl space-y-14">
         <section className="space-y-5 text-center">
           <div className="inline-flex items-center gap-2.5 rounded-full border border-apex-200 bg-apex-50 px-3.5 py-1.5 text-sm font-semibold uppercase tracking-wider text-apex-600">
-            <Sparkles size={16} /> Join The Apex Voyager
+            <Sparkles size={16} /> Join The Apex Voyager India
           </div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">
             Careers at{' '}
             <span className="bg-gradient-to-r from-apex-500 via-apex-600 to-apex-700 bg-clip-text text-transparent">
-              The Apex Voyager
+              The Apex Voyager India
             </span>
           </h1>
           <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">

@@ -84,41 +84,80 @@ export async function generateMetadata({ params }: StaysCatchAllPageProps): Prom
   const resolved = await resolveSegments(segments);
 
   switch (resolved.kind) {
-    case 'type':
+    case 'type': {
+      const typeTitle = `${resolved.stayType.label} in the Himalayas | Apex Stays`;
       return {
-        title: `${resolved.stayType.label} in the Himalayas | Apex Stays`,
+        title: typeTitle,
         description: resolved.stayType.description,
-        alternates: { canonical: `/stays/${resolved.stayType.slug}` }
+        alternates: { canonical: `/stays/${resolved.stayType.slug}` },
+        openGraph: { title: typeTitle, description: resolved.stayType.description, url: `/stays/${resolved.stayType.slug}` },
+        twitter: { card: 'summary', title: typeTitle, description: resolved.stayType.description }
       };
-    case 'destination':
+    }
+    case 'destination': {
+      const destinationTitle = `Stays in ${resolved.destination.title} | Apex Stays`;
+      const destinationDescription = `Hotels, homestays, resorts and unique stays in ${resolved.destination.title}.`;
       return {
-        title: `Stays in ${resolved.destination.title} | Apex Stays`,
-        description: `Hotels, homestays, resorts and unique stays in ${resolved.destination.title}.`,
-        alternates: { canonical: `/stays/${resolved.destination.slug}` }
+        title: destinationTitle,
+        description: destinationDescription,
+        alternates: { canonical: `/stays/${resolved.destination.slug}` },
+        openGraph: { title: destinationTitle, description: destinationDescription, url: `/stays/${resolved.destination.slug}` },
+        twitter: { card: 'summary', title: destinationTitle, description: destinationDescription },
+        // Not indexed — a pre-commit audit found these pages are template-identical
+        // once the destination name is normalized out (thin/duplicate content), and
+        // the stay listings they show are unstable Google-Places-cache results, not
+        // stable curated content. Still `follow`ed (and still fully linked/functional
+        // for visitors) so internal link equity and normal browsing are unaffected —
+        // only search-engine indexing is opted out. See app/sitemap.ts's matching note.
+        robots: { index: false, follow: true }
       };
-    case 'combined':
+    }
+    case 'combined': {
+      const combinedTitle = `${resolved.stayType.label} in ${resolved.destination.title} | Apex Stays`;
+      const combinedDescription = `${resolved.stayType.label} and other verified stays in ${resolved.destination.title}.`;
       return {
-        title: `${resolved.stayType.label} in ${resolved.destination.title} | Apex Stays`,
-        alternates: { canonical: `/stays/${resolved.destination.slug}/${resolved.stayType.slug}` }
+        title: combinedTitle,
+        description: combinedDescription,
+        alternates: { canonical: `/stays/${resolved.destination.slug}/${resolved.stayType.slug}` },
+        openGraph: { title: combinedTitle, description: combinedDescription, url: `/stays/${resolved.destination.slug}/${resolved.stayType.slug}` },
+        twitter: { card: 'summary', title: combinedTitle, description: combinedDescription },
+        // Not indexed — same thin-content/unstable-Google-Places reasoning as the
+        // `destination` case above, plus many combinations render an honest empty
+        // "no stays match" state. `follow`ed so it stays fully linked/functional.
+        robots: { index: false, follow: true }
       };
-    case 'property':
+    }
+    case 'property': {
+      const propertyTitle = `${resolved.hotel.title} | Apex Stays`;
+      const propertyImage = resolved.hotel.images[0];
       return {
-        title: `${resolved.hotel.title} | Apex Stays`,
+        title: propertyTitle,
         description: resolved.hotel.description,
         alternates: { canonical: `/stays/${resolved.hotel.slug}` },
-        openGraph: resolved.hotel.images[0] ? { images: [{ url: resolved.hotel.images[0], alt: resolved.hotel.title }] } : undefined
+        openGraph: propertyImage ? { title: propertyTitle, description: resolved.hotel.description, images: [{ url: propertyImage, alt: resolved.hotel.title }] } : undefined,
+        twitter: { card: propertyImage ? 'summary_large_image' : 'summary', title: propertyTitle, description: resolved.hotel.description, images: propertyImage ? [propertyImage] : undefined }
       };
-    case 'google-property':
+    }
+    case 'google-property': {
+      const googlePropertyTitle = `${resolved.stay.name} | Apex Stays`;
+      const googlePropertyDescription = resolved.stay.formattedAddress
+        ? `${STAY_TYPE_LABELS[resolved.stay.stayType]} in ${resolved.stay.formattedAddress}.`
+        : `${STAY_TYPE_LABELS[resolved.stay.stayType]} on Apex Stays.`;
+      const googlePropertyImage = resolved.stay.photos[0];
       return {
-        title: `${resolved.stay.name} | Apex Stays`,
-        description: resolved.stay.formattedAddress
-          ? `${STAY_TYPE_LABELS[resolved.stay.stayType]} in ${resolved.stay.formattedAddress}.`
-          : `${STAY_TYPE_LABELS[resolved.stay.stayType]} on Apex Stays.`,
+        title: googlePropertyTitle,
+        description: googlePropertyDescription,
         alternates: { canonical: `/stays/property/${resolved.stay.placeId}` },
-        openGraph: resolved.stay.photos[0] ? { images: [{ url: resolved.stay.photos[0], alt: resolved.stay.name }] } : undefined
+        openGraph: googlePropertyImage ? { title: googlePropertyTitle, description: googlePropertyDescription, images: [{ url: googlePropertyImage, alt: resolved.stay.name }] } : undefined,
+        twitter: { card: googlePropertyImage ? 'summary_large_image' : 'summary', title: googlePropertyTitle, description: googlePropertyDescription, images: googlePropertyImage ? [googlePropertyImage] : undefined },
+        // Not indexed — ephemeral Google-Places-backed data with no live pricing/
+        // availability (see resolveSegments's 'google-property' case), never stable
+        // curated content. `follow`ed so it stays fully linked/functional for visitors.
+        robots: { index: false, follow: true }
       };
+    }
     default:
-      return { title: 'Stay Not Found | Apex Stays' };
+      return { title: 'Stay Not Found | Apex Stays', robots: { index: false, follow: false } };
   }
 }
 

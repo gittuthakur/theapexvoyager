@@ -151,7 +151,7 @@ export function buildTransportCustomiseMessage({
   driveMode,
   quantity
 }: TransportCustomiseMessageParams) {
-  const lines = ['Hello The Apex Voyager,', '', 'I would like to customise this transport option.', ''];
+  const lines = ['Hello The Apex Voyager India,', '', 'I would like to customise this transport option.', ''];
   if (referenceId) lines.push(`Reference: ${referenceId}`);
   if (serviceType) lines.push(`Service: ${serviceType}`);
   lines.push(`Vehicle: ${vehicleName}`);
@@ -295,7 +295,7 @@ export function buildFourByFourRequestMessage({
   specialRequirements,
   expeditionPreferences
 }: FourByFourRequestMessageParams) {
-  const lines = ['Hello The Apex Voyager,', '', 'I submitted a 4x4 transport request.', '', `Reference: ${referenceId}`, `Service: ${fourByFourType}`];
+  const lines = ['Hello The Apex Voyager India,', '', 'I submitted a 4x4 transport request.', '', `Reference: ${referenceId}`, `Service: ${fourByFourType}`];
   if (pickup && destination) lines.push(`Route: ${pickup} → ${destination}`);
   else if (pickup) lines.push(`Pickup: ${pickup}`);
   else if (destination) lines.push(`Destination: ${destination}`);

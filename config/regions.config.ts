@@ -10,7 +10,7 @@ import type { Region } from '@/types';
 // (`mountainDusk`); both were replaced once a genuine in-region destination photo
 // was confirmed to already exist in the project.
 
-// The one canonical list of the three regions The Apex Voyager covers. `name` here
+// The one canonical list of the three regions The Apex Voyager India covers. `name` here
 // is deliberately the full, exact string already used on `Destination.state` (see
 // config/destinations.config.ts) — the existing /api/destinations route's `region`
 // query param already does an exact match against `state`, so keeping these in sync

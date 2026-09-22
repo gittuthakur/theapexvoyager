@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     title,
     description,
     url: '/plan-my-journey',
-    images: [{ url: images.hero, alt: 'Plan your Himalayan journey with The Apex Voyager' }]
+    images: [{ url: images.hero, alt: 'Plan your Himalayan journey with The Apex Voyager India' }]
   },
   twitter: { card: 'summary_large_image', title, description, images: [images.hero] }
 };

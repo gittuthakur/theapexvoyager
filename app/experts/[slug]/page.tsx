@@ -9,6 +9,9 @@ import BackButton from '@/components/ui/BackButton';
 import { getExpertBySlug } from '@/lib/experts';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
 import { getPackageBySlug } from '@/lib/packages';
+import { siteConfig } from '@/config/site.config';
+import { buildBreadcrumbListSchema } from '@/lib/schema';
+import JsonLd from '@/components/seo/JsonLd';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,19 +28,20 @@ export async function generateMetadata({ params }: ExpertDetailPageProps): Promi
   // identity through metadata. Matches app/journeys/[slug]/page.tsx's invalid-slug
   // pattern: keep the page out of the index even while its own notFound() call
   // determines the actual HTTP status.
-  if (!expert) return { title: 'Travel Experts | The Apex Voyager', robots: { index: false, follow: false } };
+  if (!expert) return { title: 'Travel Experts | The Apex Voyager India', robots: { index: false, follow: false } };
 
   // Previously only title/description were set, so canonical and every Open Graph tag
   // silently inherited the root layout's generic homepage defaults — sharing a specific
   // expert's link produced a homepage-branded preview card instead of that expert's own.
-  const title = `${expert.name} | Travel Experts | The Apex Voyager`;
+  const title = `${expert.name} | Travel Experts | The Apex Voyager India`;
   const description = expert.bio.slice(0, 155);
   const canonicalPath = `/experts/${expert.slug}`;
   return {
     title,
     description,
     alternates: { canonical: canonicalPath },
-    openGraph: { type: 'website', title, description, url: canonicalPath, images: [{ url: expert.profileImage, alt: expert.name }] }
+    openGraph: { type: 'website', title, description, url: canonicalPath, images: [{ url: expert.profileImage, alt: expert.name }] },
+    twitter: { card: 'summary_large_image', title, description, images: [expert.profileImage] }
   };
 }
 
@@ -59,6 +63,13 @@ export default async function ExpertDetailPage({ params }: ExpertDetailPageProps
 
   return (
     <DetailPageContainer>
+      <JsonLd
+        data={buildBreadcrumbListSchema([
+          { name: 'Home', url: siteConfig.url },
+          { name: 'Travel Experts', url: `${siteConfig.url}/experts` },
+          { name: expert.name, url: `${siteConfig.url}/experts/${expert.slug}` }
+        ])}
+      />
       <BackButton fallbackHref="/experts" label="Back to Travel Experts" />
 
       <ExpertHero expert={expert} destinations={destinations} />
