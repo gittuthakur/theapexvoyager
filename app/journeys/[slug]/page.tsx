@@ -79,6 +79,14 @@ const JOURNEY_SEO_OVERRIDES: Record<string, JourneySeoOverride> = {
       'Book a 6D/5N Kashmir tour package to Srinagar, Gulmarg and Pahalgam, with a Dal Lake houseboat stay, Mughal Gardens and a Gulmarg gondola ride.',
     pickupNote:
       'Airport pickup and drop are included for this journey. Share your Srinagar arrival and departure details when booking.'
+  },
+  'dharamshala-dalhousie-escape': {
+    title: 'Dharamshala Dalhousie Khajjiar Tour Package | 5D/4N',
+    h1: 'Dharamshala Dalhousie Khajjiar Tour Package',
+    description:
+      'Book a 5D/4N Dharamshala Dalhousie Khajjiar family tour package with the Dalai Lama Temple, Bhagsu Waterfall, a Dalhousie colonial walk and Khajjiar meadows.',
+    pickupNote:
+      'Private transfers are included throughout this journey. Exact pickup point and time are confirmed at the time of booking.'
   }
 };
 

@@ -18,10 +18,10 @@ export interface PackageDetailContentProps {
   autoOpenBooking?: boolean;
   /** SEO-driven H1 override for a specific journey — see JourneyHero's own prop doc. */
   heroTitleOverride?: string;
-  /** Real, static pickup/departure copy for a specific journey (e.g. Chandigarh pickup
-   *  points) — renders as its own "Departing from Chandigarh" section when present.
-   *  Absent for every journey that doesn't set one, so the rest of the catalog is
-   *  unaffected. */
+  /** Real, static pickup/transfer copy for a specific journey (e.g. Chandigarh pickup
+   *  points, or a different journey's own airport/private-transfer note) — renders as
+   *  its own "Pickup & Transfers" section when present. Absent for every journey that
+   *  doesn't set one, so the rest of the catalog is unaffected. */
   pickupNote?: string;
   /** Same-catalog journeys to surface at the bottom of the page — real data only, see app/journeys/[slug]/page.tsx. */
   relatedJourneys?: TravelPackage[];
@@ -70,9 +70,9 @@ export default function PackageDetailContent({
               </JourneySection>
             ) : null}
 
-            {/* Departing from Chandigarh */}
+            {/* Pickup & Transfers */}
             {pickupNote ? (
-              <JourneySection title="Departing from Chandigarh">
+              <JourneySection title="Pickup & Transfers">
                 <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
                   <MapPin size={18} className="mt-0.5 shrink-0 text-apex-300" />
                   <span className="text-sm text-slate-700">{pickupNote}</span>
