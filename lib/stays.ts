@@ -497,6 +497,17 @@ export async function getCachedStaysCatalog(options: { stayType?: StayType; page
         verifiedStayType: verifiedStayTypeMongoExpr()
       }
     },
+    // Strips every large field (photos, formattedAddress, googleMapsUri, websiteUri,
+    // types, ...) before the full-collection dedupe sort below — that sort previously
+    // carried whole documents (10-photo-URL arrays included) across ~5,000+ rows and
+    // exceeded Mongo's 32MB in-memory sort limit. Only what dedupeSortStage,
+    // finalSortStage, and matchStage (the treehouse name-regex or verifiedStayType
+    // filter) actually read needs to survive past this point — every other field is
+    // restored afterward, per surviving placeId only, by the $lookup rehydration
+    // inside $facet.data below. This never changes which duplicate wins the dedupe
+    // (that's still decided purely by dedupeSortStage's values, all of which are kept
+    // here), which documents match, or their final order.
+    { $project: { _id: 1, placeId: 1, name: 1, hasTypes: 1, verifiedStayType: 1, rating: 1, userRatingCount: 1 } },
     // Determines which duplicate `$first` keeps when grouping below.
     { $sort: dedupeSortStage },
     { $group: { _id: '$placeId', doc: { $first: '$$ROOT' } } },
@@ -504,7 +515,40 @@ export async function getCachedStaysCatalog(options: { stayType?: StayType; page
     ...(matchStage ? [matchStage] : []),
     // $group does not guarantee output order, so the real sort is this one, after dedup.
     { $sort: finalSortStage },
-    { $facet: { data: [{ $skip: skip }, { $limit: pageSize }], totalCount: [{ $count: 'count' }] } }
+    {
+      $facet: {
+        data: [
+          { $skip: skip },
+          { $limit: pageSize },
+          // $lookup/$unwind below are not contractually guaranteed to preserve input
+          // document order the way $sort/$group are — so the order finalSortStage just
+          // established is captured here as an explicit `rank` (0-based, matching this
+          // page's position) while it's still certain, and re-applied after rehydration
+          // rather than assumed to survive the lookup.
+          { $group: { _id: null, docs: { $push: '$$ROOT' } } },
+          { $unwind: { path: '$docs', includeArrayIndex: 'rank' } },
+          { $replaceRoot: { newRoot: { $mergeObjects: ['$docs', { rank: '$rank' }] } } },
+          // Rehydrates the complete original document — every field the lightweight
+          // $project above dropped — but only for this one page's already-deduped,
+          // already-filtered placeIds, never the whole collection.
+          { $lookup: { from: PlaceCache.collection.name, localField: '_id', foreignField: '_id', as: 'full' } },
+          { $unwind: '$full' },
+          {
+            $replaceRoot: {
+              // `full` is the untouched original document; `verifiedStayType` (computed
+              // above, not present on the stored document) and `rank` are carried over
+              // from the lightweight doc so classification and ordering survive rehydration.
+              newRoot: { $mergeObjects: ['$full', { verifiedStayType: '$verifiedStayType', rank: '$rank' }] }
+            }
+          },
+          { $sort: { rank: 1 } },
+          { $project: { rank: 0 } }
+        ],
+        // Counts the lightweight deduped/filtered stream directly — no rehydration
+        // needed just to count, so this stays exactly as cheap as before.
+        totalCount: [{ $count: 'count' }]
+      }
+    }
   ]);
 
   const docs = facetResult?.data ?? [];
