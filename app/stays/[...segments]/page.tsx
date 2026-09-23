@@ -23,6 +23,7 @@ import { destinations } from '@/config/destinations.config';
 import { findStayTypeBySlug } from '@/config/stayTypes.config';
 import { CATEGORY_TO_STAY_TYPE, STAY_TYPE_LABELS, type Stay, type StayType } from '@/types/stay';
 import { formatINR } from '@/lib/pricing';
+import { siteConfig } from '@/config/site.config';
 import type { HotelPackage } from '@/types';
 import type { Destination } from '@/types/destination';
 
@@ -562,7 +563,9 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
                       type: 'stay',
                       stayType: CATEGORY_TO_STAY_TYPE[hotel.category],
                       slug: hotel.slug,
-                      destinationSlug: matchedDestination?.slug
+                      destinationSlug: matchedDestination?.slug,
+                      location: hotel.location,
+                      url: `${siteConfig.url}/stays/${hotel.slug}`
                     }}
                     label="Ask on WhatsApp"
                   />
@@ -595,14 +598,7 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
                 {hotel.places?.customPrice ? 'Starting from' : 'Per night'}
               </p>
               <p className="text-3xl font-semibold text-slate-900">₹{price.toLocaleString('en-IN')}</p>
-              <HotelBookingModal
-                hotelName={hotel.title}
-                hotelSlug={hotel.slug}
-                destination={hotel.location}
-                defaultCheckIn={checkIn}
-                defaultCheckOut={checkOut}
-                defaultGuests={guests ? Number(guests) : undefined}
-              />
+              <HotelBookingModal hotel={hotel} />
             </aside>
           </div>
         </div>
@@ -716,12 +712,21 @@ async function GooglePropertyDetail({ stay }: { stay: Stay }) {
             <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Starting from</p>
             <p className="text-2xl font-semibold text-slate-900">Contact for pricing</p>
             <p className="text-xs text-slate-500">
-              Property and rating data from Google. No live availability or pricing is connected yet — our team will confirm current rates.
+              Property and rating data from Google. Live availability and pricing are not connected — our team will confirm the
+              current rates directly with you.
             </p>
             <WhatsAppEnquireButton
               className="w-full"
-              label="Plan This Stay"
-              selection={{ name: stay.name, type: 'stay', stayType: stay.stayType, slug: stay.slug, destinationSlug: stay.destinationSlug }}
+              label="Check Price & Availability"
+              selection={{
+                name: stay.name,
+                type: 'stay',
+                stayType: stay.stayType,
+                slug: stay.slug,
+                destinationSlug: stay.destinationSlug,
+                location: stay.formattedAddress,
+                url: `${siteConfig.url}/stays/property/${stay.placeId}`
+              }}
             />
           </aside>
         </div>

@@ -1,140 +1,41 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
-import { CheckCircle2 } from 'lucide-react';
-import { Modal } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
-import WhatsAppLink from '@/components/modules/WhatsAppLink';
-import { postJSON } from '@/lib/api';
-import { buildBookingMessage, buildWhatsAppLink } from '@/lib/whatsapp';
-import { useBookingNavigation } from '@/lib/bookingNavigation';
+import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
+import { CATEGORY_TO_STAY_TYPE } from '@/types/stay';
+import { siteConfig } from '@/config/site.config';
+import type { HotelPackage } from '@/types';
 
 export interface HotelBookingModalProps {
-  hotelName: string;
-  hotelSlug: string;
-  destination?: string;
-  defaultCheckIn?: string;
-  defaultCheckOut?: string;
-  defaultGuests?: number;
+  hotel: HotelPackage;
 }
 
-type Status = 'form' | 'sending' | 'success' | 'error';
-
-// Hands off to the universal Plan My Journey flow (source=stay&slug=...) instead of
-// opening the form below — labeled "Plan This Stay" rather than "Book Now" since this
-// never completes an instant booking. The form/Modal are kept as-is (unreachable, not
-// deleted) since nothing else in the app still opens them; see the booking-context plan.
-export default function HotelBookingModal({
-  hotelName,
-  hotelSlug,
-  destination,
-  defaultCheckIn,
-  defaultCheckOut,
-  defaultGuests
-}: HotelBookingModalProps) {
-  const { navigateToBooking } = useBookingNavigation();
-  const [open, setOpen] = useState(false);
-  const [status, setStatus] = useState<Status>('form');
-  const [error, setError] = useState('');
-  const [referenceId, setReferenceId] = useState('');
-  const [whatsappUrl, setWhatsappUrl] = useState('');
-
-  function handleClose() {
-    setOpen(false);
-    setStatus('form');
-    setError('');
-  }
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setStatus('sending');
-    setError('');
-
-    const form = new FormData(event.currentTarget);
-    const checkInDate = String(form.get('checkInDate') ?? '');
-    const checkOutDate = String(form.get('checkOutDate') ?? '');
-    const guests = String(form.get('guests') ?? '');
-
-    try {
-      const { referenceId: newReferenceId } = await postJSON<{ referenceId: string }>('/api/booking-requests', {
-        type: 'stay',
-        name: form.get('userName'),
-        phone: form.get('phone'),
-        email: form.get('email'),
-        itemName: hotelName,
-        destination,
-        dates: `${checkInDate} to ${checkOutDate}`,
-        travelers: `${guests} guest${guests === '1' ? '' : 's'}`,
-        details: { checkInDate, checkOutDate, guests }
-      });
-
-      const messageText = buildBookingMessage({
-        referenceId: newReferenceId,
-        type: 'stay',
-        itemName: hotelName,
-        dates: `${checkInDate} to ${checkOutDate}`,
-        travelers: `${guests} guest${guests === '1' ? '' : 's'}`
-      });
-
-      setReferenceId(newReferenceId);
-      setWhatsappUrl(buildWhatsAppLink({ messageText }));
-      setStatus('success');
-    } catch {
-      setStatus('error');
-      setError('Something went wrong. Please try again or contact us directly.');
-    }
-  }
-
+// Was its own "Plan This Stay" -> navigateToBooking(...) -> /plan-my-journey wizard,
+// with a second, never-opened internal <Modal>/form (dead code — nothing ever set its
+// `open` state to true). Investigated 2026-09: /plan-my-journey's own final step
+// (components/modules/trip-planner/ChoiceCard.tsx) builds its WhatsApp handoff via
+// buildJourneyRequestMessage — the same "estimated pricing, WhatsApp-lead, no live
+// inventory/pricing/payment" pattern as every other flow in this app, not a genuinely
+// live booking system. So routing a curated Stay's own CTA through that multi-step,
+// destination/dates/travellers/budget/transport/experiences wizard added friction
+// without adding any real capability this simpler, purpose-built Stay enquiry flow
+// doesn't already have. Now a thin wrapper over the exact same shared
+// WhatsAppEnquireButton/WhatsAppInquiryModal flow every Google-Places-backed Stay
+// already uses — so a curated property that becomes publiclyListed in the future
+// (see lib/hotels.ts) gets the identical honest "Check Price & Availability" CTA,
+// disclaimer, fields and message automatically, with zero further code changes.
+export default function HotelBookingModal({ hotel }: HotelBookingModalProps) {
   return (
-    <>
-      <Button type="button" className="w-full" onClick={() => navigateToBooking({ source: 'stay', slug: hotelSlug })}>
-        Plan This Stay
-      </Button>
-
-      <Modal open={open} onClose={handleClose} title={status === 'success' ? undefined : `Book ${hotelName}`}>
-        {status === 'success' ? (
-          <div className="space-y-4 text-center">
-            <CheckCircle2 size={40} className="mx-auto text-emerald-500" />
-            <div>
-              <p className="text-slate-600">Your booking reference is</p>
-              <p className="mt-1 text-2xl font-bold tracking-wide text-slate-900">{referenceId}</p>
-            </div>
-            <p className="text-slate-600">
-              Send us the pre-filled message on WhatsApp and our team will confirm availability and pricing for{' '}
-              <strong>{hotelName}</strong> directly with you.
-            </p>
-            <WhatsAppLink
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={handleClose}
-              className="cursor-hover flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:scale-105 hover:bg-[#20ba5a]"
-            >
-              <WhatsAppIcon size={16} />
-              Continue on WhatsApp
-            </WhatsAppLink>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input label="Full name" name="userName" required />
-            <Input label="Email" name="email" type="email" required />
-            <Input label="Phone" name="phone" type="tel" required />
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Input label="Check-in date" name="checkInDate" type="date" defaultValue={defaultCheckIn} required />
-              <Input label="Check-out date" name="checkOutDate" type="date" defaultValue={defaultCheckOut} required />
-            </div>
-            <Input label="Guests" name="guests" type="number" min={1} defaultValue={defaultGuests ?? 1} required />
-
-            <Button type="submit" className="w-full" disabled={status === 'sending'}>
-              {status === 'sending' ? 'Submitting...' : 'Get My Booking Reference'}
-            </Button>
-
-            {error ? <p className="text-sm text-rose-500">{error}</p> : null}
-          </form>
-        )}
-      </Modal>
-    </>
+    <WhatsAppEnquireButton
+      className="w-full"
+      label="Check Price & Availability"
+      selection={{
+        name: hotel.title,
+        type: 'stay',
+        stayType: CATEGORY_TO_STAY_TYPE[hotel.category],
+        slug: hotel.slug,
+        location: hotel.location,
+        url: `${siteConfig.url}/stays/${hotel.slug}`
+      }}
+    />
   );
 }

@@ -12,6 +12,7 @@ import { fadeInUp } from '@/lib/motion';
 import { hotelToStay, dedupeAgainstCurated } from '@/lib/stayMerge';
 import { STAY_TYPES, STAY_TYPE_LABELS, type Stay, type StayType } from '@/types/stay';
 import type { HotelPackage } from '@/types/hotel';
+import { siteConfig } from '@/config/site.config';
 
 export interface StaysGridProps {
   location: string;
@@ -221,7 +222,15 @@ export function StayCard({ stay, priority = false }: { stay: Stay; priority?: bo
             </p>
           </div>
           <WhatsAppEnquireButton
-            selection={{ name: stay.name, type: 'stay', stayType: stay.stayType, slug: stay.slug, destinationSlug: stay.destinationSlug }}
+            selection={{
+              name: stay.name,
+              type: 'stay',
+              stayType: stay.stayType,
+              slug: stay.slug,
+              destinationSlug: stay.destinationSlug,
+              location: stay.formattedAddress,
+              url: `${siteConfig.url}${href}`
+            }}
           />
         </div>
       </div>

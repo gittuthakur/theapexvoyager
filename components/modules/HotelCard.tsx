@@ -5,6 +5,7 @@ import { SafeImage } from '@/components/ui/SafeImage';
 import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { CATEGORY_TO_STAY_TYPE } from '@/types/stay';
 import type { HotelPackage } from '@/types';
+import { siteConfig } from '@/config/site.config';
 
 export interface HotelCardProps {
   hotel: HotelPackage;
@@ -101,7 +102,14 @@ export default function HotelCard({ hotel, checkIn, checkOut, guests }: HotelCar
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <WhatsAppEnquireButton
-              selection={{ name: hotel.title, type: 'stay', stayType: CATEGORY_TO_STAY_TYPE[hotel.category], slug: hotel.slug }}
+              selection={{
+                name: hotel.title,
+                type: 'stay',
+                stayType: CATEGORY_TO_STAY_TYPE[hotel.category],
+                slug: hotel.slug,
+                location: hotel.location,
+                url: `${siteConfig.url}/homestays/${hotel.slug}`
+              }}
             />
             <Link
               href={detailHref}

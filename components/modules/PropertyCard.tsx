@@ -9,6 +9,7 @@ import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
 import { CATEGORY_TO_STAY_TYPE } from '@/types/stay';
 import { cn } from '@/lib/utils';
 import type { HotelPackage } from '@/types';
+import { siteConfig } from '@/config/site.config';
 
 export interface PropertyCardProps {
   hotel: HotelPackage;
@@ -157,7 +158,14 @@ export default function PropertyCard({ hotel, checkIn, checkOut, guests, priorit
           </div>
           <div className="flex w-full flex-wrap items-center gap-3">
             <WhatsAppEnquireButton
-              selection={{ name: hotel.title, type: 'stay', stayType: CATEGORY_TO_STAY_TYPE[hotel.category], slug: hotel.slug }}
+              selection={{
+                name: hotel.title,
+                type: 'stay',
+                stayType: CATEGORY_TO_STAY_TYPE[hotel.category],
+                slug: hotel.slug,
+                location: hotel.location,
+                url: `${siteConfig.url}/stays/${hotel.slug}`
+              }}
             />
             <Link
               href={detailHref}
