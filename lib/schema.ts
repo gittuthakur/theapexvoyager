@@ -1,3 +1,5 @@
+import { siteConfig } from '@/config/site.config';
+
 export interface TouristTripSchemaInput {
   name: string;
   description: string;
@@ -95,6 +97,53 @@ export function buildBreadcrumbListSchema(items: BreadcrumbItem[]) {
       name: item.name,
       item: item.url
     }))
+  };
+}
+
+export interface JourneyProductSchemaInput {
+  /** The journey's actual rendered H1 (JOURNEY_SEO_OVERRIDES[pkg.slug]?.h1 ?? pkg.name) — never a separate marketing title. */
+  name: string;
+  /** Must be real, visibly rendered page content — never hidden/meta-only copy (e.g. pkg.shortDescription, which this route never renders). */
+  description: string;
+  /** Relative (e.g. "/images/foo.jpg") or already-absolute — resolved safely either way, never naively concatenated. */
+  image: string;
+  /** Exact canonical journey URL. */
+  url: string;
+  category: string;
+  price: number;
+}
+
+// Real Places-photo URLs (Google, https://...) are already absolute; every locally
+// stored journey image is a root-relative path — this leaves the former untouched and
+// only ever prefixes the latter, so it's safe for both without ever double-prefixing.
+function toAbsoluteImageUrl(image: string): string {
+  if (/^https?:\/\//i.test(image)) return image;
+  return `${siteConfig.url}${image.startsWith('/') ? '' : '/'}${image}`;
+}
+
+// Deliberately excludes availability, aggregateRating, review, sku/gtin/mpn,
+// priceValidUntil, and any discount/lowPrice/highPrice field — none of these are backed
+// by real data today (no capacity tracking, zero real reviews site-wide, no product
+// identifiers, no "was" price). Adding any of them here would be exactly the kind of
+// invented structured-data claim Google's own policies (and this app's own honest-empty
+// philosophy elsewhere — see lib/stays.ts, components/modules/stays/*) explicitly warn
+// against. Extend this once a real per-journey signal actually exists — e.g. a
+// `journeyId`-linked, approved+verified Review (see models/Review.ts).
+export function buildJourneyProductSchema(input: JourneyProductSchemaInput) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: input.name,
+    description: input.description,
+    image: toAbsoluteImageUrl(input.image),
+    url: input.url,
+    category: input.category,
+    offers: {
+      '@type': 'Offer',
+      url: input.url,
+      priceCurrency: 'INR',
+      price: input.price
+    }
   };
 }
 

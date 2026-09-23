@@ -6,7 +6,7 @@ import { getCuratedDestinations } from '@/lib/destinations';
 import { getPackageRegionIds } from '@/lib/packageFilters';
 import { getAllRegions } from '@/lib/regions';
 import { siteConfig } from '@/config/site.config';
-import { buildBreadcrumbListSchema } from '@/lib/schema';
+import { buildBreadcrumbListSchema, buildJourneyProductSchema } from '@/lib/schema';
 import JsonLd from '@/components/seo/JsonLd';
 
 // The 'sikkim-mountain-escape' → 'uttarakhand-explorer' legacy-slug redirect (this
@@ -160,6 +160,16 @@ export default async function JourneyDetailPage({ params, searchParams }: Journe
     if (label) relatedJourneyRegionLabels[journey.slug] = label;
   }
 
+  const canonicalUrl = `${siteConfig.url}/journeys/${pkg.slug}`;
+  const visibleTitle = JOURNEY_SEO_OVERRIDES[pkg.slug]?.h1 ?? pkg.name;
+  // pkg.shortDescription is never rendered on this route (only used in generateMetadata
+  // above and in other pages' card previews) — Highlights is the actual visible summary
+  // of the journey on this page (rendered immediately under the hero), so it's the real,
+  // on-page content this maps to. Falls back to `destination` (also visibly rendered, in
+  // the hero's meta row) only for the never-actually-empty case of a journey with no
+  // highlights, so this never silently falls through to hidden/meta-only copy.
+  const visibleDescription = pkg.highlights?.length ? pkg.highlights.join(', ') : pkg.destination;
+
   return (
     <>
       <JsonLd
@@ -168,6 +178,16 @@ export default async function JourneyDetailPage({ params, searchParams }: Journe
           { name: 'Journeys', url: `${siteConfig.url}/journeys` },
           { name: pkg.name, url: `${siteConfig.url}/journeys/${pkg.slug}` }
         ])}
+      />
+      <JsonLd
+        data={buildJourneyProductSchema({
+          name: visibleTitle,
+          description: visibleDescription,
+          image: pkg.image,
+          url: canonicalUrl,
+          category: pkg.category,
+          price: pkg.price
+        })}
       />
       <PackageDetailContent
         pkg={pkg}
