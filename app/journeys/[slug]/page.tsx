@@ -71,6 +71,14 @@ const JOURNEY_SEO_OVERRIDES: Record<string, JourneySeoOverride> = {
     description:
       'Book an 8D/7N Himachal honeymoon package from Chandigarh covering Shimla and Manali, with a candlelight dinner on Mall Road and Manikaran hot springs for two.',
     pickupNote: CHANDIGARH_PICKUP_NOTE
+  },
+  'kashmir-signature-journey': {
+    title: 'Srinagar Gulmarg Pahalgam Tour Package | 6D/5N',
+    h1: 'Srinagar Gulmarg Pahalgam Tour Package',
+    description:
+      'Book a 6D/5N Kashmir tour package to Srinagar, Gulmarg and Pahalgam, with a Dal Lake houseboat stay, Mughal Gardens and a Gulmarg gondola ride.',
+    pickupNote:
+      'Airport pickup and drop are included for this journey. Share your Srinagar arrival and departure details when booking.'
   }
 };
 
