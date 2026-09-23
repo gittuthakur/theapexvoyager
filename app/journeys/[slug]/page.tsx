@@ -87,6 +87,14 @@ const JOURNEY_SEO_OVERRIDES: Record<string, JourneySeoOverride> = {
       'Book a 5D/4N Dharamshala Dalhousie Khajjiar family tour package with the Dalai Lama Temple, Bhagsu Waterfall, a Dalhousie colonial walk and Khajjiar meadows.',
     pickupNote:
       'Private transfers are included throughout this journey. Exact pickup point and time are confirmed at the time of booking.'
+  },
+  'uttarakhand-explorer': {
+    title: 'Rishikesh Haridwar Mussoorie Tour Package | 6D/5N',
+    h1: 'Rishikesh Haridwar Mussoorie Tour Package',
+    description:
+      'Book a 6D/5N Rishikesh Haridwar Mussoorie tour package with Ganga Aarti, seasonal white-water rafting, ashram yoga and Mussoorie hill views.',
+    pickupNote:
+      'Private vehicle transfers are included throughout this journey. Exact pickup point and time are confirmed at the time of booking.'
   }
 };
 
