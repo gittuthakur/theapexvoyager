@@ -4,7 +4,15 @@
  *  ripple into the provider-agnostic pricing layer or UI. Only the fields this codebase
  *  actually reads are declared — HBX responses carry many more. */
 
-export type HbxEnvironment = 'test' | 'production';
+/** 'unknown' is the fail-closed default for anything that isn't an exact match against
+ *  a known evaluation origin or an explicitly approved+confirmed production origin (see
+ *  hbx.client.ts's getHbxEnvironment()) — it is deliberately distinct from 'test' so a
+ *  malformed/typo'd/unrecognized configuration is never conflated with the real,
+ *  intentionally-configured evaluation environment. Both 'test' and 'unknown' are
+ *  equally non-production to every consumer (stayPricing.service.ts's public gate only
+ *  ever special-cases 'production'), so this distinction is for honest logging/
+ *  diagnostics, not a second safety branch to keep in sync. */
+export type HbxEnvironment = 'test' | 'unknown' | 'production';
 
 export interface HbxDestinationZone {
   zoneCode: number;
@@ -70,7 +78,16 @@ export interface HbxRate {
   rateClass?: string;
   rateType?: string;
   net: string;
+  /** Occupancy ECHO of the request (rooms/adults/children the caller asked for) — this
+   *  always equals the caller's own query and is NOT the supplier's remaining
+   *  availability count. See `allotment` below for that. Confirmed against a real
+   *  response (2026-09-24 Phase-7 audit): a request for `rooms: 1` returned
+   *  `"rooms": 1, "allotment": 2` on the same rate object — two different numbers with
+   *  two different meanings. */
   rooms?: number;
+  /** The supplier's actual remaining bookable quantity at this rate — this is what
+   *  `NormalizedRate.roomsRemaining` must be derived from, never `rooms` above. */
+  allotment?: number;
   cancellationPolicies?: HbxCancellationPolicy[];
 }
 

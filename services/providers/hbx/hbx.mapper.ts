@@ -1,5 +1,5 @@
-import type { HbxAvailabilityHotel, HbxHotelContent } from './hbx.types';
-import type { NormalizedRate } from '../../pricing/stayPricing.types';
+import type { HbxAvailabilityHotel, HbxCancellationPolicy, HbxHotelContent } from './hbx.types';
+import type { CancellationPolicy, NormalizedRate } from '../../pricing/stayPricing.types';
 import { getHbxEnvironment } from './hbx.client';
 
 export interface HbxHotelSummary {
@@ -27,13 +27,30 @@ export function mapHbxHotelContentToSummary(raw: HbxHotelContent): HbxHotelSumma
   };
 }
 
+/** Preserves every tier HBX returned, in source order — never truncated to the first
+ *  one (2026-09-24 Phase-7 audit finding: HBX can return multiple tiers, e.g. free ->
+ *  50% -> 100%, and only keeping tier [0] silently discarded the rest). A tier missing
+ *  either field is dropped rather than passed through malformed; no currency
+ *  conversion or amount adjustment happens here — `chargeAmount` is HBX's own string,
+ *  verbatim. */
+function mapCancellationPolicies(raw?: HbxCancellationPolicy[]): CancellationPolicy[] {
+  if (!raw) return [];
+  return raw
+    .filter((policy) => typeof policy.amount === 'string' && typeof policy.from === 'string')
+    .map((policy) => ({ chargeAmount: policy.amount, chargeFrom: policy.from }));
+}
+
 /** A cancellation policy whose charge kicks in at some future cutoff means the rate is
  *  refundable up until that date, non-refundable after — HBX never returns an explicit
- *  boolean, so this is the one place that inference happens. No cancellation policy at
- *  all is treated as "refundability unknown" (`undefined`), never assumed either way. */
-function isRefundable(rate: { cancellationPolicies?: Array<{ from: string }> }): boolean | undefined {
-  if (!rate.cancellationPolicies || rate.cancellationPolicies.length === 0) return undefined;
-  const cutoff = new Date(rate.cancellationPolicies[0].from);
+ *  boolean, so this is the one place that inference happens. Uses the FIRST tier only
+ *  (HBX orders tiers chronologically — tier 0 is the earliest/most lenient cutoff,
+ *  i.e. "still fully refundable before this date"); this is an unchanged inference rule,
+ *  independent of how many tiers are now preserved on the rate itself. No cancellation
+ *  policy at all is treated as "refundability unknown" (`undefined`), never assumed
+ *  either way. */
+function isRefundable(policies: CancellationPolicy[]): boolean | undefined {
+  if (policies.length === 0) return undefined;
+  const cutoff = new Date(policies[0].chargeFrom);
   if (Number.isNaN(cutoff.getTime())) return undefined;
   return cutoff.getTime() > Date.now();
 }
@@ -51,6 +68,8 @@ export function mapHbxAvailabilityToRates(hotel: HbxAvailabilityHotel, nightCoun
       const net = Number.parseFloat(rate.net);
       if (!Number.isFinite(net) || net <= 0) continue;
 
+      const cancellationPolicies = mapCancellationPolicies(rate.cancellationPolicies);
+
       rates.push({
         provider: 'hbx',
         providerHotelId: String(hotel.code),
@@ -62,11 +81,14 @@ export function mapHbxAvailabilityToRates(hotel: HbxAvailabilityHotel, nightCoun
         roomCode: room.code,
         boardName: rate.boardName,
         rateType: rate.rateType,
-        refundable: isRefundable(rate),
-        cancellationPolicy: rate.cancellationPolicies?.[0]
-          ? { chargeAmount: rate.cancellationPolicies[0].amount, chargeFrom: rate.cancellationPolicies[0].from }
-          : undefined,
-        roomsRemaining: rate.rooms,
+        refundable: isRefundable(cancellationPolicies),
+        cancellationPolicies,
+        // `rate.allotment` is the supplier's real remaining count — NOT `rate.rooms`,
+        // which only echoes the room count the caller requested (see HbxRate's own
+        // field doc comments in hbx.types.ts; 2026-09-24 Phase-7 audit finding).
+        // Preserved as `undefined` (never 0 or NaN) when HBX omits it or sends
+        // something non-numeric.
+        roomsRemaining: Number.isFinite(rate.allotment) && (rate.allotment as number) >= 0 ? rate.allotment : undefined,
         lastCheckedAt: new Date().toISOString(),
         environment
       });

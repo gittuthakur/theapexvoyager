@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { describeHbxAuth, getHbxEnvironment, hbxFetch, isHbxConfigured } from './hbx.client';
 import { HbxApiError } from './hbx.errors';
+import { HBX_APPROVED_PRODUCTION_ORIGINS } from '@/config/hbxEnvironment.config';
 
 const ORIGINAL_ENV = { ...process.env };
 
@@ -25,20 +26,84 @@ describe('hbx.client', () => {
     vi.unstubAllGlobals();
   });
 
-  describe('isHbxConfigured / getHbxEnvironment', () => {
-    it('reports configured=true and environment="test" for the eval base URL', () => {
+  describe('isHbxConfigured', () => {
+    it('reports configured=true when both credentials are present', () => {
       expect(isHbxConfigured()).toBe(true);
-      expect(getHbxEnvironment()).toBe('test');
     });
 
     it('reports not configured when credentials are missing', () => {
       setHbxEnv({ HOTELBEDS_SECRET: undefined });
       expect(isHbxConfigured()).toBe(false);
     });
+  });
 
-    it('reports environment="production" for a non-test base URL', () => {
+  // Fail-closed environment classification — see hbx.client.ts's getHbxEnvironment()
+  // doc comment and the 2026-09-24 audit (Section C) this replaces. Every case here
+  // that is NOT the current evaluation URL must resolve to something other than
+  // 'production' — 'unknown' is that fail-closed default, distinct from 'test' so a
+  // misconfiguration is never silently treated as the intentionally-configured
+  // evaluation environment either.
+  describe('getHbxEnvironment (fail-closed)', () => {
+    afterEach(() => {
+      HBX_APPROVED_PRODUCTION_ORIGINS.clear();
+      delete process.env.HBX_PRODUCTION_CONFIRMED;
+    });
+
+    it('classifies the current evaluation URL as "test"', () => {
+      expect(getHbxEnvironment()).toBe('test');
+    });
+
+    it('a missing HOTELBEDS_API_BASE_URL is NOT production', () => {
+      setHbxEnv({ HOTELBEDS_API_BASE_URL: undefined });
+      expect(getHbxEnvironment()).not.toBe('production');
+      expect(getHbxEnvironment()).toBe('unknown');
+    });
+
+    it('an empty HOTELBEDS_API_BASE_URL is NOT production', () => {
+      setHbxEnv({ HOTELBEDS_API_BASE_URL: '' });
+      expect(getHbxEnvironment()).not.toBe('production');
+      expect(getHbxEnvironment()).toBe('unknown');
+    });
+
+    it('an uppercase/case-variant of the known test URL cannot accidentally become production (or silently pass as "test" either)', () => {
+      setHbxEnv({ HOTELBEDS_API_BASE_URL: 'https://API.TEST.HOTELBEDS.COM' });
+      // Origins are compared lowercase, so this actually resolves to 'test' — but the
+      // critical guarantee under audit is that it can NEVER resolve to 'production',
+      // regardless of case.
+      expect(getHbxEnvironment()).not.toBe('production');
+    });
+
+    it('a typo/unrecognized URL is NOT production, even with no confirmation flag set', () => {
+      setHbxEnv({ HOTELBEDS_API_BASE_URL: 'https://aip.test.hotelbeds.com' });
+      expect(getHbxEnvironment()).toBe('unknown');
+    });
+
+    it('a production-LOOKING URL without the confirmation flag is still NOT production', () => {
       setHbxEnv({ HOTELBEDS_API_BASE_URL: 'https://api.hotelbeds.com' });
+      HBX_APPROVED_PRODUCTION_ORIGINS.add('https://api.hotelbeds.com');
+      // Flag deliberately left unset — origin approval alone must not be enough.
+      expect(getHbxEnvironment()).toBe('unknown');
+    });
+
+    it('the confirmation flag alone, without an approved exact origin, is still NOT production', () => {
+      setHbxEnv({ HOTELBEDS_API_BASE_URL: 'https://api.hotelbeds.com' });
+      process.env.HBX_PRODUCTION_CONFIRMED = 'true';
+      // Origin allow-list deliberately left empty — the flag alone must not be enough.
+      expect(getHbxEnvironment()).toBe('unknown');
+    });
+
+    it('an approved origin PLUS the confirmation flag together — and only together — produce "production"', () => {
+      setHbxEnv({ HOTELBEDS_API_BASE_URL: 'https://api.hotelbeds.com' });
+      HBX_APPROVED_PRODUCTION_ORIGINS.add('https://api.hotelbeds.com');
+      process.env.HBX_PRODUCTION_CONFIRMED = 'true';
       expect(getHbxEnvironment()).toBe('production');
+    });
+
+    it('an approved origin does not extend to a different, unapproved origin', () => {
+      setHbxEnv({ HOTELBEDS_API_BASE_URL: 'https://api.hotelbeds.co.uk' });
+      HBX_APPROVED_PRODUCTION_ORIGINS.add('https://api.hotelbeds.com');
+      process.env.HBX_PRODUCTION_CONFIRMED = 'true';
+      expect(getHbxEnvironment()).toBe('unknown');
     });
   });
 

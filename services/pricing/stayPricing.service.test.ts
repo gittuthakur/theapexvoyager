@@ -4,6 +4,7 @@ const { getConfirmedMappingMock } = vi.hoisted(() => ({ getConfirmedMappingMock:
 vi.mock('./hotelMappingRegistry.service', () => ({ getConfirmedMapping: getConfirmedMappingMock }));
 
 const { getRawPricingResult, resolvePublicPriceState } = await import('./stayPricing.service');
+const { HBX_APPROVED_PRODUCTION_ORIGINS } = await import('@/config/hbxEnvironment.config');
 
 const ORIGINAL_ENV = { ...process.env };
 
@@ -43,6 +44,7 @@ describe('stayPricing.service', () => {
   afterEach(() => {
     process.env = { ...ORIGINAL_ENV };
     vi.unstubAllGlobals();
+    HBX_APPROVED_PRODUCTION_ORIGINS.clear();
   });
 
   it('no mapping -> PRICE_ON_REQUEST, and never calls the provider at all', async () => {
@@ -68,13 +70,39 @@ describe('stayPricing.service', () => {
     expect(publicState.state).toBe('PRICE_ON_REQUEST'); // ...but the public gate downgrades it.
   });
 
-  it('confirmed mapping + production-environment rate -> VERIFIED_LIVE_RATE', async () => {
+  it('confirmed mapping + a genuinely approved-and-confirmed production origin -> VERIFIED_LIVE_RATE', async () => {
+    // Both independent signals set — see hbx.client.ts's fail-closed getHbxEnvironment().
     process.env.HOTELBEDS_API_BASE_URL = 'https://api.hotelbeds.com';
+    process.env.HBX_PRODUCTION_CONFIRMED = 'true';
+    HBX_APPROVED_PRODUCTION_ORIGINS.add('https://api.hotelbeds.com');
     getConfirmedMappingMock.mockResolvedValue(CONFIRMED_MAPPING);
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(AVAILABILITY_RESPONSE, { status: 200 })));
 
     const publicState = await resolvePublicPriceState(PUBLIC_QUERY);
     expect(publicState.state).toBe('VERIFIED_LIVE_RATE');
+  });
+
+  it('confirmed mapping + a production-looking URL that is NOT approved/confirmed -> never VERIFIED_LIVE_RATE', async () => {
+    process.env.HOTELBEDS_API_BASE_URL = 'https://api.hotelbeds.com';
+    // Deliberately no HBX_PRODUCTION_CONFIRMED, no approved-origin entry — this is the
+    // exact fail-open scenario the 2026-09-24 audit flagged: a base URL that merely
+    // *looks* like production must never be enough on its own.
+    getConfirmedMappingMock.mockResolvedValue(CONFIRMED_MAPPING);
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(AVAILABILITY_RESPONSE, { status: 200 })));
+
+    const publicState = await resolvePublicPriceState(PUBLIC_QUERY);
+    expect(publicState.state).not.toBe('VERIFIED_LIVE_RATE');
+    expect(publicState.state).toBe('PRICE_ON_REQUEST');
+  });
+
+  it('confirmed mapping + a typo/unrecognized base URL ("unknown" environment) -> never VERIFIED_LIVE_RATE', async () => {
+    process.env.HOTELBEDS_API_BASE_URL = 'https://aip.test.hotelbeds.com';
+    getConfirmedMappingMock.mockResolvedValue(CONFIRMED_MAPPING);
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(AVAILABILITY_RESPONSE, { status: 200 })));
+
+    const publicState = await resolvePublicPriceState(PUBLIC_QUERY);
+    expect(publicState.state).not.toBe('VERIFIED_LIVE_RATE');
+    expect(publicState.state).toBe('PRICE_ON_REQUEST');
   });
 
   it('confirmed mapping but a supplier outage -> PROVIDER_ERROR, never disguised as PRICE_ON_REQUEST', async () => {

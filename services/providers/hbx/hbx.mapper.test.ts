@@ -53,7 +53,10 @@ describe('mapHbxAvailabilityToRates', () => {
         code: 'DBL.SU',
         name: 'double superior',
         rates: [
-          { net: '188.54', boardName: 'BED AND BREAKFAST', rateType: 'BOOKABLE', rooms: 1, cancellationPolicies: [{ amount: '188.54', from: '2099-01-01T23:59:00+05:30' }] }
+          // `rooms: 1` here deliberately differs from `allotment: 2` — a real captured
+          // HBX response has exactly this shape (2026-09-24 Phase-7 audit): `rooms` is
+          // the requested-occupancy echo, `allotment` is the real remaining count.
+          { net: '188.54', boardName: 'BED AND BREAKFAST', rateType: 'BOOKABLE', rooms: 1, allotment: 2, cancellationPolicies: [{ amount: '188.54', from: '2099-01-01T23:59:00+05:30' }] }
         ]
       }
     ]
@@ -71,8 +74,65 @@ describe('mapHbxAvailabilityToRates', () => {
       displayPerNight: 94.27,
       environment: 'test',
       refundable: true,
-      roomsRemaining: 1
+      roomsRemaining: 2
     });
+  });
+
+  it('roomsRemaining comes from `allotment`, never from the requested-occupancy `rooms` echo', () => {
+    const hotel: HbxAvailabilityHotel = {
+      ...baseHotel,
+      rooms: [{ ...baseHotel.rooms[0], rates: [{ ...baseHotel.rooms[0].rates[0], rooms: 1, allotment: 5 }] }]
+    };
+    expect(mapHbxAvailabilityToRates(hotel, 2)[0].roomsRemaining).toBe(5);
+  });
+
+  it('leaves roomsRemaining undefined (not 0, not the rooms echo) when allotment is absent', () => {
+    const hotel: HbxAvailabilityHotel = {
+      ...baseHotel,
+      rooms: [{ ...baseHotel.rooms[0], rates: [{ net: '100', rooms: 3 }] }]
+    };
+    expect(mapHbxAvailabilityToRates(hotel, 2)[0].roomsRemaining).toBeUndefined();
+  });
+
+  it('leaves roomsRemaining undefined when allotment is invalid (negative or non-numeric)', () => {
+    const negative: HbxAvailabilityHotel = { ...baseHotel, rooms: [{ ...baseHotel.rooms[0], rates: [{ net: '100', allotment: -1 }] }] };
+    const nonNumeric: HbxAvailabilityHotel = { ...baseHotel, rooms: [{ ...baseHotel.rooms[0], rates: [{ net: '100', allotment: Number.NaN }] }] };
+    expect(mapHbxAvailabilityToRates(negative, 2)[0].roomsRemaining).toBeUndefined();
+    expect(mapHbxAvailabilityToRates(nonNumeric, 2)[0].roomsRemaining).toBeUndefined();
+  });
+
+  it('preserves every cancellation tier, in order, with amounts unchanged — never truncated to the first', () => {
+    const hotel: HbxAvailabilityHotel = {
+      ...baseHotel,
+      rooms: [
+        {
+          ...baseHotel.rooms[0],
+          rates: [
+            {
+              ...baseHotel.rooms[0].rates[0],
+              cancellationPolicies: [
+                { amount: '0', from: '2026-10-01T00:00:00+05:30' },
+                { amount: '94.27', from: '2026-10-05T00:00:00+05:30' },
+                { amount: '188.54', from: '2026-10-08T00:00:00+05:30' }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+    const policies = mapHbxAvailabilityToRates(hotel, 2)[0].cancellationPolicies;
+    expect(policies).toEqual([
+      { chargeAmount: '0', chargeFrom: '2026-10-01T00:00:00+05:30' },
+      { chargeAmount: '94.27', chargeFrom: '2026-10-05T00:00:00+05:30' },
+      { chargeAmount: '188.54', chargeFrom: '2026-10-08T00:00:00+05:30' }
+    ]);
+    // No currency conversion of any kind — amounts are HBX's own strings, verbatim.
+    expect(policies.every((p) => typeof p.chargeAmount === 'string')).toBe(true);
+  });
+
+  it('cancellationPolicies is an empty array (never invented) when HBX gave none', () => {
+    const hotel: HbxAvailabilityHotel = { ...baseHotel, rooms: [{ ...baseHotel.rooms[0], rates: [{ net: '100' }] }] };
+    expect(mapHbxAvailabilityToRates(hotel, 2)[0].cancellationPolicies).toEqual([]);
   });
 
   it('infers non-refundable once the cancellation cutoff has passed', () => {

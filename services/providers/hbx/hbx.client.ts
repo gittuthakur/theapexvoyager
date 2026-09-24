@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import { HbxApiError } from './hbx.errors';
 import type { HbxEnvironment } from './hbx.types';
+import { HBX_APPROVED_PRODUCTION_ORIGINS } from '@/config/hbxEnvironment.config';
 
 // Server-only by convention, same trust model this codebase already uses for
 // GOOGLE_PLACES_API_KEY (lib/googlePlaces.ts) and MONGODB_URI (lib/mongodb.ts): never
@@ -17,13 +18,65 @@ export function isHbxConfigured(): boolean {
   return Boolean(process.env.HOTELBEDS_API_KEY && process.env.HOTELBEDS_SECRET);
 }
 
-/** Derived from HOTELBEDS_API_BASE_URL rather than NODE_ENV — HBX's own test/production
- *  split is a property of WHICH ACCOUNT the configured base URL points at, not of how
- *  this Next.js app was built. An eval-credentialed base URL must never be mistaken for
- *  production-capable just because `next build`/`next start` ran, and vice versa. */
+// Exact, lowercase origins HBX's evaluation/certification environment is confirmed to
+// use. Matched by parsed URL origin (scheme+host+port), never by substring — a
+// substring check is what let the pre-2026-09-24-audit version of this function
+// misclassify a case variant, typo, or unset value as production (see git history /
+// that audit's Section C for the full finding).
+const KNOWN_TEST_ORIGINS = new Set(['https://api.test.hotelbeds.com']);
+
+/** Parses `rawUrl` and returns its lowercased origin, or `null` for anything missing,
+ *  empty, or malformed enough that `new URL()` itself rejects it. Deliberately never
+ *  throws — an invalid configured URL must fail closed (this function returning `null`,
+ *  which getHbxEnvironment() below treats as "not recognized"), not crash a request. */
+function normalizeOrigin(rawUrl: string | undefined): string | null {
+  if (!rawUrl) return null;
+  try {
+    return new URL(rawUrl).origin.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fail-closed environment classification. Replaces the earlier
+ * `!url.includes('api.test.') => 'production'` logic (2026-09-24 audit Section C):
+ * that defaulted a missing, empty, mistyped, or case-varied HOTELBEDS_API_BASE_URL to
+ * 'production', which could have let evaluation credentials/rates pass the public
+ * safety gate on nothing more than a configuration mistake — a fail-OPEN default.
+ *
+ * The default here is now 'unknown' for anything not explicitly recognized. Reaching
+ * 'production' requires BOTH, independently:
+ *   1. HOTELBEDS_API_BASE_URL's parsed origin exactly matches an entry in
+ *      HBX_APPROVED_PRODUCTION_ORIGINS (config/hbxEnvironment.config.ts — empty until
+ *      HBX confirms a real value, never guessed); AND
+ *   2. HBX_PRODUCTION_CONFIRMED is exactly the string 'true'.
+ * Neither signal alone is ever sufficient — a correct production URL with the flag
+ * left at its safe default (false/unset) still classifies as 'unknown', and the flag
+ * being true against an unapproved/malformed/typo'd origin still classifies as
+ * 'unknown'. Both must be true at once, and they live in different places (one in
+ * version-controlled code, one in environment config) so a single mistake in either
+ * can never flip production on by itself.
+ *
+ * Never logs `rawUrl`, the API key, the secret, or the signature — this function reads
+ * only HOTELBEDS_API_BASE_URL and HBX_PRODUCTION_CONFIRMED, and returns nothing but the
+ * classified label itself.
+ */
 export function getHbxEnvironment(): HbxEnvironment {
-  const base = process.env.HOTELBEDS_API_BASE_URL ?? '';
-  return base.includes('api.test.') ? 'test' : 'production';
+  const origin = normalizeOrigin(process.env.HOTELBEDS_API_BASE_URL);
+
+  if (origin !== null && KNOWN_TEST_ORIGINS.has(origin)) {
+    return 'test';
+  }
+
+  const productionConfirmedFlag = process.env.HBX_PRODUCTION_CONFIRMED === 'true';
+  const isApprovedProductionOrigin = origin !== null && HBX_APPROVED_PRODUCTION_ORIGINS.has(origin);
+
+  if (productionConfirmedFlag && isApprovedProductionOrigin) {
+    return 'production';
+  }
+
+  return 'unknown';
 }
 
 function mask(value: string): string {

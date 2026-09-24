@@ -6,7 +6,13 @@
 
 export type StayPricingProviderId = 'hbx' | 'booking' | 'tripjack' | 'tbo' | 'direct-contract' | 'manual';
 
-export type HbxEnvironment = 'test' | 'production';
+// Mirrors services/providers/hbx/hbx.types.ts's own HbxEnvironment exactly (a
+// pre-existing duplication, not introduced by this change) — kept in sync here because
+// NormalizedRate.environment below is typed against this declaration, not that one.
+// 'unknown' is the fail-closed default for anything not an exact match against a known
+// evaluation origin or an approved+confirmed production origin (see hbx.client.ts's
+// getHbxEnvironment()) — never assignable to 'production'.
+export type HbxEnvironment = 'test' | 'unknown' | 'production';
 
 export interface CancellationPolicy {
   /** Amount charged if cancelled on/after `chargeFrom` — same currency as the rate. */
@@ -37,12 +43,18 @@ export interface NormalizedRate {
   /** `undefined` when the provider gave no cancellation policy to infer from — never
    *  defaulted to true or false. See hbx.mapper.ts's isRefundable(). */
   refundable?: boolean;
-  cancellationPolicy?: CancellationPolicy;
+  /** Every tier the supplier returned, in source order — never truncated to one (see
+   *  hbx.mapper.ts's mapCancellationPolicies(), fixed 2026-09-26 Phase-8: HBX can
+   *  return several tiers, e.g. free -> 50% -> 100%, and keeping only the first
+   *  silently discarded the rest). Empty array when the supplier gave none — never
+   *  invented. */
+  cancellationPolicies: CancellationPolicy[];
   roomsRemaining?: number;
   lastCheckedAt: string;
-  /** Which supplier environment produced this rate. A `'test'` rate must never reach
-   *  resolvePublicPriceState's PRODUCTION_CAPABLE_ENVIRONMENTS allow-list — see
-   *  stayPricing.service.ts. */
+  /** Which supplier environment produced this rate — 'test'/'unknown' must never reach
+   *  resolvePublicPriceState's production check (`rate.environment === 'production'`,
+   *  stayPricing.service.ts); only an environment explicitly classified 'production' by
+   *  hbx.client.ts's fail-closed getHbxEnvironment() can. */
   environment: HbxEnvironment;
 }
 
