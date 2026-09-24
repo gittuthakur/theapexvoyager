@@ -24,8 +24,8 @@ export interface WhyChooseUsProps {
 const defaultItems: WhyChooseUsItem[] = [
   {
     icon: Sparkles,
-    title: 'Curated With Care',
-    description: 'Every destination, stay and journey is handpicked and vetted before it ever reaches our catalog.'
+    title: 'Handpicked Sanctuary Stays',
+    description: 'From heritage apple-orchard villas to luxury riverside camps—personally vetted for unmatched comfort.'
   },
   {
     icon: ShieldCheck,
@@ -49,15 +49,15 @@ const defaultItems: WhyChooseUsItem[] = [
   },
   {
     icon: Heart,
-    title: 'Personalized Trips',
+    title: 'Bespoke, Never Generic',
     description:
-      'Your journey, designed around you. From destinations and activities to pace and budget, we tailor every trip to your style.'
+      'Every itinerary is uniquely crafted around your pace, preferences, and travel style.'
   },
   {
     icon: Headphones,
-    title: 'Travel Assistance',
+    title: 'Dedicated Mountain Concierge',
     description:
-      "We're with you, every step of the journey. Get dedicated support before, during, and after your trip."
+      "Seasoned local pilots and 24/7 round-the-clock trip coordination from arrival to departure."
   }
 ];
 

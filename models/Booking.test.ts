@@ -110,6 +110,26 @@ describe('Booking model — monetary integrity', () => {
   });
 });
 
+describe('Booking model — customer.specialRequests', () => {
+  it('is optional — a document without it is still valid', async () => {
+    const doc = new Booking(validBookingData());
+    expect(await getValidationError(doc)).toBeUndefined();
+    expect(doc.customer.specialRequests).toBeUndefined();
+  });
+
+  it('accepts a valid string', async () => {
+    const doc = new Booking(validBookingData({ customer: { name: 'Test Customer', phone: '9876543210', specialRequests: 'Vegetarian meals please' } }));
+    expect(await getValidationError(doc)).toBeUndefined();
+    expect(doc.customer.specialRequests).toBe('Vegetarian meals please');
+  });
+
+  it('rejects a string over the 1000-character maxlength (schema-level backstop)', async () => {
+    const doc = new Booking(validBookingData({ customer: { name: 'Test Customer', phone: '9876543210', specialRequests: 'a'.repeat(1001) } }));
+    const error = await getValidationError(doc);
+    expect(error?.errors['customer.specialRequests']).toBeDefined();
+  });
+});
+
 describe('Booking model — status enums', () => {
   it('accepts every documented booking status', async () => {
     for (const status of BOOKING_STATUSES) {

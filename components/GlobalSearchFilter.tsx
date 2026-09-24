@@ -326,7 +326,7 @@ export default function GlobalSearchFilter({
                   onChange={setDestination}
                   label="Where do you want to go?"
                   icon={Search}
-                  placeholder="Search places or destinations"
+                  placeholder="Explore Shimla, Manali, Spiti &amp; Beyond"
                   destinations={trendingDestinations}
                 />
               </motion.div>
@@ -347,7 +347,7 @@ export default function GlobalSearchFilter({
                   onChange={setDestination}
                   label="Where do you want to go?"
                   icon={Search}
-                  placeholder="Search places or destinations"
+                  placeholder="Explore Shimla, Manali, Spiti &amp; Beyond"
                   destinations={trendingDestinations}
                 />
               </motion.div>
@@ -371,7 +371,7 @@ export default function GlobalSearchFilter({
                   onChange={setDestination}
                   label="Where do you want to go?"
                   icon={Search}
-                  placeholder="Search places or destinations"
+                  placeholder="Explore Shimla, Manali, Spiti &amp; Beyond"
                   destinations={trendingDestinations}
                 />
               </motion.div>
@@ -395,7 +395,7 @@ export default function GlobalSearchFilter({
                   onChange={setDestination}
                   label="Where?"
                   icon={MapPin}
-                  placeholder="Search places or destinations"
+                  placeholder="Explore Shimla, Manali, Spiti &amp; Beyond"
                   destinations={trendingDestinations}
                 />
               </motion.div>
@@ -419,7 +419,7 @@ export default function GlobalSearchFilter({
                   onChange={setPickup}
                   label="Pickup Location"
                   icon={MapPin}
-                  placeholder="e.g., Manali Bus Stand"
+                  placeholder="Flying from / Departure City"
                   destinations={trendingDestinations}
                 />
               </motion.div>
@@ -456,7 +456,7 @@ export default function GlobalSearchFilter({
                   onChange={setDestination}
                   label="Where are you going?"
                   icon={MapPin}
-                  placeholder="Search places or destinations"
+                  placeholder="Explore Shimla, Manali, Spiti &amp; Beyond"
                   destinations={trendingDestinations}
                 />
               </motion.div>
@@ -480,7 +480,7 @@ export default function GlobalSearchFilter({
           className="cursor-hover inline-flex items-center justify-center gap-2 rounded-xl bg-apex-500 px-6 py-5 font-semibold text-white shadow-lg shadow-apex-500/30 transition-colors duration-300 ease-in-out hover:bg-apex-400"
         >
           <Search size={20} />
-          Explore
+          Curate My Route
         </motion.button>
       </form>
 

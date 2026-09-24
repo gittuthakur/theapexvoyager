@@ -52,6 +52,13 @@ export interface BookingCustomerSnapshot {
   name: string;
   phone: string;
   email?: string;
+  /** Free-text, optional. Added in Phase 9D (booking-creation endpoint) — the field
+   *  did not exist before; this is the smallest justified addition to carry it, since
+   *  the request contract (app/api/bookings/route.ts) explicitly accepts it. Validated
+   *  and length-capped before it ever reaches this schema (lib/customerValidation.ts's
+   *  `normalizeSpecialRequests` — control characters and `<`/`>` rejected, plain text
+   *  only); `maxlength` here is a second, schema-level backstop, not the only check. */
+  specialRequests?: string;
 }
 
 /** Immutable — captured once at booking creation from the quote's own snapshot
@@ -123,7 +130,8 @@ const BookingCustomerSchema = new Schema<BookingCustomerSnapshot>(
   {
     name: { type: String, required: true },
     phone: { type: String, required: true },
-    email: { type: String }
+    email: { type: String },
+    specialRequests: { type: String, maxlength: 1000 }
   },
   { _id: false }
 );

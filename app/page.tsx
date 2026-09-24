@@ -147,13 +147,13 @@ export default async function HomePage() {
   const heroData: HeroSectionData = {
     badge: {
       icon: <Compass size={16} className="text-apex-600" />,
-      text: 'Real Himalayas. Rarely Found.'
+      text: 'TAILORED HIMALAYAN EXPEDITIONS'
     },
-    titleTop: 'Customized Himachal Tour Packages ',
-    titleBottomPrefix: 'from ',
-    titleHighlight: 'Chandigarh',
+    titleTop: 'Himachal, Crafted ',
+    titleBottomPrefix: 'to Your ',
+    titleHighlight: 'Imagination.',
     subtitle:
-      'Handpicked stays, remote valleys and thoughtfully planned journeys across Himachal Pradesh, Jammu & Kashmir and Uttarakhand — for travelers who want to see more than the usual route.',
+      'Bespoke road journeys, boutique mountain retreats, and effortless private travel—designed from anywhere across the globe to the heights of the Himalayas.',
     media: {
       src: images.hero,
       alt: 'Luxury Himalayan expedition trek through Spiti Valley and Manali tour packages, Himachal Pradesh, at dusk'
@@ -221,9 +221,9 @@ export default async function HomePage() {
         <BeyondTouristTrailSection destinations={popularDestinations} />
         <PackageSection
           packages={featuredJourneys}
-          eyebrow="Handpicked for you"
-          title="The"
-          highlight="Journey Edit"
+          eyebrow="ICONIC TRAILWAYS"
+          title="Timeless Circuits,"
+          highlight="Tailored for You"
           subtitle="Thoughtfully planned Himalayan itineraries with the route, pace and essential details already mapped out."
           viewAllLabel="Explore All Journeys"
         />
@@ -250,10 +250,10 @@ export default async function HomePage() {
         <WhyChooseUs />
         <FinalCta
           eyebrow="Need help planning?"
-          title="Not Sure "
-          highlight="Where to Start?"
-          subtitle="Tell us your dates, interests and travel style, and our travel team can help shape a journey around what matters to you."
-          primaryLabel="Plan My Journey"
+          title="Let’s Design Your Next "
+          highlight="Himalayan Chapter"
+          subtitle="Tell us what you're dreaming of, and our travel curators will tailor a bespoke blueprint within 24 hours."
+          primaryLabel="Request Personalized Itinerary"
           primaryHref="/plan-my-journey"
           secondaryLabel="Call Our Travel Team"
         />
