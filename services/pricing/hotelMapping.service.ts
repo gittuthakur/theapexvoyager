@@ -89,8 +89,11 @@ export function haversineDistanceMeters(a: { latitude: number; longitude: number
 // Both thresholds were chosen against the 2026-09-24 diagnostic's real sample data
 // (e.g. Shimla/Manali hotel coordinates cluster within a few km of the town centre) —
 // not arbitrary round numbers.
-const HIGH_CONFIDENCE_NAME_THRESHOLD = 0.82;
-const HIGH_CONFIDENCE_DISTANCE_METERS = 300;
+// Exported so the review UI (app/internal/hotel-mappings) can label a stored candidate
+// "strong" using the exact same thresholds this scorer uses for HIGH_CONFIDENCE —
+// display-only, and never a second, drifting copy of these numbers.
+export const HIGH_CONFIDENCE_NAME_THRESHOLD = 0.82;
+export const HIGH_CONFIDENCE_DISTANCE_METERS = 300;
 const REVIEW_NAME_THRESHOLD = 0.5;
 const REVIEW_DISTANCE_METERS = 2000;
 // Beyond this, even a strong name match is more likely a coordinate data error on one
