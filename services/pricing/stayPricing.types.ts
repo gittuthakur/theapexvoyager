@@ -83,3 +83,21 @@ export interface StayPricingProvider {
   id: StayPricingProviderId;
   getAvailability(query: StayPricingQuery): Promise<StayPricingResult>;
 }
+
+/**
+ * What a real customer-facing price request is allowed to carry — deliberately NOT a
+ * StayPricingQuery: it identifies a Google property by `googlePlaceId`, never a raw
+ * provider hotel id. See stayPricing.service.ts's resolvePublicPriceState: a provider
+ * hotel id may only ever come from an already-CONFIRMED HotelProviderMapping row
+ * (models/HotelProviderMapping.ts), resolved server-side — never supplied by the caller
+ * and never derived by running the fuzzy matcher live against a customer's request.
+ */
+export interface PublicPriceQuery {
+  googlePlaceId: string;
+  destinationSlug: string;
+  checkIn: string;
+  checkOut: string;
+  adults: number;
+  children: number;
+  rooms: number;
+}

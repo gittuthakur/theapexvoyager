@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { isLocalDevelopment } from '@/lib/env';
+import { requireInternalDevAccess } from '@/lib/internalRouteGuard';
 import { describeHbxAuth } from '@/services/providers/hbx/hbx.client';
 import { getHbxDestinationMapping } from '@/config/hbxDestinations.config';
 import { getRawPricingResult } from '@/services/pricing/stayPricing.service';
@@ -19,9 +19,8 @@ export const dynamic = 'force-dynamic';
  * NOT the same function (`resolvePublicPriceState`) any real UI is allowed to call.
  */
 export async function POST(request: Request) {
-  if (!isLocalDevelopment()) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
-  }
+  const denied = requireInternalDevAccess();
+  if (denied) return denied;
 
   let payload: {
     destinationSlug?: string;

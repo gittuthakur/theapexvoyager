@@ -1,5 +1,6 @@
 import { hbxPricingProvider } from '../providers/hbx/hbxAvailability.service';
-import type { PriceSourceState, StayPricingProvider, StayPricingQuery, StayPricingResult } from './stayPricing.types';
+import { getConfirmedMapping } from './hotelMappingRegistry.service';
+import type { PriceSourceState, PublicPriceQuery, StayPricingProvider, StayPricingQuery, StayPricingResult } from './stayPricing.types';
 
 /** Every registered provider, in lookup order. Adding Booking.com/TripJack/TBO/direct-
  *  contract/manual later means registering another StayPricingProvider here — nothing
@@ -21,21 +22,47 @@ export async function getRawPricingResult(query: StayPricingQuery, providerId: S
 
 /**
  * THE SAFETY GATE. This is the one function any public-facing Stays page/component is
- * ever allowed to call for pricing. It never returns VERIFIED_LIVE_RATE unless every
- * single rate a provider returned self-reports `environment === 'production'` (see
- * services/pricing/stayPricing.types.ts's NormalizedRate.environment) — an evaluation/
- * test-environment rate is downgraded to PRICE_ON_REQUEST regardless of how confident
- * the provider itself was, and the underlying test-environment rates are stripped out
- * entirely rather than passed through with a caveat. Today, with only HBX evaluation
- * credentials configured anywhere in this app, this means every call to this function
- * returns PRICE_ON_REQUEST or UNAVAILABLE/PROVIDER_ERROR — never a price — no matter
- * what the HBX evaluation account itself returns. That is intentional: this phase is
- * architecture only, not a production price-display launch. Flipping this to actually
- * show VERIFIED_LIVE_RATE requires both a production-capable provider AND explicit
- * approval to enable it — never a silent side effect of adding one.
+ * ever allowed to call for pricing, and the only one that takes a `googlePlaceId`
+ * rather than a raw provider hotel id.
+ *
+ * Two independent gates, both mandatory (see the Phase-4 brief's Price Resolution
+ * Rule):
+ *
+ *  1. CONFIRMED MAPPING REQUIRED. A provider is only ever queried once a human has
+ *     explicitly confirmed a HotelProviderMapping (models/HotelProviderMapping.ts) for
+ *     this exact (googlePlaceId, provider) pair — see hotelMappingRegistry.service.ts's
+ *     getConfirmedMapping. No mapping, or one still PENDING_REVIEW/REJECTED/DISABLED,
+ *     means PRICE_ON_REQUEST immediately, with NO provider call made at all — the fuzzy
+ *     matcher never runs live against a customer's price request; it only ever runs
+ *     offline (services/providers/hbx/hbxMappingCandidates.service.ts).
+ *
+ *  2. PRODUCTION-CAPABLE ENVIRONMENT REQUIRED. Even with a CONFIRMED mapping, this never
+ *     returns VERIFIED_LIVE_RATE unless every rate a provider returned self-reports
+ *     `environment === 'production'` (services/pricing/stayPricing.types.ts's
+ *     NormalizedRate.environment) — an evaluation/test-environment rate is downgraded to
+ *     PRICE_ON_REQUEST regardless of the mapping's confirmation status.
+ *
+ * Today, with only HBX evaluation credentials configured anywhere in this app, this
+ * means every call returns PRICE_ON_REQUEST/UNAVAILABLE/PROVIDER_ERROR — never a price —
+ * no matter how many mappings get confirmed. That is intentional: production price
+ * display requires BOTH a confirmed mapping AND production-capable provider
+ * credentials, never either alone.
  */
-export async function resolvePublicPriceState(query: StayPricingQuery, providerId: StayPricingProvider['id'] = 'hbx'): Promise<{ state: PriceSourceState }> {
-  const result = await getRawPricingResult(query, providerId);
+export async function resolvePublicPriceState(query: PublicPriceQuery, providerId: StayPricingProvider['id'] = 'hbx'): Promise<{ state: PriceSourceState }> {
+  const mapping = await getConfirmedMapping({ googlePlaceId: query.googlePlaceId, provider: providerId });
+  if (!mapping) return { state: 'PRICE_ON_REQUEST' };
+
+  const providerQuery: StayPricingQuery = {
+    destinationSlug: query.destinationSlug,
+    checkIn: query.checkIn,
+    checkOut: query.checkOut,
+    adults: query.adults,
+    children: query.children,
+    rooms: query.rooms,
+    providerHotelIds: [mapping.providerHotelId]
+  };
+
+  const result = await getRawPricingResult(providerQuery, providerId);
 
   if (result.state === 'PROVIDER_ERROR') return { state: 'PROVIDER_ERROR' };
   if (result.state === 'UNAVAILABLE' || result.rates.length === 0) return { state: 'UNAVAILABLE' };
