@@ -9,6 +9,8 @@ import { getExpertBySlug } from '@/lib/experts';
 import { calculateBookingPrice, isValidPrice, type BookingConfig } from '@/lib/pricing';
 import { normalizeTripPlannerJourney } from '@/lib/tripPlannerRequest';
 import { STAY_TYPE_OPTIONS, TRANSPORT_MODES, EXPERIENCE_OPTIONS } from '@/config/tripPlanner.config';
+import { validateJourneyTravelDate } from '@/lib/dateValidation';
+import { MAX_JOURNEY_TRAVELLERS, validateJourneyTravellerCounts } from '@/services/booking/journeyQuote.service';
 
 const VALID_TYPES: BookingRequestType[] = ['stay', 'journey', 'tour', 'experience', 'transport', 'expert'];
 
@@ -65,30 +67,6 @@ function isSafeDetailsShape(value: unknown, depth: number): boolean {
   }
   // Functions/symbols/undefined can't arrive via JSON.parse, but reject on principle.
   return false;
-}
-
-const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
-
-/** The business's own "today", independent of the server host's OS timezone (Vercel runs
- *  UTC) — this site only serves India-based travel, so IST is the one timezone every
- *  travelDate should be judged against, using the same ISO YYYY-MM-DD string-comparison
- *  convention lib/pricing.ts already uses for seasonal pricing windows. IST has no DST,
- *  so a fixed +5:30 offset is exact, not an approximation. */
-function todayISOInIST(): string {
-  return new Date(Date.now() + IST_OFFSET_MS).toISOString().slice(0, 10);
-}
-
-/** Rejects a structurally-plausible but impossible date (e.g. "2026-02-30", which
- *  `new Date(...)` would otherwise silently roll over to March 2) by round-tripping the
- *  parsed value back through its UTC fields. */
-function isValidCalendarDateISO(value: string): boolean {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!match) return false;
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const date = new Date(Date.UTC(year, month - 1, day));
-  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 }
 
 const MAX_BODY_BYTES = 100_000;
@@ -287,17 +265,36 @@ export async function POST(request: Request) {
 
         // Validated before anything is persisted — a missing/malformed/impossible/past date
         // must reject with no BookingRequest.create(), no reference, and no email, same as
-        // every other pre-persistence validation failure above.
+        // every other pre-persistence validation failure above. Same two-message contract
+        // as before this was extracted to lib/dateValidation.ts (Phase 9B) — only the
+        // format/calendar check and the past-date check moved, not their wording.
         const travelDateRaw = typeof details?.travelDate === 'string' ? details.travelDate.trim() : '';
-        if (!travelDateRaw || !isValidCalendarDateISO(travelDateRaw)) {
-          return NextResponse.json({ error: 'travelDate must be a valid date (YYYY-MM-DD)' }, { status: 400 });
-        }
-        if (travelDateRaw < todayISOInIST()) {
-          return NextResponse.json({ error: 'travelDate cannot be in the past' }, { status: 400 });
+        const dateResult = validateJourneyTravelDate(travelDateRaw);
+        if (!dateResult.valid) {
+          const message = dateResult.reason === 'PAST_DATE' ? 'travelDate cannot be in the past' : 'travelDate must be a valid date (YYYY-MM-DD)';
+          return NextResponse.json({ error: message }, { status: 400 });
         }
 
-        const adultsRaw = Number(details?.adults);
-        const childrenRaw = Number(details?.children);
+        // Phase 9B hardening: previously an out-of-range/malformed adults or children
+        // value was silently coerced to a safe default (Number(...) + a floor/min check)
+        // and the booking still succeeded — never rejected. That is an intentional,
+        // explicitly-requested change here: a genuine request (a real integer within
+        // range, exactly what PackageBookingModal.tsx always sends) behaves identically;
+        // anything else — a float, a negative number, a boolean, a numeric string, or a
+        // combined total over the cap — now rejects with 400 instead of being silently
+        // reinterpreted. See services/booking/journeyQuote.service.ts's
+        // validateJourneyTravellerCounts, the single shared source of this rule (also
+        // used by the new quote service) so the limit is never a second, drifting copy.
+        const travellerResult = validateJourneyTravellerCounts(details?.adults, details?.children);
+        if (!travellerResult.valid) {
+          return NextResponse.json(
+            {
+              error: `adults must be a whole number from 1 to ${MAX_JOURNEY_TRAVELLERS}, children from 0 to ${MAX_JOURNEY_TRAVELLERS - 1}, and adults + children must not exceed ${MAX_JOURNEY_TRAVELLERS}`
+            },
+            { status: 400 }
+          );
+        }
+
         const requestedStayId = typeof details?.stayOptionId === 'string' ? details.stayOptionId : undefined;
         const requestedTransportId = typeof details?.transportOptionId === 'string' ? details.transportOptionId : undefined;
         const requestedPaceId = typeof details?.paceId === 'string' ? details.paceId : undefined;
@@ -306,8 +303,8 @@ export async function POST(request: Request) {
           : [];
 
         const config: BookingConfig = {
-          adults: Number.isFinite(adultsRaw) && adultsRaw > 0 ? Math.floor(adultsRaw) : 1,
-          children: Number.isFinite(childrenRaw) && childrenRaw > 0 ? Math.floor(childrenRaw) : 0,
+          adults: travellerResult.adults,
+          children: travellerResult.children,
           travelDate: travelDateRaw,
           // Only a stay/transport/pace/add-on id that actually belongs to THIS journey is
           // honored — anything else (missing, or copied from a different journey) falls
