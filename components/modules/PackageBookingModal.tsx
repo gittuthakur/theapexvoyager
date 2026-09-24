@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { format } from 'date-fns';
-import { ArrowRight, Check, Minus, Plus } from 'lucide-react';
+import { AlertCircle, ArrowRight, Check, Minus, Plus, RotateCw, ShieldCheck } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 import { calculateBookingPrice, CUSTOM_QUOTE_LABEL, formatINR, isValidPrice, type PriceBreakdown } from '@/lib/pricing';
@@ -10,6 +10,9 @@ import { postJSON } from '@/lib/api';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
 import { trackWhatsAppConversion } from '@/lib/googleAds';
 import { cn } from '@/lib/utils';
+import { formatCountdown, remainingMs, QUOTE_ERROR_MESSAGES, type QuoteSelections } from '@/lib/journeyQuoteClient';
+import { useJourneyQuote } from '@/lib/useJourneyQuote';
+import type { QuoteState } from '@/lib/journeyQuoteReducer';
 import type { TravelPackage } from '@/types/package';
 
 export interface PackageBookingModalProps {
@@ -180,7 +183,11 @@ function PriceBreakdownPanel({ pkg, breakdown }: { pkg: TravelPackage; breakdown
   const hasValidBasePrice = isValidPrice(pkg.price);
   return (
     <div className="rounded-2xl border border-apex-200 bg-apex-50 p-5 static top-0">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-apex-600">Live Trip Price</p>
+      {/* Renamed from "Live Trip Price" (Phase 9E) — this is still only the client's own
+       *  calculation from lib/pricing.ts, never server-checked. Now that the summary
+       *  step can also show a real server-verified price (see QuotePricePanel below),
+       *  this heading must not read as anything more authoritative than an estimate. */}
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-apex-600">Estimated total</p>
       <div className="mt-3 space-y-2 text-sm text-slate-700">
         <div className="flex items-center justify-between gap-3">
           <span>
@@ -224,6 +231,107 @@ function PriceBreakdownPanel({ pkg, breakdown }: { pkg: TravelPackage; breakdown
         This is dynamic pricing based on our configured package data for {pkg.name} — not external hotel/flight API
         pricing. Final availability and pricing will be confirmed by The Apex Voyager India team.
       </p>
+    </div>
+  );
+}
+
+/** Presentational-only ticking countdown — reads the server-authoritative `expiresAt`
+ *  every second purely to update the visible `M:SS` text. The actual "has this expired"
+ *  DECISION is made elsewhere (lib/useJourneyQuote.ts's own interval, which dispatches
+ *  the state machine's `EXPIRED` transition); this component never decides that itself,
+ *  it only ever displays time already known to be server-issued. `aria-live="off"` here
+ *  is deliberate — the ancestor status region (QuotePricePanel below) already announces
+ *  the verified price once via its own `aria-live="polite"`; re-announcing this number
+ *  to a screen reader every single second would be noise, not an accessible countdown. */
+function Countdown({ expiresAt }: { expiresAt: string }) {
+  const [msLeft, setMsLeft] = useState(() => remainingMs(expiresAt));
+
+  useEffect(() => {
+    setMsLeft(remainingMs(expiresAt));
+    const interval = setInterval(() => setMsLeft(remainingMs(expiresAt)), 1000);
+    return () => clearInterval(interval);
+  }, [expiresAt]);
+
+  return (
+    <span role="timer" aria-live="off" className="font-semibold text-slate-900">
+      {formatCountdown(msLeft)}
+    </span>
+  );
+}
+
+function QuotePricePanel({
+  quoteState,
+  travelDateLabel,
+  travelerLabel,
+  onRefresh
+}: {
+  quoteState: QuoteState;
+  travelDateLabel: string;
+  travelerLabel: string;
+  onRefresh: () => void;
+}) {
+  if (quoteState.status === 'idle') return null;
+
+  if (quoteState.status === 'loading') {
+    return (
+      <div role="status" aria-live="polite" className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-600">
+        <RotateCw size={16} className="shrink-0 animate-spin text-apex-500" aria-hidden="true" />
+        <span>Checking latest package price…</span>
+      </div>
+    );
+  }
+
+  if (quoteState.status === 'success') {
+    const { quote } = quoteState;
+    return (
+      <div role="status" aria-live="polite" className="space-y-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+        <div className="flex items-start justify-between gap-3">
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
+            <ShieldCheck size={14} aria-hidden="true" /> Verified package price
+          </p>
+        </div>
+        <p className="break-words text-2xl font-bold text-slate-900">{quote.totalFormatted}</p>
+        <p className="break-words text-sm text-slate-700">
+          {travelDateLabel} · {travelerLabel}
+        </p>
+        <p className="text-sm text-slate-600">
+          Price valid for 15 minutes (<Countdown expiresAt={quote.expiresAt} /> remaining)
+        </p>
+        <p className="text-xs text-slate-500">Price is verified, but availability is not confirmed yet.</p>
+      </div>
+    );
+  }
+
+  if (quoteState.status === 'expired') {
+    return (
+      <div role="status" aria-live="polite" className="space-y-3 rounded-2xl border border-amber-200 bg-amber-50 p-5">
+        <p className="flex items-center gap-2 text-sm font-semibold text-amber-800">
+          <AlertCircle size={16} aria-hidden="true" /> Price quote expired
+        </p>
+        <button
+          type="button"
+          onClick={onRefresh}
+          className="cursor-hover rounded-full border border-amber-300 bg-white px-4 py-2 text-sm font-semibold text-amber-800 transition-all duration-300 ease-in-out hover:bg-amber-100"
+        >
+          Refresh Price
+        </button>
+      </div>
+    );
+  }
+
+  // 'error'
+  return (
+    <div role="alert" aria-live="polite" className="space-y-3 rounded-2xl border border-rose-200 bg-rose-50 p-5">
+      <p className="flex items-center gap-2 text-sm font-semibold text-rose-700">
+        <AlertCircle size={16} aria-hidden="true" /> {QUOTE_ERROR_MESSAGES[quoteState.kind]}
+      </p>
+      <button
+        type="button"
+        onClick={onRefresh}
+        className="cursor-hover rounded-full border border-rose-300 bg-white px-4 py-2 text-sm font-semibold text-rose-700 transition-all duration-300 ease-in-out hover:bg-rose-100"
+      >
+        Refresh Price
+      </button>
     </div>
   );
 }
@@ -287,6 +395,40 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
     () => calculateBookingPrice(pkg, { adults, children, stayOptionId, addOnIds, travelDate, transportOptionId, paceId }),
     [pkg, adults, children, stayOptionId, addOnIds, travelDate, transportOptionId, paceId]
   );
+
+  // Phase 9E — server-verified price. `quoteSelections` carries ONLY the fields
+  // `POST /api/journey-quotes` actually accepts (see lib/journeyQuoteClient.ts's own
+  // contract comment) — never `breakdown`'s client-computed total/labels. Any change to
+  // one of these fields is what the hook itself watches to invalidate a shown quote
+  // (lib/useJourneyQuote.ts), matching Phase 9E's required invalidation list exactly:
+  // date, adults, children, stay, transport, pace, add-ons.
+  const quoteSelections = useMemo<QuoteSelections>(
+    () => ({ journeySlug: pkg.slug, travelDate, adults, children, stayOptionId, transportOptionId, paceId, addOnIds }),
+    [pkg.slug, travelDate, adults, children, stayOptionId, transportOptionId, paceId, addOnIds]
+  );
+  const { state: quoteState, requestQuote, resetQuote } = useJourneyQuote(quoteSelections);
+
+  // Fires exactly once per entry into the review ("summary") step — this effect's
+  // dependency array is `[step]` only (not `quoteSelections`/`requestQuote`, which are
+  // referentially stable/handled elsewhere), so it never refires on a render that
+  // doesn't actually change `step`, and therefore can never turn into a render-loop of
+  // duplicate requests. Reaching this step already requires a valid, non-past
+  // `travelDate` (handleContinueFromConfig) and adults >= 1 (Stepper's own min), so this
+  // is always a request the server should accept — `requestQuote` still re-checks via
+  // `canRequestQuote` regardless, defensively.
+  useEffect(() => {
+    if (step === 'summary') requestQuote();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally step-only, see comment above
+  }, [step]);
+
+  // Modal close: the component itself is never unmounted while the page is (only its
+  // visible dialog is, via FloatingOverlay) — see lib/useJourneyQuote.ts's own doc
+  // comment on `resetQuote`. Without this, a held token/quote would silently survive a
+  // close and still be sitting in memory on the next open, before the "every reopen
+  // starts a clean wizard" effect above even runs.
+  useEffect(() => {
+    if (!open) resetQuote();
+  }, [open, resetQuote]);
 
   function toggleAddOn(id: string) {
     setAddOnIds((prev) => (prev.includes(id) ? prev.filter((entry) => entry !== id) : [...prev, id]));
@@ -745,6 +887,13 @@ export default function PackageBookingModal({ pkg, open, onClose }: PackageBooki
           </div>
 
           <PriceBreakdownPanel pkg={pkg} breakdown={breakdown} />
+
+          <QuotePricePanel
+            quoteState={quoteState}
+            travelDateLabel={format(parseISODateLocal(travelDate), 'd MMMM yyyy')}
+            travelerLabel={`${adults} Adult${adults !== 1 ? 's' : ''}${children > 0 ? ` + ${children} Child${children !== 1 ? 'ren' : ''}` : ''}`}
+            onRefresh={requestQuote}
+          />
 
           {submitError ? (
             <p role="alert" className="text-sm text-rose-500">
