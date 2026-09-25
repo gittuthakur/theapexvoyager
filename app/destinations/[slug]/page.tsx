@@ -32,6 +32,18 @@ import { buildBreadcrumbListSchema } from '@/lib/schema';
 import JsonLd from '@/components/seo/JsonLd';
 import type { DestinationAccessType, DestinationMatchScores } from '@/types/destination';
 
+// Phase P2E audit: no searchParams, cookies(), or headers() anywhere in this page or
+// any function it calls — no genuine request-specific dependency exists. However,
+// converting this route to ISR was verified NOT possible with only `export const
+// revalidate = ...`: Next.js's App Router requires an exported `generateStaticParams()`
+// (confirmed by direct build test — even one returning an empty array moves this route
+// from the `ƒ` (Dynamic) to the `●` (SSG) classification) before `revalidate` has any
+// effect at all on a dynamic-segment (`[slug]`) route; without it, `revalidate` is
+// silently a no-op and the route stays fully dynamic regardless. Adding
+// `generateStaticParams()` — even an empty one, which needs no MongoDB read at build
+// time and prebuilds nothing — is exactly the kind of change this phase's own brief
+// said not to make without further authorization, so `force-dynamic` stays in place
+// here; see this phase's final report for the full finding.
 export const dynamic = 'force-dynamic';
 
 interface DestinationDetailPageProps {
@@ -90,32 +102,41 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
     notFound();
   }
 
-  const journeys = await getPackagesByDestinationSlug(destination.slug);
-  const tours = await getToursByDestinationSlug(destination.slug);
-  const catalogExperiences = await getExperiencesByDestination(destination.title);
-  const localExperts = await getExpertsByDestinationSlug(destination.slug);
-  // For a trek-gated destination, normal road transport terminates at `roadHead` (e.g.
-  // Sonprayag for Kedarnath), never at the shrine itself — searching routes by `title`
-  // would either find nothing or, if a route were ever added, wrongly imply a vehicle
-  // reaches the shrine. Falls back to `title` for the ordinary drive-straight-there
-  // majority of destinations, where that's already the correct search target.
-  const routesToDestination = await getRoutes({ destination: destination.roadHead ?? primaryDestinationName(destination.title) });
   // Canonical Destination↔Stay location mapping (Phase B) — the single source both this
   // embedded section and /stays/[...segments] read for where this destination's
   // accommodation actually is and how the UI should describe it. See
-  // lib/stayLocation.ts and config/stayLocations.config.ts.
+  // lib/stayLocation.ts and config/stayLocations.config.ts. Synchronous — computed
+  // before the Promise.all below purely so `curatedStays` has `searchLocations` to read.
   const stayContext = getStayLocationContext(destination);
-  const curatedStays = await getHotels({ locations: stayContext.searchLocations, destinationSlug: destination.slug });
-  // Real rating computed from actual Review documents — takes precedence over the static
-  // config rating so this never disagrees with the rating shown on journey cards
-  // elsewhere on the site (both of which read from the same getDestinationRatingsMap).
-  const destinationRating = (await getDestinationRatingsMap()).get(destination.slug);
   const parentRegion = getRegionForState(destination.state);
-  const related = (
-    await Promise.all((destination.relatedSlugs ?? []).map((relatedSlug) => getCuratedDestinationBySlug(relatedSlug)))
-  )
-    .filter((item): item is NonNullable<typeof item> => Boolean(item))
-    .slice(0, 3);
+
+  // Phase P2E: every one of these reads only ever depends on the already-resolved
+  // `destination` above (or, for `curatedStays`, on `stayContext`, itself already
+  // resolved synchronously) — none depends on any of the others' results, and none
+  // touches Google Places server-side (that only happens client-side, inside
+  // StaysGrid, after this page has already rendered). Previously these ran as 8
+  // sequential round-trips; running them concurrently changes nothing about the data,
+  // fallback behavior, or ordering of what's rendered — only how long it takes to fetch.
+  const [journeys, tours, catalogExperiences, localExperts, routesToDestination, curatedStays, ratingsMap, relatedRaw] = await Promise.all([
+    getPackagesByDestinationSlug(destination.slug),
+    getToursByDestinationSlug(destination.slug),
+    getExperiencesByDestination(destination.title),
+    getExpertsByDestinationSlug(destination.slug),
+    // For a trek-gated destination, normal road transport terminates at `roadHead` (e.g.
+    // Sonprayag for Kedarnath), never at the shrine itself — searching routes by `title`
+    // would either find nothing or, if a route were ever added, wrongly imply a vehicle
+    // reaches the shrine. Falls back to `title` for the ordinary drive-straight-there
+    // majority of destinations, where that's already the correct search target.
+    getRoutes({ destination: destination.roadHead ?? primaryDestinationName(destination.title) }),
+    getHotels({ locations: stayContext.searchLocations, destinationSlug: destination.slug }),
+    // Real rating computed from actual Review documents — takes precedence over the
+    // static config rating so this never disagrees with the rating shown on journey
+    // cards elsewhere on the site (both of which read from the same map).
+    getDestinationRatingsMap(),
+    Promise.all((destination.relatedSlugs ?? []).map((relatedSlug) => getCuratedDestinationBySlug(relatedSlug)))
+  ]);
+  const destinationRating = ratingsMap.get(destination.slug);
+  const related = relatedRaw.filter((item): item is NonNullable<typeof item> => Boolean(item)).slice(0, 3);
 
   const information = [
     [Clock, 'Best time', destination.bestTime],
