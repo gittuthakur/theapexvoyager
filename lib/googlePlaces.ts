@@ -3,6 +3,7 @@
 import type { StayType } from '@/types/stay';
 import { isLocalDevelopment } from '@/lib/env';
 import { getMockPlaces } from '@/lib/mockPlacesData';
+import { clampPhotoWidth } from '@/lib/placePhotoUrl';
 
 const PLACES_API_BASE = 'https://places.googleapis.com/v1';
 
@@ -183,9 +184,14 @@ export async function searchStays(location: string, stayType: StayType, apiKey: 
 // Points at our own proxy (app/api/places/photo/route.ts), never at Google directly —
 // the direct media URL requires the API key as a query param, which would otherwise
 // ship our billable key to every browser that loads the page. 1200px default gives a
-// genuinely "HD" image for card/carousel display rather than a thumbnail.
+// genuinely "HD" image for card/carousel display rather than a thumbnail — this is a
+// gallery-appropriate DEFAULT for a photo's stored URL, not a per-slot render size; see
+// lib/placePhotoUrl.ts's `withPhotoWidth` for how a render site requests something
+// smaller for a specific on-screen slot without needing a different stored URL.
+// `clampPhotoWidth` here is defense-in-depth only (same safe bounds as the proxy route
+// itself enforces) — it does not change this function's own 1200px default.
 export function toProxiedPhotoUrl(photoName: string, maxWidthPx = 1200): string {
-  return `/api/places/photo?name=${encodeURIComponent(photoName)}&w=${maxWidthPx}`;
+  return `/api/places/photo?name=${encodeURIComponent(photoName)}&w=${clampPhotoWidth(maxWidthPx)}`;
 }
 
 export function placeName(place: RawGooglePlace): string {

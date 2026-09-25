@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { isLocalDevelopment } from '@/lib/env';
 import { images } from '@/config/images.config';
+import { clampPhotoWidth } from '@/lib/placePhotoUrl';
 
 const PLACES_API_BASE = 'https://places.googleapis.com/v1';
 
@@ -29,7 +30,12 @@ function pickLocalPlaceholder(name: string): string {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const name = searchParams.get('name');
-  const maxWidthPx = Number(searchParams.get('w') ?? '800');
+  // Phase P2A hardening: previously an unvalidated `Number(...)` — a caller could
+  // request an arbitrarily large (or negative/NaN, silently coerced by Google's own API
+  // in some unspecified way) width. `clampPhotoWidth` bounds this to a safe, sane range
+  // regardless of what the query string contains; existing callers that already send a
+  // reasonable `w` (or omit it entirely) see no behavior change.
+  const maxWidthPx = clampPhotoWidth(searchParams.get('w'));
 
   if (!name || !/^places\/[^/]+\/photos\/[^/]+$/.test(name)) {
     return NextResponse.json({ error: 'Invalid or missing photo name' }, { status: 400 });

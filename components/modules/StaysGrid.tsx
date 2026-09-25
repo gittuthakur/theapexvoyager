@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Star } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { SkeletonGrid } from '@/components/ui/Skeleton';
+import { withPhotoWidth } from '@/lib/placePhotoUrl';
 import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
 import { cn } from '@/lib/utils';
 import { fadeInUp } from '@/lib/motion';
@@ -154,6 +155,15 @@ function stayDetailHref(stay: Stay): string {
   return stay.source === 'google' ? `/stays/property/${stay.placeId}` : `/stays/${stay.slug}`;
 }
 
+// Phase P2A — slot-appropriate widths for this card's own two photo slots, rewritten
+// onto whatever `w` a stored/mock photo URL already carries (see lib/placePhotoUrl.ts's
+// own doc comment on why this happens at render time, not at discovery time). Each
+// value gives roughly 1.8–3x headroom over the slot's CSS pixel size for a sharp look
+// on standard-to-high-DPR phones, while still cutting the byte count dramatically
+// versus the previous flat 1200px request for every slot regardless of size.
+const CARD_PHOTO_WIDTH_PX = 640; // main photo slot: h-48 tall, up to 360px wide (see `sizes` below)
+const CARD_THUMBNAIL_WIDTH_PX = 192; // secondary thumbnail slot: h-14 w-14 (56x56px)
+
 export function StayCard({ stay, priority = false }: { stay: Stay; priority?: boolean }) {
   const href = stayDetailHref(stay);
 
@@ -179,7 +189,7 @@ export function StayCard({ stay, priority = false }: { stay: Stay; priority?: bo
           ) : null}
           {stay.photos[0] ? (
             <SafeImage
-              src={stay.photos[0]}
+              src={withPhotoWidth(stay.photos[0], CARD_PHOTO_WIDTH_PX)}
               alt={stay.name}
               fill
               sizes="(min-width: 1280px) 360px, 90vw"
@@ -205,7 +215,7 @@ export function StayCard({ stay, priority = false }: { stay: Stay; priority?: bo
             <div className="flex gap-1.5">
               {stay.photos.slice(1, 4).map((photo, index) => (
                 <span key={photo} className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-slate-200">
-                  <SafeImage src={photo} alt={`${stay.name} photo ${index + 2}`} fill sizes="40px" className="object-cover" />
+                  <SafeImage src={withPhotoWidth(photo, CARD_THUMBNAIL_WIDTH_PX)} alt={`${stay.name} photo ${index + 2}`} fill sizes="40px" className="object-cover" />
                 </span>
               ))}
             </div>
