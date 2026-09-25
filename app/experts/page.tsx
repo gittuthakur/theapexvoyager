@@ -10,8 +10,9 @@ import ExpertTravelSupport from '@/components/modules/ExpertTravelSupport';
 import TalkToTravelTeamButton from '@/components/modules/TalkToTravelTeamButton';
 import { PackageCard, FinalCta } from '@/components/modules';
 import { images } from '@/config/images.config';
-import { getAllExperts, getExpertFacets, matchesExpertQuery } from '@/lib/experts';
+import { getAllExperts, matchesExpertQuery } from '@/lib/experts';
 import { getPackageBySlug } from '@/lib/packages';
+import type { ExpertFacets } from '@/types/expert';
 
 // Previously missing entirely, which left this page's canonical unset and its OG tags
 // silently inheriting the root layout's generic homepage defaults — anyone sharing an
@@ -55,7 +56,17 @@ interface ExpertsPageProps {
 export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
   const { destination, travelStyle, expertise, q, help } = await searchParams;
 
-  const [allExperts, facets] = await Promise.all([getAllExperts(), getExpertFacets()]);
+  // Phase P2J: getExpertFacets() previously called getAllExperts() a second, fully
+  // redundant time internally (same query, same data, no request-specific variation) —
+  // replaced with the same facet-computation logic it used internally, applied to the
+  // `allExperts` already fetched here, so the facets are byte-for-byte identical
+  // without a second Mongo round-trip.
+  const allExperts = await getAllExperts();
+  const facets: ExpertFacets = {
+    destinations: Array.from(new Set(allExperts.flatMap((expert) => expert.destinationSlugs))).sort(),
+    travelStyles: Array.from(new Set(allExperts.flatMap((expert) => expert.travelStyles))).sort(),
+    expertise: Array.from(new Set(allExperts.flatMap((expert) => expert.expertise))).sort()
+  };
 
   const experts = allExperts.filter((expert) => {
     const matchesDestination = !destination || expert.destinationSlugs.includes(destination);
