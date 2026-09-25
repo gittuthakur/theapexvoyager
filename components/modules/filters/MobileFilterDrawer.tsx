@@ -106,7 +106,7 @@ export default function MobileFilterDrawer({
     const pendingHref = pendingFocusRestoreHref;
     pendingFocusRestoreHref = null;
     if (pendingHref && pendingHref === window.location.pathname + window.location.search) {
-      triggerRef.current?.focus();
+      triggerRef.current?.focus({ preventScroll: true });
     }
   }, []);
 

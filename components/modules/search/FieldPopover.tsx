@@ -264,7 +264,7 @@ export function FieldPopover({ open, onClose, anchorRef, children, width, align 
         const anchor = anchorRef.current;
         if (!anchor || anchor.contains(document.activeElement)) return;
         const focusable = anchor.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
-        focusable?.focus();
+        focusable?.focus({ preventScroll: true });
       });
     };
   }, [open, anchorRef]);
