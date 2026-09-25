@@ -32,19 +32,20 @@ import { buildBreadcrumbListSchema } from '@/lib/schema';
 import JsonLd from '@/components/seo/JsonLd';
 import type { DestinationAccessType, DestinationMatchScores } from '@/types/destination';
 
-// Phase P2E audit: no searchParams, cookies(), or headers() anywhere in this page or
-// any function it calls — no genuine request-specific dependency exists. However,
-// converting this route to ISR was verified NOT possible with only `export const
-// revalidate = ...`: Next.js's App Router requires an exported `generateStaticParams()`
-// (confirmed by direct build test — even one returning an empty array moves this route
-// from the `ƒ` (Dynamic) to the `●` (SSG) classification) before `revalidate` has any
-// effect at all on a dynamic-segment (`[slug]`) route; without it, `revalidate` is
-// silently a no-op and the route stays fully dynamic regardless. Adding
-// `generateStaticParams()` — even an empty one, which needs no MongoDB read at build
-// time and prebuilds nothing — is exactly the kind of change this phase's own brief
-// said not to make without further authorization, so `force-dynamic` stays in place
-// here; see this phase's final report for the full finding.
-export const dynamic = 'force-dynamic';
+// Phase P2F/P2G: no searchParams, cookies(), or headers() anywhere in this page or any
+// function it calls — no genuine request-specific dependency exists. An empty
+// `generateStaticParams()` is required for `revalidate` to have any effect at all on
+// this dynamic-segment (`[slug]`) route (Next.js 16.3.0 verified behavior — see Phase
+// P2F's build experiments); it prebuilds nothing and needs no MongoDB read at build
+// time. `dynamicParams` is deliberately left unset (defaults to `true`) so any real,
+// DB-backed destination not in the (empty) static list still renders on its first
+// request and is cached thereafter — this is what makes a newly added destination work
+// immediately, with no redeploy required (Phase P2F proved this experimentally).
+export const revalidate = 300;
+
+export async function generateStaticParams() {
+  return [];
+}
 
 interface DestinationDetailPageProps {
   params: Promise<{ slug: string }>;
