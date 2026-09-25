@@ -6,7 +6,7 @@ import JourneysHeroSearch from '@/components/modules/journeys/JourneysHeroSearch
 import SignatureJourneys from '@/components/modules/journeys/SignatureJourneys';
 import JourneyStorySection from '@/components/modules/journeys/JourneyStorySection';
 import JourneysTrustSection from '@/components/modules/journeys/JourneysTrustSection';
-import { getAllPackages, getFeaturedPackages } from '@/lib/packages';
+import { getAllPackages } from '@/lib/packages';
 import { getCuratedDestinations } from '@/lib/destinations';
 import { getDestinationRatingsMap } from '@/lib/reviews';
 import { getPackageCategories } from '@/lib/packageFilters';
@@ -65,10 +65,20 @@ interface JourneysPageProps {
 export default async function JourneysPage({ searchParams }: JourneysPageProps) {
   const { destination, category, region, season, priceMin, priceMax, duration, accommodation, sort, page } = await searchParams;
 
-  const packages = await getAllPackages();
-  const featuredPackages = await getFeaturedPackages(3);
-  const destinations = await getCuratedDestinations();
-  const destinationRatings = await getDestinationRatingsMap();
+  // Phase P2I: getFeaturedPackages() previously called getAllPackages() a second,
+  // fully redundant time internally (same query, same data, no request-specific
+  // variation) — replaced with the same filter/fallback/slice logic it used
+  // internally, applied to the `packages` already fetched below, so the featured set
+  // is byte-for-byte identical without a second Mongo round-trip. destinations and
+  // destinationRatings are independent of packages and of each other, so all three
+  // reads now run concurrently instead of sequentially.
+  const [packages, destinations, destinationRatings] = await Promise.all([
+    getAllPackages(),
+    getCuratedDestinations(),
+    getDestinationRatingsMap()
+  ]);
+  const featuredCandidates = packages.filter((pkg) => pkg.featured);
+  const featuredPackages = (featuredCandidates.length > 0 ? featuredCandidates : packages).slice(0, 3);
   const categories = getPackageCategories(packages);
 
   return (
