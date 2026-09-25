@@ -31,8 +31,22 @@ import { getReviewsForDestinationsPage, reviewToTestimonial } from '@/lib/review
 import { getHomeHeroRegions } from '@/services/regions/regionHub.service';
 import type { StatItem } from '@/types';
 
-// Tours now come live from MongoDB, so this page can't be statically prerendered at build time.
-export const dynamic = 'force-dynamic';
+// Phase P2D-B: every data source this page reads (packages, hotels, reviews, home-hero
+// regions, featured experiences, tours) is catalog/editorial content that changes when
+// an admin edits it — occasionally, never per-request — not request-specific, user-
+// specific, or live/quote data (confirmed by audit: no searchParams, cookies(), or
+// headers() anywhere in this page or any function it calls, and no `cache: 'no-store'`/
+// `revalidate: 0`/`unstable_noStore()` inside any of those functions either). This page
+// therefore no longer needs to re-run its full MongoDB read set on every single request
+// — ISR serves a cached render to every visitor and only regenerates in the background
+// once per revalidate window. 300s (5 minutes) is a deliberately conservative choice for
+// a site with no tag-based cache-invalidation architecture yet: short enough that an
+// admin's catalog edit (a new journey, hotel, or featured region) is visible without a
+// redeploy within a normal business timeframe, long enough to remove the vast majority
+// of per-visitor Mongo read pressure this page's six concurrent queries otherwise cause
+// on every request. This does not affect the live, request-time Journey quote API
+// (Phase 9E) or any booking/tracking flow — none of those are read from this page.
+export const revalidate = 300;
 
 // Previously absent entirely (this page had no metadata/generateMetadata export at
 // all), so Home silently inherited the root layout's generic site-wide defaults —
