@@ -7,14 +7,36 @@ import Lenis from '@studio-freight/lenis';
 // scroll instead of being hijacked by Lenis below.
 const NESTED_SCROLL_SELECTOR = '.overflow-y-auto, .overflow-auto, [data-lenis-prevent]';
 
+// Neither option below is set, so `syncTouch` stays at the package default of
+// `false` — meaning Lenis's own onVirtualScroll never treats a touch gesture as
+// "smooth" (that branch requires `syncTouch && isTouchEvent`), and touch scrolling
+// on this site has always been native, untouched by Lenis. A touch-only device
+// therefore gets zero scrolling benefit from Lenis today, yet still pays for its
+// non-passive touchstart/touchmove/touchend window listeners (attached
+// unconditionally by Lenis's VirtualScroll) and this file's own perpetual RAF
+// loop. `any-pointer`/`any-hover` (rather than the primary-pointer `pointer`/
+// `hover` CustomCursor uses) is the correct check here: Lenis's real job is
+// smoothing *wheel* input specifically, which only a real mouse/trackpad can
+// generate, so a hybrid touchscreen-laptop/Surface/tablet that also has a
+// trackpad or mouse — even one where touch is the OS-reported primary pointer —
+// keeps Lenis, since that hardware can and does produce wheel events. Only a
+// device with no fine/hover-capable input at all (a phone/tablet with just a
+// touchscreen) loses anything, and it was already getting nothing.
+const ELIGIBLE_QUERY = '(any-pointer: fine) and (any-hover: hover) and (prefers-reduced-motion: no-preference)';
+
 export default function SmoothScroll({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    // Eased/smoothed scrolling is one of the canonical prefers-reduced-motion use cases —
-    // skip Lenis entirely so native (instant, non-eased) browser scrolling takes over;
-    // the scroll-lock class toggle it would otherwise watch is a CSS-only concern that
-    // works with or without Lenis running.
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // Checked once at mount, not kept in sync via a MediaQueryList `change`
+    // listener: unlike a purely decorative overlay, tearing Lenis down and
+    // recreating it mid-session would need to reconcile animatedScroll/
+    // targetScroll against whatever the user has scrolled to in the meantime
+    // (risking a visible jump) and re-run the wheel/touchmove shield and
+    // MutationObserver setup — real regression surface for a preference that,
+    // in practice, changes at runtime only via a DevTools toggle. Reduced-motion
+    // already skipped Lenis at mount before this change; this just widens the
+    // same mount-time check to also cover devices with no real wheel hardware.
+    if (!window.matchMedia(ELIGIBLE_QUERY).matches) return;
 
     const lenis = new Lenis({
       duration: 1.2,
