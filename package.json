@@ -20,7 +20,6 @@
     "db:backfill-spiti-kinnaur-slug": "tsx scripts/backfillSpitiKinnaurDestinationSlug.ts"
   },
   "dependencies": {
-    "@studio-freight/lenis": "^1.0.42",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "framer-motion": "^12.6.7",

@@ -12,5 +12,4 @@ export { default as Pagination } from './Pagination';
 export * from './Skeleton';
 export * from './SafeImage';
 export * from './MediaPlaceholder';
-export { default as CustomCursor } from './CustomCursor';
 export * from './WhatsAppIcon';

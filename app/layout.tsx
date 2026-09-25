@@ -5,9 +5,8 @@ import { META_PIXEL_ID } from '@/lib/metaPixel';
 import './globals.css';
 import { Poppins } from 'next/font/google';
 import { MotionConfig } from 'framer-motion';
-import { CustomCursor } from '@/components/ui';
 import BackToTopButton from '@/components/ui/BackToTopButton';
-import { Navbar, Footer, SmoothScroll } from '@/components/layout';
+import { Navbar, Footer } from '@/components/layout';
 import NavigationTracker from '@/components/NavigationTracker';
 import { WhatsAppInquiryProvider } from '@/components/modules/WhatsAppInquiryModal';
 import { BookingRequestProvider } from '@/components/modules/BookingRequestModal';
@@ -127,12 +126,9 @@ fbq('track', 'PageView');`}
         <MotionConfig reducedMotion="user">
           <WhatsAppInquiryProvider>
             <BookingRequestProvider>
-              <SmoothScroll>
-                <Navbar />
-                {children}
-                <Footer />
-              </SmoothScroll>
-              <CustomCursor />
+              <Navbar />
+              {children}
+              <Footer />
               <BackToTopButton />
             </BookingRequestProvider>
           </WhatsAppInquiryProvider>

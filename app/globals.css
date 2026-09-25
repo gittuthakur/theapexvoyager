@@ -8,10 +8,6 @@
   color: #0f172a;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
   min-height: 100vh;
   background: #ffffff;
