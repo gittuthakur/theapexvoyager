@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { connectDB } from '@/lib/mongodb';
 import { Experience as ExperienceModel, type ExperienceDocument } from '@/models/Experience';
 import type { Experience } from '@/types/experience';
@@ -54,12 +55,20 @@ export function toExperience(doc: ExperienceDocument): Experience {
 /**
  * Experience data lives in MongoDB (see models/Experience.ts, seeded from
  * config/experiences.config.ts by scripts/seed.ts).
+ *
+ * Phase P2K: React's cache() request-memoizes this — app/experiences/page.tsx,
+ * ExperienceMoodDiscovery, FeaturedExperiences (via getFeaturedExperiences) and
+ * RegionShowcase each call this independently with no props passed between them,
+ * which otherwise meant four identical MongoDB round-trips per /experiences request.
+ * Scoped to a single render pass by React's own contract (a fresh cache per incoming
+ * request, nothing shared across requests) — not persistent/ISR caching, so a catalog
+ * edit is visible on the very next request exactly as before.
  */
-export async function getAllExperiences(): Promise<Experience[]> {
+export const getAllExperiences = cache(async (): Promise<Experience[]> => {
   await connectDB();
   const docs = await ExperienceModel.find().lean<ExperienceDocument[]>();
   return JSON.parse(JSON.stringify(docs.map(toExperience)));
-}
+});
 
 export async function getExperienceBySlug(slug: string): Promise<Experience | undefined> {
   await connectDB();
