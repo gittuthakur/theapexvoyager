@@ -63,9 +63,14 @@ export default function HeroSection({ data, className, children, sidePanel, sear
     <section aria-labelledby="hero-heading" className={cn('relative isolate overflow-hidden bg-slate-100', className)}>
       {data.schema ? <JsonLd data={data.schema} /> : null}
 
-      {/* fill + sizes (not fixed width/height) keeps this full-bleed background sharp and CLS-free across breakpoints */}
+      {/* fill + sizes (not fixed width/height) keeps this full-bleed background sharp and CLS-free across breakpoints.
+          `preload` (not the deprecated `priority`, removed in Next.js 16 — see next/image's own
+          changelog) plus an explicit `fetchPriority="high"` are two independent, non-conflicting
+          signals: preload gets this LCP-critical image discovered before the browser reaches it in
+          the document, fetchPriority tells the browser to service that request first among whatever
+          else is already in flight. */}
       <div className="absolute inset-0">
-        <SafeImage src={data.media.src} alt={data.media.alt} fill priority sizes="100vw" className="object-cover" />
+        <SafeImage src={data.media.src} alt={data.media.alt} fill preload fetchPriority="high" sizes="100vw" className="object-cover" />
         <div className={cn('absolute inset-0 bg-gradient-to-b from-white/85 via-white/0 to-[#0D1830]/35', overlayClassName)} />
       </div>
 

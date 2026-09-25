@@ -27,8 +27,10 @@ export default function InnerHeroBanner({ title, highlite, subtitle, eyebrow, bg
       <div className="absolute inset-0">
         {/* Decorative: the H1 right below already carries this hero's actual content
             (previously alt={title} silently dropped `highlite`, e.g. rendering as the
-            truncated "Places Worth" on /destinations instead of the full heading). */}
-        <SafeImage src={bgImage} alt="" fill priority sizes="100vw" className={cn('object-cover', imageClassName)} />
+            truncated "Places Worth" on /destinations instead of the full heading).
+            `preload`/`fetchPriority` (not the deprecated `priority`) — see HeroSection.tsx's
+            comment on this same pattern for the full rationale. */}
+        <SafeImage src={bgImage} alt="" fill preload fetchPriority="high" sizes="100vw" className={cn('object-cover', imageClassName)} />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-white/50 to-white/80" />
       </div>
 

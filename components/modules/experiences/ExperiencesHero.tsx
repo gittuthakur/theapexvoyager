@@ -34,7 +34,9 @@ export default function ExperiencesHero() {
   return (
     <section className="relative isolate overflow-hidden bg-slate-900">
       <div className="absolute inset-0">
-        <SafeImage src={images.hero} alt="Himalayan peaks at first light" fill priority sizes="100vw" className="object-cover" />
+        {/* `preload`/`fetchPriority` (not the deprecated `priority`) — see HeroSection.tsx's
+            comment on this same pattern for the full rationale. */}
+        <SafeImage src={images.hero} alt="Himalayan peaks at first light" fill preload fetchPriority="high" sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-white/90 to-white/50" />
       </div>
 
