@@ -65,8 +65,14 @@ interface DestinationsPageProps {
 export default async function DestinationsPage({ searchParams }: DestinationsPageProps) {
   const { destination, style, season, region, priceMin, priceMax, bestFor, sort, page, view } = await searchParams;
 
-  const destinations = await getCuratedDestinations();
-  const [statsMap, reviews] = await Promise.all([getDestinationStatsMap(destinations), getReviewsForDestinationsPage()]);
+  // Phase P2H: getReviewsForDestinationsPage() takes no arguments and never depends on
+  // `destinations` — only getDestinationStatsMap() does, since it needs the resolved
+  // list to compute per-destination counts. Fetching destinations and reviews
+  // concurrently (rather than reviews waiting behind destinations) removes one
+  // sequential Mongo round-trip from the critical path; stats still runs after,
+  // since it has a genuine data dependency on the resolved destinations list.
+  const [destinations, reviews] = await Promise.all([getCuratedDestinations(), getReviewsForDestinationsPage()]);
+  const statsMap = await getDestinationStatsMap(destinations);
   const stats = Object.fromEntries(statsMap);
 
   const activeRegionId = region ? getRegionById(region)?.id : undefined;
