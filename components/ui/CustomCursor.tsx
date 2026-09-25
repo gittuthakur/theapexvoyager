@@ -11,7 +11,30 @@ export interface CustomCursorProps {
 
 const POSITION_SPRING = { stiffness: 500, damping: 45 };
 
+// A custom cursor only makes sense on a device whose primary pointer is a
+// mouse/trackpad: (pointer: fine) + (hover: hover) together, rather than just
+// "not coarse", so a touchscreen laptop or tablet that happens to also expose
+// a mouse still gets the overlay only when that mouse is the primary input.
+// prefers-reduced-motion is folded into the same query so both conditions are
+// tracked by one MediaQueryList instead of three.
+const ELIGIBLE_QUERY = '(pointer: fine) and (hover: hover) and (prefers-reduced-motion: no-preference)';
+
 export default function CustomCursor({ hoverSelector = 'button, a, .cursor-hover', size = 16 }: CustomCursorProps) {
+  // Starts false so server and first client render both paint nothing — the
+  // real capability is only knowable client-side, and a mount-time check kept
+  // in an effect (matching SmoothScroll's prefers-reduced-motion check) avoids
+  // a hydration mismatch. It's corrected to the real value immediately after
+  // mount, then kept in sync if the OS/DevTools capability changes at runtime.
+  const [eligible, setEligible] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia(ELIGIBLE_QUERY);
+    setEligible(mql.matches);
+    const update = () => setEligible(mql.matches);
+    mql.addEventListener('change', update);
+    return () => mql.removeEventListener('change', update);
+  }, []);
+
   // Motion values write straight to the transform on every mousemove without
   // going through React state/render — a plain useState here would re-render
   // this tree on every pixel of pointer movement. useSpring keeps the same
@@ -23,6 +46,10 @@ export default function CustomCursor({ hoverSelector = 'button, a, .cursor-hover
   const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
+    // Ineligible devices/preferences never attach the listeners below at all —
+    // not merely hidden via CSS while the mousemove/hover runtime keeps going.
+    if (!eligible) return;
+
     const move = (event: MouseEvent) => {
       rawX.set(event.clientX);
       rawY.set(event.clientY);
@@ -44,7 +71,9 @@ export default function CustomCursor({ hoverSelector = 'button, a, .cursor-hover
         element.removeEventListener('mouseleave', removeHover);
       });
     };
-  }, [hoverSelector]);
+  }, [eligible, hoverSelector]);
+
+  if (!eligible) return null;
 
   return (
     <motion.div
