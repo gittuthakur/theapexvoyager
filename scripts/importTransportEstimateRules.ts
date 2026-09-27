@@ -42,6 +42,7 @@ const REQUIRED_COLUMNS = [
   'rateBasis',
   'perKmRateRupees',
   'minimumKmPerDay',
+  'deadKmReturnPercent',
   'driverAllowanceApplicable',
   'driverAllowanceIncludedInBaseFare',
   'driverAllowancePerDayAmountRupees',
@@ -95,6 +96,15 @@ function toOptionalInt(value: string): number | undefined {
   return Number.isFinite(n) ? Math.round(n) : undefined;
 }
 
+/** Unlike toOptionalInt, never rounds — deadKmReturnPercent is a percentage, not a
+ *  minor-unit money value, so a fractional value (e.g. 24.5) is preserved exactly. Returns
+ *  NaN (never undefined) for a non-blank, non-numeric value so validateRow can tell
+ *  "blank" (skip — unset behaves as 0%) apart from "garbage" (reject). */
+function toOptionalFiniteNumber(value: string): number | undefined {
+  if (!value) return undefined;
+  return Number(value);
+}
+
 function toOptionalComponentStatus(value: string): TransportEstimateComponentStatus | undefined {
   if (!value) return undefined;
   return TRANSPORT_ESTIMATE_COMPONENT_STATUSES.includes(value as TransportEstimateComponentStatus) ? (value as TransportEstimateComponentStatus) : undefined;
@@ -137,6 +147,11 @@ export function validateRow(row: Row): RowValidationResult {
     errors.push('perKmRateRupees must not include a sub-paise fraction (never silently rounded)');
   }
 
+  const deadKmReturnPercent = toOptionalFiniteNumber(row.deadKmReturnPercent);
+  if (deadKmReturnPercent !== undefined && !(Number.isFinite(deadKmReturnPercent) && deadKmReturnPercent >= 0 && deadKmReturnPercent <= 200)) {
+    errors.push('deadKmReturnPercent must be a finite number between 0 and 200 (inclusive) when provided — never silently clamped');
+  }
+
   if (!row.validFrom || Number.isNaN(Date.parse(row.validFrom))) errors.push('validFrom is required and must be a valid date');
   if (!row.validTo || Number.isNaN(Date.parse(row.validTo))) errors.push('validTo is required and must be a valid date');
   if (row.validFrom && row.validTo && !Number.isNaN(Date.parse(row.validFrom)) && !Number.isNaN(Date.parse(row.validTo))) {
@@ -173,6 +188,7 @@ export function validateRow(row: Row): RowValidationResult {
     rateBasis: row.rateBasis as TransportEstimateRateBasis,
     perKmRateMinorUnits: perKmRateMinorUnits as number,
     minimumKmPerDay: toOptionalInt(row.minimumKmPerDay),
+    deadKmReturnPercent,
     driverAllowance: {
       applicable: driverAllowanceApplicable,
       includedInBaseFare: driverAllowanceIncludedInBaseFare,

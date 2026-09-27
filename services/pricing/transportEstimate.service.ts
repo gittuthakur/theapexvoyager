@@ -141,9 +141,27 @@ export async function calculateTransportEstimate(query: TransportEstimateQuery):
   return buildCalculatedResult(validNow[0], query.distanceKm);
 }
 
+/**
+ * TP3E dead-km formula. `distanceKm` (the genuine, caller-supplied route distance) is
+ * never mutated — every derived figure (`deadKmComponentKm`, `preFloorKm`,
+ * `effectiveBillableKm`) is a separate, independently exposed value (TP3E Sections 2–4).
+ * A rule with no `deadKmReturnPercent` behaves as 0% dead-km, exactly reproducing
+ * TP3B/TP3C's original `max(distanceKm, minimumKmPerDay ?? 0)` behavior.
+ *
+ * Rounding rule (TP3E Section 5, chosen and documented here): every intermediate km
+ * figure (`deadKmComponentKm`, `preFloorKm`, `effectiveBillableKm`) is kept at full
+ * floating-point precision — none of them, and never `distanceKm` itself, is rounded.
+ * `Math.round()` is applied exactly once, at the very end, to the final
+ * `amountMinorUnits` — the only place fractional paise cannot be allowed to exist.
+ */
 function buildCalculatedResult(rule: TransportEstimateRuleDocument, distanceKm: number): CalculatedEstimateResult {
-  const billableKm = Math.max(distanceKm, rule.minimumKmPerDay ?? 0);
-  let amountMinorUnits = billableKm * rule.perKmRateMinorUnits;
+  const deadKmComponentKm = distanceKm * ((rule.deadKmReturnPercent ?? 0) / 100);
+  const preFloorKm = distanceKm + deadKmComponentKm;
+  const minimumKmPerDay = rule.minimumKmPerDay ?? 0;
+  const effectiveBillableKm = Math.max(preFloorKm, minimumKmPerDay);
+  const minimumKmApplied = effectiveBillableKm > preFloorKm;
+
+  let amountMinorUnits = effectiveBillableKm * rule.perKmRateMinorUnits;
 
   const driverAllowance: TransportEstimateDriverAllowance | undefined = rule.driverAllowance;
   const driverAllowanceStatus: 'INCLUDED' | 'EXCLUDED' = driverAllowance?.applicable ? 'INCLUDED' : 'EXCLUDED';
@@ -157,6 +175,10 @@ function buildCalculatedResult(rule: TransportEstimateRuleDocument, distanceKm: 
     currency: 'INR',
     distanceKm,
     distanceSource: 'CALLER_PROVIDED_ROUTE',
+    deadKmComponentKm,
+    effectiveBillableKm,
+    minimumKmApplied,
+    perKmRateMinorUnits: rule.perKmRateMinorUnits,
     rateRuleId: String(rule._id),
     rateRuleSource: rule.sourceType,
     componentStatus: {
@@ -180,6 +202,7 @@ export interface CreateTransportEstimateRuleInput {
   rateBasis: TransportEstimateRateBasis;
   perKmRateMinorUnits: number;
   minimumKmPerDay?: number;
+  deadKmReturnPercent?: number;
   driverAllowance?: TransportEstimateDriverAllowance;
   nightHaltChargeMinorUnits?: number;
   tollStatus?: TransportEstimateComponentStatus;

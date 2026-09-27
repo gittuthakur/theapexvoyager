@@ -17,6 +17,7 @@ interface FakeRule {
   rateBasis: string;
   perKmRateMinorUnits: number;
   minimumKmPerDay?: number;
+  deadKmReturnPercent?: number;
   driverAllowance?: FakeDriverAllowance;
   nightHaltChargeMinorUnits?: number;
   tollStatus: string;
@@ -286,6 +287,180 @@ describe('calculateTransportEstimate — integer arithmetic', () => {
     const result = await calculateTransportEstimate({ ...BASE_QUERY, distanceKm: 33.3 });
     expect(result.status).toBe('CALCULATED_ESTIMATE');
     if (result.status === 'CALCULATED_ESTIMATE') expect(Number.isInteger(result.amountMinorUnits)).toBe(true);
+  });
+});
+
+describe('calculateTransportEstimate — TP3E dead-km component', () => {
+  it('backward compatible: no deadKmReturnPercent set behaves as 0% (TP3B/TP3C parity)', async () => {
+    ruleStore.push(baseRule());
+    const result = await calculateTransportEstimate({ ...BASE_QUERY, distanceKm: 115 });
+    expect(result.status).toBe('CALCULATED_ESTIMATE');
+    if (result.status === 'CALCULATED_ESTIMATE') {
+      expect(result.deadKmComponentKm).toBe(0);
+      expect(result.effectiveBillableKm).toBe(115);
+      expect(result.minimumKmApplied).toBe(false);
+      expect(result.distanceKm).toBe(115); // genuine route distance, never mutated
+    }
+  });
+
+  it('explicit deadKmReturnPercent: 0 behaves identically to unset', async () => {
+    ruleStore.push(baseRule({ deadKmReturnPercent: 0 }));
+    const result = await calculateTransportEstimate({ ...BASE_QUERY, distanceKm: 115 });
+    expect(result.status).toBe('CALCULATED_ESTIMATE');
+    if (result.status === 'CALCULATED_ESTIMATE') expect(result.effectiveBillableKm).toBe(115);
+  });
+
+  it('exposes a fractional dead-km component without rounding it (documented example: 115km @ 25%)', async () => {
+    ruleStore.push(baseRule({ deadKmReturnPercent: 25, perKmRateMinorUnits: 1_300 }));
+    const result = await calculateTransportEstimate({ ...BASE_QUERY, distanceKm: 115 });
+    expect(result.status).toBe('CALCULATED_ESTIMATE');
+    if (result.status === 'CALCULATED_ESTIMATE') {
+      expect(result.deadKmComponentKm).toBeCloseTo(28.75, 10);
+      expect(result.effectiveBillableKm).toBeCloseTo(143.75, 10);
+      expect(result.distanceKm).toBe(115); // route distance itself stays exact, untouched
+      expect(Number.isInteger(result.amountMinorUnits)).toBe(true); // money still integer-safe
+      expect(result.amountMinorUnits).toBe(Math.round(143.75 * 1_300));
+    }
+  });
+
+  it('never mutates the genuine route distance regardless of the dead-km percent applied', async () => {
+    ruleStore.push(baseRule({ deadKmReturnPercent: 60 }));
+    const result = await calculateTransportEstimate({ ...BASE_QUERY, distanceKm: 240 });
+    expect(result.status).toBe('CALCULATED_ESTIMATE');
+    if (result.status === 'CALCULATED_ESTIMATE') expect(result.distanceKm).toBe(240);
+  });
+});
+
+describe('calculateTransportEstimate — TP3E minimum-km interaction scenarios', () => {
+  it('A. 115km, 0% dead-km, no minimum => 115 effective km', async () => {
+    ruleStore.push(baseRule());
+    const result = await calculateTransportEstimate({ ...BASE_QUERY, distanceKm: 115 });
+    if (result.status === 'CALCULATED_ESTIMATE') {
+      expect(result.effectiveBillableKm).toBe(115);
+      expect(result.minimumKmApplied).toBe(false);
+    } else throw new Error('expected CALCULATED_ESTIMATE');
+  });
+
+  it('B. 115km, 25% dead-km, no minimum => 143.75 pre-floor km, no minimum applied', async () => {
+    ruleStore.push(baseRule({ deadKmReturnPercent: 25 }));
+    const result = await calculateTransportEstimate({ ...BASE_QUERY, distanceKm: 115 });
+    if (result.status === 'CALCULATED_ESTIMATE') {
+      expect(result.effectiveBillableKm).toBeCloseTo(143.75, 10);
+      expect(result.minimumKmApplied).toBe(false);
+    } else throw new Error('expected CALCULATED_ESTIMATE');
+  });
+
+  it('C. 115km, 25% dead-km, 200km minimum => 200 effective km, minimum applied = true', async () => {
+    ruleStore.push(baseRule({ deadKmReturnPercent: 25, minimumKmPerDay: 200 }));
+    const result = await calculateTransportEstimate({ ...BASE_QUERY, distanceKm: 115 });
+    if (result.status === 'CALCULATED_ESTIMATE') {
+      expect(result.effectiveBillableKm).toBe(200);
+      expect(result.minimumKmApplied).toBe(true);
+    } else throw new Error('expected CALCULATED_ESTIMATE');
+  });
+
+  it('D. 240km, 25% dead-km, 200km minimum => 300 effective km, minimum applied = false', async () => {
+    ruleStore.push(baseRule({ deadKmReturnPercent: 25, minimumKmPerDay: 200 }));
+    const result = await calculateTransportEstimate({ ...BASE_QUERY, distanceKm: 240 });
+    if (result.status === 'CALCULATED_ESTIMATE') {
+      expect(result.effectiveBillableKm).toBe(300);
+      expect(result.minimumKmApplied).toBe(false);
+    } else throw new Error('expected CALCULATED_ESTIMATE');
+  });
+
+  it('E. minimum larger than pre-floor distance => minimum wins and is flagged applied', async () => {
+    ruleStore.push(baseRule({ deadKmReturnPercent: 0, minimumKmPerDay: 500 }));
+    const result = await calculateTransportEstimate({ ...BASE_QUERY, distanceKm: 115 });
+    if (result.status === 'CALCULATED_ESTIMATE') {
+      expect(result.effectiveBillableKm).toBe(500);
+      expect(result.minimumKmApplied).toBe(true);
+    } else throw new Error('expected CALCULATED_ESTIMATE');
+  });
+
+  it('F. minimum smaller than pre-floor distance => pre-floor distance wins, not flagged applied', async () => {
+    ruleStore.push(baseRule({ deadKmReturnPercent: 25, minimumKmPerDay: 50 }));
+    const result = await calculateTransportEstimate({ ...BASE_QUERY, distanceKm: 115 });
+    if (result.status === 'CALCULATED_ESTIMATE') {
+      expect(result.effectiveBillableKm).toBeCloseTo(143.75, 10);
+      expect(result.minimumKmApplied).toBe(false);
+    } else throw new Error('expected CALCULATED_ESTIMATE');
+  });
+
+  it('G. deadKmReturnPercent = 0 explicit => identical to unset', async () => {
+    ruleStore.push(baseRule({ deadKmReturnPercent: 0 }));
+    const result = await calculateTransportEstimate({ ...BASE_QUERY, distanceKm: 115 });
+    if (result.status === 'CALCULATED_ESTIMATE') expect(result.deadKmComponentKm).toBe(0);
+    else throw new Error('expected CALCULATED_ESTIMATE');
+  });
+
+  it('H. deadKmReturnPercent unset => identical to explicit 0', async () => {
+    ruleStore.push(baseRule());
+    const result = await calculateTransportEstimate({ ...BASE_QUERY, distanceKm: 115 });
+    if (result.status === 'CALCULATED_ESTIMATE') expect(result.deadKmComponentKm).toBe(0);
+    else throw new Error('expected CALCULATED_ESTIMATE');
+  });
+});
+
+describe('calculateTransportEstimate — TP3D six-fixture regression (in-memory only, TEST rates, NOT production-approved)', () => {
+  const VEHICLES: Array<{ category: string; perKmRateMinorUnits: number }> = [
+    { category: 'Sedan', perKmRateMinorUnits: 1_300 },
+    { category: 'SUV', perKmRateMinorUnits: 1_600 },
+    { category: 'Tempo Traveller', perKmRateMinorUnits: 2_500 }
+  ];
+  const ROUTES = [
+    { name: 'Chandigarh -> Shimla', distanceKm: 115 },
+    { name: 'Chandigarh -> Dharamshala', distanceKm: 240 }
+  ];
+
+  it('Scenario 1 (0%, no minimum) reproduces TP3C baseline exactly', async () => {
+    for (const vehicle of VEHICLES) {
+      ruleStore.push(baseRule({ vehicleCategory: vehicle.category, perKmRateMinorUnits: vehicle.perKmRateMinorUnits }));
+    }
+    const expected: Record<string, Record<string, number>> = {
+      'Chandigarh -> Shimla': { Sedan: 149_500, SUV: 184_000, 'Tempo Traveller': 287_500 },
+      'Chandigarh -> Dharamshala': { Sedan: 312_000, SUV: 384_000, 'Tempo Traveller': 600_000 }
+    };
+    for (const route of ROUTES) {
+      for (const vehicle of VEHICLES) {
+        const result = await calculateTransportEstimate({ ...BASE_QUERY, vehicleCategory: vehicle.category, distanceKm: route.distanceKm });
+        expect(result.status).toBe('CALCULATED_ESTIMATE');
+        if (result.status === 'CALCULATED_ESTIMATE') expect(result.amountMinorUnits).toBe(expected[route.name][vehicle.category]);
+      }
+    }
+  });
+
+  it('Scenario 2 (25%, no minimum) matches TP3D projections', async () => {
+    for (const vehicle of VEHICLES) {
+      ruleStore.push(baseRule({ vehicleCategory: vehicle.category, perKmRateMinorUnits: vehicle.perKmRateMinorUnits, deadKmReturnPercent: 25 }));
+    }
+    const expected: Record<string, Record<string, number>> = {
+      'Chandigarh -> Shimla': { Sedan: 186_875, SUV: 230_000, 'Tempo Traveller': 359_375 },
+      'Chandigarh -> Dharamshala': { Sedan: 390_000, SUV: 480_000, 'Tempo Traveller': 750_000 }
+    };
+    for (const route of ROUTES) {
+      for (const vehicle of VEHICLES) {
+        const result = await calculateTransportEstimate({ ...BASE_QUERY, vehicleCategory: vehicle.category, distanceKm: route.distanceKm });
+        expect(result.status).toBe('CALCULATED_ESTIMATE');
+        if (result.status === 'CALCULATED_ESTIMATE') expect(result.amountMinorUnits).toBe(expected[route.name][vehicle.category]);
+      }
+    }
+  });
+
+  it('Scenario 3 (25% + 200km minimum) matches TP3D projections', async () => {
+    for (const vehicle of VEHICLES) {
+      ruleStore.push(baseRule({ vehicleCategory: vehicle.category, perKmRateMinorUnits: vehicle.perKmRateMinorUnits, deadKmReturnPercent: 25, minimumKmPerDay: 200 }));
+    }
+    const expected: Record<string, Record<string, number>> = {
+      'Chandigarh -> Shimla': { Sedan: 260_000, SUV: 320_000, 'Tempo Traveller': 500_000 },
+      'Chandigarh -> Dharamshala': { Sedan: 390_000, SUV: 480_000, 'Tempo Traveller': 750_000 }
+    };
+    for (const route of ROUTES) {
+      for (const vehicle of VEHICLES) {
+        const result = await calculateTransportEstimate({ ...BASE_QUERY, vehicleCategory: vehicle.category, distanceKm: route.distanceKm });
+        expect(result.status).toBe('CALCULATED_ESTIMATE');
+        if (result.status === 'CALCULATED_ESTIMATE') expect(result.amountMinorUnits).toBe(expected[route.name][vehicle.category]);
+      }
+    }
   });
 });
 

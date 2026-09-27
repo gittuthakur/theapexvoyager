@@ -233,6 +233,44 @@ describe('TransportEstimateRule model — no minimum invented', () => {
   });
 });
 
+describe('TransportEstimateRule model — deadKmReturnPercent (TP3E)', () => {
+  it('is omittable — unset behaves as 0% at calculation time, never invented here', () => {
+    const doc = new TransportEstimateRule(validRuleData());
+    expect(doc.deadKmReturnPercent).toBeUndefined();
+  });
+
+  it('accepts 0, 25, 40, 100 and the maximum of 200', async () => {
+    for (const deadKmReturnPercent of [0, 25, 40, 100, 200]) {
+      const doc = new TransportEstimateRule(validRuleData({ deadKmReturnPercent }));
+      expect(await getValidationError(doc), `deadKmReturnPercent ${deadKmReturnPercent} should be valid`).toBeUndefined();
+    }
+  });
+
+  it('rejects a negative value', async () => {
+    const doc = new TransportEstimateRule(validRuleData({ deadKmReturnPercent: -1 }));
+    expect((await getValidationError(doc))?.errors.deadKmReturnPercent).toBeDefined();
+  });
+
+  it('rejects a value above 200 — never silently clamped', async () => {
+    const doc = new TransportEstimateRule(validRuleData({ deadKmReturnPercent: 201 }));
+    expect((await getValidationError(doc))?.errors.deadKmReturnPercent).toBeDefined();
+    expect(doc.deadKmReturnPercent).toBe(201); // rejected by validation, not silently coerced to 200
+  });
+
+  it('rejects NaN and Infinity', async () => {
+    const nanDoc = new TransportEstimateRule(validRuleData({ deadKmReturnPercent: NaN }));
+    expect((await getValidationError(nanDoc))?.errors.deadKmReturnPercent).toBeDefined();
+
+    const infDoc = new TransportEstimateRule(validRuleData({ deadKmReturnPercent: Infinity }));
+    expect((await getValidationError(infDoc))?.errors.deadKmReturnPercent).toBeDefined();
+  });
+
+  it('accepts a fractional percentage (not restricted to whole numbers)', async () => {
+    const doc = new TransportEstimateRule(validRuleData({ deadKmReturnPercent: 24.5 }));
+    expect(await getValidationError(doc)).toBeUndefined();
+  });
+});
+
 describe('TransportEstimateRule model — indexes', () => {
   it('defines a lookup index on (vehicleCategory, serviceRegion, tripType, rateBasis, active)', () => {
     const indexes = TransportEstimateRule.schema.indexes();

@@ -96,6 +96,14 @@ export interface TransportEstimateRuleDocument extends Document {
    *  Section 17), never an invented minimum. */
   minimumKmPerDay?: number;
 
+  /** TP3E — vehicle return/repositioning distance, expressed as a percentage of the
+   *  genuine route distance (e.g. 25 = 25%). Omitted behaves as 0% (no dead-km modeled,
+   *  fully backward compatible with TP3B/TP3C rules that predate this field) — never
+   *  silently clamped; an out-of-range value fails schema validation instead. The genuine
+   *  route distance itself is never altered by this field — see
+   *  services/pricing/transportEstimate.service.ts for how it's applied. */
+  deadKmReturnPercent?: number;
+
   driverAllowance?: TransportEstimateDriverAllowance;
 
   /** Stored for a future overnight/multi-day trip type only — TP3B's own supported trip
@@ -173,6 +181,14 @@ const TransportEstimateRuleSchema = new Schema<TransportEstimateRuleDocument>(
       validate: { validator: isPositiveFiniteInteger, message: 'perKmRateMinorUnits must be a positive, finite integer (paise) — never zero, negative, NaN or Infinity' }
     },
     minimumKmPerDay: { type: Number, validate: { validator: isNonNegativeFiniteInteger, message: 'minimumKmPerDay must be a non-negative integer' } },
+
+    deadKmReturnPercent: {
+      type: Number,
+      validate: {
+        validator: (value: number | undefined) => value === undefined || (Number.isFinite(value) && value >= 0 && value <= 200),
+        message: 'deadKmReturnPercent must be a finite number between 0 and 200 (inclusive) — invalid values are rejected, never clamped'
+      }
+    },
 
     driverAllowance: { type: TransportEstimateDriverAllowanceSchema },
 

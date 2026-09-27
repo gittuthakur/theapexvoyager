@@ -36,6 +36,7 @@ reason; nothing partial is ever written for a rejected row.
 | `rateBasis` | Yes | Only `PER_KM` is supported in TP3B. |
 | `perKmRateRupees` | Yes | **The actual owner-approved rate, in rupees per kilometre** — `<owner approved amount>`. Never estimated, never copied from a competitor site or from `TransportVehicle.estimatedFromPrice`/`TransportRoute.startingFare`. Converted internally to paise. |
 | `minimumKmPerDay` | No | Floor distance (km) the calculation is measured against. Leave blank to use the actual approved road distance with no floor. |
+| `deadKmReturnPercent` | No | TP3E — vehicle return/repositioning distance, as a percentage of the route distance (e.g. `25` = 25%). Must be between `0` and `200` inclusive when provided; invalid values are rejected, never clamped. Leave blank to model no dead-km at all (0%) — the genuine route distance is never altered by this field. |
 | `driverAllowanceApplicable` | No | `true`/`false`. Leave blank (treated as `false`) if this rule has no driver-allowance concept at all. |
 | `driverAllowanceIncludedInBaseFare` | No | `true`/`false`. Only meaningful when `driverAllowanceApplicable` is `true` — set `true` if the allowance is already folded into `perKmRateRupees` (nothing extra is added), or `false` if it must be added on top via `driverAllowancePerDayAmountRupees`. |
 | `driverAllowancePerDayAmountRupees` | Only when applicable and not included in base fare | `<owner approved amount>`, per day. Must be blank whenever `driverAllowanceApplicable` is `false` or `driverAllowanceIncludedInBaseFare` is `true` — a component can never be silently double-counted. |
@@ -55,8 +56,8 @@ reason; nothing partial is ever written for a rejected row.
 ## Example row (placeholders only)
 
 ```csv
-vehicleCategory,serviceRegion,tripType,rateBasis,perKmRateRupees,minimumKmPerDay,driverAllowanceApplicable,driverAllowanceIncludedInBaseFare,driverAllowancePerDayAmountRupees,nightHaltChargeRupees,tollStatus,parkingStatus,stateTaxStatus,permitStatus,validFrom,validTo,sourceType,sourceName,sourceReference,verifiedBy,notes
-SUV,himachal-pradesh,ONE_WAY,PER_KM,<owner approved amount>,,true,false,<owner approved amount>,,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,2026-10-01,2027-03-31,BUSINESS_APPROVED_ESTIMATE,,,,
+vehicleCategory,serviceRegion,tripType,rateBasis,perKmRateRupees,minimumKmPerDay,deadKmReturnPercent,driverAllowanceApplicable,driverAllowanceIncludedInBaseFare,driverAllowancePerDayAmountRupees,nightHaltChargeRupees,tollStatus,parkingStatus,stateTaxStatus,permitStatus,validFrom,validTo,sourceType,sourceName,sourceReference,verifiedBy,notes
+SUV,himachal-pradesh,ONE_WAY,PER_KM,<owner approved amount>,,,true,false,<owner approved amount>,,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,2026-10-01,2027-03-31,BUSINESS_APPROVED_ESTIMATE,,,,
 ```
 
 ## Customer-facing wording contract

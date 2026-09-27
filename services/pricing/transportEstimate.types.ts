@@ -54,12 +54,32 @@ export type TransportEstimateComponentStatusMap = {
 
 export interface CalculatedEstimateResult {
   status: 'CALCULATED_ESTIMATE';
+  /** The final estimated price (base + driver allowance + any explicitly supported fixed
+   *  extras — none exist yet), in integer minor units. Rounded exactly once, here, at the
+   *  very end — every intermediate km/percentage figure below is kept at full precision
+   *  (TP3E Section 5's rounding rule). */
   amountMinorUnits: number;
   currency: 'INR';
+  /** The genuine, caller-supplied route distance — NEVER mutated by the dead-km
+   *  component below (TP3E Section 2/3). */
   distanceKm: number;
   /** Always 'CALLER_PROVIDED_ROUTE' in TP3B — this service never computes or infers a
    *  distance itself (TP3B Section 10). */
   distanceSource: 'CALLER_PROVIDED_ROUTE';
+  /** TP3E — the vehicle return/repositioning distance in km, derived from the rule's
+   *  `deadKmReturnPercent` applied to `distanceKm` (0 when the rule doesn't set one —
+   *  fully backward compatible with a pre-TP3E rule). Kept at full floating-point
+   *  precision, never rounded. */
+  deadKmComponentKm: number;
+  /** TP3E — `max(distanceKm + deadKmComponentKm, minimumKmPerDay ?? 0)`, the km figure
+   *  actually multiplied by `perKmRateMinorUnits`. Full precision, never rounded. */
+  effectiveBillableKm: number;
+  /** TP3E — true only when the rule's `minimumKmPerDay` floor raised
+   *  `effectiveBillableKm` above `distanceKm + deadKmComponentKm`. */
+  minimumKmApplied: boolean;
+  /** The rule's own ₹/km rate (integer minor units per km), exposed so a future UI can
+   *  show the calculation breakdown without recomputing it client-side (TP3E Section 4). */
+  perKmRateMinorUnits: number;
   rateRuleId: string;
   rateRuleSource: TransportEstimateSourceType;
   componentStatus: TransportEstimateComponentStatusMap;

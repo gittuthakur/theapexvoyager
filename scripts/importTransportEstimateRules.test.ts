@@ -9,6 +9,7 @@ function validRow(overrides: Partial<Row> = {}): Row {
     rateBasis: 'PER_KM',
     perKmRateRupees: '12',
     minimumKmPerDay: '',
+    deadKmReturnPercent: '',
     driverAllowanceApplicable: 'true',
     driverAllowanceIncludedInBaseFare: 'false',
     driverAllowancePerDayAmountRupees: '300',
@@ -122,5 +123,45 @@ describe('validateRow', () => {
     const result = validateRow(validRow({ minimumKmPerDay: '', nightHaltChargeRupees: '' }));
     expect(result.input?.minimumKmPerDay).toBeUndefined();
     expect(result.input?.nightHaltChargeMinorUnits).toBeUndefined();
+  });
+});
+
+describe('validateRow — deadKmReturnPercent (TP3E)', () => {
+  it('is undefined when blank — unset behaves as 0% at calculation time, never invented here', () => {
+    const result = validateRow(validRow({ deadKmReturnPercent: '' }));
+    expect(result.valid).toBe(true);
+    expect(result.input?.deadKmReturnPercent).toBeUndefined();
+  });
+
+  it('accepts 0, 25, 40, 100 and the maximum of 200', () => {
+    for (const value of ['0', '25', '40', '100', '200']) {
+      const result = validateRow(validRow({ deadKmReturnPercent: value }));
+      expect(result.valid, `deadKmReturnPercent "${value}" should be valid`).toBe(true);
+      expect(result.input?.deadKmReturnPercent).toBe(Number(value));
+    }
+  });
+
+  it('accepts a fractional percentage', () => {
+    const result = validateRow(validRow({ deadKmReturnPercent: '24.5' }));
+    expect(result.valid).toBe(true);
+    expect(result.input?.deadKmReturnPercent).toBe(24.5);
+  });
+
+  it('rejects a negative value', () => {
+    const result = validateRow(validRow({ deadKmReturnPercent: '-1' }));
+    expect(result.valid).toBe(false);
+    expect(result.errors.join(' ')).toMatch(/deadKmReturnPercent/);
+  });
+
+  it('rejects a value above 200 — never silently clamped', () => {
+    const result = validateRow(validRow({ deadKmReturnPercent: '201' }));
+    expect(result.valid).toBe(false);
+    expect(result.errors.join(' ')).toMatch(/deadKmReturnPercent/);
+  });
+
+  it('rejects a non-numeric value', () => {
+    const result = validateRow(validRow({ deadKmReturnPercent: 'not-a-number' }));
+    expect(result.valid).toBe(false);
+    expect(result.errors.join(' ')).toMatch(/deadKmReturnPercent/);
   });
 });
