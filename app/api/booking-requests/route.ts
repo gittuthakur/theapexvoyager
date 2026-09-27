@@ -10,6 +10,7 @@ import { calculateBookingPrice, isValidPrice, type BookingConfig } from '@/lib/p
 import { normalizeTripPlannerJourney } from '@/lib/tripPlannerRequest';
 import { STAY_TYPE_OPTIONS, TRANSPORT_MODES, EXPERIENCE_OPTIONS } from '@/config/tripPlanner.config';
 import { validateJourneyTravelDate } from '@/lib/dateValidation';
+import { limitPublicForm, isContactPhone } from '@/lib/publicFormRequest';
 import { MAX_JOURNEY_TRAVELLERS, validateJourneyTravellerCounts } from '@/services/booking/journeyQuote.service';
 
 const VALID_TYPES: BookingRequestType[] = ['stay', 'journey', 'tour', 'experience', 'transport', 'expert'];
@@ -115,6 +116,8 @@ async function readBodyWithLimit(request: Request, maxBytes: number): Promise<Bo
 // the save-then-redirect shape already used by /api/inquiries.
 export async function POST(request: Request) {
   try {
+    const limited = limitPublicForm(request, '/api/booking-requests');
+    if (limited) return limited;
     // Content-Length is only ever an optional fast-path — a non-browser client can omit
     // it, understate it, or use chunked transfer-encoding with no length header at all,
     // so it must never be the only thing standing between an oversized body and
@@ -170,7 +173,7 @@ export async function POST(request: Request) {
     if (!VALID_TYPES.includes(type)) {
       return NextResponse.json({ error: `type must be one of: ${VALID_TYPES.join(', ')}` }, { status: 400 });
     }
-    if (!name || !phone) {
+    if (!name || name.length > 200 || !isContactPhone(phone) || phone.length > 30) {
       return NextResponse.json({ error: 'Name and phone are required' }, { status: 400 });
     }
     if (!itemName) {
@@ -483,7 +486,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ referenceId: bookingRequest.referenceId }, { status: 201 });
   } catch (error) {
-    console.error('Failed to save booking request', error);
+    console.error('Failed to save booking request');
     return NextResponse.json({ error: 'Failed to save booking request' }, { status: 500 });
   }
 }

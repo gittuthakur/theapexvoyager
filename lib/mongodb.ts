@@ -28,6 +28,11 @@ export async function connectDB(): Promise<typeof mongoose> {
     cache.promise = mongoose.connect(MONGODB_URI, { bufferCommands: false });
   }
 
-  cache.conn = await cache.promise;
+  try {
+    cache.conn = await cache.promise;
+  } catch (error) {
+    cache.promise = null;
+    throw error;
+  }
   return cache.conn;
 }

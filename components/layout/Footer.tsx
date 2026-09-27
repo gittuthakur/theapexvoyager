@@ -198,7 +198,7 @@ export default function Footer({
                 <Mail size={15} className="text-apex-300" />
                 <a
                   href={`mailto:${siteConfig.contactEmail}`}
-                  className="cursor-hover min-w-0 flex-1 break-words transition-colors duration-300 ease-in-out hover:text-white text-nowrap"
+                  className="cursor-hover min-w-0 flex-1 break-all transition-colors duration-300 ease-in-out hover:text-white"
                 >
                   {siteConfig.contactEmail}
                 </a>

@@ -1,9 +1,6 @@
 import { Mail, Phone, Sparkles } from 'lucide-react';
 import { siteConfig } from '@/config/site.config';
 
-const pendingClass =
-  'inline-block rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-xs font-semibold text-amber-700';
-
 const SECTIONS: { heading: string; body: React.ReactNode }[] = [
   {
     heading: '1. General',
@@ -39,7 +36,8 @@ const SECTIONS: { heading: string; body: React.ReactNode }[] = [
     body: (
       <p>
         Payment terms for your trip, including advance amounts and balance due dates, will be communicated to you
-        directly by our travel team. <span className={pendingClass}>[BUSINESS POLICY TO BE CONFIRMED]</span>
+        directly by our travel team in writing before you pay. Please review the quoted inclusions, exclusions,
+        applicable taxes and cancellation terms before accepting the quotation.
       </p>
     )
   },
@@ -107,7 +105,7 @@ const SECTIONS: { heading: string; body: React.ReactNode }[] = [
       <p>
         Cancellations, whether requested by the traveller or arising from circumstances requiring rescheduling, are
         handled in accordance with our Cancellation Policy.{' '}
-        <span className={pendingClass}>[BUSINESS POLICY TO BE CONFIRMED]</span>
+        The terms for your specific services will be shared in writing before payment.
       </p>
     )
   },
@@ -115,9 +113,9 @@ const SECTIONS: { heading: string; body: React.ReactNode }[] = [
     heading: '12. Force Majeure',
     body: (
       <p>
-        The Apex Voyager India is not liable for delays, changes, or cancellations arising from events beyond our
-        reasonable control, including natural disasters, extreme weather, road closures, or government
-        restrictions.
+        Natural disasters, extreme weather, road closures or government restrictions may affect a trip.
+        We will discuss available alternatives and the applicable booking terms with you. This does not limit
+        any rights you have under applicable law.
       </p>
     )
   },
@@ -132,7 +130,7 @@ const SECTIONS: { heading: string; body: React.ReactNode }[] = [
   },
   {
     heading: '14. Liability',
-    body: <p className={pendingClass}>[BUSINESS POLICY TO BE CONFIRMED]</p>
+    body: <p>Our role and the services we arrange are described in your written booking confirmation. Independent suppliers operate their own services. Please contact us promptly about any concern so we can help coordinate a response. Nothing in these terms excludes rights or responsibilities that cannot be excluded under applicable law.</p>
   }
 ];
 
@@ -155,7 +153,7 @@ export default function TermsAndConditionsContent() {
             Voyager.
           </p>
           <p className="text-xs text-slate-400">
-            Last updated: <span className={pendingClass}>[DATE TO BE CONFIRMED]</span>
+            Last updated: 25 September 2026
           </p>
         </section>
 
@@ -175,13 +173,13 @@ export default function TermsAndConditionsContent() {
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/10 text-apex-300">
               <Mail size={24} />
             </div>
-            <div className="space-y-4">
+            <div className="min-w-0 space-y-4">
               <h2 className="text-xl font-bold sm:text-2xl">15. Contact</h2>
               <p className="max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
                 If you have any questions about these Terms &amp; Conditions, please get in touch with our travel
                 team.
               </p>
-              <div className="flex flex-wrap gap-4 pt-2 text-sm">
+              <div className="flex flex-wrap gap-4 pt-2 text-sm break-all">
                 <a
                   href={siteConfig.contactPhoneHref}
                   className="cursor-hover inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 font-semibold text-slate-900 transition hover:bg-slate-100"

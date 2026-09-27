@@ -146,6 +146,6 @@ export async function sendBookingConfirmationEmails(input: BookingConfirmationEm
   // slow/unreachable SMTP host costs at most ~5s total, not ~5s per recipient.
   const results = await Promise.allSettled(sends);
   for (const result of results) {
-    if (result.status === 'rejected') console.error('Failed to send a booking confirmation email', result.reason);
+    if (result.status === 'rejected') console.error('Saved request: email notification failed.');
   }
 }

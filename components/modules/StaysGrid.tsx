@@ -90,7 +90,7 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
   }
 
   if (status === 'error' && curatedAsStays.length === 0) {
-    return <p className="text-sm text-slate-500">We couldn't load live stays right now — please check back shortly.</p>;
+    return <p className="text-sm text-slate-500">We couldn&apos;t load live stays right now — please check back shortly.</p>;
   }
 
   if (stays.length === 0) {

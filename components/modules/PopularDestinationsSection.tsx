@@ -94,7 +94,7 @@ export default function PopularDestinationsSection({ destinations }: PopularDest
           <div className='flex min-w-0 flex-1 flex-col gap-2 text-center sm:text-start'>
             <h3 className="text-xl font-bold text-slate-900">Not sure where to go?</h3>
             <p className="text-sm text-slate-600">
-              Tell us what you love — adventure, nature, luxury, quiet or slow travel — and we'll match you to your ideal
+              Tell us what you love — adventure, nature, luxury, quiet or slow travel — and we&apos;ll match you to your ideal
               Himalayan destination.
             </p>
           </div>

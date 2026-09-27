@@ -83,7 +83,7 @@ const WHY_APEX_STAYS: Array<{ title: string; description: string; icon: LucideIc
   { title: 'Stay Planning', description: 'Help finding the right accommodation for your route.', icon: BadgeCheck },
   { title: 'Local Expertise', description: 'Advice from people who actually know the Himalayas.', icon: MapPinned },
   { title: 'Accommodation Options', description: 'From hotels to homestays, matched to how you want to travel.', icon: Sparkles },
-  { title: '24/7 Travel Support', description: 'Real help on WhatsApp, before and during your stay.', icon: Clock }
+  { title: 'Travel Planning Support', description: 'Real help on WhatsApp, before and during your stay.', icon: Clock }
 ];
 
 export default async function StaysPage() {

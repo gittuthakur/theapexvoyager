@@ -1,13 +1,17 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { Inquiry } from '@/models/Inquiry';
+import { readPublicForm, isContactPhone } from '@/lib/publicFormRequest';
+import { sendBookingConfirmationEmails } from '@/lib/mailer';
 
 // Saves a WhatsApp lead-capture submission before the browser is redirected to
 // wa.me — this is the record of intent even if the visitor never actually sends
 // the prefilled WhatsApp message.
 export async function POST(request: Request) {
   try {
-    const body = await request.json().catch(() => null);
+    const parsed = await readPublicForm(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const name = typeof body?.name === 'string' ? body.name.trim() : '';
     const phone = typeof body?.phone === 'string' ? body.phone.trim() : '';
     const selection = typeof body?.selection === 'string' ? body.selection.trim() : '';
@@ -18,7 +22,7 @@ export async function POST(request: Request) {
     const sourcePage = typeof body?.sourcePage === 'string' ? body.sourcePage.trim() : undefined;
     const date = typeof body?.date === 'string' ? body.date.trim() : undefined;
 
-    if (!name || !phone) {
+    if (!name || name.length > 200 || !isContactPhone(phone) || phone.length > 30) {
       return NextResponse.json({ error: 'Name and phone are required' }, { status: 400 });
     }
     if (!selection) {
@@ -41,9 +45,13 @@ export async function POST(request: Request) {
       date: date?.slice(0, 30)
     });
 
+    after(() => sendBookingConfirmationEmails({
+      referenceId: String(inquiry._id), type: selectionType, name: inquiry.name,
+      phone: inquiry.phone, itemName: inquiry.selection, dates: inquiry.date
+    }));
     return NextResponse.json({ inquiry }, { status: 201 });
   } catch (error) {
-    console.error('Failed to save inquiry', error);
+    console.error('Failed to save inquiry');
     return NextResponse.json({ error: 'Failed to save inquiry' }, { status: 500 });
   }
 }

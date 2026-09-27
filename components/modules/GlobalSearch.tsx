@@ -211,7 +211,7 @@ export function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900">No results found</h3>
                       <p className="mt-2 text-sm text-slate-500">
-                        We couldn't find anything matching "<span className="font-medium">{query}</span>". Try another destination, tour or experience.
+                        We couldn&apos;t find anything matching &quot;<span className="font-medium">{query}</span>&quot;. Try another destination, tour or experience.
                       </p>
                     </div>
 

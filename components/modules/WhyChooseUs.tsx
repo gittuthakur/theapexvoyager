@@ -25,7 +25,7 @@ const defaultItems: WhyChooseUsItem[] = [
   {
     icon: Sparkles,
     title: 'Handpicked Sanctuary Stays',
-    description: 'From heritage apple-orchard villas to luxury riverside camps—personally vetted for unmatched comfort.'
+    description: 'Explore heritage villas, mountain retreats and riverside stays, with facilities confirmed for your trip.'
   },
   {
     icon: ShieldCheck,
@@ -57,7 +57,7 @@ const defaultItems: WhyChooseUsItem[] = [
     icon: Headphones,
     title: 'Dedicated Mountain Concierge',
     description:
-      "Seasoned local pilots and 24/7 round-the-clock trip coordination from arrival to departure."
+      "Local drivers and a dedicated travel team help coordinate your journey from arrival to departure."
   }
 ];
 

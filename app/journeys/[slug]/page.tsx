@@ -56,11 +56,11 @@ const JOURNEY_SEO_OVERRIDES: Record<string, JourneySeoOverride> = {
     // Kinnaur, not just Spiti — Day 1 (Kalpa) and Day 2 (Nako) of this journey's real
     // itinerary are both Kinnaur-district stops, so this reflects the actual route
     // rather than marketing a separate Kinnaur-only product.
-    title: 'Kinnaur Spiti Tour from Chandigarh | 7D/6N',
-    h1: 'Kinnaur & Spiti Valley Tour from Chandigarh',
+    title: 'Kinnaur Spiti Tour from Shimla | 7D/6N',
+    h1: 'Kinnaur & Spiti Valley Tour from Shimla',
     description:
-      'Book a 7D/6N Kinnaur & Spiti tour from Chandigarh via Kalpa and Nako to Key Monastery, Kaza, Hikkim and Langza on a real high-altitude circuit.',
-    pickupNote: CHANDIGARH_PICKUP_NOTE
+      'Plan a 7D/6N Kinnaur & Spiti tour from Shimla via Kalpa and Nako to Kaza, ending in Manali. Ask about a separate Chandigarh transfer.',
+    pickupNote: 'The published 7-day itinerary starts in Shimla and ends in Manali. A Chandigarh transfer requires separate confirmation of timing, cost and any additional night. Chandratal and the Kunzum route depend on seasonal road access; confirm the final route before booking.'
   },
   'himachal-himalayan-explorer': {
     // Shimla (Days 1-3) and Manali (Days 3-8) are both genuinely, substantively

@@ -2,9 +2,11 @@ import type { Metadata } from 'next';
 import AboutContent from '@/components/modules/AboutContent';
 import { images } from '@/config/images.config';
 
+export const dynamic = 'force-dynamic';
+
 const title = 'About Us | The Apex Voyager India';
 const description =
-  'The Apex Voyager India crafts curated, safety-first Himalayan journeys backed by local expertise and 24/7 support. Learn our mission and what guides every trip.';
+  'The Apex Voyager India crafts curated, safety-first Himalayan journeys backed by local expertise and trip coordination. Learn our mission and what guides every trip.';
 
 export const metadata: Metadata = {
   title,

@@ -8,6 +8,8 @@ import { Expert } from '@/models/Expert';
 import { siteConfig } from '@/config/site.config';
 import { stayTypes } from '@/config/stayTypes.config';
 
+export const dynamic = 'force-dynamic';
+
 interface SlugRecord {
   slug: string;
   updatedAt?: Date;

@@ -18,9 +18,11 @@ export default function ContactForm({ apiEndpoint = '/api/contact', onSuccess }:
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (status === 'sending') return;
+    const formElement = event.currentTarget;
     setStatus('sending');
 
-    const form = new FormData(event.currentTarget);
+    const form = new FormData(formElement);
     const payload = {
       name: form.get('name'),
       email: form.get('email'),
@@ -32,7 +34,7 @@ export default function ContactForm({ apiEndpoint = '/api/contact', onSuccess }:
       await postJSON(apiEndpoint, payload);
       setStatus('success');
       setMessage('Thanks! We received your message and will respond shortly.');
-      event.currentTarget.reset();
+      formElement.reset();
       onSuccess?.();
     } catch {
       setStatus('error');
@@ -43,17 +45,17 @@ export default function ContactForm({ apiEndpoint = '/api/contact', onSuccess }:
   return (
     <form className={glassCardClass(false, 'space-y-6 p-8')} onSubmit={handleSubmit}>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Input label="Name" name="name" required />
-        <Input label="Email" name="email" type="email" required />
+        <Input label="Name (required)" name="name" maxLength={200} autoComplete="name" required />
+        <Input label="Email (required)" name="email" type="email" maxLength={200} autoComplete="email" required />
       </div>
-      <Input label="Phone" name="phone" type="tel" />
-      <Textarea label="Message" name="message" rows={5} required />
+      <Input label="Phone (optional)" name="phone" type="tel" maxLength={30} autoComplete="tel" />
+      <Textarea label="Message (required)" name="message" rows={5} maxLength={5000} required />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <Button type="submit" disabled={status === 'sending'}>
           {status === 'sending' ? 'Sending...' : 'Send Message'}
         </Button>
         {message ? (
-          <p className={status === 'error' ? 'text-sm text-rose-500' : 'text-sm text-slate-600'}>{message}</p>
+          <p role={status === 'error' ? 'alert' : 'status'} className={status === 'error' ? 'text-sm text-rose-500' : 'text-sm text-slate-600'}>{message}</p>
         ) : null}
       </div>
     </form>

@@ -31,7 +31,7 @@ export default async function AboutPage() {
                   Founded with a core passion to bridge the exact gap between modern urban explorers and unscripted, breathtaking mountain trails, <strong className="text-slate-900 font-semibold">The Apex Voyager India</strong> seamlessly combines cutting-edge travel technology with deep-rooted local hospitality. We strongly believe that every single journey should be entirely effortless, deeply immersive, and forever unforgettable.
                 </p>
                 <p>
-                  What started as a vision to redefine mountain expeditions has evolved into a trusted platform. We empower travelers by eliminating hassles through smart configuration tools, real-time pricing transparency, and handpicked local experiences that standard travel portals often miss. From the winding roads of Himachal to cozy heritage stays, we take care of the details so you can live the experience.
+                  What started as a vision to redefine mountain expeditions has evolved into a trusted platform. We empower travelers by eliminating hassles through smart configuration tools, clear indicative pricing, and handpicked local experiences that standard travel portals often miss. From the winding roads of Himachal to cozy heritage stays, we take care of the details so you can live the experience.
                 </p>
               </div>
             </section>
@@ -52,7 +52,7 @@ export default async function AboutPage() {
               <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Himalayan States Covered</p>
             </div>
             <div className="px-5 py-7 rounded-2xl border border-slate-200 bg-slate-50 text-center space-y-1">
-              <p className="text-3xl sm:text-4xl font-black text-emerald-500">24/7</p>
+              <p className="text-3xl sm:text-4xl font-black text-emerald-500">Support</p>
               <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">On-Trip Assistance</p>
             </div>
           </div>

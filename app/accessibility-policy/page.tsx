@@ -4,7 +4,7 @@ import { images } from '@/config/images.config';
 
 const title = 'Accessibility & Assistance Animals Policy | The Apex Voyager India';
 const description =
-  'Accessibility policy for travelers with disabilities and service animals booking with The Apex Voyager India, aligned with India\'s RPWD Act, 2016.';
+  'How to discuss accessibility and assistance-animal arrangements with The Apex Voyager India before booking.';
 
 export const metadata: Metadata = {
   title,

@@ -60,7 +60,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
       {
         question: 'How are homestays and hotels selected?',
         answer:
-          'Every partner stay is personally vetted for safety, cleanliness, and hospitality before it’s listed, and re-checked periodically as part of our quality standards.'
+          'We help you review property information and confirm the facilities and arrangements that matter to your stay before booking. Listing a property does not certify its safety or accessibility.'
       },
       {
         question: 'Can I request a specific room type or view?',

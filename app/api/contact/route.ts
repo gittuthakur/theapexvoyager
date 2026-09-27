@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { connectDB } from '@/lib/mongodb';
 import { Enquiry } from '@/models/Enquiry';
+import { readPublicForm, isContactPhone } from '@/lib/publicFormRequest';
+import { normalizeCustomerEmail } from '@/lib/customerValidation';
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const SMTP_HOST = process.env.SMTP_HOST;
@@ -23,6 +25,9 @@ const transporter =
     host: SMTP_HOST,
     port: SMTP_PORT,
     secure: SMTP_PORT === 465,
+    connectionTimeout: 5000,
+    greetingTimeout: 5000,
+    socketTimeout: 5000,
     auth: {
       user: SMTP_USER,
       pass: SMTP_PASS
@@ -57,7 +62,9 @@ function escapeHtml(value: unknown) {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json().catch(() => null);
+    const parsed = await readPublicForm(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
     const name = typeof body?.name === 'string' ? body.name.trim() : '';
     const email = typeof body?.email === 'string' ? body.email.trim() : '';
     const phone = typeof body?.phone === 'string' ? body.phone.trim() : undefined;
@@ -68,8 +75,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    if (!EMAIL_PATTERN.test(email) || email.length > 200) {
+    if (!EMAIL_PATTERN.test(email) || !normalizeCustomerEmail(email)) {
       return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
+    }
+
+    if (name.length > 200 || message.length > 5000 || (phone && (phone.length > 30 || !isContactPhone(phone))) || (budgetRange && budgetRange.length > 100)) {
+      return NextResponse.json({ error: 'Please check your contact details and message length.' }, { status: 400 });
     }
 
     const boundedName = name.slice(0, 200);
@@ -116,11 +127,17 @@ export async function POST(request: Request) {
     `
     };
 
-    await Promise.all([transporter.sendMail(adminMail), transporter.sendMail(guestMail)]);
+    const notifications = await Promise.allSettled([
+      Promise.resolve().then(() => transporter.sendMail(adminMail)),
+      Promise.resolve().then(() => transporter.sendMail(guestMail))
+    ]);
+    if (notifications.some((result) => result.status === 'rejected')) {
+      console.error('Contact enquiry saved; email notification failed.');
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Failed to save contact enquiry', error);
+    console.error('Failed to save contact enquiry');
     return NextResponse.json({ error: 'Something went wrong — please try again.' }, { status: 500 });
   }
 }

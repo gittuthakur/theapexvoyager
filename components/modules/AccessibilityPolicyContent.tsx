@@ -27,9 +27,9 @@ export default function AccessibilityPolicyContent() {
             <span className="bg-gradient-to-r from-apex-500 via-apex-600 to-apex-700 bg-clip-text text-transparent">Policy</span>
           </h1>
           <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
-            The Apex Voyager India is committed to making the Himalayas accessible to every traveler. From certified
-            service animals to on-ground support, our partner stays, hotels, and transport across Himachal Pradesh,
-            Kashmir, and Uttarakhand are held to a single standard: equal access, without exception.
+            We help travellers discuss accessibility requirements when planning a Himalayan journey. Terrain,
+            buildings and vehicles vary across Himachal Pradesh, Kashmir and Uttarakhand. Share your needs before
+            booking so we can check specific arrangements with the property or transport provider.
           </p>
         </section>
 
@@ -39,16 +39,16 @@ export default function AccessibilityPolicyContent() {
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-apex-50 text-apex-600">
               <BadgeCheck size={24} />
             </div>
-            <div className="space-y-3">
+            <div className="min-w-0 space-y-3">
               <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">1. Service Animals vs. Pets</h2>
               <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
-                Certified guide dogs and trained service animals assisting guests with disabilities are recognised as
-                working animals, not pets. They are welcome across our partner homestays, hotels, and transport
-                vehicles free of any pet fee or breed restriction that might otherwise apply.
+                Guide dogs and trained assistance animals can be essential travel companions. Tell us about the
+                assistance you need so we can check access arrangements with each property and transport provider.
+                We cannot promise identical facilities or arrangements across every listed service.
               </p>
               <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
-                Emotional support animals are treated differently from certified service animals under Indian law and
-                may be subject to individual property policies — see the guidelines below before you book.
+                If you travel with an emotional support animal or a pet, ask us to check the specific provider&apos;s
+                arrangements before you book. We will explain any relevant requirements shared by that provider.
               </p>
             </div>
           </div>
@@ -60,28 +60,28 @@ export default function AccessibilityPolicyContent() {
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white text-apex-600 shadow-sm">
               <Gavel size={24} />
             </div>
-            <div className="space-y-3">
+            <div className="min-w-0 space-y-3">
               <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">2. Legal Framework in India</h2>
               <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
-                This policy is framed in line with the{' '}
+                We recognise the objectives of the{' '}
                 <strong className="font-semibold text-slate-900">
                   Rights of Persons with Disabilities (RPWD) Act, 2016
                 </strong>
-                , which mandates equal access, non-discrimination, and reasonable accommodation for persons with
-                disabilities across public services, transport, and hospitality establishments in India.
+                . We aim to support respectful, non-discriminatory travel planning and reasonable accommodation.
+                This page describes our coordination process; it does not certify every supplier or route as accessible.
               </p>
               <ul className="space-y-2 text-sm leading-relaxed text-slate-600 sm:text-base">
                 <li className="flex items-start gap-2.5">
                   <ShieldCheck size={18} className="mt-0.5 shrink-0 text-apex-500" />
-                  <span>Equal access to bookings, stays, and transport for travelers with disabilities.</span>
+                  <span>Discuss access needs for rooms, entrances, bathrooms and vehicles before booking.</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <ShieldCheck size={18} className="mt-0.5 shrink-0 text-apex-500" />
-                  <span>No discrimination on the basis of disability or the use of a certified service animal.</span>
+                  <span>Ask us to check assistance-animal arrangements with each service provider.</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <ShieldCheck size={18} className="mt-0.5 shrink-0 text-apex-500" />
-                  <span>Reasonable accommodations made by our partner properties wherever practicable.</span>
+                  <span>Request written confirmation of the arrangements important to your journey.</span>
                 </li>
               </ul>
             </div>
@@ -98,8 +98,8 @@ export default function AccessibilityPolicyContent() {
               </div>
               <h3 className="mt-4 text-base font-bold text-slate-900">Give prior notice</h3>
               <p className="mt-2 text-sm leading-relaxed text-slate-500">
-                Mountain homestays often have limited rooms and staff. Let us know at least 48 hours before check-in
-                if you&apos;re travelling with a service animal, so your host can prepare a comfortable arrangement.
+                Mountain homestays often have limited rooms and staff. Share your accessibility or assistance-animal
+                requirements before booking so we have time to check suitable arrangements.
               </p>
             </div>
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-apex-400/40">
@@ -108,8 +108,8 @@ export default function AccessibilityPolicyContent() {
               </div>
               <h3 className="mt-4 text-base font-bold text-slate-900">Carry documentation</h3>
               <p className="mt-2 text-sm leading-relaxed text-slate-500">
-                Where a property or transport provider requests it, carry your service animal&apos;s certification or
-                a treating physician&apos;s note. This helps our partners verify and accommodate you quickly.
+                Ask us what information a provider needs to confirm an arrangement. Please avoid sending medical
+                records through a general enquiry form; discuss any necessary documentation directly with our team.
               </p>
             </div>
           </div>
@@ -121,11 +121,11 @@ export default function AccessibilityPolicyContent() {
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/10 text-apex-300">
               <Headset size={24} />
             </div>
-            <div className="space-y-4">
+            <div className="min-w-0 space-y-4">
               <h2 className="text-xl font-bold sm:text-2xl">4. Support &amp; Assistance</h2>
               <p className="max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
-                Our accessibility help desk coordinates directly with partner homestays and hotels across the three
-                Himalayan states we operate in, so your arrangements are confirmed before you arrive.
+                Our travel team can contact the relevant property or operator to check your requirements.
+                Please obtain written confirmation of essential arrangements before committing to a booking.
               </p>
 
               <div className="flex flex-wrap gap-2 pt-1">
@@ -143,7 +143,7 @@ export default function AccessibilityPolicyContent() {
                 })}
               </div>
 
-              <div className="flex flex-wrap gap-4 pt-2 text-sm">
+              <div className="flex flex-wrap gap-4 pt-2 text-sm break-all">
                 <a
                   href={siteConfig.contactPhoneHref}
                   className="cursor-hover inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 font-semibold text-slate-900 transition hover:bg-slate-100"

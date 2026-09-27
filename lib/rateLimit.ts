@@ -9,6 +9,13 @@ const hits = new Map<string, { count: number; windowStart: number }>();
 
 export function isRateLimited(key: string, limit: number): boolean {
   const now = Date.now();
+  // Bound memory even when callers rotate IP addresses or search terms.
+  if (hits.size >= 10_000) {
+    for (const [storedKey, entry] of hits) {
+      if (now - entry.windowStart > WINDOW_MS) hits.delete(storedKey);
+    }
+    if (hits.size >= 10_000 && !hits.has(key)) return true;
+  }
   const entry = hits.get(key);
   if (!entry || now - entry.windowStart > WINDOW_MS) {
     hits.set(key, { count: 1, windowStart: now });

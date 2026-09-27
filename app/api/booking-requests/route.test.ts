@@ -12,6 +12,7 @@ vi.mock('next/server', async (importOriginal) => {
 });
 
 vi.mock('@/lib/mongodb', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }));
+vi.mock('@/lib/rateLimit', () => ({ isRateLimited: vi.fn().mockReturnValue(false) }));
 vi.mock('@/lib/bookingId', () => ({ generateBookingId: vi.fn().mockResolvedValue('TAP-99999') }));
 
 const bookingRequestCreateMock = vi.fn();

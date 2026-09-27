@@ -12,9 +12,6 @@ import {
 } from 'lucide-react';
 import { siteConfig } from '@/config/site.config';
 
-const pendingClass =
-  'inline-block rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-xs font-semibold text-amber-700';
-
 interface Section {
   icon: typeof Shield;
   heading: string;
@@ -86,12 +83,16 @@ const SECTIONS: Section[] = [
   },
   {
     icon: Timer,
-    heading: '4. Cookies and Analytics',
+    heading: '4. Cookies, Local Storage and Advertising Measurement',
     body: (
       <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
-        This website does not currently use cookies, analytics, or tracking technologies for advertising or
-        profiling purposes. If this changes in the future, this policy will be updated to reflect the technologies
-        in use at that time.
+        This website loads the Google Ads tag to measure advertising activity, including clicks that open
+        WhatsApp, and Meta Pixel to record page views. A WhatsApp click does not mean that a message was sent
+        or a booking confirmed. These services may use cookies and receive browser, device, IP address,
+        page URL and referrer information. We also use browser local storage for saved favourites.
+        You can manage cookies and stored site data through your browser settings; blocking them may affect
+        saved preferences and advertising measurement. Google and Meta provide additional privacy and ad controls
+        in their own services.
       </p>
     )
   },
@@ -100,9 +101,10 @@ const SECTIONS: Section[] = [
     heading: '5. Third-Party Services',
     body: (
       <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
-        We use trusted service providers to help operate this website and respond to your enquiries — for example,
-        email delivery for enquiry and booking communication. We do not sell your personal information, and we do
-        not share it with third parties for their own marketing purposes.
+        We use hosting, database and email providers to operate the website and handle enquiries. Travel details
+        needed to arrange a requested service may be shared with the relevant accommodation or transport provider.
+        Google and Meta receive information through the advertising technologies described above and process it
+        under their own privacy policies. Opening WhatsApp takes you to a separate service governed by its own terms.
       </p>
     )
   },
@@ -159,7 +161,7 @@ export default function PrivacyPolicyContent() {
             when you explore our website, enquire about a journey, or communicate with our travel team.
           </p>
           <p className="text-xs text-slate-400">
-            Last updated: <span className={pendingClass}>[DATE TO BE CONFIRMED]</span>
+            Last updated: 25 September 2026
           </p>
         </section>
 
@@ -172,7 +174,7 @@ export default function PrivacyPolicyContent() {
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-apex-50 text-apex-600">
                     <SectionIcon size={22} />
                   </div>
-                  <div className="w-full space-y-3">
+                  <div className="min-w-0 w-full space-y-3">
                     <h2 className="text-lg font-bold text-slate-900 sm:text-xl">{section.heading}</h2>
                     {section.body}
                   </div>
@@ -187,13 +189,13 @@ export default function PrivacyPolicyContent() {
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/10 text-apex-300">
               <Mail size={24} />
             </div>
-            <div className="space-y-4">
+            <div className="min-w-0 space-y-4">
               <h2 className="text-xl font-bold sm:text-2xl">9. Contact</h2>
               <p className="max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
                 If you have any questions about this Privacy Policy or the information we hold about you, please
                 get in touch.
               </p>
-              <div className="flex flex-wrap gap-4 pt-2 text-sm">
+              <div className="flex flex-wrap gap-4 pt-2 text-sm break-all">
                 <a
                   href={siteConfig.contactPhoneHref}
                   className="cursor-hover inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 font-semibold text-slate-900 transition hover:bg-slate-100"

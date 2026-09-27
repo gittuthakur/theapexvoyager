@@ -1,16 +1,13 @@
 import { Mail, Phone, Sparkles } from 'lucide-react';
 import { siteConfig } from '@/config/site.config';
 
-const pendingClass =
-  'inline-block rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-xs font-semibold text-amber-700';
-
 const SECTIONS: { heading: string; body: React.ReactNode }[] = [
   {
     heading: '1. Booking Cancellation',
     body: (
       <p>
         If you wish to cancel a confirmed booking, please contact our travel team as soon as possible by phone,
-        email, or WhatsApp. <span className={pendingClass}>[FINAL CANCELLATION TERMS TO BE CONFIRMED]</span>
+        email, or WhatsApp. Include your booking reference and ask for written acknowledgement of your request.
       </p>
     )
   },
@@ -20,7 +17,7 @@ const SECTIONS: { heading: string; body: React.ReactNode }[] = [
       <p>
         Requests to change your travel dates are handled on a case-by-case basis, subject to availability with our
         partner stays and transport providers.{' '}
-        <span className={pendingClass}>[FINAL CANCELLATION TERMS TO BE CONFIRMED]</span>
+        Any revised price or supplier charges will be explained before you accept a change.
       </p>
     )
   },
@@ -30,7 +27,7 @@ const SECTIONS: { heading: string; body: React.ReactNode }[] = [
       <p>
         Cancellation terms for stays, hotels, and homestays may vary by property. Our travel team will confirm the
         specific terms applicable to your stay at the time of booking.{' '}
-        <span className={pendingClass}>[FINAL CANCELLATION TERMS TO BE CONFIRMED]</span>
+        Review the written cancellation deadlines and charges before making payment.
       </p>
     )
   },
@@ -40,7 +37,7 @@ const SECTIONS: { heading: string; body: React.ReactNode }[] = [
       <p>
         Cancellation terms for transport bookings depend on the vehicle operator and route. Our travel team will
         confirm the applicable terms at the time of booking.{' '}
-        <span className={pendingClass}>[FINAL CANCELLATION TERMS TO BE CONFIRMED]</span>
+        Review the written cancellation deadlines and charges before making payment.
       </p>
     )
   },
@@ -66,8 +63,9 @@ const SECTIONS: { heading: string; body: React.ReactNode }[] = [
     heading: '7. Force Majeure',
     body: (
       <p>
-        The Apex Voyager India is not responsible for cancellations or changes arising from events beyond our reasonable
-        control, including natural disasters, extreme weather, or government restrictions.
+        Events such as natural disasters, extreme weather or government restrictions may affect a booking.
+        Available alternatives and any refund will depend on the affected services, your booking terms and
+        applicable law; a full refund or free rescheduling is not automatically guaranteed.
       </p>
     )
   },
@@ -76,7 +74,7 @@ const SECTIONS: { heading: string; body: React.ReactNode }[] = [
     body: (
       <p>
         Where a refund is applicable, it will be processed to the original mode of payment.{' '}
-        <span className={pendingClass}>[FINAL CANCELLATION TERMS TO BE CONFIRMED]</span>
+        Our team will confirm the eligible amount, any deductions and the expected processing time in writing.
       </p>
     )
   },
@@ -110,7 +108,7 @@ export default function CancellationPolicyContent() {
             transport booked through The Apex Voyager India.
           </p>
           <p className="text-xs text-slate-400">
-            Last updated: <span className={pendingClass}>[DATE TO BE CONFIRMED]</span>
+            Last updated: 25 September 2026
           </p>
         </section>
 
@@ -130,12 +128,12 @@ export default function CancellationPolicyContent() {
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/10 text-apex-300">
               <Mail size={24} />
             </div>
-            <div className="space-y-4">
+            <div className="min-w-0 space-y-4">
               <h2 className="text-xl font-bold sm:text-2xl">Need to cancel or reschedule?</h2>
               <p className="max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
                 Contact our travel team directly and we&apos;ll confirm the exact terms for your booking.
               </p>
-              <div className="flex flex-wrap gap-4 pt-2 text-sm">
+              <div className="flex flex-wrap gap-4 pt-2 text-sm break-all">
                 <a
                   href={siteConfig.contactPhoneHref}
                   className="cursor-hover inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 font-semibold text-slate-900 transition hover:bg-slate-100"

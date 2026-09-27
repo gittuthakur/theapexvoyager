@@ -7,10 +7,10 @@ interface TrustPoint {
 }
 
 const TRUST_POINTS: TrustPoint[] = [
-  { icon: BadgeCheck, title: 'Verified Local Experiences', description: 'Experiences selected for quality, authenticity and reliability.' },
+  { icon: BadgeCheck, title: 'Curated Local Experiences', description: 'Explore local activities, with arrangements confirmed before booking.' },
   { icon: Compass, title: 'Local Experts', description: 'People who know the mountains beyond the guidebook.' },
   { icon: ShieldCheck, title: 'Transparent Pricing', description: 'Know what is included before you book.' },
-  { icon: Clock, title: '24/7 Travel Support', description: "We're here before, during and after your journey." }
+  { icon: Clock, title: 'Travel Planning Support', description: "We're here before, during and after your journey." }
 ];
 
 export default function ExperienceTrust() {

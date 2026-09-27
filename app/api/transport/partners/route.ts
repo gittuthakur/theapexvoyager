@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { TransportPartner, type TransportPartnerType } from '@/models/TransportPartner';
+import { readPublicForm, isContactPhone } from '@/lib/publicFormRequest';
+import { normalizeCustomerEmail } from '@/lib/customerValidation';
 
 const PARTNER_TYPES: TransportPartnerType[] = [
   'Cab Operator',
@@ -26,7 +28,9 @@ function toStringArray(value: unknown, maxItems = 20, maxLength = 100): string[]
 // intake only.
 export async function POST(request: Request) {
   try {
-    const body = await request.json().catch(() => null);
+    const parsed = await readPublicForm(request);
+    if (parsed.error) return parsed.error;
+    const body = parsed.body;
 
     const businessName = typeof body?.businessName === 'string' ? body.businessName.trim() : '';
     const phone = typeof body?.phone === 'string' ? body.phone.trim() : '';
@@ -47,6 +51,9 @@ export async function POST(request: Request) {
 
     if (!businessName || !phone || !state) {
       return NextResponse.json({ error: 'businessName, phone and state are required' }, { status: 400 });
+    }
+    if (!isContactPhone(phone) || (whatsapp && !isContactPhone(whatsapp)) || (email && !normalizeCustomerEmail(email)) || (numberOfVehicles !== undefined && (!Number.isInteger(numberOfVehicles) || numberOfVehicles < 1))) {
+      return NextResponse.json({ error: 'Please check your contact details and vehicle count.' }, { status: 400 });
     }
     if (partnerTypes.length === 0) {
       return NextResponse.json({ error: `At least one partnerType is required, from: ${PARTNER_TYPES.join(', ')}` }, { status: 400 });
@@ -78,7 +85,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ id: String(partner._id), status: partner.status }, { status: 201 });
   } catch (error) {
-    console.error('Failed to save transport partner application', error);
+    console.error('Failed to save transport partner application');
     return NextResponse.json({ error: 'Failed to save transport partner application' }, { status: 500 });
   }
 }

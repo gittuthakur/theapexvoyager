@@ -11,7 +11,7 @@ const JOURNEYS_TRUST_BADGES = [
   { icon: ShieldCheck, title: 'Accommodation & Experience Planning', description: 'We help you plan stays and experiences around your route' },
   { icon: Sparkles, title: 'Personalized Journeys', description: 'Configured to your dates and preferences' },
   { icon: Gem, title: 'Transparent Travel Planning', description: 'Clear pricing, never a hidden surprise' },
-  { icon: Headphones, title: '24/7 Travel Support', description: "We're here whenever you need us" }
+  { icon: Headphones, title: 'Dedicated Travel Support', description: "Contact our team before and during your trip" }
 ];
 
 export default function JourneysTrustSection() {

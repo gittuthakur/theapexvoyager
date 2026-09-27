@@ -5,7 +5,7 @@ const VALUES = [
   {
     icon: Mountain,
     title: 'Built by travelers, for travelers',
-    description: 'Every team member has walked the routes and stayed in the homestays we sell — the work stays honest.'
+    description: 'We value practical destination knowledge and thoughtful research when helping travellers choose routes and stays.'
   },
   {
     icon: HeartHandshake,
