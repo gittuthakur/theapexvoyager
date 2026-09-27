@@ -1,10 +1,6 @@
-'use client';
-
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import PackageCard from '@/components/modules/PackageCard';
-import { fadeInUp, staggerContainer, viewportOnce } from '@/lib/motion';
 import type { TravelPackage } from '@/types/package';
 
 export interface PackageSectionProps {
@@ -17,6 +13,16 @@ export interface PackageSectionProps {
   viewAllHref?: string;
 }
 
+// No entrance animation here on purpose. The previous whileInView-driven fade/stagger
+// (and, after that, a useInView/useReducedMotion/timeout-based replacement) both left
+// this heading and its cards permanently at opacity: 0 for some real visitors —
+// prefers-reduced-motion users outright, and everyone else for however long it takes
+// JavaScript to hydrate, IntersectionObserver to fire, or a fallback timer to elapse.
+// This is a Server Component rendering plain, unanimated markup instead: no client
+// hooks, no hydration dependency, no inline opacity/transform of any kind — the
+// heading and every card are simply visible the moment the server's HTML paints,
+// exactly as if JavaScript never loads at all. PackageCard itself still opts into
+// 'use client' independently for its own (unrelated) interactive bits.
 export default function PackageSection({
   packages,
   eyebrow = 'Curated Journeys',
@@ -40,33 +46,21 @@ export default function PackageSection({
       />
 
       <div className="relative z-10 mx-auto max-w-[1440px] px-6">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnce}
-          variants={fadeInUp}
-          className="text-center"
-        >
+        <div className="text-center">
           <p className="text-md font-semibold uppercase tracking-[0.16em] text-apex-600">{eyebrow}</p>
           <h2 className="mt-2 text-3xl font-bold text-slate-900 sm:text-4xl">
             {title} <span className="bg-gradient-to-r from-apex-500 via-apex-600 to-apex-700 bg-clip-text text-transparent">{highlight}</span>
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-slate-600">{subtitle}</p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnce}
-          variants={staggerContainer}
-          className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-        >
+        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {packages.map((pkg) => (
-            <motion.div key={pkg.slug} variants={fadeInUp} className="h-full">
+            <div key={pkg.slug} className="h-full">
               <PackageCard pkg={pkg} />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
 
         <div className="mt-10 flex justify-center">
           <Link
