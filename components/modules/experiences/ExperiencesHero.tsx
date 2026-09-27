@@ -40,8 +40,12 @@ export default function ExperiencesHero() {
         <div className="absolute inset-0 bg-gradient-to-t from-white via-white/90 to-white/50" />
       </div>
 
+      {/* `initial={false}` — see HeroSection.tsx's comment on the same P2T fix: renders the
+          eyebrow/H1/subtitle directly at their resolved `visible` style from first paint,
+          instead of the `fadeInUp` hidden variant (opacity: 0) staying inlined until hydration —
+          this was the exact text P2R measured as /experiences' LCP element (~22s render delay). */}
       <motion.div
-        initial="hidden"
+        initial={false}
         animate="visible"
         variants={staggerContainer}
         className="relative mx-auto flex w-full max-w-[1400px] flex-col justify-end px-6 pb-28 pt-32"
@@ -62,10 +66,11 @@ export default function ExperiencesHero() {
 
       {/* Discovery bar — deliberately overlaps the hero's lower edge so it reads as one continuous, premium surface rather than a plain search form below the fold. */}
       <div className="relative mx-auto w-full max-w-[1400px] px-6 sm:mb-10">
+        {/* Same P2T fix as the heading above: this search panel is the page's primary CTA
+            slot, so it must not depend on hydration to become visible either. */}
         <motion.form
-          initial={{ opacity: 0, y: 24 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut', delay: 0.2 }}
           onSubmit={handleSubmit}
           className={cn(SEARCH_PANEL_CLASS, 'relative -mt-16 mb-10 flex w-full flex-col gap-2 sm:mb-0 lg:flex-row lg:items-center lg:gap-3')}
         >

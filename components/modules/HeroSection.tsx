@@ -74,8 +74,18 @@ export default function HeroSection({ data, className, children, sidePanel, sear
         <div className={cn('absolute inset-0 bg-gradient-to-b from-white/85 via-white/0 to-[#0D1830]/35', overlayClassName)} />
       </div>
 
+      {/* `initial={false}` (not "hidden") is the fix for the P2T hero-text hydration gate:
+          `initial="hidden"` rendered the SSR/first-paint HTML with `fadeInUp`'s hidden variant
+          (opacity: 0, translateY(24px)) inlined, so the badge/H1/subtitle stayed invisible until
+          client JS hydrated, Framer Motion mounted, and the entrance transition ran — under a slow
+          connection/device that measured as several real seconds of a blank hero (P2R found this as
+          the actual LCP element on /experiences, renderTime ~22s, loadTime 0 — proving it was a
+          render/hydration delay, not a network one). `initial={false}` renders directly at the
+          `visible` target from the very first paint — critical hero text is plain, immediately
+          readable CSS with no JS/hydration dependency — while keeping `variants`/`animate` in place
+          so nothing else about the structure changes. */}
       <motion.div
-        initial="hidden"
+        initial={false}
         animate="visible"
         variants={staggerContainer}
         className="relative mx-auto w-full max-w-[1440px] grid gap-4 px-6 pb-10 pt-28 lg:px-8 xl:px-5 lg:grid-cols-[2.6fr_1fr] lg:items-center lg:pb-18 lg:pt-28"

@@ -34,8 +34,11 @@ export default function InnerHeroBanner({ title, highlite, subtitle, eyebrow, bg
         <div className="absolute inset-0 bg-gradient-to-t from-white via-white/50 to-white/80" />
       </div>
 
+      {/* `initial={false}` — see HeroSection.tsx's comment on the same P2T fix: renders the
+          eyebrow/H1/subtitle directly at their resolved `visible` style from first paint,
+          instead of the `fadeInUp` hidden variant (opacity: 0) staying inlined until hydration. */}
       <motion.div
-        initial="hidden"
+        initial={false}
         animate="visible"
         variants={staggerContainer}
         className="relative mx-auto w-full max-w-[1440px] px-6 pb-12 pt-32"
