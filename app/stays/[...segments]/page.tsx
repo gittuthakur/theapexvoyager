@@ -23,6 +23,9 @@ import { destinations } from '@/config/destinations.config';
 import { findStayTypeBySlug } from '@/config/stayTypes.config';
 import { CATEGORY_TO_STAY_TYPE, STAY_TYPE_LABELS, type Stay, type StayType } from '@/types/stay';
 import { formatINR } from '@/lib/pricing';
+import { isValidCalendarDateISO } from '@/lib/dateValidation';
+import { resolvePublicPrice } from '@/services/pricing/stayPricing.service';
+import type { PublicPriceQuery } from '@/services/pricing/stayPricing.types';
 import { siteConfig } from '@/config/site.config';
 import type { HotelPackage } from '@/types';
 import type { Destination } from '@/types/destination';
@@ -268,7 +271,7 @@ export default async function StaysCatchAllPage({ params, searchParams }: StaysC
   }
 
   if (resolved.kind === 'google-property') {
-    return <GooglePropertyDetail stay={resolved.stay} />;
+    return <GooglePropertyDetail stay={resolved.stay} checkIn={checkIn} checkOut={checkOut} guests={guests} />;
   }
 
   return <PropertyDetail hotel={resolved.hotel} checkIn={checkIn} checkOut={checkOut} guests={guests} />;
@@ -626,9 +629,46 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
 // types/stayInventory.ts's StayRoom doc comments), so this honestly says rooms will
 // be confirmed on enquiry rather than fabricating cards, and never renders a star-
 // class badge at all rather than inventing one from the Google guest rating.
-async function GooglePropertyDetail({ stay }: { stay: Stay }) {
+/** Builds a PublicPriceQuery only when the URL actually carries a complete, plausible
+ *  search context — a bare property visit with no dates never attempts a price call at
+ *  all (no default date range is invented). `guests` is today a single free-text field
+ *  (no adults/children/rooms breakdown collected anywhere yet), so it is read as the
+ *  adult count with children/rooms left at their safe defaults — see this function's
+ *  return, never a design the safety gate can turn into a wrong displayed price:
+ *  resolvePublicPrice still requires a CONFIRMED mapping and a production-classified
+ *  environment before ever returning a real amount, regardless of this interpretation. */
+function buildStayPriceQuery(params: { googlePlaceId: string; destinationSlug: string; checkIn?: string; checkOut?: string; guests?: string }): PublicPriceQuery | null {
+  const { googlePlaceId, destinationSlug, checkIn, checkOut, guests } = params;
+  if (!checkIn || !checkOut || !isValidCalendarDateISO(checkIn) || !isValidCalendarDateISO(checkOut)) return null;
+  if (checkOut <= checkIn) return null;
+
+  const adults = guests ? Number.parseInt(guests, 10) : 2;
+  if (!Number.isFinite(adults) || adults < 1) return null;
+
+  return { googlePlaceId, destinationSlug, checkIn, checkOut, adults, children: 0, rooms: 1 };
+}
+
+/** ISO 4217 currency-agnostic — an HBX rate's currency is never assumed to be INR (its
+ *  evaluation environment returns EUR); falls back to a plain "amount CODE" string if the
+ *  supplier ever sends something Intl.NumberFormat doesn't recognize. */
+function formatCurrencyAmount(amount: number, currency: string): string {
+  try {
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency, maximumFractionDigits: 2 }).format(amount);
+  } catch {
+    return `${amount.toFixed(2)} ${currency}`;
+  }
+}
+
+async function GooglePropertyDetail({ stay, checkIn, checkOut, guests }: { stay: Stay; checkIn?: string; checkOut?: string; guests?: string }) {
   const matchedDestination = await getCuratedDestinationBySlug(stay.destinationSlug);
   const locationLabel = matchedDestination?.title ?? stay.formattedAddress ?? stay.destinationSlug;
+
+  // Server-only pricing call (never imported into client code) — see
+  // services/pricing/stayPricing.service.ts's resolvePublicPrice for the two mandatory
+  // safety gates (confirmed hotel mapping AND a production-classified HBX environment)
+  // that must both hold before this can ever return a real amount.
+  const priceQuery = buildStayPriceQuery({ googlePlaceId: stay.placeId, destinationSlug: stay.destinationSlug, checkIn, checkOut, guests });
+  const priceResult = priceQuery ? await resolvePublicPrice(priceQuery) : null;
 
   return (
     <DetailPageContainer>
@@ -709,12 +749,27 @@ async function GooglePropertyDetail({ stay }: { stay: Stay }) {
           </div>
 
           <aside className="h-fit space-y-4 rounded-[2rem] border border-slate-200 bg-slate-50 p-8 text-center xl:sticky xl:top-24">
-            <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Starting from</p>
-            <p className="text-2xl font-semibold text-slate-900">Contact for pricing</p>
-            <p className="text-xs text-slate-500">
-              Property and rating data from Google. Live availability and pricing are not connected — our team will confirm the
-              current rates directly with you.
-            </p>
+            {priceResult?.state === 'VERIFIED_LIVE_RATE' && priceResult.price ? (
+              <>
+                <p className="text-sm uppercase tracking-[0.24em] text-slate-500">
+                  Total for {priceResult.price.nightCount} night{priceResult.price.nightCount === 1 ? '' : 's'}
+                </p>
+                <p className="text-2xl font-semibold text-slate-900">{formatCurrencyAmount(priceResult.price.totalStayPrice, priceResult.price.currency)}</p>
+                <p className="text-xs text-slate-500">
+                  ≈ {formatCurrencyAmount(priceResult.price.displayPerNight, priceResult.price.currency)} / night. Final price and room
+                  selection confirmed at booking.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Starting from</p>
+                <p className="text-2xl font-semibold text-slate-900">Contact for pricing</p>
+                <p className="text-xs text-slate-500">
+                  Property and rating data from Google. Live availability and pricing are not connected — our team will confirm the
+                  current rates directly with you.
+                </p>
+              </>
+            )}
             <WhatsAppEnquireButton
               className="w-full"
               label="Check Price & Availability"

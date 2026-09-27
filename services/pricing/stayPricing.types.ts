@@ -39,6 +39,13 @@ export interface NormalizedRate {
   roomName?: string;
   roomCode?: string;
   boardName?: string;
+  /** The supplier's own board-basis code (e.g. "BB"/"HB"/"AI") alongside `boardName`'s
+   *  human-readable label — both are the supplier's own values, never derived from one
+   *  another. */
+  boardCode?: string;
+  /** The supplier's own rate identifier, required to re-confirm/book this exact rate
+   *  later — never itself a price or a value this codebase computes. */
+  rateKey?: string;
   rateType?: string;
   /** `undefined` when the provider gave no cancellation policy to infer from — never
    *  defaulted to true or false. See hbx.mapper.ts's isRefundable(). */
@@ -112,4 +119,20 @@ export interface PublicPriceQuery {
   adults: number;
   children: number;
   rooms: number;
+}
+
+/** What a public-facing caller (a Stay page/component) is allowed to receive. `price` is
+ *  present only when `state === 'VERIFIED_LIVE_RATE'` (or, in future, 'VERIFIED_MANUAL_RATE')
+ *  — every other state means "do not show a number" (stayPricing.service.ts's
+ *  resolvePublicPrice never populates `price` otherwise). `totalStayPrice` and
+ *  `displayPerNight` are kept as two distinct, separately labeled fields so a caller can
+ *  never mislabel one as the other — see that field's own doc comment on NormalizedRate. */
+export interface PublicPriceResult {
+  state: PriceSourceState;
+  price?: {
+    currency: string;
+    totalStayPrice: number;
+    displayPerNight: number;
+    nightCount: number;
+  };
 }

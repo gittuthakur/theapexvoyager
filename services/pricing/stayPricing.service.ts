@@ -1,6 +1,7 @@
 import { hbxPricingProvider } from '../providers/hbx/hbxAvailability.service';
 import { getConfirmedMapping } from './hotelMappingRegistry.service';
-import type { PriceSourceState, PublicPriceQuery, StayPricingProvider, StayPricingQuery, StayPricingResult } from './stayPricing.types';
+import { getCachedAvailability, saveCachedAvailability } from './stayRateCache.service';
+import type { NormalizedRate, PriceSourceState, PublicPriceQuery, PublicPriceResult, StayPricingProvider, StayPricingQuery, StayPricingResult } from './stayPricing.types';
 
 /** Every registered provider, in lookup order. Adding Booking.com/TripJack/TBO/direct-
  *  contract/manual later means registering another StayPricingProvider here — nothing
@@ -18,6 +19,25 @@ export async function getRawPricingResult(query: StayPricingQuery, providerId: S
     return { state: 'UNAVAILABLE', rates: [] };
   }
   return provider.getAvailability(query);
+}
+
+/** Cache-aware version of getRawPricingResult, used only by the public resolution path
+ *  below — the diagnostic route intentionally keeps calling getRawPricingResult directly
+ *  so it always shows the truly-current live state, never a cached one. A cache hit
+ *  short-circuits before the provider is ever called; a miss (or an expired entry) falls
+ *  through to a real live call and then persists it, never caching a PROVIDER_ERROR or a
+ *  sampling-mode query (see stayRateCache.service.ts). */
+async function getCachedOrFreshPricingResult(query: StayPricingQuery, providerId: StayPricingProvider['id']): Promise<StayPricingResult> {
+  const cached = await getCachedAvailability(query, providerId);
+  if (cached) return cached;
+
+  const fresh = await getRawPricingResult(query, providerId);
+  await saveCachedAvailability(query, providerId, fresh);
+  return fresh;
+}
+
+function cheapestRate(rates: NormalizedRate[]): NormalizedRate {
+  return rates.reduce((min, rate) => (rate.totalStayPrice < min.totalStayPrice ? rate : min));
 }
 
 /**
@@ -48,7 +68,7 @@ export async function getRawPricingResult(query: StayPricingQuery, providerId: S
  * display requires BOTH a confirmed mapping AND production-capable provider
  * credentials, never either alone.
  */
-export async function resolvePublicPriceState(query: PublicPriceQuery, providerId: StayPricingProvider['id'] = 'hbx'): Promise<{ state: PriceSourceState }> {
+export async function resolvePublicPrice(query: PublicPriceQuery, providerId: StayPricingProvider['id'] = 'hbx'): Promise<PublicPriceResult> {
   const mapping = await getConfirmedMapping({ googlePlaceId: query.googlePlaceId, provider: providerId });
   if (!mapping) return { state: 'PRICE_ON_REQUEST' };
 
@@ -62,13 +82,29 @@ export async function resolvePublicPriceState(query: PublicPriceQuery, providerI
     providerHotelIds: [mapping.providerHotelId]
   };
 
-  const result = await getRawPricingResult(providerQuery, providerId);
+  const result = await getCachedOrFreshPricingResult(providerQuery, providerId);
 
   if (result.state === 'PROVIDER_ERROR') return { state: 'PROVIDER_ERROR' };
   if (result.state === 'UNAVAILABLE' || result.rates.length === 0) return { state: 'UNAVAILABLE' };
 
-  const allProductionCapable = result.rates.every((rate) => rate.environment === 'production');
-  if (!allProductionCapable) return { state: 'PRICE_ON_REQUEST' };
+  const productionRates = result.rates.filter((rate) => rate.environment === 'production');
+  if (productionRates.length === 0) return { state: 'PRICE_ON_REQUEST' };
 
+  // Lowest total-stay price among production-capable rates only — never averaged, never
+  // adjusted, and never picked from a non-production rate even if it happened to be
+  // cheaper (TP-Stay Section 10: the two safety gates apply to which rates are eligible
+  // at all, not just to the final state label).
+  const rate = cheapestRate(productionRates);
+  return {
+    state: 'VERIFIED_LIVE_RATE',
+    price: { currency: rate.currency, totalStayPrice: rate.totalStayPrice, displayPerNight: rate.displayPerNight, nightCount: rate.nightCount }
+  };
+}
+
+/** Thin, backward-compatible wrapper over resolvePublicPrice for a caller that only ever
+ *  needs the state label, never the amount (kept so the diagnostic-adjacent call sites
+ *  that predate resolvePublicPrice don't need to change). */
+export async function resolvePublicPriceState(query: PublicPriceQuery, providerId: StayPricingProvider['id'] = 'hbx'): Promise<{ state: PriceSourceState }> {
+  const result = await resolvePublicPrice(query, providerId);
   return { state: result.state };
 }

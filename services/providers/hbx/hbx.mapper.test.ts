@@ -78,6 +78,24 @@ describe('mapHbxAvailabilityToRates', () => {
     });
   });
 
+  it('preserves rateKey and boardCode verbatim alongside boardName', () => {
+    const hotel: HbxAvailabilityHotel = {
+      ...baseHotel,
+      rooms: [{ ...baseHotel.rooms[0], rates: [{ ...baseHotel.rooms[0].rates[0], rateKey: '20261010|20261012|W|142378|...', boardCode: 'BB' }] }]
+    };
+    const rate = mapHbxAvailabilityToRates(hotel, 2)[0];
+    expect(rate.rateKey).toBe('20261010|20261012|W|142378|...');
+    expect(rate.boardCode).toBe('BB');
+    expect(rate.boardName).toBe('BED AND BREAKFAST');
+  });
+
+  it('leaves rateKey/boardCode undefined (never invented) when HBX omits them', () => {
+    const rate = mapHbxAvailabilityToRates(baseHotel, 2)[0];
+    expect(rate.rateKey).toBeUndefined();
+    // baseHotel's own fixture sets boardName but not boardCode.
+    expect(rate.boardCode).toBeUndefined();
+  });
+
   it('roomsRemaining comes from `allotment`, never from the requested-occupancy `rooms` echo', () => {
     const hotel: HbxAvailabilityHotel = {
       ...baseHotel,

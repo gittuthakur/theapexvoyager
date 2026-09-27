@@ -80,6 +80,8 @@ export function mapHbxAvailabilityToRates(hotel: HbxAvailabilityHotel, nightCoun
         roomName: room.name,
         roomCode: room.code,
         boardName: rate.boardName,
+        boardCode: rate.boardCode,
+        rateKey: rate.rateKey,
         rateType: rate.rateType,
         refundable: isRefundable(cancellationPolicies),
         cancellationPolicies,
