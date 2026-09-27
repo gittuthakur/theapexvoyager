@@ -5,6 +5,7 @@ import { ArrowRight, Car, ExternalLink, Globe, MapPin, Sparkles, Users } from 'l
 import PropertyCard from '@/components/modules/PropertyCard';
 import StaysGrid, { StayCard } from '@/components/modules/StaysGrid';
 import { PropertyPhotoGallery } from '@/components/modules/stays/PropertyPhotoGallery';
+import { StayPricePanel } from '@/components/modules/stays/StayPricePanel';
 import { hotelToStay, dedupeAgainstCurated } from '@/lib/stayMerge';
 import HotelBookingModal from '@/components/modules/HotelBookingModal';
 import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
@@ -648,17 +649,6 @@ function buildStayPriceQuery(params: { googlePlaceId: string; destinationSlug: s
   return { googlePlaceId, destinationSlug, checkIn, checkOut, adults, children: 0, rooms: 1 };
 }
 
-/** ISO 4217 currency-agnostic — an HBX rate's currency is never assumed to be INR (its
- *  evaluation environment returns EUR); falls back to a plain "amount CODE" string if the
- *  supplier ever sends something Intl.NumberFormat doesn't recognize. */
-function formatCurrencyAmount(amount: number, currency: string): string {
-  try {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency, maximumFractionDigits: 2 }).format(amount);
-  } catch {
-    return `${amount.toFixed(2)} ${currency}`;
-  }
-}
-
 async function GooglePropertyDetail({ stay, checkIn, checkOut, guests }: { stay: Stay; checkIn?: string; checkOut?: string; guests?: string }) {
   const matchedDestination = await getCuratedDestinationBySlug(stay.destinationSlug);
   const locationLabel = matchedDestination?.title ?? stay.formattedAddress ?? stay.destinationSlug;
@@ -749,27 +739,7 @@ async function GooglePropertyDetail({ stay, checkIn, checkOut, guests }: { stay:
           </div>
 
           <aside className="h-fit space-y-4 rounded-[2rem] border border-slate-200 bg-slate-50 p-8 text-center xl:sticky xl:top-24">
-            {priceResult?.state === 'VERIFIED_LIVE_RATE' && priceResult.price ? (
-              <>
-                <p className="text-sm uppercase tracking-[0.24em] text-slate-500">
-                  Total for {priceResult.price.nightCount} night{priceResult.price.nightCount === 1 ? '' : 's'}
-                </p>
-                <p className="text-2xl font-semibold text-slate-900">{formatCurrencyAmount(priceResult.price.totalStayPrice, priceResult.price.currency)}</p>
-                <p className="text-xs text-slate-500">
-                  ≈ {formatCurrencyAmount(priceResult.price.displayPerNight, priceResult.price.currency)} / night. Final price and room
-                  selection confirmed at booking.
-                </p>
-              </>
-            ) : (
-              <>
-                <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Starting from</p>
-                <p className="text-2xl font-semibold text-slate-900">Contact for pricing</p>
-                <p className="text-xs text-slate-500">
-                  Property and rating data from Google. Live availability and pricing are not connected — our team will confirm the
-                  current rates directly with you.
-                </p>
-              </>
-            )}
+            <StayPricePanel priceResult={priceResult} />
             <WhatsAppEnquireButton
               className="w-full"
               label="Check Price & Availability"

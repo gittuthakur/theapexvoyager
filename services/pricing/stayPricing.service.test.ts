@@ -12,7 +12,7 @@ vi.mock('./hotelMappingRegistry.service', () => ({ getConfirmedMapping: getConfi
 // dedicated describe block further down overrides this to prove a cache hit is honored.
 vi.mock('./stayRateCache.service', () => ({ getCachedAvailability: getCachedAvailabilityMock, saveCachedAvailability: saveCachedAvailabilityMock }));
 
-const { getRawPricingResult, resolvePublicPrice, resolvePublicPriceState } = await import('./stayPricing.service');
+const { getRawPricingResult, resolvePublicPrice, resolvePublicPriceState, resolveTestModePrice } = await import('./stayPricing.service');
 const { HBX_APPROVED_PRODUCTION_ORIGINS } = await import('@/config/hbxEnvironment.config');
 
 const ORIGINAL_ENV = { ...process.env };
@@ -248,5 +248,85 @@ describe('resolvePublicPrice — cache interaction', () => {
 
     expect(saveCachedAvailabilityMock).toHaveBeenCalledTimes(1);
     expect(saveCachedAvailabilityMock).toHaveBeenCalledWith(expect.objectContaining({ providerHotelIds: ['142378'] }), 'hbx', expect.objectContaining({ state: 'VERIFIED_LIVE_RATE' }));
+  });
+});
+
+const TEST_MODE_QUERY = {
+  providerHotelId: '617065',
+  destinationSlug: 'manali',
+  checkIn: '2026-10-05',
+  checkOut: '2026-10-07',
+  adults: 2,
+  children: 0,
+  rooms: 1
+};
+
+describe('resolveTestModePrice — structurally test-environment-only', () => {
+  beforeEach(() => {
+    process.env.HOTELBEDS_API_KEY = 'test-key';
+    process.env.HOTELBEDS_SECRET = 'test-secret';
+    getCachedAvailabilityMock.mockReset().mockResolvedValue(null);
+    saveCachedAvailabilityMock.mockReset().mockResolvedValue(undefined);
+  });
+  afterEach(() => {
+    process.env = { ...ORIGINAL_ENV };
+    vi.unstubAllGlobals();
+    HBX_APPROVED_PRODUCTION_ORIGINS.clear();
+  });
+
+  it('never returns a price outside a test-classified environment ("unknown")', async () => {
+    // No HOTELBEDS_API_BASE_URL set at all -> getHbxEnvironment() === 'unknown'.
+    const result = await resolveTestModePrice(TEST_MODE_QUERY);
+    expect(result).toEqual({ state: 'PRICE_ON_REQUEST' });
+  });
+
+  it('never returns a price even against a genuinely approved-and-confirmed production environment', async () => {
+    process.env.HOTELBEDS_API_BASE_URL = 'https://api.hotelbeds.com';
+    process.env.HBX_PRODUCTION_CONFIRMED = 'true';
+    HBX_APPROVED_PRODUCTION_ORIGINS.add('https://api.hotelbeds.com');
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(AVAILABILITY_RESPONSE, { status: 200 })));
+
+    const result = await resolveTestModePrice(TEST_MODE_QUERY);
+    expect(result).toEqual({ state: 'PRICE_ON_REQUEST' });
+  });
+
+  it('never even calls the provider when the environment is not test', async () => {
+    const fetchSpy = vi.fn();
+    vi.stubGlobal('fetch', fetchSpy);
+    await resolveTestModePrice(TEST_MODE_QUERY);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('returns the genuine test-environment rate when the environment is test', async () => {
+    process.env.HOTELBEDS_API_BASE_URL = 'https://api.test.hotelbeds.com';
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(AVAILABILITY_RESPONSE, { status: 200 })));
+
+    const result = await resolveTestModePrice(TEST_MODE_QUERY);
+    expect(result.state).toBe('VERIFIED_LIVE_RATE');
+    expect(result.price).toEqual({ currency: 'EUR', totalStayPrice: 188.54, displayPerNight: 94.27, nightCount: 2 });
+  });
+
+  it('never requires or reads a HotelProviderMapping (works with no confirmed mapping at all)', async () => {
+    process.env.HOTELBEDS_API_BASE_URL = 'https://api.test.hotelbeds.com';
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(AVAILABILITY_RESPONSE, { status: 200 })));
+    getConfirmedMappingMock.mockReset().mockResolvedValue(null); // no mapping exists
+
+    const result = await resolveTestModePrice(TEST_MODE_QUERY);
+    expect(result.state).toBe('VERIFIED_LIVE_RATE');
+    expect(getConfirmedMappingMock).not.toHaveBeenCalled();
+  });
+
+  it('returns UNAVAILABLE when no rates come back', async () => {
+    process.env.HOTELBEDS_API_BASE_URL = 'https://api.test.hotelbeds.com';
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ hotels: { hotels: [] } }), { status: 200 })));
+    const result = await resolveTestModePrice(TEST_MODE_QUERY);
+    expect(result).toEqual({ state: 'UNAVAILABLE' });
+  });
+
+  it('returns PROVIDER_ERROR on a supplier outage, never disguised', async () => {
+    process.env.HOTELBEDS_API_BASE_URL = 'https://api.test.hotelbeds.com';
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('down', { status: 503 })));
+    const result = await resolveTestModePrice(TEST_MODE_QUERY);
+    expect(result).toEqual({ state: 'PROVIDER_ERROR' });
   });
 });

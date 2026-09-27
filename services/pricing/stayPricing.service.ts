@@ -1,3 +1,4 @@
+import { getHbxEnvironment } from '../providers/hbx/hbx.client';
 import { hbxPricingProvider } from '../providers/hbx/hbxAvailability.service';
 import { getConfirmedMapping } from './hotelMappingRegistry.service';
 import { getCachedAvailability, saveCachedAvailability } from './stayRateCache.service';
@@ -107,4 +108,58 @@ export async function resolvePublicPrice(query: PublicPriceQuery, providerId: St
 export async function resolvePublicPriceState(query: PublicPriceQuery, providerId: StayPricingProvider['id'] = 'hbx'): Promise<{ state: PriceSourceState }> {
   const result = await resolvePublicPrice(query, providerId);
   return { state: result.state };
+}
+
+export interface TestModePriceQuery {
+  /** A raw provider hotel id, taken directly — deliberately NOT a googlePlaceId, and no
+   *  HotelProviderMapping is ever read, created, or confirmed by this function. This is
+   *  intentional: it exists only to verify the HBX TEST pipeline end-to-end (see
+   *  app/internal/hbx-test-price-preview/page.tsx, a local-development-only page), never
+   *  to give any real customer-facing page a way to bypass the mapping-confirmation gate. */
+  providerHotelId: string;
+  destinationSlug: string;
+  checkIn: string;
+  checkOut: string;
+  adults: number;
+  children: number;
+  rooms: number;
+}
+
+/**
+ * TEST-ONLY verification path. Structurally incapable of ever affecting a real customer:
+ * the very first line requires getHbxEnvironment() === 'test' (the exact same fail-closed
+ * classification resolvePublicPrice's production gate relies on) or it returns
+ * PRICE_ON_REQUEST immediately — so this can never produce a result in production or an
+ * unrecognized ('unknown') environment, regardless of what query it's given. It then only
+ * ever accepts rates the provider itself tagged environment === 'test' — never
+ * 'production', the exact opposite filter from resolvePublicPrice's own, so the two
+ * functions can never be mistaken for one another or leak into each other's result. Not
+ * imported by any real Stay page — only by the local-dev-only preview page above.
+ */
+export async function resolveTestModePrice(query: TestModePriceQuery, providerId: StayPricingProvider['id'] = 'hbx'): Promise<PublicPriceResult> {
+  if (getHbxEnvironment() !== 'test') return { state: 'PRICE_ON_REQUEST' };
+
+  const providerQuery: StayPricingQuery = {
+    destinationSlug: query.destinationSlug,
+    checkIn: query.checkIn,
+    checkOut: query.checkOut,
+    adults: query.adults,
+    children: query.children,
+    rooms: query.rooms,
+    providerHotelIds: [query.providerHotelId]
+  };
+
+  const result = await getCachedOrFreshPricingResult(providerQuery, providerId);
+
+  if (result.state === 'PROVIDER_ERROR') return { state: 'PROVIDER_ERROR' };
+  if (result.state === 'UNAVAILABLE' || result.rates.length === 0) return { state: 'UNAVAILABLE' };
+
+  const testRates = result.rates.filter((rate) => rate.environment === 'test');
+  if (testRates.length === 0) return { state: 'PRICE_ON_REQUEST' };
+
+  const rate = cheapestRate(testRates);
+  return {
+    state: 'VERIFIED_LIVE_RATE',
+    price: { currency: rate.currency, totalStayPrice: rate.totalStayPrice, displayPerNight: rate.displayPerNight, nightCount: rate.nightCount }
+  };
 }
