@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import BackButton from '@/components/ui/BackButton';
-import PlanMyJourneyWizard from '@/components/modules/trip-planner';
+import PlanMyJourneyWizard, { WizardSkeleton } from '@/components/modules/trip-planner';
 import { resolveBookingContext } from '@/lib/bookingContext';
 import { siteConfig } from '@/config/site.config';
 import { images } from '@/config/images.config';
@@ -62,7 +62,7 @@ export default async function PlanMyJourneyPage({ searchParams }: PlanMyJourneyP
           </p>
         </div>
 
-        <Suspense fallback={null}>
+        <Suspense fallback={<WizardSkeleton />}>
           <PlanMyJourneyWizard bookingContext={bookingContext} hadBookingParams={hadBookingParams} />
         </Suspense>
       </div>
