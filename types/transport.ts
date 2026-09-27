@@ -85,6 +85,10 @@ export interface VehicleOption {
 }
 
 export interface TransportRoute {
+  /** The MongoDB `_id` (as a string) — needed to look up this exact route server-side
+   *  for a price calculation (see app/api/transport/price/route.ts). Optional so a
+   *  synthetic/custom (uncatalogued) route object can still be represented without one. */
+  id?: string;
   origin: string;
   destination: string;
   routeType?: string;

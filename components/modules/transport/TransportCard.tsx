@@ -8,8 +8,19 @@ import { openTransportWhatsAppLead } from '@/lib/whatsapp';
 import { formatINR, splitTransportPriceNote } from '@/lib/pricing';
 import type { VehicleOption } from '@/types/transport';
 
+/** A route/date-aware price, computed server-side by /api/transport/price (TP3F) — this
+ *  component never computes a price itself, only renders whichever state it's given. */
+export type TransportCardPriceOverride =
+  | { kind: 'loading' }
+  | { kind: 'priced'; label: string; amountLabel: string; disclaimer?: string }
+  | { kind: 'quoteRequired' };
+
 export interface TransportCardProps {
   vehicle: VehicleOption;
+  /** When present, replaces the static estimatedFromPrice/priceNote block below with a
+   *  route/date-aware price (or its loading/quote-required state) — see
+   *  TransportCardWithPriceEstimate, the only current caller. */
+  priceOverride?: TransportCardPriceOverride;
   pickup?: string;
   destination?: string;
   /** Optional — only used to enrich the "Customise on WhatsApp" message. */
@@ -32,6 +43,7 @@ export interface TransportCardProps {
 
 export default function TransportCard({
   vehicle,
+  priceOverride,
   pickup,
   destination,
   date,
@@ -128,20 +140,36 @@ export default function TransportCard({
 
         <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
-              {vehicle.estimatedFromPrice ? 'Estimated from' : ''}
-            </p>
-            <p className="text-3xl font-bold text-slate-900">
-              {vehicle.estimatedFromPrice ? (
+            {priceOverride ? (
+              priceOverride.kind === 'loading' ? (
+                <div className="h-9 w-32 animate-pulse rounded-lg bg-slate-200" aria-hidden="true" />
+              ) : priceOverride.kind === 'priced' ? (
                 <>
-                  {formatINR(vehicle.estimatedFromPrice)}
-                  {priceSplit ? <span className="text-base font-semibold text-slate-500"> / {priceSplit.unit}</span> : null}
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{priceOverride.label}</p>
+                  <p className="text-3xl font-bold text-slate-900">{priceOverride.amountLabel}</p>
+                  {priceOverride.disclaimer ? <p className="mt-1 max-w-xs text-xs text-slate-500">{priceOverride.disclaimer}</p> : null}
                 </>
               ) : (
-                'Price on request'
-              )}
-            </p>
-            {vehicle.estimatedFromPrice && priceDetail ? <p className="mt-1 text-xs text-slate-500">{priceDetail}</p> : null}
+                <p className="text-2xl font-bold text-slate-900">Get Custom Quote</p>
+              )
+            ) : (
+              <>
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                  {vehicle.estimatedFromPrice ? 'Estimated from' : ''}
+                </p>
+                <p className="text-3xl font-bold text-slate-900">
+                  {vehicle.estimatedFromPrice ? (
+                    <>
+                      {formatINR(vehicle.estimatedFromPrice)}
+                      {priceSplit ? <span className="text-base font-semibold text-slate-500"> / {priceSplit.unit}</span> : null}
+                    </>
+                  ) : (
+                    'Price on request'
+                  )}
+                </p>
+                {vehicle.estimatedFromPrice && priceDetail ? <p className="mt-1 text-xs text-slate-500">{priceDetail}</p> : null}
+              </>
+            )}
           </div>
           <button
             type="button"

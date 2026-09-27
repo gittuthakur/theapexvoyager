@@ -53,6 +53,7 @@ export function toVehicleOption(doc: TransportVehicleDocument): VehicleOption {
 
 export function toTransportRoute(doc: TransportRouteDocument): TransportRouteType {
   return {
+    id: String(doc._id),
     origin: doc.origin,
     destination: doc.destination,
     routeType: doc.routeType,

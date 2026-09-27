@@ -6,7 +6,7 @@ import { FloatingOverlay } from '@/components/ui/FloatingOverlay';
 import { cn } from '@/lib/utils';
 import { formatINR } from '@/lib/pricing';
 import { TRIP_TYPE_OPTIONS, type ServiceType } from '@/config/transportServiceTypes.config';
-import TransportCard from './TransportCard';
+import TransportCardWithPriceEstimate from './TransportCardWithPriceEstimate';
 import NoInventoryActions from './NoInventoryActions';
 import type { TransportRoute, VehicleOption } from '@/types/transport';
 
@@ -325,9 +325,13 @@ export default function RouteBookingPopup({
           {matchingVehicles.length > 0 ? (
             <div className="mt-4 grid gap-6 sm:grid-cols-2">
               {matchingVehicles.map((vehicle) => (
-                <TransportCard
+                <TransportCardWithPriceEstimate
                   key={vehicle.slug ?? vehicle.id}
                   vehicle={vehicle}
+                  routeId={routeMeta?.id}
+                  tripType={tripType}
+                  travelDate={date}
+                  travellerCount={Number(travellers) || undefined}
                   pickup={pickup}
                   destination={drop}
                   date={date}
