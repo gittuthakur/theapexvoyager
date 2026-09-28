@@ -6,6 +6,7 @@ import { isRecentFailure, markFailure } from '@/lib/negativeCache';
 import { coalesce, COALESCE_LOCKED } from '@/lib/requestCoalescing';
 import { classifyPlaceLocation } from '@/lib/placeLocationSafety';
 import { classifyVerifiedStayType, verifiedStayTypeMongoExpr, hasTreehouseNameEvidence, treehouseNameMongoPattern } from '@/lib/stayClassification';
+import { filterOutExcludedPlaces, getActiveExclusionSet, isPropertyExcluded } from '@/services/properties/propertyExclusion.service';
 import { STAY_TYPES, type Stay, type StayType } from '@/types/stay';
 import type { StayMode } from '@/config/stayLocations.config';
 import type { HotelPackage } from '@/types/hotel';
@@ -204,13 +205,19 @@ async function fetchAndCacheStayType(
       };
     });
 
+  // A property owner's exclusion request must survive Google still returning that place
+  // — never write an excluded placeId back into PlaceCache, or the 30-day TTL cache
+  // would silently "resurrect" it the moment it expires and is refetched (this is the
+  // one write path that populates PlaceCache from Google at all).
+  const filteredDocs = await filterOutExcludedPlaces('google', docs);
+
   await connectDB();
   const saved = await Promise.all(
     // Keyed by (placeId, destinationSlug, stayType) — see models/PlaceCache.ts's index
     // comment: two destinations that legitimately share a real search location (e.g.
     // Kinnaur and Sangla Valley both resolving to "Sangla") must each get their own
     // cached copy of the same real place, never overwrite each other's.
-    docs.map((doc) =>
+    filteredDocs.map((doc) =>
       PlaceCache.findOneAndUpdate(
         { placeId: doc.placeId, destinationSlug: doc.destinationSlug, stayType: doc.stayType },
         doc,
@@ -227,7 +234,7 @@ async function fetchAndCacheStayType(
       rawCount: rawPlaces.length,
       duplicatesRemoved,
       wrongLocationRejected,
-      finalCount: docs.length
+      finalCount: filteredDocs.length
     }
   };
 }
@@ -287,7 +294,12 @@ export async function getStaysForDestination(
       // did in Phase B) never has a stale prior-location row served as if still valid.
       const cached = await PlaceCache.find({ destinationSlug, stayType, searchLocation: location }).lean();
       if (cached.length > 0) {
-        const stays = cached.map(toStay);
+        // A row can have been cached before its place was ever excluded — filtering only
+        // at write time (fetchAndCacheStayType) would leave it visible here for up to the
+        // remaining 30-day TTL. Every read of an already-cached row is filtered too, so
+        // an exclusion takes effect immediately, not just for future Google fetches.
+        const visibleCached = await filterOutExcludedPlaces('google', cached);
+        const stays = visibleCached.map(toStay);
         return {
           stays,
           meta: {
@@ -490,7 +502,15 @@ export async function getCachedStaysCatalog(options: { stayType?: StayType; page
       ? { $match: { verifiedStayType: options.stayType } }
       : null;
 
+  // This is a cache-only, whole-collection read — the only way an exclusion can be
+  // enforced here is a $match stage against the current active-exclusion set, run before
+  // pagination/counting so both stay accurate. Placed first, before every other stage,
+  // so an excluded row never survives into the (more expensive) dedupe sort at all.
+  const excludedPlaceIds = await getActiveExclusionSet('google');
+  const exclusionMatchStage = excludedPlaceIds.size > 0 ? [{ $match: { placeId: { $nin: Array.from(excludedPlaceIds) } } }] : [];
+
   const [facetResult] = await PlaceCache.aggregate<PlaceCacheFacetResult>([
+    ...exclusionMatchStage,
     {
       $addFields: {
         hasTypes: { $gt: [{ $size: { $ifNull: ['$types', []] } }, 0] },
@@ -577,6 +597,14 @@ export async function getCachedStaysCatalog(options: { stayType?: StayType; page
 // customer-facing Stay (lib/stayClassification.ts) — never trusting whichever
 // category query happened to discover this particular cached row.
 export async function getStayByPlaceId(placeId: string): Promise<Stay | null> {
+  // A property owner's exclusion request must hold even for a direct URL that already
+  // exists and is already indexed/bookmarked — never just the listing surfaces. Returns
+  // the exact same `null` an unknown/mistyped placeId already returns, so the page's
+  // existing notFound() call (app/stays/[...segments]/page.tsx) fires unchanged; an
+  // excluded property gets a genuine 404, never a distinguishable "excluded" response
+  // that would confirm to a visitor that this specific ID once existed.
+  if (await isPropertyExcluded('google', placeId)) return null;
+
   await connectDB();
   const docs = await PlaceCache.find({ placeId }).lean();
   if (docs.length === 0) return null;
