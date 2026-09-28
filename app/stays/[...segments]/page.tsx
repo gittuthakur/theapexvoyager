@@ -5,15 +5,14 @@ import { ArrowRight, Car, ExternalLink, Globe, MapPin, Sparkles, Users } from 'l
 import PropertyCard from '@/components/modules/PropertyCard';
 import StaysGrid, { StayCard } from '@/components/modules/StaysGrid';
 import { PropertyPhotoGallery } from '@/components/modules/stays/PropertyPhotoGallery';
-import { StayPricePanel } from '@/components/modules/stays/StayPricePanel';
 import { hotelToStay, dedupeAgainstCurated } from '@/lib/stayMerge';
-import HotelBookingModal from '@/components/modules/HotelBookingModal';
-import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
 import StayHero from '@/components/modules/stays/StayHero';
 import DetailPageContainer from '@/components/modules/detail/DetailPageContainer';
 import BackButton from '@/components/ui/BackButton';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
+import { GoogleMapsButton } from '@/components/ui/GoogleMapsButton';
+import { buildGoogleMapsUrl } from '@/lib/googleMapsLink';
 import { getHotels, getHotelBySlug } from '@/lib/hotels';
 import { getPackagesByDestinationSlug } from '@/lib/packages';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
@@ -24,10 +23,6 @@ import { destinations } from '@/config/destinations.config';
 import { findStayTypeBySlug } from '@/config/stayTypes.config';
 import { CATEGORY_TO_STAY_TYPE, STAY_TYPE_LABELS, type Stay, type StayType } from '@/types/stay';
 import { formatINR } from '@/lib/pricing';
-import { isValidCalendarDateISO } from '@/lib/dateValidation';
-import { resolvePublicPrice } from '@/services/pricing/stayPricing.service';
-import type { PublicPriceQuery } from '@/services/pricing/stayPricing.types';
-import { siteConfig } from '@/config/site.config';
 import type { HotelPackage } from '@/types';
 import type { Destination } from '@/types/destination';
 
@@ -272,7 +267,7 @@ export default async function StaysCatchAllPage({ params, searchParams }: StaysC
   }
 
   if (resolved.kind === 'google-property') {
-    return <GooglePropertyDetail stay={resolved.stay} checkIn={checkIn} checkOut={checkOut} guests={guests} />;
+    return <GooglePropertyDetail stay={resolved.stay} />;
   }
 
   return <PropertyDetail hotel={resolved.hotel} checkIn={checkIn} checkOut={checkOut} guests={guests} />;
@@ -441,8 +436,11 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
   const otherStays = similarStays.filter((stay) => stay.slug !== hotel.slug).slice(0, 3);
   const journeys = nearbyJourneys.slice(0, 2);
 
-  const price = hotel.places?.customPrice ?? hotel.pricePerNight;
   const galleryImages = hotel.images;
+  // Real Google-Maps deep link when this curated Hotel has been enriched with a matched
+  // Google place (lib/stays.ts's enrichHotelsWithPlaces) — never fabricated, and simply
+  // omitted (no Maps action at all) when no Google match exists for this property.
+  const curatedMapsUrl = buildGoogleMapsUrl({ googleMapsUri: hotel.places?.googleMapsUri, placeId: hotel.places?.placeId });
 
   return (
     <DetailPageContainer>
@@ -561,18 +559,6 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
                   <Link href="/experts" className="inline-flex items-center gap-1 text-sm font-semibold text-apex-600 hover:text-apex-700">
                     <Users size={14} /> Browse Travel Experts
                   </Link>
-                  <WhatsAppEnquireButton
-                    selection={{
-                      name: hotel.title,
-                      type: 'stay',
-                      stayType: CATEGORY_TO_STAY_TYPE[hotel.category],
-                      slug: hotel.slug,
-                      destinationSlug: matchedDestination?.slug,
-                      location: hotel.location,
-                      url: `${siteConfig.url}/stays/${hotel.slug}`
-                    }}
-                    label="Ask on WhatsApp"
-                  />
                 </div>
               </div>
 
@@ -596,13 +582,22 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
               ) : null}
             </div>
 
-            {/* Availability CTA */}
-            <aside className="h-fit space-y-6 rounded-[2rem] border border-slate-200 bg-slate-50 p-8 text-center xl:sticky xl:top-24">
-              <p className="text-sm uppercase tracking-[0.24em] text-slate-500">
-                {hotel.places?.customPrice ? 'Starting from' : 'Per night'}
+            {/* Informational notice — The Apex Voyager India has no booking/pricing
+                agreement with this (or any) Stay property today, so this panel never
+                shows a price or a "book"/"enquire" CTA of any kind (see
+                app/stays/[...segments]/page.tsx's GooglePropertyDetail for the
+                equivalent Google-sourced notice). This curated Hotel's own displayed
+                content (title/description/amenities) is The Apex Voyager India's own
+                catalog data, never Google's — so this disclosure never mentions Google
+                as the source, and no "Property information sourced from Google"
+                attribution line is ever shown here, even when `curatedMapsUrl` exists
+                (a Maps link alone proves nothing about where the REST of the content
+                came from — see lib/googleMapsLink.ts's own doc comment). */}
+            <aside className="h-fit space-y-4 rounded-[2rem] border border-slate-200 bg-slate-50 p-8 text-center xl:sticky xl:top-24">
+              <p className="text-sm text-slate-600">
+                This is an independent informational listing. The Apex Voyager India is not the property owner or booking provider.
               </p>
-              <p className="text-3xl font-semibold text-slate-900">₹{price.toLocaleString('en-IN')}</p>
-              <HotelBookingModal hotel={hotel} />
+              <GoogleMapsButton url={curatedMapsUrl} fullWidth />
             </aside>
           </div>
         </div>
@@ -627,38 +622,19 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
 // Google call of any kind (see lib/stays.ts's getStayByPlaceId). Deliberately shows
 // no room inventory or hotel-class star rating: no trusted source for either exists
 // anywhere in this app today (audited 2026-09 — see types/stay.ts's HotelClass and
-// types/stayInventory.ts's StayRoom doc comments), so this honestly says rooms will
-// be confirmed on enquiry rather than fabricating cards, and never renders a star-
-// class badge at all rather than inventing one from the Google guest rating.
-/** Builds a PublicPriceQuery only when the URL actually carries a complete, plausible
- *  search context — a bare property visit with no dates never attempts a price call at
- *  all (no default date range is invented). `guests` is today a single free-text field
- *  (no adults/children/rooms breakdown collected anywhere yet), so it is read as the
- *  adult count with children/rooms left at their safe defaults — see this function's
- *  return, never a design the safety gate can turn into a wrong displayed price:
- *  resolvePublicPrice still requires a CONFIRMED mapping and a production-classified
- *  environment before ever returning a real amount, regardless of this interpretation. */
-function buildStayPriceQuery(params: { googlePlaceId: string; destinationSlug: string; checkIn?: string; checkOut?: string; guests?: string }): PublicPriceQuery | null {
-  const { googlePlaceId, destinationSlug, checkIn, checkOut, guests } = params;
-  if (!checkIn || !checkOut || !isValidCalendarDateISO(checkIn) || !isValidCalendarDateISO(checkOut)) return null;
-  if (checkOut <= checkIn) return null;
-
-  const adults = guests ? Number.parseInt(guests, 10) : 2;
-  if (!Number.isFinite(adults) || adults < 1) return null;
-
-  return { googlePlaceId, destinationSlug, checkIn, checkOut, adults, children: 0, rooms: 1 };
-}
-
-async function GooglePropertyDetail({ stay, checkIn, checkOut, guests }: { stay: Stay; checkIn?: string; checkOut?: string; guests?: string }) {
+// types/stayInventory.ts's StayRoom doc comments). Purely informational: The Apex
+// Voyager India has no booking/pricing agreement with any Stay property today (2026-09
+// business decision), so this page never calls a pricing service and never renders a
+// price, an enquiry/WhatsApp CTA, or any wording implying Apex can confirm, negotiate,
+// reserve or book this property — the only action offered is a genuine outbound link to
+// Google Maps for the exact same place.
+async function GooglePropertyDetail({ stay }: { stay: Stay }) {
   const matchedDestination = await getCuratedDestinationBySlug(stay.destinationSlug);
   const locationLabel = matchedDestination?.title ?? stay.formattedAddress ?? stay.destinationSlug;
-
-  // Server-only pricing call (never imported into client code) — see
-  // services/pricing/stayPricing.service.ts's resolvePublicPrice for the two mandatory
-  // safety gates (confirmed hotel mapping AND a production-classified HBX environment)
-  // that must both hold before this can ever return a real amount.
-  const priceQuery = buildStayPriceQuery({ googlePlaceId: stay.placeId, destinationSlug: stay.destinationSlug, checkIn, checkOut, guests });
-  const priceResult = priceQuery ? await resolvePublicPrice(priceQuery) : null;
+  // Always constructible — `stay.placeId` is this record's own real Google Place ID —
+  // but `googleMapsUri` (verbatim from Google's own Text Search response) is preferred
+  // whenever present since it's the more specific of the two genuine URLs.
+  const mapsUrl = buildGoogleMapsUrl({ googleMapsUri: stay.googleMapsUri, placeId: stay.placeId });
 
   return (
     <DetailPageContainer>
@@ -689,26 +665,18 @@ async function GooglePropertyDetail({ stay, checkIn, checkOut, guests }: { stay:
               ) : null}
             </div>
 
-            {/* Room section — honest placeholder only. See this component's top
-                comment: no verified room-inventory source is connected today. */}
+            {/* Independent-listing notice — see this component's top comment: no
+                booking/pricing agreement exists with this property, so this is never
+                framed as something Apex can confirm on enquiry. */}
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-              <p className="text-sm font-semibold text-slate-900">Rooms &amp; Rates</p>
-              <p className="mt-1 text-sm text-slate-600">
-                Exact room options, occupancy and pricing for this property will be confirmed with you directly when you enquire.
+              <p className="text-sm text-slate-600">
+                This is an independent informational listing. Property information is sourced from Google. The Apex Voyager India is not
+                the property owner or booking provider.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-3">
-              {stay.googleMapsUri ? (
-                <a
-                  href={stay.googleMapsUri}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="cursor-hover inline-flex items-center gap-1.5 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-apex-400 hover:text-slate-900"
-                >
-                  <MapPin size={14} /> View on Google Maps
-                </a>
-              ) : null}
+              <GoogleMapsButton url={mapsUrl} />
               {stay.websiteUri ? (
                 <a
                   href={stay.websiteUri}
@@ -739,20 +707,11 @@ async function GooglePropertyDetail({ stay, checkIn, checkOut, guests }: { stay:
           </div>
 
           <aside className="h-fit space-y-4 rounded-[2rem] border border-slate-200 bg-slate-50 p-8 text-center xl:sticky xl:top-24">
-            <StayPricePanel priceResult={priceResult} />
-            <WhatsAppEnquireButton
-              className="w-full"
-              label="Check Price & Availability"
-              selection={{
-                name: stay.name,
-                type: 'stay',
-                stayType: stay.stayType,
-                slug: stay.slug,
-                destinationSlug: stay.destinationSlug,
-                location: stay.formattedAddress,
-                url: `${siteConfig.url}/stays/property/${stay.placeId}`
-              }}
-            />
+            <p className="text-sm text-slate-600">
+              This is an independent informational listing. Property information is sourced from Google. The Apex Voyager India is not the
+              property owner or booking provider.
+            </p>
+            <GoogleMapsButton url={mapsUrl} fullWidth />
           </aside>
         </div>
       </div>

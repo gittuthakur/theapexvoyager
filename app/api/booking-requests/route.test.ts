@@ -154,12 +154,19 @@ describe('POST /api/booking-requests — journey path', () => {
 });
 
 describe('POST /api/booking-requests — unrelated types are unaffected by the journey traveller limit', () => {
-  it('a stay-type request with no adults/children fields at all still succeeds', async () => {
+  it('a tour-type request with no adults/children fields at all still succeeds', async () => {
     const res = await POST(
-      jsonRequest({ type: 'stay', name: 'Test Customer', phone: '9876543210', itemName: 'Some Hotel', details: { slug: 'some-hotel' } })
+      jsonRequest({ type: 'tour', name: 'Test Customer', phone: '9876543210', itemName: 'Some Tour', details: { slug: 'some-tour' } })
     );
     expect(res.status).toBe(201);
     expect(getPackageBySlugMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects a "stay" type — no booking/pricing agreement exists with any Stay property', async () => {
+    const res = await POST(
+      jsonRequest({ type: 'stay', name: 'Test Customer', phone: '9876543210', itemName: 'Some Hotel', details: { slug: 'some-hotel' } })
+    );
+    expect(res.status).toBe(400);
   });
 
   it('an experience-type request is unaffected by the journey traveller cap', async () => {

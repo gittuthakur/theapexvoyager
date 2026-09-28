@@ -20,7 +20,12 @@ export function hotelToStay(hotel: HotelPackage, destinationSlug?: string): Stay
     photos: hotel.images,
     customPrice: hotel.pricePerNight,
     destinationSlug: destinationSlug ?? hotel.slug,
-    source: 'curated'
+    source: 'curated',
+    // Passed through only when a real Google place was matched (lib/stays.ts's
+    // enrichHotelsWithPlaces) — never fabricated. `placeId` above stays the synthetic
+    // `curated:${slug}` identity key regardless; a Google Maps link must only ever be
+    // built from this real `googleMapsUri` for a curated Stay, never from `placeId`.
+    googleMapsUri: hotel.places?.googleMapsUri
   };
 }
 

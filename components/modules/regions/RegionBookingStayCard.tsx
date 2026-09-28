@@ -1,13 +1,23 @@
 import { Star } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { GoogleMapsButton } from '@/components/ui/GoogleMapsButton';
+import { buildGoogleMapsUrl } from '@/lib/googleMapsLink';
 import type { RegionBookingStayCardProps } from '@/services/providers/booking/booking.mapper';
 
-// The designed-but-dataless Booking.com stay variant — bookingMode "affiliate", distinct
-// CTA copy from the curated Mongo stay card (RegionStays reuses HotelCard for those).
-// Only ever rendered when bookingContext.accommodations is non-empty, which never
-// happens today (see services/providers/booking/bookingAccommodation.service.ts) — this
-// exists so the visual slot and copy contract are correct once real credentials land.
-export default function RegionBookingStayCard({ name, photoUrl, priceFrom, currency, providerUrl, rating }: RegionBookingStayCardProps) {
+// The designed-but-dataless Booking.com stay variant — bookingMode "affiliate". Only
+// ever rendered when bookingContext.accommodations is non-empty, which never happens
+// today (see services/providers/booking/bookingAccommodation.service.ts) — kept, not
+// deleted, so the visual slot is ready the moment a real integration lands. Renders no
+// price and no commercial call-to-action of any kind — there is no active Booking.com
+// affiliate integration today (2026-09: Stays vertical made commercial-CTA-free
+// sitewide), and `providerUrl` is preserved on the props type for that future
+// integration's own commercial UI, not rendered here as if one already exists. Shows the
+// same informational "View on Google Maps" action every other Stay surface uses, but
+// ONLY when real Google place data is actually present — never fabricated from
+// `providerUrl` (a Booking.com URL, not a Maps one).
+export default function RegionBookingStayCard({ name, photoUrl, rating, googleMapsUri, placeId }: RegionBookingStayCardProps) {
+  const mapsUrl = buildGoogleMapsUrl({ googleMapsUri, placeId });
+
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg">
       <div className="relative h-48 w-full overflow-hidden bg-slate-100">
@@ -22,28 +32,12 @@ export default function RegionBookingStayCard({ name, photoUrl, priceFrom, curre
           </span>
         ) : null}
         <div className="flex-1" />
-        {priceFrom ? (
-          <p className="text-lg font-semibold text-apex-600">
-            {currency ?? ''} {priceFrom.toLocaleString('en-IN')} <span className="text-sm font-normal text-slate-500">/ night</span>
-          </p>
-        ) : null}
-        <div className="mt-3 flex flex-wrap gap-2">
-          <a
-            href={providerUrl}
-            target="_blank"
-            rel="noopener noreferrer nofollow"
-            className="inline-flex min-h-[44px] flex-1 items-center justify-center rounded-xl bg-apex-500 px-4 py-2 text-sm font-semibold text-white transition-colors duration-300 ease-in-out hover:bg-apex-400"
-          >
-            Check Availability
-          </a>
-          <a
-            href={providerUrl}
-            target="_blank"
-            rel="noopener noreferrer nofollow"
-            className="inline-flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors duration-300 ease-in-out hover:bg-slate-50"
-          >
-            View on Booking.com
-          </a>
+        {/* name/photo/rating above are Booking.com-sourced, never Google's — a Maps link
+            alone (when googleMapsUri/placeId are ever populated) proves nothing about
+            the rest of this content's provenance, so no "sourced from Google"
+            attribution is shown here (see lib/googleMapsLink.ts's own doc comment). */}
+        <div className="mt-3">
+          <GoogleMapsButton url={mapsUrl} fullWidth />
         </div>
       </div>
     </div>

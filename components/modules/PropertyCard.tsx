@@ -5,11 +5,10 @@ import Link from 'next/link';
 import { ArrowRight, BadgeCheck, Heart, MapPin, Star } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
-import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
-import { CATEGORY_TO_STAY_TYPE } from '@/types/stay';
+import { GoogleMapsButton } from '@/components/ui/GoogleMapsButton';
+import { buildGoogleMapsUrl } from '@/lib/googleMapsLink';
 import { cn } from '@/lib/utils';
 import type { HotelPackage } from '@/types';
-import { siteConfig } from '@/config/site.config';
 
 export interface PropertyCardProps {
   hotel: HotelPackage;
@@ -32,21 +31,6 @@ function readWishlist(): Set<string> {
   } catch {
     return new Set();
   }
-}
-
-// `toLocaleString('en-IN')` depends on the JS engine's ICU data — Node's SSR
-// runtime doesn't always ship the full locale tables the browser has, so the
-// same price can render with different digit grouping on the server vs. the
-// client and trip a hydration mismatch. This does the Indian lakh/crore
-// grouping with plain string math instead, so server and client always agree.
-function formatIndianPrice(amount: number): string {
-  const rounded = Math.round(amount);
-  const isNegative = rounded < 0;
-  const digits = String(Math.abs(rounded));
-  const lastThree = digits.slice(-3);
-  const remaining = digits.slice(0, -3);
-  const grouped = remaining ? `${remaining.replace(/\B(?=(\d{2})+(?!\d))/g, ',')},${lastThree}` : lastThree;
-  return `${isNegative ? '-' : ''}${grouped}`;
 }
 
 export default function PropertyCard({ hotel, checkIn, checkOut, guests, priority = false }: PropertyCardProps) {
@@ -73,9 +57,8 @@ export default function PropertyCard({ hotel, checkIn, checkOut, guests, priorit
   if (guests) detailParams.set('guests', guests);
   const detailQuery = detailParams.toString();
   const detailHref = detailQuery ? `/stays/${hotel.slug}?${detailQuery}` : `/stays/${hotel.slug}`;
-
-  const price = hotel.places?.customPrice ?? hotel.pricePerNight;
   const imageSrc = hotel.images[0];
+  const mapsUrl = buildGoogleMapsUrl({ googleMapsUri: hotel.places?.googleMapsUri, placeId: hotel.places?.placeId });
 
   return (
     <article className="group flex h-full flex-col rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm transition-all duration-300 ease-in-out motion-safe:hover:-translate-y-1 hover:shadow-lg">
@@ -147,34 +130,20 @@ export default function PropertyCard({ hotel, checkIn, checkOut, guests, priorit
 
         <div className="flex-1" />
 
+        {/* This card's own title/description/amenities are The Apex Voyager India's own
+            curated catalog data, never Google's — a Maps link (when `hotel.places`
+            matched a real Google place) proves nothing about the REST of this content's
+            provenance, so no "sourced from Google" attribution is ever shown here (see
+            lib/googleMapsLink.ts's own doc comment on this exact distinction). */}
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-t border-slate-100 pt-4">
-          <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
-              {hotel.places?.customPrice ? 'Starting from' : 'From'}
-            </p>
-            <p className="text-3xl font-bold text-slate-900">
-              ₹{formatIndianPrice(price)} <span className="text-sm font-normal text-slate-500">/ night</span>
-            </p>
-          </div>
-          <div className="flex w-full flex-wrap items-center gap-3">
-            <WhatsAppEnquireButton
-              selection={{
-                name: hotel.title,
-                type: 'stay',
-                stayType: CATEGORY_TO_STAY_TYPE[hotel.category],
-                slug: hotel.slug,
-                location: hotel.location,
-                url: `${siteConfig.url}/stays/${hotel.slug}`
-              }}
-            />
-            <Link
-              href={detailHref}
-              className="cursor-hover inline-flex items-center gap-2 rounded-full bg-apex-500 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400"
-            >
-              View Stay
-              <ArrowRight size={20} />
-            </Link>
-          </div>
+          <GoogleMapsButton url={mapsUrl} fullWidth />
+          <Link
+            href={detailHref}
+            className="w-full sm:w-auto cursor-hover inline-flex items-center justify-center gap-2 rounded-full bg-apex-500 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400"
+          >
+            View Stay
+            <ArrowRight size={20} />
+          </Link>
         </div>
       </div>
     </article>

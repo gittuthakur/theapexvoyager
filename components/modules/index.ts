@@ -20,7 +20,6 @@ export { default as FinalCta } from './FinalCta';
 export { default as NewsletterBanner } from './NewsletterBanner';
 export { default as ContactForm } from './ContactForm';
 export { default as HotelCard } from './HotelCard';
-export { default as HotelBookingModal } from './HotelBookingModal';
 export { default as PropertyCard } from './PropertyCard';
 export { default as StayHero } from './StayHero';
 export { default as StaySearch } from './StaySearch';

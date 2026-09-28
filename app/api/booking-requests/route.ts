@@ -13,7 +13,11 @@ import { validateJourneyTravelDate } from '@/lib/dateValidation';
 import { limitPublicForm, isContactPhone } from '@/lib/publicFormRequest';
 import { MAX_JOURNEY_TRAVELLERS, validateJourneyTravellerCounts } from '@/services/booking/journeyQuote.service';
 
-const VALID_TYPES: BookingRequestType[] = ['stay', 'journey', 'tour', 'experience', 'transport', 'expert'];
+// 'stay' removed 2026-09: The Apex Voyager India has no booking/pricing agreement with
+// any Stay property, and no real UI caller ever sent this type anyway (it was reachable
+// but orphaned — see git history) — a `type: 'stay'` request now fails closed with the
+// same generic 400 any other unrecognized type already gets.
+const VALID_TYPES: BookingRequestType[] = ['journey', 'tour', 'experience', 'transport', 'expert'];
 
 // A `type: 'journey'` request means one of two structurally different things — a
 // catalog Journey Detail booking (PackageBookingModal.tsx, tied to a real Journey

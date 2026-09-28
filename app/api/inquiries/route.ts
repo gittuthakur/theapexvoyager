@@ -28,8 +28,12 @@ export async function POST(request: Request) {
     if (!selection) {
       return NextResponse.json({ error: 'A selection is required' }, { status: 400 });
     }
-    if (selectionType !== 'stay' && selectionType !== 'destination') {
-      return NextResponse.json({ error: 'selectionType must be "stay" or "destination"' }, { status: 400 });
+    // 'stay' was removed 2026-09: The Apex Voyager India has no booking/pricing agreement
+    // with any Stay property, so no enquiry may be submitted for one — this endpoint now
+    // fails closed with the same generic 400 a malformed/unrecognized value already got,
+    // never a Stay-specific error that would confirm the endpoint used to accept it.
+    if (selectionType !== 'destination') {
+      return NextResponse.json({ error: 'selectionType must be "destination"' }, { status: 400 });
     }
 
     await connectDB();

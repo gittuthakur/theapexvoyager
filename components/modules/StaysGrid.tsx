@@ -7,13 +7,13 @@ import { MapPin, Star } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { SkeletonGrid } from '@/components/ui/Skeleton';
 import { withPhotoWidth } from '@/lib/placePhotoUrl';
-import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
+import { GoogleMapsButton } from '@/components/ui/GoogleMapsButton';
+import { buildGoogleMapsUrl } from '@/lib/googleMapsLink';
 import { cn } from '@/lib/utils';
 import { fadeInUp } from '@/lib/motion';
 import { hotelToStay, dedupeAgainstCurated } from '@/lib/stayMerge';
 import { STAY_TYPES, STAY_TYPE_LABELS, type Stay, type StayType } from '@/types/stay';
 import type { HotelPackage } from '@/types/hotel';
-import { siteConfig } from '@/config/site.config';
 
 export interface StaysGridProps {
   location: string;
@@ -144,8 +144,8 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
 }
 
 // Exported so server-rendered catalog/search listings can render the exact same card
-// (safe photo fallback, honest "Contact for pricing", Google attribution) rather than
-// a second, divergent card template.
+// (safe photo fallback, honest "View on Google Maps" action, Google attribution) rather
+// than a second, divergent card template.
 // Google-backed stays have a real, canonical detail page (/stays/property/<placeId>
 // — see app/stays/[...segments]/page.tsx's getStayByPlaceId); curated stays reuse the
 // existing curated Hotel detail page at /stays/<hotel-slug>. `stay.placeId` for a
@@ -166,12 +166,13 @@ const CARD_THUMBNAIL_WIDTH_PX = 192; // secondary thumbnail slot: h-14 w-14 (56x
 
 export function StayCard({ stay, priority = false }: { stay: Stay; priority?: boolean }) {
   const href = stayDetailHref(stay);
+  // `stay.placeId` is only a real Google Place ID when `source === 'google'` — a curated
+  // Stay's `placeId` is the synthetic `curated:${slug}` key (lib/stayMerge.ts's
+  // hotelToStay), never a real one to build a Maps link from.
+  const mapsUrl = buildGoogleMapsUrl({ googleMapsUri: stay.googleMapsUri, placeId: stay.source === 'google' ? stay.placeId : undefined });
 
   return (
     <article className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-lg transition hover:-translate-y-1">
-      {/* Only the image + name are inside the Link — WhatsAppEnquireButton below is a
-          <button>, and interactive content must never nest inside an <a> (HTML5's
-          content model forbids it, and it breaks keyboard/screen-reader navigation). */}
       <Link href={href} className="cursor-hover block">
         <div className="relative h-48 w-full overflow-hidden bg-slate-100">
           <span className="absolute left-3 top-3 z-10 rounded-full bg-apex-500 px-3 py-1 text-xs font-semibold text-white">
@@ -223,26 +224,14 @@ export function StayCard({ stay, priority = false }: { stay: Stay; priority?: bo
         </div>
       </Link>
 
-      <div className="space-y-3 p-5 pt-3">
-        <div className="flex flex-col justify-between gap-3">
-          <div>
-            <p className="text-xs uppercase tracking-wider text-slate-500">Starting from</p>
-            <p className="text-md font-bold text-slate-900">
-              {stay.customPrice ? `₹${stay.customPrice.toLocaleString('en-IN')} / night` : 'Contact for pricing'}
-            </p>
-          </div>
-          <WhatsAppEnquireButton
-            selection={{
-              name: stay.name,
-              type: 'stay',
-              stayType: stay.stayType,
-              slug: stay.slug,
-              destinationSlug: stay.destinationSlug,
-              location: stay.formattedAddress,
-              url: `${siteConfig.url}${href}`
-            }}
-          />
-        </div>
+      <div className="space-y-2 p-5 pt-3">
+        <GoogleMapsButton url={mapsUrl} fullWidth />
+        {/* The "sourced from Google" attribution is about THIS CARD'S OWN displayed
+            name/address/photos, not about whether a Maps link exists — a curated Stay's
+            content is The Apex Voyager India's own catalog data even when it also has a
+            real Google Maps link, so this only ever shows for a genuinely
+            Google-sourced record (source === 'google'). */}
+        {mapsUrl && stay.source === 'google' ? <p className="text-[11px] text-slate-400">Property information sourced from Google</p> : null}
       </div>
     </article>
   );

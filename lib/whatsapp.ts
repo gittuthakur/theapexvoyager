@@ -27,8 +27,6 @@ export function buildWhatsAppLink(params: WhatsAppLinkParams = {}) {
   return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 }
 
-const FALLBACK_NOT_PROVIDED = 'Not provided';
-
 /** YYYY-MM-DD in the browser's local calendar date — never UTC, so a late-evening IST
  *  visitor's "today" matches what their own `<input type="date">` shows, not a
  *  UTC-shifted one. Used both as the check-in field's `min` and as the check-in-not-
@@ -59,65 +57,6 @@ export function formatDisplayDate(isoDate: string): string {
   const parsed = new Date(`${isoDate}T00:00:00`);
   if (Number.isNaN(parsed.getTime())) return isoDate;
   return parsed.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
-export interface StayEnquiryMessageParams {
-  propertyName: string;
-  /** Real stay category (e.g. "Hotel", "Homestay") — STAY_TYPE_LABELS[stayType], never invented. */
-  stayType: string;
-  /** Real formattedAddress/location — "Not provided" when the source data has none, never guessed. */
-  location: string;
-  /** Already display-formatted (see formatDisplayDate) — this builder never formats dates itself. */
-  checkIn: string;
-  checkOut: string;
-  adults: string;
-  children: string;
-  rooms: string;
-  customerName: string;
-  phone: string;
-  /** Absolute URL of this exact property's own page — never the page the CTA happened to be clicked from. */
-  propertyUrl: string;
-}
-
-// Every Stay listing on this site — regardless of category, and regardless of whether
-// it's a curated Hotel document or a Google-Places-backed property — has no connected
-// live inventory, pricing, or Booking.com integration (see AGENTS.md's Stays module
-// notes). This message exists specifically so a customer never mistakes tapping
-// "Check Price & Availability" for completing an instant, confirmed booking: it always
-// frames the message as a price/availability request our team will confirm, never a
-// booking confirmation, and never invents a price, room, discount, or reference number.
-export function buildStayEnquiryMessage({
-  propertyName,
-  stayType,
-  location,
-  checkIn,
-  checkOut,
-  adults,
-  children,
-  rooms,
-  customerName,
-  phone,
-  propertyUrl
-}: StayEnquiryMessageParams): string {
-  return [
-    'Hello The Apex Voyager India,',
-    '',
-    'I would like to check the price and availability for this stay.',
-    '',
-    `Property: ${propertyName}`,
-    `Stay type: ${stayType || FALLBACK_NOT_PROVIDED}`,
-    `Location: ${location || FALLBACK_NOT_PROVIDED}`,
-    `Check-in: ${checkIn}`,
-    `Check-out: ${checkOut}`,
-    `Adults: ${adults}`,
-    `Children: ${children}`,
-    `Rooms: ${rooms}`,
-    `Customer name: ${customerName}`,
-    `Phone: ${phone}`,
-    `Property page: ${propertyUrl}`,
-    '',
-    'Please confirm the current availability and final price.'
-  ].join('\n');
 }
 
 const TYPE_VERB: Record<BookingRequestType, string> = {

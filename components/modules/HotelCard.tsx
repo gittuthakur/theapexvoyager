@@ -1,11 +1,10 @@
 import Link from 'next/link';
 import { ArrowRight, MapPin, Star } from 'lucide-react';
-import WhatsAppEnquireButton from '@/components/modules/WhatsAppEnquireButton';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
-import { CATEGORY_TO_STAY_TYPE } from '@/types/stay';
+import { GoogleMapsButton } from '@/components/ui/GoogleMapsButton';
+import { buildGoogleMapsUrl } from '@/lib/googleMapsLink';
 import type { HotelPackage } from '@/types';
-import { siteConfig } from '@/config/site.config';
 
 export interface HotelCardProps {
   hotel: HotelPackage;
@@ -21,6 +20,7 @@ export default function HotelCard({ hotel, checkIn, checkOut, guests }: HotelCar
   if (guests) detailParams.set('guests', guests);
   const detailQuery = detailParams.toString();
   const detailHref = detailQuery ? `/homestays/${hotel.slug}?${detailQuery}` : `/homestays/${hotel.slug}`;
+  const mapsUrl = buildGoogleMapsUrl({ googleMapsUri: hotel.places?.googleMapsUri, placeId: hotel.places?.placeId });
 
   return (
     <article className="group rounded-[2rem] border border-slate-200 bg-white p-6 shadow-glow transition hover:-translate-y-1">
@@ -91,33 +91,19 @@ export default function HotelCard({ hotel, checkIn, checkOut, guests }: HotelCar
             ))}
           </div>
         ) : null}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
-              {hotel.places?.customPrice ? 'Starting from' : 'Per night'}
-            </p>
-            <p className="text-xl font-bold text-slate-900">
-              ₹{(hotel.places?.customPrice ?? hotel.pricePerNight).toLocaleString('en-IN')}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <WhatsAppEnquireButton
-              selection={{
-                name: hotel.title,
-                type: 'stay',
-                stayType: CATEGORY_TO_STAY_TYPE[hotel.category],
-                slug: hotel.slug,
-                location: hotel.location,
-                url: `${siteConfig.url}/homestays/${hotel.slug}`
-              }}
-            />
-            <Link
-              href={detailHref}
-              className="inline-flex items-center gap-2 rounded-full bg-apex-500 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400"
-            >
-              View Details <ArrowRight size={16} />
-            </Link>
-          </div>
+        {/* This card's own title/description/amenities are The Apex Voyager India's own
+            curated catalog data, never Google's — a Maps link (when `hotel.places`
+            matched a real Google place) proves nothing about the REST of this content's
+            provenance, so no "sourced from Google" attribution is ever shown here (see
+            lib/googleMapsLink.ts's own doc comment on this exact distinction). */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-4">
+          <GoogleMapsButton url={mapsUrl} fullWidth />
+          <Link
+            href={detailHref}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-apex-500 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400"
+          >
+            View Details <ArrowRight size={16} />
+          </Link>
         </div>
       </div>
     </article>

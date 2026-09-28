@@ -6,16 +6,25 @@ vi.mock('@/models/Inquiry', () => ({ Inquiry: { create } }));
 vi.mock('@/lib/mailer', () => ({ sendBookingConfirmationEmails: notify }));
 const { POST } = await import('./route');
 const request = (phone: string) => new Request('https://test.invalid/api/inquiries', {
-  method: 'POST', body: JSON.stringify({ name: 'Fixture', phone, selection: 'Fixture stay', selectionType: 'stay' })
+  method: 'POST', body: JSON.stringify({ name: 'Fixture', phone, selection: 'Fixture destination', selectionType: 'destination' })
 });
 beforeEach(() => { create.mockReset().mockImplementation(async value => ({ ...value, _id: 'fixture-id' })); notify.mockReset(); });
 it('persists a valid enquiry before notifying the team', async () => {
   expect((await POST(request('+44 20 7946 0123'))).status).toBe(201);
-  expect(notify).toHaveBeenCalledWith(expect.objectContaining({ referenceId: 'fixture-id', itemName: 'Fixture stay' }));
+  expect(notify).toHaveBeenCalledWith(expect.objectContaining({ referenceId: 'fixture-id', itemName: 'Fixture destination' }));
   expect(create.mock.invocationCallOrder[0]).toBeLessThan(notify.mock.invocationCallOrder[0]);
 });
 it('rejects an unusable phone number without persisting or notifying', async () => {
   expect((await POST(request('not a phone'))).status).toBe(400);
+  expect(create).not.toHaveBeenCalled();
+  expect(notify).not.toHaveBeenCalled();
+});
+it('rejects a "stay" selectionType — no booking/pricing agreement exists with any Stay property', async () => {
+  const staySelection = new Request('https://test.invalid/api/inquiries', {
+    method: 'POST',
+    body: JSON.stringify({ name: 'Fixture', phone: '+44 20 7946 0123', selection: 'Fixture stay', selectionType: 'stay' })
+  });
+  expect((await POST(staySelection)).status).toBe(400);
   expect(create).not.toHaveBeenCalled();
   expect(notify).not.toHaveBeenCalled();
 });
