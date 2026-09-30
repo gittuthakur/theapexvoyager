@@ -60,11 +60,22 @@ export default function PackageDetailContent({
     if (autoOpenBooking) setBookingOpen(true);
   }, [autoOpenBooking]);
 
+  // Home > Journeys > [this journey] — the one real, always-true hierarchy for every
+  // Journey detail page; mirrors the exact labels this page's own BreadcrumbList JSON-LD
+  // uses (see app/journeys/[slug]/page.tsx) so the visible trail and structured data
+  // never disagree. The final item carries no `href` — it's the current page, never a
+  // useless link to itself.
+  const breadcrumbItems = [
+    { label: 'Home', href: '/' },
+    { label: 'Journeys', href: '/journeys' },
+    { label: heroTitleOverride ?? pkg.name }
+  ];
+
   return (
     <DetailPageContainer mainClassName="pb-28 lg:pb-14">
       <BackButton fallbackHref="/journeys" label="Back to Journeys" />
 
-      <JourneyHero pkg={pkg} titleOverride={heroTitleOverride} />
+      <JourneyHero pkg={pkg} titleOverride={heroTitleOverride} breadcrumbItems={breadcrumbItems} />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_340px] lg:gap-8">
           <div className="space-y-6">

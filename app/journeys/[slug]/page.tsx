@@ -194,11 +194,15 @@ export default async function JourneyDetailPage({ params, searchParams }: Journe
 
   return (
     <>
+      {/* Same three labels (Home, Journeys, this journey's own visible title) the
+          visible breadcrumb trail below renders — see PackageDetailContent's own
+          breadcrumbItems, which use this identical `visibleTitle` for its final item,
+          so the structured data and what a visitor actually sees never disagree. */}
       <JsonLd
         data={buildBreadcrumbListSchema([
           { name: 'Home', url: siteConfig.url },
           { name: 'Journeys', url: `${siteConfig.url}/journeys` },
-          { name: pkg.name, url: `${siteConfig.url}/journeys/${pkg.slug}` }
+          { name: visibleTitle, url: `${siteConfig.url}/journeys/${pkg.slug}` }
         ])}
       />
       <JsonLd

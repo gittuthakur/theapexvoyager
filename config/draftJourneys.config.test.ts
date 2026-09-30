@@ -42,6 +42,19 @@ const OWNER_APPROVED_PRICES: Record<string, number> = {
 // Explicitly kept ON HOLD — no price, per Phase 2B's overlap finding and Phase 3 Part 9.
 const ON_HOLD_SLUG = 'dharamshala-mcleodganj-dalhousie-khajjiar-circuit';
 
+// Batch 2 (Phase 6) — 8 more owner-approved indicative starting prices, same exact-figure
+// guarantee as OWNER_APPROVED_PRICES above.
+const BATCH_2_APPROVED_PRICES: Record<string, number> = {
+  'shimla-short-escape': 7999,
+  'manali-short-escape': 8999,
+  'kasol-manikaran-weekend': 6999,
+  'dalhousie-khajjiar-chamba': 10999,
+  'bir-billing-palampur': 9999,
+  'mussoorie-weekend': 7999,
+  'valley-of-flowers-hemkund-sahib-trek': 12999,
+  'rishikesh-adventure-package': 8999
+};
+
 const KNOWN_BUSINESS_STATES = new Set(['Himachal Pradesh', 'Jammu & Kashmir', 'Uttarakhand', 'Ladakh']);
 
 function itineraryDayCountFromDuration(duration: string): number | undefined {
@@ -135,26 +148,39 @@ describe('config/draftJourneys.config.ts — commercial pricing (Phase 3, Part 6
     expect(journey?.price).toBeUndefined();
   });
 
-  it('every OTHER (new Phase 3) draft has no price — never fabricated, never inferred from another package', () => {
-    const approvedOrHeld = new Set([...Object.keys(OWNER_APPROVED_PRICES), ON_HOLD_SLUG]);
+  it('every OTHER (still-unapproved) draft has no price — never fabricated, never inferred from another package', () => {
+    const approvedOrHeld = new Set([
+      ...Object.keys(OWNER_APPROVED_PRICES),
+      ...Object.keys(BATCH_2_APPROVED_PRICES),
+      ON_HOLD_SLUG
+    ]);
     const unapproved = draftJourneys.filter((j) => !approvedOrHeld.has(j.slug));
-    expect(unapproved.length).toBeGreaterThan(0); // sanity: the Phase 3 packages are actually present
+    expect(unapproved.length).toBeGreaterThan(0); // sanity: the still-unpriced drafts are actually present
     for (const journey of unapproved) {
       expect(journey.price, `${journey.slug} should have no price set`).toBeUndefined();
     }
   });
 
-  it('no draft OUTSIDE the 10 Phase 4A owner-approved packages carries inclusions/exclusions — commercial approval for the rest remains out of scope', () => {
-    const phase4ApprovedSlugs = new Set(Object.keys(OWNER_APPROVED_PRICES));
+  it('all 8 Batch 2 (Phase 6) drafts carry exactly their approved starting price, never a different or inferred value', () => {
+    for (const [slug, approvedPrice] of Object.entries(BATCH_2_APPROVED_PRICES)) {
+      const journey = draftJourneys.find((j) => j.slug === slug);
+      expect(journey, `expected draft "${slug}" to exist`).toBeDefined();
+      expect(journey?.price).toBe(approvedPrice);
+      expect(journey?.status).toBe('draft');
+    }
+  });
+
+  it('no draft OUTSIDE the 10 Phase 4A + 8 Phase 6 owner-approved packages carries inclusions/exclusions — commercial approval for the rest remains out of scope', () => {
+    const approvedSlugs = new Set([...Object.keys(OWNER_APPROVED_PRICES), ...Object.keys(BATCH_2_APPROVED_PRICES)]);
     for (const journey of draftJourneys) {
-      if (phase4ApprovedSlugs.has(journey.slug)) continue;
+      if (approvedSlugs.has(journey.slug)) continue;
       expect(journey.inclusions, `${journey.slug} inclusions`).toEqual([]);
       expect(journey.exclusions, `${journey.slug} exclusions`).toEqual([]);
     }
   });
 
-  it('every one of the 10 Phase 4A owner-approved packages now carries a real, non-empty inclusions and exclusions list', () => {
-    for (const slug of Object.keys(OWNER_APPROVED_PRICES)) {
+  it('every one of the 10 Phase 4A + 8 Phase 6 owner-approved packages now carries a real, non-empty inclusions and exclusions list', () => {
+    for (const slug of [...Object.keys(OWNER_APPROVED_PRICES), ...Object.keys(BATCH_2_APPROVED_PRICES)]) {
       const journey = draftJourneys.find((j) => j.slug === slug);
       expect(journey?.inclusions.length, `${slug} inclusions`).toBeGreaterThan(0);
       expect(journey?.exclusions.length, `${slug} exclusions`).toBeGreaterThan(0);

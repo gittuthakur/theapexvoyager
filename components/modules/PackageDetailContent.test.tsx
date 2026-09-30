@@ -119,6 +119,30 @@ describe('PackageDetailContent — AI-readable content fields (Phase 1)', () => 
   });
 });
 
+describe('PackageDetailContent — Phase 6 visible breadcrumbs', () => {
+  it('renders a real Home > Journeys > [journey] breadcrumb trail', () => {
+    const html = renderToStaticMarkup(<PackageDetailContent pkg={basePkg({ name: 'Test Journey' })} />);
+    expect(html).toContain('aria-label="Breadcrumb"');
+    expect(html).toContain('>Home<');
+    expect(html).toContain('>Journeys<');
+    expect(html).toContain('>Test Journey<');
+    expect(html).toContain('href="/journeys"');
+  });
+
+  it('uses the SEO H1 override for the final breadcrumb item when one is set, matching the visible H1 and the page\'s own BreadcrumbList JSON-LD', () => {
+    const html = renderToStaticMarkup(
+      <PackageDetailContent pkg={basePkg({ name: 'Internal Name' })} heroTitleOverride="Manali Tour Package from Chandigarh" />
+    );
+    expect(html).toContain('>Manali Tour Package from Chandigarh<');
+    expect(html).not.toMatch(/<a[^>]*>Manali Tour Package from Chandigarh<\/a>/);
+  });
+
+  it('the final breadcrumb item never links to itself', () => {
+    const html = renderToStaticMarkup(<PackageDetailContent pkg={basePkg({ name: 'Test Journey' })} />);
+    expect(html).not.toMatch(/<a[^>]*>Test Journey<\/a>/);
+  });
+});
+
 describe('PackageDetailContent — Phase 4A commercial fields (Accommodation/Meals/Transport/Pickup/Drop)', () => {
   it('renders each commercial field only when actually populated, under its own "Good to Know" label', () => {
     const html = renderToStaticMarkup(
