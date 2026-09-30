@@ -6,10 +6,6 @@ const {
   placeCacheAggregateMock,
   searchStaysMock,
   isLocalDevelopmentMock,
-  isRecentFailureMock,
-  markFailureMock,
-  coalesceMock,
-  classifyPlaceLocationMock,
   classifyVerifiedStayTypeMock,
   isPropertyExcludedMock,
   filterOutExcludedPlacesMock,
@@ -20,10 +16,6 @@ const {
   placeCacheAggregateMock: vi.fn(),
   searchStaysMock: vi.fn(),
   isLocalDevelopmentMock: vi.fn(),
-  isRecentFailureMock: vi.fn(),
-  markFailureMock: vi.fn(),
-  coalesceMock: vi.fn(),
-  classifyPlaceLocationMock: vi.fn(),
   classifyVerifiedStayTypeMock: vi.fn(),
   isPropertyExcludedMock: vi.fn(),
   filterOutExcludedPlacesMock: vi.fn(),
@@ -39,6 +31,10 @@ vi.mock('@/models/PlaceCache', () => ({
     collection: { name: 'placecaches' }
   }
 }));
+// lib/stays.ts (the PUBLIC read path) only ever imports searchStays from here for its
+// isLocalDevelopment() branch — never in production. Mocked so a test can assert it was
+// NEVER called for every production-path scenario below (Part 1 of the Phase 1 audit's
+// cost-proof requirement).
 vi.mock('@/lib/googlePlaces', () => ({
   searchStays: searchStaysMock,
   placeName: (place: { name?: string }) => place.name ?? 'Unnamed',
@@ -46,9 +42,6 @@ vi.mock('@/lib/googlePlaces', () => ({
   placeCoordinates: () => ({ latitude: undefined, longitude: undefined })
 }));
 vi.mock('@/lib/env', () => ({ isLocalDevelopment: isLocalDevelopmentMock }));
-vi.mock('@/lib/negativeCache', () => ({ isRecentFailure: isRecentFailureMock, markFailure: markFailureMock }));
-vi.mock('@/lib/requestCoalescing', () => ({ coalesce: coalesceMock, COALESCE_LOCKED: Symbol('coalesce-locked') }));
-vi.mock('@/lib/placeLocationSafety', () => ({ classifyPlaceLocation: classifyPlaceLocationMock }));
 vi.mock('@/lib/stayClassification', () => ({
   classifyVerifiedStayType: classifyVerifiedStayTypeMock,
   verifiedStayTypeMongoExpr: () => ({}),
@@ -86,10 +79,6 @@ beforeEach(() => {
   placeCacheAggregateMock.mockReset();
   searchStaysMock.mockReset();
   isLocalDevelopmentMock.mockReset().mockReturnValue(false);
-  isRecentFailureMock.mockReset().mockReturnValue(false);
-  markFailureMock.mockReset();
-  coalesceMock.mockReset();
-  classifyPlaceLocationMock.mockReset().mockReturnValue('exact');
   classifyVerifiedStayTypeMock.mockReset().mockReturnValue('hotel');
   isPropertyExcludedMock.mockReset().mockResolvedValue(false);
   filterOutExcludedPlacesMock.mockReset().mockImplementation(async (_provider, items) => items);
@@ -104,6 +93,7 @@ describe('getStayByPlaceId — direct URL exclusion', () => {
     const result = await getStayByPlaceId('normal-id');
     expect(result).not.toBeNull();
     expect(result?.placeId).toBe('normal-id');
+    expect(searchStaysMock).not.toHaveBeenCalled();
   });
 
   it('an excluded property\'s direct URL returns null (the page\'s existing notFound() then fires)', async () => {
@@ -146,29 +136,64 @@ describe('getStaysForDestination — listing exclusion', () => {
 
     expect(result.stays.map((s) => s.placeId)).toEqual(['normal-id']);
     expect(filterOutExcludedPlacesMock).toHaveBeenCalled();
+    expect(searchStaysMock).not.toHaveBeenCalled();
+  });
+});
+
+// Phase 1 (2026-09) Google Places cost-control audit: getStaysForDestination is the one
+// function every public visitor/crawler-facing route reaches (app/stays/search/page.tsx,
+// app/api/destinations's `type=stays` handler). It must be Mongo-only, unconditionally —
+// see lib/staysRefresh.ts for where Google is now actually called (a separate module this
+// file never imports).
+describe('getStaysForDestination — Google Places cost control (Phase 1)', () => {
+  it('a warm cache hit returns cached data and never calls Google', async () => {
+    placeCacheFindMock.mockReturnValue({ lean: vi.fn().mockResolvedValue([cacheDoc(NORMAL_PLACE)]) });
+
+    const result = await getStaysForDestination('manali', 'Manali', ['hotel']);
+
+    expect(result.stays).toHaveLength(1);
+    expect(searchStaysMock).not.toHaveBeenCalled();
   });
 
-  it('a Google re-fetch (cache miss) never persists an excluded property into PlaceCache', async () => {
-    vi.stubEnv('GOOGLE_PLACES_API_KEY', 'test-key');
+  it('a cache MISS returns an honest empty result and never calls Google', async () => {
     placeCacheFindMock.mockReturnValue({ lean: vi.fn().mockResolvedValue([]) });
-    searchStaysMock.mockResolvedValue({
-      places: [{ id: 'normal-id', name: 'Mountain View Resort' }, { id: 'excluded-id', name: 'Similar Name Resort' }],
-      pagesFetched: 1,
-      saturated: false
-    });
-    filterOutExcludedPlacesMock.mockImplementation(async (_provider, items) => items.filter((item: { placeId: string }) => item.placeId !== 'excluded-id'));
-    placeCacheFindOneAndUpdateMock.mockImplementation(({ placeId }: { placeId: string }) => ({
-      lean: vi.fn().mockResolvedValue(cacheDoc({ placeId, name: placeId }))
-    }));
-    coalesceMock.mockImplementation((_key: string, fetcher: () => Promise<unknown>) => fetcher());
 
-    const result = await getStaysForDestination('manali', 'Manali', ['hotel'], undefined, undefined);
+    const result = await getStaysForDestination('a-brand-new-destination', 'Nowhere', ['hotel']);
 
-    // Only the normal place was ever upserted — the excluded one is filtered BEFORE the
-    // Mongo write, never written and then filtered out on read.
-    expect(placeCacheFindOneAndUpdateMock).toHaveBeenCalledTimes(1);
-    expect(placeCacheFindOneAndUpdateMock).toHaveBeenCalledWith(expect.objectContaining({ placeId: 'normal-id' }), expect.anything(), expect.anything());
-    expect(result.stays.map((s) => s.placeId)).toEqual(['normal-id']);
+    expect(result.stays).toEqual([]);
+    expect(result.meta[0]).toMatchObject({ fromCache: false, queried: false, error: 'NOT_YET_REFRESHED' });
+    expect(searchStaysMock).not.toHaveBeenCalled();
+    expect(placeCacheFindOneAndUpdateMock).not.toHaveBeenCalled();
+  });
+
+  it('a cache MISS across every requested stay type still never calls Google, for any of them', async () => {
+    placeCacheFindMock.mockReturnValue({ lean: vi.fn().mockResolvedValue([]) });
+
+    const result = await getStaysForDestination('a-brand-new-destination', 'Nowhere');
+
+    expect(result.stays).toEqual([]);
+    expect(searchStaysMock).not.toHaveBeenCalled();
+  });
+
+  it('an old (but still present) cached row is still served as a cache hit — there is no TTL/staleness check on the read path', async () => {
+    const oldDoc = cacheDoc({ ...NORMAL_PLACE, updatedAt: new Date('2020-01-01') });
+    placeCacheFindMock.mockReturnValue({ lean: vi.fn().mockResolvedValue([oldDoc]) });
+
+    const result = await getStaysForDestination('manali', 'Manali', ['hotel']);
+
+    expect(result.stays).toHaveLength(1);
+    expect(result.meta[0].fromCache).toBe(true);
+    expect(searchStaysMock).not.toHaveBeenCalled();
+  });
+
+  it('is unaffected by the presence/absence of GOOGLE_PLACES_API_KEY — it never reads that env var', async () => {
+    placeCacheFindMock.mockReturnValue({ lean: vi.fn().mockResolvedValue([]) });
+    vi.stubEnv('GOOGLE_PLACES_API_KEY', '');
+
+    const result = await getStaysForDestination('a-brand-new-destination', 'Nowhere', ['hotel']);
+
+    expect(result.stays).toEqual([]);
+    expect(searchStaysMock).not.toHaveBeenCalled();
     vi.unstubAllEnvs();
   });
 });
@@ -189,6 +214,7 @@ describe('getCachedStaysCatalog — cache-only browse exclusion', () => {
     expect(exclusionStage.$match.placeId.$nin).toEqual(['excluded-id']);
     // Must be the very first stage — before dedupe/sort — so pagination counts stay accurate.
     expect(pipeline[0]).toBe(exclusionStage);
+    expect(searchStaysMock).not.toHaveBeenCalled();
   });
 
   it('adds no exclusion stage at all when there are no active exclusions (unchanged pipeline shape)', async () => {

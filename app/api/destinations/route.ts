@@ -18,11 +18,11 @@ function isValidPlaceName(value: string): boolean {
   return value.length > 0 && value.length <= MAX_PLACE_NAME_LENGTH && PLACE_NAME_PATTERN.test(value);
 }
 
-// Google billing protection for the one endpoint that can trigger real Google Places
-// calls on a cache miss (lib/stays.ts's getStaysForDestination). Request coalescing
-// (lib/requestCoalescing.ts) already caps duplicate Google calls for the *same*
-// destination to one in flight; this catches the other risk — a bot/script hammering
-// many distinct (and therefore individually uncoalescable) locations from one source.
+// General abuse protection for this endpoint. Kept even though lib/stays.ts's
+// getStaysForDestination is now Mongo-only end to end (see the Phase 1 Google Places
+// cost-control audit — a cache miss here can no longer trigger a live Google call, so
+// this is no longer billing protection specifically) — a script hammering many distinct
+// locations from one source is still worth rate-limiting on general principle.
 const STAYS_RATE_LIMIT_PER_MINUTE = 20;
 
 function getClientIp(request: Request): string {
@@ -31,8 +31,9 @@ function getClientIp(request: Request): string {
   return request.headers.get('x-real-ip') ?? 'unknown';
 }
 
-// Underlying results already come from a 30-day-TTL Mongo cache (lib/destinations.ts,
-// lib/stays.ts), so this is safe to cache a full day at the HTTP layer too — repeat
+// Underlying results already come from a Mongo-only cache (lib/destinations.ts,
+// lib/stays.ts) that no longer expires on its own — see models/PlaceCache.ts — so this
+// is safe to cache a full day at the HTTP layer too — repeat
 // calls for the same query string return from the browser/CDN cache in milliseconds
 // instead of round-tripping to this route at all.
 const CACHE_HEADERS = {

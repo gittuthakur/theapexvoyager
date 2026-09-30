@@ -4,10 +4,28 @@ import { STAY_TYPES, type StayType } from '@/types/stay';
 const { model, models } = mongoose;
 
 // One document per real-world place (unique on placeId), tagged with which
-// destination + accommodation category it was found under. MongoDB's own TTL
-// monitor deletes a document 30 days after its last `updatedAt` — so "the doc is
-// still in the collection" IS the freshness check; getStaysForDestination()
-// (lib/stays.ts) never has to compute an age itself.
+// destination + accommodation category it was found under.
+//
+// PHASE 1 CHANGE (2026-09 Google Places cost-control audit): this collection previously
+// carried a `expireAfterSeconds: 30 days` TTL index on `updatedAt`, so an unrefreshed
+// place would be physically deleted a month after its last write. That made sense when a
+// public cache MISS silently fell back to a live Google call (deleting an entry just
+// meant "it'll be refetched on the next visitor"). Now that lib/stays.ts's public read
+// path is Mongo-only and Google is only ever called by the controlled daily refresh job
+// (lib/staysRefresh.ts, via app/api/cron/refresh-stays/route.ts), a TTL delete would mean
+// a single missed/failed refresh cycle makes real, previously-published catalogue data
+// vanish from the live site for no visitor-facing reason — exactly what Part 4 of the
+// Phase 1 brief prohibits. Freshness is now tracked separately, via this document's own
+// `updatedAt` (still bumped by every successful refresh write) and the refresh run's own
+// audit trail (models/StaysRefreshRun.ts) — never by deleting the record itself.
+//
+// DEPLOYMENT NOTE: Mongoose does not alter an EXISTING index's options on reconnect —
+// removing `expireAfterSeconds` here only changes what a brand-new deployment/index build
+// creates. The already-live MongoDB deployment's `updatedAt_1` TTL index must be dropped
+// out-of-band (e.g. `db.placecaches.dropIndex('updatedAt_1')` via the Mongo shell/Atlas
+// UI) for this change to take effect there — see the Phase 1 report's "remaining risks"
+// section. This was intentionally NOT done from this session (no live database access;
+// Part 0 of the audit this phase followed was explicitly read-only about MongoDB).
 export interface PlaceCacheDocument extends Document {
   placeId: string;
   name: string;
@@ -72,7 +90,6 @@ const PlaceCacheSchema = new Schema<PlaceCacheDocument>(
 PlaceCacheSchema.index({ placeId: 1, destinationSlug: 1, stayType: 1 }, { unique: true });
 // Supports the read path: PlaceCache.find({ destinationSlug, stayType, searchLocation }).
 PlaceCacheSchema.index({ destinationSlug: 1, stayType: 1, searchLocation: 1 });
-PlaceCacheSchema.index({ updatedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
 
 // `models.PlaceCache` survives Next.js dev hot-reloads — without this guard, re-running
 // this module would call `model()` on an already-registered name and throw.

@@ -42,7 +42,9 @@ const DEFAULT_PAGE_SIZE = 8;
 // Text Search (New) caps pageSize at 20; hard ceiling on how many pages
 // searchPlacesAllPages will follow via nextPageToken — bounds both Google spend and
 // response latency instead of exhausting every page Google is willing to return.
-const MAX_PAGES = 3;
+// Exported so lib/staysRefresh.ts's request budget can reserve the correct worst-case
+// request count per search before it starts, rather than guessing/duplicating this value.
+export const MAX_PAGES = 3;
 
 interface SearchTextResponse {
   places?: RawGooglePlace[];
@@ -92,23 +94,28 @@ export async function searchPlaces(textQuery: string, apiKey: string, pageSize =
   return data.places ?? [];
 }
 
-// Follows `nextPageToken` up to MAX_PAGES — bounded, controlled query expansion (see
-// AGENTS.md's 3-state Google Places inventory expansion mission) rather than an
-// unbounded loop, so one destination's saturated result set can't blow through Google
-// spend or a single page render's latency budget. Stops early the moment a page comes
-// back with no token (Google itself has exhausted results) — "saturation reached"
-// means either this or MAX_PAGES was hit, and callers should report which.
+// Follows `nextPageToken` up to `maxPages` (defaults to the module-wide MAX_PAGES=3 when
+// omitted, so every pre-existing caller is completely unaffected) — bounded, controlled
+// query expansion (see AGENTS.md's 3-state Google Places inventory expansion mission)
+// rather than an unbounded loop, so one destination's saturated result set can't blow
+// through Google spend or a single page render's latency budget. Stops early the moment
+// a page comes back with no token (Google itself has exhausted results) — "saturation
+// reached" means either this or the page cap was hit, and callers should report which.
+// `maxPages` is the one knob lib/staysRefresh.ts uses to run the scheduled refresh at a
+// shallower, cheaper depth (GOOGLE_PLACES_REFRESH_MAX_PAGES, default 1) than any other
+// caller of this function.
 export async function searchPlacesAllPages(
   textQuery: string,
   apiKey: string,
-  pageSize = DEFAULT_PAGE_SIZE
+  pageSize = DEFAULT_PAGE_SIZE,
+  maxPages = MAX_PAGES
 ): Promise<{ places: RawGooglePlace[]; pagesFetched: number; saturated: boolean }> {
   const places: RawGooglePlace[] = [];
   let pageToken: string | undefined;
   let pagesFetched = 0;
   let saturated = false;
 
-  for (let page = 0; page < MAX_PAGES; page += 1) {
+  for (let page = 0; page < maxPages; page += 1) {
     // A page-token request must repeat the original textQuery/pageSize alongside the
     // token — Google (New) rejects a token-only body with "Empty text_query. Request
     // parameters for paging requests must match the initial SearchText request."
@@ -169,7 +176,13 @@ export interface StaySearchResult {
   saturated: boolean;
 }
 
-export async function searchStays(location: string, stayType: StayType, apiKey: string, state = 'Himachal Pradesh'): Promise<StaySearchResult> {
+export async function searchStays(
+  location: string,
+  stayType: StayType,
+  apiKey: string,
+  state = 'Himachal Pradesh',
+  maxPages = MAX_PAGES
+): Promise<StaySearchResult> {
   if (isLocalDevelopment()) {
     console.info(`[dev] Serving mock Places data for "${stayType}" stays in "${location}" — no Google Places credits spent.`);
     // Every stay type shares the same mock location data, so the place `id`s must be
@@ -178,7 +191,7 @@ export async function searchStays(location: string, stayType: StayType, apiKey: 
     const mockPlaces = getMockPlaces(location, state).map((place) => ({ ...place, id: `${place.id}_${stayType}` }));
     return { places: mockPlaces, pagesFetched: 1, saturated: true };
   }
-  return searchPlacesAllPages(`${STAY_TYPE_QUERIES[stayType]} in ${location}, ${state}`, apiKey);
+  return searchPlacesAllPages(`${STAY_TYPE_QUERIES[stayType]} in ${location}, ${state}`, apiKey, DEFAULT_PAGE_SIZE, maxPages);
 }
 
 // Points at our own proxy (app/api/places/photo/route.ts), never at Google directly —

@@ -27,7 +27,16 @@ export function toTravelPackage(doc: JourneyDocument): TravelPackage {
     signatureMoments: doc.signatureMoments,
     apexPicks: doc.apexPicks,
     faqs: doc.faqs,
-    regionId: doc.regionId ? String(doc.regionId) : undefined
+    regionId: doc.regionId ? String(doc.regionId) : undefined,
+    startingCity: doc.startingCity,
+    endingCity: doc.endingCity,
+    priceBasis: doc.priceBasis,
+    hotelCategoryDescription: doc.hotelCategoryDescription,
+    idealTraveller: doc.idealTraveller,
+    bestTimeToVisit: doc.bestTimeToVisit,
+    importantNotes: doc.importantNotes,
+    bookingProcess: doc.bookingProcess,
+    updatedAt: doc.updatedAt ? new Date(doc.updatedAt).toISOString() : undefined
   };
 }
 

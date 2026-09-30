@@ -83,6 +83,31 @@ export interface JourneyDocument extends Document {
   faqs?: JourneyFaq[];
   /** Backfilled by scripts/backfillRegionRefs.ts from `destinationSlugs` — see models/Region.ts. */
   regionId?: Types.ObjectId;
+  // --- AI-readable content fields (Phase 1 foundation, added 2026-09) ---
+  // All optional and deliberately unfilled on the existing 6 journeys — see
+  // AGENTS.md/the Phase 1 audit: "do not fabricate values for existing packages."
+  // A future journey (or a backfill once real copy is written) can populate any of
+  // these; the template only ever renders one when it's actually present.
+  /** Free-text town/city the itinerary begins from, e.g. "Chandigarh". */
+  startingCity?: string;
+  /** Free-text town/city the itinerary ends at, e.g. "Manali". */
+  endingCity?: string;
+  /** How `price` should be read, e.g. "per person (twin sharing)", "per couple". */
+  priceBasis?: string;
+  /** Real, descriptive hotel-tier copy distinct from `stayOptions`' bare price labels. */
+  hotelCategoryDescription?: string;
+  /** Who this journey is genuinely built for, e.g. "Couples and honeymooners". */
+  idealTraveller?: string;
+  /** Real seasonal guidance, e.g. "March–June and September–November". */
+  bestTimeToVisit?: string;
+  /** Caveats that don't belong in inclusions/exclusions (altitude, road closures, permits). */
+  importantNotes?: string[];
+  /** Plain-language description of how booking actually works end to end. */
+  bookingProcess?: string;
+  // Populated automatically by `{ timestamps: true }` below — declared here only so
+  // lib/packages.ts can read doc.updatedAt with type safety.
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const PickSchema = { title: String, description: String };
@@ -117,7 +142,15 @@ const JourneySchema = new Schema<JourneyDocument>(
       moment: PickSchema
     },
     faqs: [{ question: String, answer: String }],
-    regionId: { type: Schema.Types.ObjectId, ref: 'Region' }
+    regionId: { type: Schema.Types.ObjectId, ref: 'Region' },
+    startingCity: { type: String },
+    endingCity: { type: String },
+    priceBasis: { type: String },
+    hotelCategoryDescription: { type: String },
+    idealTraveller: { type: String },
+    bestTimeToVisit: { type: String },
+    importantNotes: { type: [String] },
+    bookingProcess: { type: String }
   },
   { timestamps: true }
 );

@@ -17,7 +17,8 @@
     "db:backfill-region-refs": "tsx scripts/backfillRegionRefs.ts",
     "db:backfill-transport-service-type": "tsx scripts/backfillTransportServiceType.ts",
     "db:backfill-brand-name-seo": "tsx scripts/backfillBrandNameSeo.ts",
-    "db:backfill-spiti-kinnaur-slug": "tsx scripts/backfillSpitiKinnaurDestinationSlug.ts"
+    "db:backfill-spiti-kinnaur-slug": "tsx scripts/backfillSpitiKinnaurDestinationSlug.ts",
+    "db:migrate-placecache-ttl": "tsx scripts/migratePlaceCacheTtl.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

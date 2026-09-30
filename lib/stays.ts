@@ -2,9 +2,6 @@ import { connectDB } from '@/lib/mongodb';
 import { PlaceCache, type PlaceCacheDocument } from '@/models/PlaceCache';
 import { searchStays, placeName, placePhotoUrls, placeCoordinates, type RawGooglePlace } from '@/lib/googlePlaces';
 import { isLocalDevelopment } from '@/lib/env';
-import { isRecentFailure, markFailure } from '@/lib/negativeCache';
-import { coalesce, COALESCE_LOCKED } from '@/lib/requestCoalescing';
-import { classifyPlaceLocation } from '@/lib/placeLocationSafety';
 import { classifyVerifiedStayType, verifiedStayTypeMongoExpr, hasTreehouseNameEvidence, treehouseNameMongoPattern } from '@/lib/stayClassification';
 import { filterOutExcludedPlaces, getActiveExclusionSet, isPropertyExcluded } from '@/services/properties/propertyExclusion.service';
 import { STAY_TYPES, type Stay, type StayType } from '@/types/stay';
@@ -146,125 +143,36 @@ function toDevStay(place: RawGooglePlace, destinationSlug: string, stayType: Sta
   };
 }
 
-async function fetchAndCacheStayType(
-  destinationSlug: string,
-  location: string,
-  stayType: StayType,
-  apiKey: string,
-  state: string | undefined,
-  stayMode: StayMode | undefined
-): Promise<{ stays: Stay[]; meta: Omit<StayCategoryMeta, 'stayType' | 'fromCache' | 'queried' | 'error'> }> {
-  const { places: rawPlaces, pagesFetched, saturated } = await searchStays(location, stayType, apiKey, state);
-
-  // Google's own pagination can occasionally hand back the same place across two
-  // pages — dedupe strictly by place.id (never by name) before anything else.
-  const seenPlaceIds = new Set<string>();
-  const uniquePlaces: RawGooglePlace[] = [];
-  let duplicatesRemoved = 0;
-  for (const place of rawPlaces) {
-    if (seenPlaceIds.has(place.id)) {
-      duplicatesRemoved += 1;
-      continue;
-    }
-    seenPlaceIds.add(place.id);
-    uniquePlaces.push(place);
-  }
-
-  let wrongLocationRejected = 0;
-  const docs = uniquePlaces
-    .map((place) => {
-      const classification = classifyPlaceLocation(place.formattedAddress, location, stayMode);
-      return { place, classification };
-    })
-    .filter(({ classification }) => {
-      if (classification === 'wrong-location') {
-        wrongLocationRejected += 1;
-        return false;
-      }
-      return true;
-    })
-    .map(({ place, classification }) => {
-      const { latitude, longitude } = placeCoordinates(place);
-      return {
-        placeId: place.id,
-        name: placeName(place),
-        slug: `${destinationSlug}-${slugify(placeName(place))}`,
-        stayType,
-        formattedAddress: place.formattedAddress,
-        latitude,
-        longitude,
-        rating: place.rating,
-        userRatingCount: place.userRatingCount,
-        photos: placePhotoUrls(place),
-        destinationSlug,
-        searchLocation: location,
-        types: place.types,
-        googleMapsUri: place.googleMapsUri,
-        websiteUri: place.websiteUri,
-        locationClassification: classification as 'exact' | 'nearby' | 'access-base'
-      };
-    });
-
-  // A property owner's exclusion request must survive Google still returning that place
-  // — never write an excluded placeId back into PlaceCache, or the 30-day TTL cache
-  // would silently "resurrect" it the moment it expires and is refetched (this is the
-  // one write path that populates PlaceCache from Google at all).
-  const filteredDocs = await filterOutExcludedPlaces('google', docs);
-
-  await connectDB();
-  const saved = await Promise.all(
-    // Keyed by (placeId, destinationSlug, stayType) — see models/PlaceCache.ts's index
-    // comment: two destinations that legitimately share a real search location (e.g.
-    // Kinnaur and Sangla Valley both resolving to "Sangla") must each get their own
-    // cached copy of the same real place, never overwrite each other's.
-    filteredDocs.map((doc) =>
-      PlaceCache.findOneAndUpdate(
-        { placeId: doc.placeId, destinationSlug: doc.destinationSlug, stayType: doc.stayType },
-        doc,
-        { upsert: true, returnDocument: 'after' }
-      ).lean()
-    )
-  );
-
-  return {
-    stays: saved.filter((doc): doc is NonNullable<typeof doc> => Boolean(doc)).map(toStay),
-    meta: {
-      pagesFetched,
-      saturated,
-      rawCount: rawPlaces.length,
-      duplicatesRemoved,
-      wrongLocationRejected,
-      finalCount: filteredDocs.length
-    }
-  };
-}
-
-// Fetches every requested accommodation category for a destination, using the 30-day
-// Mongo cache (models/PlaceCache.ts) per (destinationSlug, stayType, searchLocation)
-// tuple and only calling Google for categories that aren't cached yet. Each category
-// fails independently — one broken query never blocks the others or the whole page.
-// `stayMode` is optional and purely cosmetic (labels a matched result "exact" / "nearby"
-// / "access-base" for reporting) — it never loosens the location-safety check itself.
+// PUBLIC READ PATH — Mongo-only, by construction. This is the one function every real
+// visitor/crawler-facing route calls (app/stays/search/page.tsx, app/api/destinations's
+// `type=stays` handler, which components/modules/StaysGrid.tsx fetches client-side).
+// It reads PlaceCache and PlaceCache alone — there is no code path here that can reach
+// Google, so there's nothing for a user-agent check to gate: a bot and a visitor run the
+// exact same Mongo-only query. A cache miss (a destination/stayType combo the daily
+// refresh job — lib/staysRefresh.ts — hasn't populated yet) returns an honest empty
+// result with `error: 'NOT_YET_REFRESHED'`, never a live fallback fetch. Populating
+// PlaceCache from Google now happens ONLY in lib/staysRefresh.ts, invoked ONLY by
+// app/api/cron/refresh-stays/route.ts on a controlled schedule (see vercel.json) — see
+// the Phase 1 Google Places cost-control audit for the full before/after architecture.
+// `stayMode` remains part of this function's signature for call-site compatibility, but
+// is no longer read here — it only ever affected write-time classification, which now
+// happens exclusively in lib/staysRefresh.ts.
 export async function getStaysForDestination(
   destinationSlug: string,
   location: string,
   stayTypes: StayType[] = STAY_TYPES,
-  state?: string,
-  stayMode?: StayMode
+  _state?: string,
+  _stayMode?: StayMode
 ): Promise<StaysForDestinationResult> {
-  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
-
-  // Local dev and production read the same MongoDB database (there's no separate dev
-  // database), so writing dev's mock Places results into PlaceCache doesn't stay local
-  // — it leaks into production for as long as that cache entry lives, and production
-  // has no API key to ever refresh/replace it (found via a real "Where to stay" photo
-  // 503 on production for a mock-sourced Manali listing). Mock data costs nothing to
-  // regenerate, so dev fetches it fresh every time instead of ever touching the shared
-  // cache — production's caching behavior below is completely unchanged.
+  // Local dev never reads/writes the shared PlaceCache at all (see the comment this
+  // replaced) — it calls searchStays() directly, which itself short-circuits to mock
+  // data whenever NODE_ENV is 'development' (lib/googlePlaces.ts), so this still never
+  // spends a real Google credit; it's simply not part of the Mongo-only public path this
+  // function now guarantees for every other environment.
   if (isLocalDevelopment()) {
     const perType = await Promise.all(
       stayTypes.map(async (stayType): Promise<{ stays: Stay[]; meta: StayCategoryMeta }> => {
-        const { places: rawPlaces, pagesFetched, saturated } = await searchStays(location, stayType, apiKey ?? '', state);
+        const { places: rawPlaces, pagesFetched, saturated } = await searchStays(location, stayType, '', _state);
         const stays = rawPlaces.map((place) => toDevStay(place, destinationSlug, stayType));
         return {
           stays,
@@ -295,9 +203,9 @@ export async function getStaysForDestination(
       const cached = await PlaceCache.find({ destinationSlug, stayType, searchLocation: location }).lean();
       if (cached.length > 0) {
         // A row can have been cached before its place was ever excluded — filtering only
-        // at write time (fetchAndCacheStayType) would leave it visible here for up to the
-        // remaining 30-day TTL. Every read of an already-cached row is filtered too, so
-        // an exclusion takes effect immediately, not just for future Google fetches.
+        // at refresh-write time (lib/staysRefresh.ts) would leave it visible here until
+        // the next refresh cycle. Every read of an already-cached row is filtered too, so
+        // an exclusion takes effect immediately, not just for future Google refreshes.
         const visibleCached = await filterOutExcludedPlaces('google', cached);
         const stays = visibleCached.map(toStay);
         return {
@@ -316,90 +224,24 @@ export async function getStaysForDestination(
         };
       }
 
-      if (!apiKey) {
-        console.warn(`GOOGLE_PLACES_API_KEY is not set — skipping live "${stayType}" search for "${location}"`);
-        return {
-          stays: [],
-          meta: {
-            stayType,
-            fromCache: false,
-            queried: false,
-            pagesFetched: 0,
-            saturated: false,
-            rawCount: 0,
-            duplicatesRemoved: 0,
-            wrongLocationRejected: 0,
-            finalCount: 0,
-            error: 'API_KEY_MISSING'
-          }
-        };
-      }
-
-      const failureKey = `stay:${destinationSlug}:${stayType}`;
-      if (isRecentFailure(failureKey)) {
-        return {
-          stays: [],
-          meta: {
-            stayType,
-            fromCache: false,
-            queried: false,
-            pagesFetched: 0,
-            saturated: false,
-            rawCount: 0,
-            duplicatesRemoved: 0,
-            wrongLocationRejected: 0,
-            finalCount: 0,
-            error: 'NEGATIVE_CACHE'
-          }
-        };
-      }
-
-      // Coalesced across concurrent requests for the exact same tuple — see
-      // lib/requestCoalescing.ts. A request that loses the race never touches Google;
-      // it's reported below as 'COALESCED_IN_FLIGHT' rather than an error.
-      const coalesceKey = `${destinationSlug}:${stayType}:${location}`;
-      try {
-        const result = await coalesce(coalesceKey, () =>
-          fetchAndCacheStayType(destinationSlug, location, stayType, apiKey, state, stayMode)
-        );
-        if (result === COALESCE_LOCKED) {
-          return {
-            stays: [],
-            meta: {
-              stayType,
-              fromCache: false,
-              queried: false,
-              pagesFetched: 0,
-              saturated: false,
-              rawCount: 0,
-              duplicatesRemoved: 0,
-              wrongLocationRejected: 0,
-              finalCount: 0,
-              error: 'COALESCED_IN_FLIGHT'
-            }
-          };
+      // Honest empty state — the daily refresh job (lib/staysRefresh.ts) hasn't cached
+      // this (destinationSlug, stayType, location) combo yet. Never a live Google call
+      // from a public request, regardless of who or what is asking.
+      return {
+        stays: [],
+        meta: {
+          stayType,
+          fromCache: false,
+          queried: false,
+          pagesFetched: 0,
+          saturated: false,
+          rawCount: 0,
+          duplicatesRemoved: 0,
+          wrongLocationRejected: 0,
+          finalCount: 0,
+          error: 'NOT_YET_REFRESHED'
         }
-        const { stays, meta } = result;
-        return { stays, meta: { stayType, fromCache: false, queried: true, ...meta } };
-      } catch (error) {
-        console.error(`Failed to fetch "${stayType}" stays for "${location}" from Google Places`, error);
-        markFailure(failureKey);
-        return {
-          stays: [],
-          meta: {
-            stayType,
-            fromCache: false,
-            queried: true,
-            pagesFetched: 0,
-            saturated: false,
-            rawCount: 0,
-            duplicatesRemoved: 0,
-            wrongLocationRejected: 0,
-            finalCount: 0,
-            error: error instanceof Error ? error.message.slice(0, 200) : 'UNKNOWN_ERROR'
-          }
-        };
-      }
+      };
     })
   );
 

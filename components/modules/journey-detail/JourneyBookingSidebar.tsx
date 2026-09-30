@@ -56,7 +56,8 @@ export default function JourneyBookingSidebar({ pkg, onCustomize }: JourneyBooki
           <p className="mt-1 text-3xl font-extrabold text-slate-900">
             {isValidPrice(pkg.price) ? (
               <>
-                {formatPriceOrQuote(pkg.price)} <span className="text-sm font-normal text-slate-500">/ person</span>
+                {formatPriceOrQuote(pkg.price)}{' '}
+                <span className="text-sm font-normal text-slate-500">/ {pkg.priceBasis || 'person'}</span>
               </>
             ) : (
               formatPriceOrQuote(pkg.price)

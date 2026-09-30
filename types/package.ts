@@ -81,4 +81,17 @@ export interface TravelPackage {
   faqs?: PackageFaq[];
   /** ObjectId (as a string) of the MongoDB Region document this journey belongs to — see models/Region.ts. */
   regionId?: string;
+  // --- AI-readable content fields (Phase 1 foundation) — see models/Journey.ts for the
+  // full rationale. All optional; the detail page only renders one when it's populated. */
+  startingCity?: string;
+  endingCity?: string;
+  priceBasis?: string;
+  hotelCategoryDescription?: string;
+  idealTraveller?: string;
+  bestTimeToVisit?: string;
+  importantNotes?: string[];
+  bookingProcess?: string;
+  /** ISO timestamp of the underlying document's last update — drives the page's visible
+   *  "Last updated" line (see models/Journey.ts's `timestamps: true`). */
+  updatedAt?: string;
 }

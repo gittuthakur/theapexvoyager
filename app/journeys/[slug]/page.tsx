@@ -6,8 +6,19 @@ import { getCuratedDestinations } from '@/lib/destinations';
 import { getPackageRegionIds } from '@/lib/packageFilters';
 import { getAllRegions } from '@/lib/regions';
 import { siteConfig } from '@/config/site.config';
-import { buildBreadcrumbListSchema, buildJourneyProductSchema } from '@/lib/schema';
+import { buildBreadcrumbListSchema, buildFaqPageSchema, buildJourneyProductSchema } from '@/lib/schema';
 import JsonLd from '@/components/seo/JsonLd';
+
+// ISR, matching the Destination detail page's caching strategy (app/destinations/[slug]/
+// page.tsx) — was previously fully dynamic (a live, uncached Mongo round-trip on every
+// request), the one major detail template without any caching. An empty
+// generateStaticParams means nothing is pre-rendered at build time; every slug is
+// rendered on first request and then served from cache for up to 5 minutes, so a Journey
+// edit is never stale for longer than that.
+export const revalidate = 300;
+export async function generateStaticParams() {
+  return [];
+}
 
 // The 'sikkim-mountain-escape' → 'uttarakhand-explorer' legacy-slug redirect (this
 // journey's content was always Rishikesh/Haridwar/Mussoorie, Uttarakhand —
@@ -153,6 +164,15 @@ export default async function JourneyDetailPage({ params, searchParams }: Journe
   const destinations = await getCuratedDestinations();
   const destinationsBySlug = new Map(destinations.map((destination) => [destination.slug, destination]));
   const regions = getAllRegions();
+
+  // Real Destination page(s) this journey covers — only a `destinationSlugs` entry that
+  // actually resolves to a live curated Destination becomes a link; an unresolved slug
+  // (e.g. a retired/renamed destination) is silently skipped rather than 404ing or
+  // fabricating a link. See components/modules/PackageDetailContent.tsx's own doc comment.
+  const linkedDestinations = (pkg.destinationSlugs ?? [])
+    .map((slug) => destinationsBySlug.get(slug))
+    .filter((destination): destination is NonNullable<typeof destination> => Boolean(destination))
+    .map((destination) => ({ slug: destination.slug, title: destination.title }));
   const relatedJourneyRegionLabels: Record<string, string> = {};
   for (const journey of relatedJourneys) {
     const regionId = getPackageRegionIds(journey, destinationsBySlug)[0];
@@ -189,6 +209,10 @@ export default async function JourneyDetailPage({ params, searchParams }: Journe
           price: pkg.price
         })}
       />
+      {/* Only ever built from `pkg.faqs`, the exact same real, populated data the FAQ
+          section below renders — never a fabricated or off-page question set (see
+          lib/schema.ts's own doc comment on buildFaqPageSchema). */}
+      {pkg.faqs?.length ? <JsonLd data={buildFaqPageSchema(pkg.faqs)} /> : null}
       <PackageDetailContent
         pkg={pkg}
         autoOpenBooking={book === '1'}
@@ -196,6 +220,7 @@ export default async function JourneyDetailPage({ params, searchParams }: Journe
         pickupNote={JOURNEY_SEO_OVERRIDES[pkg.slug]?.pickupNote}
         relatedJourneys={relatedJourneys}
         relatedJourneyRegionLabels={relatedJourneyRegionLabels}
+        linkedDestinations={linkedDestinations}
       />
     </>
   );

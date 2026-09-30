@@ -45,8 +45,9 @@ export const CATEGORY_TO_STAY_TYPE: Record<
 // badge should render for it while that remains true.
 export type HotelClass = '3-star' | '4-star' | '5-star' | 'luxury';
 
-// A single accommodation discovered via Google Places (New) Text Search, cached in
-// MongoDB (models/PlaceCache.ts) with a 30-day TTL, OR a publiclyListed curated Hotel
+// A single accommodation discovered via Google Places (New) Text Search, cached
+// indefinitely in MongoDB (models/PlaceCache.ts, refreshed on a controlled daily cycle —
+// see lib/staysRefresh.ts — rather than expiring on a TTL), OR a publiclyListed curated Hotel
 // record adapted to this same shape for display alongside Google results (see
 // components/modules/StaysGrid.tsx's hotelToStay). Distinct from HotelPackage
 // (types/hotel.ts), which is the curated record's own native shape.

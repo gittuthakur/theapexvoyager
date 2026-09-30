@@ -13,6 +13,14 @@ import RelatedJourneys from '@/components/modules/journey-detail/RelatedJourneys
 import { formatINR } from '@/lib/pricing';
 import type { TravelPackage } from '@/types/package';
 
+/** A curated Destination this journey genuinely covers — only ever built from a real
+ *  `destinationSlugs` match against the live catalog (see app/journeys/[slug]/page.tsx);
+ *  never a guessed/fabricated link. */
+export interface LinkedDestination {
+  slug: string;
+  title: string;
+}
+
 export interface PackageDetailContentProps {
   pkg: TravelPackage;
   autoOpenBooking?: boolean;
@@ -27,6 +35,8 @@ export interface PackageDetailContentProps {
   relatedJourneys?: TravelPackage[];
   /** Region badge per related journey slug (same derivation as /journeys' own PackageCard) — see app/journeys/[slug]/page.tsx. */
   relatedJourneyRegionLabels?: Record<string, string>;
+  /** Real Destination page(s) this journey covers — see app/journeys/[slug]/page.tsx. */
+  linkedDestinations?: LinkedDestination[];
 }
 
 export default function PackageDetailContent({
@@ -35,7 +45,8 @@ export default function PackageDetailContent({
   heroTitleOverride,
   pickupNote,
   relatedJourneys = [],
-  relatedJourneyRegionLabels
+  relatedJourneyRegionLabels,
+  linkedDestinations = []
 }: PackageDetailContentProps) {
   // Never true on the initial render (server or first client paint) — the modal's
   // FloatingOverlay bails out to `null` during SSR (no `document`), so starting this
@@ -171,6 +182,93 @@ export default function PackageDetailContent({
               ) : null}
             </div>
 
+            {/* Good to Know — AI-readable content foundation (Phase 1). Every line is
+                conditional on a real, populated field; nothing here is a fabricated
+                fallback for a journey that hasn't set it yet. */}
+            {pkg.idealTraveller ||
+            pkg.bestTimeToVisit ||
+            pkg.hotelCategoryDescription ||
+            pkg.bookingProcess ||
+            pkg.importantNotes?.length ||
+            (pkg.startingCity && pkg.endingCity) ? (
+              <JourneySection title="Good to Know">
+                <dl className="space-y-4 text-sm text-slate-700">
+                  {pkg.startingCity && pkg.endingCity ? (
+                    <div>
+                      <dt className="font-semibold text-slate-900">Route</dt>
+                      <dd className="mt-1">
+                        {pkg.startingCity} → {pkg.endingCity}
+                      </dd>
+                    </div>
+                  ) : null}
+                  {pkg.idealTraveller ? (
+                    <div>
+                      <dt className="font-semibold text-slate-900">Ideal for</dt>
+                      <dd className="mt-1">{pkg.idealTraveller}</dd>
+                    </div>
+                  ) : null}
+                  {pkg.bestTimeToVisit ? (
+                    <div>
+                      <dt className="font-semibold text-slate-900">Best time to visit</dt>
+                      <dd className="mt-1">{pkg.bestTimeToVisit}</dd>
+                    </div>
+                  ) : null}
+                  {pkg.hotelCategoryDescription ? (
+                    <div>
+                      <dt className="font-semibold text-slate-900">Hotel category</dt>
+                      <dd className="mt-1">{pkg.hotelCategoryDescription}</dd>
+                    </div>
+                  ) : null}
+                  {pkg.bookingProcess ? (
+                    <div>
+                      <dt className="font-semibold text-slate-900">How booking works</dt>
+                      <dd className="mt-1">{pkg.bookingProcess}</dd>
+                    </div>
+                  ) : null}
+                  {pkg.importantNotes?.length ? (
+                    <div>
+                      <dt className="font-semibold text-slate-900">Important notes</dt>
+                      <dd className="mt-1">
+                        <ul className="list-disc space-y-1 pl-5">
+                          {pkg.importantNotes.map((note) => (
+                            <li key={note}>{note}</li>
+                          ))}
+                        </ul>
+                      </dd>
+                    </div>
+                  ) : null}
+                  <div>
+                    <dt className="font-semibold text-slate-900">Cancellation</dt>
+                    <dd className="mt-1">
+                      See our{' '}
+                      <Link href="/cancellation-policy" className="font-medium text-apex-600 underline">
+                        cancellation policy
+                      </Link>{' '}
+                      for full terms.
+                    </dd>
+                  </div>
+                </dl>
+              </JourneySection>
+            ) : null}
+
+            {/* Explore the destination(s) — only real destinationSlugs matches, never a
+                guessed link (see app/journeys/[slug]/page.tsx). */}
+            {linkedDestinations.length ? (
+              <JourneySection title="Explore the Destination">
+                <div className="flex flex-wrap gap-3">
+                  {linkedDestinations.map((destination) => (
+                    <Link
+                      key={destination.slug}
+                      href={`/destinations/${destination.slug}`}
+                      className="cursor-hover inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-700 transition-colors duration-300 ease-in-out hover:border-apex-300 hover:text-apex-600"
+                    >
+                      <MapPin size={14} className="text-apex-400" /> {destination.title}
+                    </Link>
+                  ))}
+                </div>
+              </JourneySection>
+            ) : null}
+
             {/* Stay Options */}
             {pkg.stayOptions?.length ? (
               <JourneySection title="Stay Options">
@@ -271,6 +369,13 @@ export default function PackageDetailContent({
                   ))}
                 </div>
               </JourneySection>
+            ) : null}
+
+            {pkg.updatedAt ? (
+              <p className="text-xs text-slate-400">
+                Last updated{' '}
+                {new Date(pkg.updatedAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </p>
             ) : null}
 
             <RelatedJourneys journeys={relatedJourneys} regionLabelsBySlug={relatedJourneyRegionLabels} />
