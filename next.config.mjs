@@ -20,19 +20,15 @@ const nextConfig = {
         permanent: true
       },
       {
-        // KNOWN MISMATCH (Phase 1 AI-search audit, 2026-09): this slug's real search
-        // intent is a generic Shimla-Manali family/group tour, but it currently
-        // redirects into 'himachal-himalayan-explorer', which is honeymoon-positioned
-        // content (category: 'Honeymoon'). That's the only existing Shimla+Manali
-        // coverage today, so redirecting here (rather than to a 404) is still the
-        // better of two imperfect options. Once the Phase 2 catalogue expansion adds a
-        // standalone, category-neutral "Shimla Manali Tour Package" journey, change
-        // this `destination` to that journey's real slug — do NOT remove or 404 this
-        // redirect before that replacement journey exists, per the Phase 1 audit's
-        // explicit instruction to never break an indexed URL before its replacement
-        // is live.
+        // RESOLVED (Phase 4D, 2026-10): the standalone, category-neutral "Shimla
+        // Manali Tour Package" journey this redirect always needed now exists and is
+        // published (slug: shimla-manali-tour-package — verified returning HTTP 200
+        // in production before this change was made, per the Phase 1 audit's own
+        // instruction to never repoint an indexed URL to something not yet live).
+        // Previously pointed at 'himachal-himalayan-explorer' (honeymoon-positioned
+        // content) as a stopgap — see git history for that reasoning.
         source: '/journeys/shimla-manali-tour-package-from-chandigarh',
-        destination: '/journeys/himachal-himalayan-explorer',
+        destination: '/journeys/shimla-manali-tour-package',
         permanent: true
       }
     ];
