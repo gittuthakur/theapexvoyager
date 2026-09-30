@@ -87,13 +87,32 @@ describe('config/ladakhFoundation.config.ts — 8 Destinations', () => {
   });
 });
 
-describe('config/ladakhFoundation.config.ts — no Ladakh Journeys created this phase', () => {
-  it('no existing live or draft Journey references any Ladakh destination slug', () => {
+describe('config/ladakhFoundation.config.ts — exactly the 5 Phase 3C Ladakh Journeys reference Ladakh', () => {
+  const LADAKH_JOURNEY_SLUGS = new Set([
+    'leh-nubra-pangong-tour',
+    'leh-nubra-pangong-turtuk-tour',
+    'leh-nubra-pangong-hanle-tour',
+    'ladakh-hanle-tso-moriri-tour',
+    'srinagar-leh-ladakh-tour'
+  ]);
+
+  it('no LIVE (published) package references any Ladakh destination slug', () => {
     const ladakhSlugs = new Set(ladakhDestinationDrafts.map((d) => d.slug));
-    const allJourneys = [...packages, ...draftJourneys];
-    for (const journey of allJourneys) {
+    for (const journey of packages) {
       for (const slug of journey.destinationSlugs ?? []) {
-        expect(ladakhSlugs.has(slug), `${journey.slug} unexpectedly references Ladakh destination "${slug}"`).toBe(false);
+        expect(ladakhSlugs.has(slug), `live package ${journey.slug} unexpectedly references Ladakh destination "${slug}"`).toBe(false);
+      }
+    }
+  });
+
+  it('only the 5 designated Ladakh journey drafts reference a Ladakh destination slug — every other draft does not', () => {
+    const ladakhSlugs = new Set(ladakhDestinationDrafts.map((d) => d.slug));
+    for (const journey of draftJourneys) {
+      const referencesLadakh = (journey.destinationSlugs ?? []).some((slug) => ladakhSlugs.has(slug));
+      if (LADAKH_JOURNEY_SLUGS.has(journey.slug)) {
+        expect(referencesLadakh, `${journey.slug} is a designated Ladakh journey but references no Ladakh destination`).toBe(true);
+      } else {
+        expect(referencesLadakh, `${journey.slug} unexpectedly references a Ladakh destination`).toBe(false);
       }
     }
   });

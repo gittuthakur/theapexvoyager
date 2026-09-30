@@ -2,10 +2,28 @@ import { describe, expect, it } from 'vitest';
 import { draftJourneys } from './draftJourneys.config';
 import { destinations } from './destinations.config';
 import { packages } from './packages.config';
+import { ladakhDestinationDrafts } from './ladakhFoundation.config';
 
-const REAL_DESTINATION_SLUGS = new Set(destinations.map((d) => d.slug));
-const DESTINATION_STATE_BY_SLUG = new Map(destinations.map((d) => [d.slug, d.state]));
+const REAL_DESTINATION_SLUGS = new Set([
+  ...destinations.map((d) => d.slug),
+  ...ladakhDestinationDrafts.map((d) => d.slug)
+]);
+const DESTINATION_STATE_BY_SLUG = new Map<string, string | undefined>([
+  ...destinations.map((d): [string, string | undefined] => [d.slug, d.state]),
+  ...ladakhDestinationDrafts.map((d): [string, string | undefined] => [d.slug, d.state])
+]);
 const LIVE_PACKAGE_SLUGS = new Set(packages.map((p) => p.slug));
+
+// The exact 5 Phase 3C Ladakh Journey drafts — the only drafts permitted to reference a
+// Ladakh destination slug (Phase 3C brief, Part 1: "create ONLY these 5 canonical
+// journeys").
+const LADAKH_JOURNEY_SLUGS = new Set([
+  'leh-nubra-pangong-tour',
+  'leh-nubra-pangong-turtuk-tour',
+  'leh-nubra-pangong-hanle-tour',
+  'ladakh-hanle-tso-moriri-tour',
+  'srinagar-leh-ladakh-tour'
+]);
 
 // The 10 Phase 2 drafts the owner approved an indicative starting price for (Phase 3,
 // Part 6) — exact figures, never inferred from any other package.
@@ -24,7 +42,7 @@ const OWNER_APPROVED_PRICES: Record<string, number> = {
 // Explicitly kept ON HOLD — no price, per Phase 2B's overlap finding and Phase 3 Part 9.
 const ON_HOLD_SLUG = 'dharamshala-mcleodganj-dalhousie-khajjiar-circuit';
 
-const KNOWN_BUSINESS_STATES = new Set(['Himachal Pradesh', 'Jammu & Kashmir', 'Uttarakhand']);
+const KNOWN_BUSINESS_STATES = new Set(['Himachal Pradesh', 'Jammu & Kashmir', 'Uttarakhand', 'Ladakh']);
 
 function itineraryDayCountFromDuration(duration: string): number | undefined {
   // Every duration string in this catalogue is "<N> Nights / <M> Days" — the itinerary
@@ -71,12 +89,22 @@ describe('config/draftJourneys.config.ts — destination/region validity', () =>
     }
   });
 
-  it('no draft references any Ladakh-related destination — Ladakh has no curated Region/Destination yet (Phase 3, Part 5)', () => {
-    const ladakhPattern = /leh|ladakh|nubra|pangong|khardung|turtuk|hanle|tso-moriri|kargil|lamayuru/i;
+  it('only the 5 Phase 3C Ladakh journeys reference a Ladakh destination slug — every other draft stays within Himachal/Kashmir/Uttarakhand', () => {
+    const ladakhSlugs = new Set(ladakhDestinationDrafts.map((d) => d.slug));
     for (const journey of draftJourneys) {
-      for (const slug of journey.destinationSlugs ?? []) {
-        expect(ladakhPattern.test(slug), `"${slug}" on ${journey.slug} looks like an invented Ladakh destination slug`).toBe(false);
+      const referencesLadakh = (journey.destinationSlugs ?? []).some((slug) => ladakhSlugs.has(slug));
+      if (LADAKH_JOURNEY_SLUGS.has(journey.slug)) {
+        expect(referencesLadakh, `${journey.slug} is a designated Ladakh journey but references no Ladakh destination`).toBe(true);
+      } else {
+        expect(referencesLadakh, `${journey.slug} unexpectedly references a Ladakh destination`).toBe(false);
       }
+    }
+  });
+
+  it('contains exactly the 5 expected Ladakh journey slugs, all present in the catalogue', () => {
+    const actualSlugs = new Set(draftJourneys.map((j) => j.slug));
+    for (const slug of LADAKH_JOURNEY_SLUGS) {
+      expect(actualSlugs.has(slug), `expected Ladakh journey "${slug}" to exist`).toBe(true);
     }
   });
 });
@@ -130,7 +158,7 @@ describe('config/draftJourneys.config.ts — duplicate protection (Phase 2 + Pha
     expect(spitiRelatedDrafts.map((j) => j.slug).sort()).toEqual(['kinnaur-spiti-circuit', 'spiti-winter-expedition']);
   });
 
-  it('contains the expected Phase 2 (11) + Phase 3 (18) draft total', () => {
-    expect(draftJourneys).toHaveLength(29);
+  it('contains the expected Phase 2 (11) + Phase 3 (18) + Phase 3C Ladakh (5) draft total', () => {
+    expect(draftJourneys).toHaveLength(34);
   });
 });

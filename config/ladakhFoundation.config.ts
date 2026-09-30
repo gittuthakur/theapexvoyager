@@ -93,10 +93,15 @@ export interface LadakhDestinationDraft {
    *  real, already-live generic hero fallback (GENERIC_HERO_IMAGE) pending dedicated
    *  Ladakh photography, never a fabricated/invented image path. */
   image: string;
-  /** Required by models/Destination.ts's schema — genuinely 0 for every entry: no real
-   *  Journey/Tour references any Ladakh destination yet (Part 10 of the Phase 3B
-   *  brief — Ladakh Journeys are not created this phase). */
+  /** Required by models/Destination.ts's schema — genuinely 0 for every entry: no
+   *  PUBLISHED Journey references any Ladakh destination (the 5 Phase 3C Ladakh Journey
+   *  drafts remain unpublished, so this count stays honestly 0 until they publish). */
   toursCount: number;
+  /** Matches the existing convention of calling Jammu & Kashmir (also a Union
+   *  Territory) a "state" elsewhere in config/destinations.config.ts, for consistency —
+   *  Ladakh is administratively a Union Territory, not a state, but this app's
+   *  Destination.state field is used as a general region label throughout. */
+  state: string;
   editorialDescription: string;
   bestTime: string;
   idealDuration: string;
@@ -119,6 +124,7 @@ export const ladakhDestinationDrafts: LadakhDestinationDraft[] = [
   {
     slug: 'leh',
     title: 'Leh',
+    state: 'Ladakh',
     image: GENERIC_HERO_IMAGE,
     toursCount: 0,
     category: 'Gateway Town',
@@ -146,6 +152,7 @@ export const ladakhDestinationDrafts: LadakhDestinationDraft[] = [
   {
     slug: 'nubra-valley',
     title: 'Nubra Valley',
+    state: 'Ladakh',
     image: GENERIC_HERO_IMAGE,
     toursCount: 0,
     category: 'Valley',
@@ -177,6 +184,7 @@ export const ladakhDestinationDrafts: LadakhDestinationDraft[] = [
   {
     slug: 'pangong-lake',
     title: 'Pangong Lake',
+    state: 'Ladakh',
     image: GENERIC_HERO_IMAGE,
     toursCount: 0,
     category: 'High-Altitude Lake',
@@ -202,6 +210,7 @@ export const ladakhDestinationDrafts: LadakhDestinationDraft[] = [
   {
     slug: 'turtuk',
     title: 'Turtuk',
+    state: 'Ladakh',
     image: GENERIC_HERO_IMAGE,
     toursCount: 0,
     category: 'Village',
@@ -227,6 +236,7 @@ export const ladakhDestinationDrafts: LadakhDestinationDraft[] = [
   {
     slug: 'hanle',
     title: 'Hanle',
+    state: 'Ladakh',
     image: GENERIC_HERO_IMAGE,
     toursCount: 0,
     category: 'Remote Village',
@@ -248,6 +258,7 @@ export const ladakhDestinationDrafts: LadakhDestinationDraft[] = [
   {
     slug: 'tso-moriri',
     title: 'Tso Moriri',
+    state: 'Ladakh',
     image: GENERIC_HERO_IMAGE,
     toursCount: 0,
     category: 'High-Altitude Lake',
@@ -269,6 +280,7 @@ export const ladakhDestinationDrafts: LadakhDestinationDraft[] = [
   {
     slug: 'kargil',
     title: 'Kargil',
+    state: 'Ladakh',
     image: GENERIC_HERO_IMAGE,
     toursCount: 0,
     category: 'Town',
@@ -289,6 +301,7 @@ export const ladakhDestinationDrafts: LadakhDestinationDraft[] = [
   {
     slug: 'lamayuru',
     title: 'Lamayuru',
+    state: 'Ladakh',
     image: GENERIC_HERO_IMAGE,
     toursCount: 0,
     category: 'Monastery Village',

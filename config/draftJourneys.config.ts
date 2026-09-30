@@ -1010,5 +1010,236 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     importantNotes: ['This package deliberately excludes Corbett and Rishikesh/Haridwar — travellers wanting a wildlife stop or a pilgrimage-style circuit should consider the existing Nainital Corbett Mussoorie or Uttarakhand Explorer packages instead.'],
     bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
     faqs: []
+  },
+
+  // ============================================================
+  // PHASE 3C — Ladakh Journey drafts (2026-09). All 5 destinationSlugs verified against
+  // the live database before writing (see docs/phase-3c-ladakh-journeys.md) — every one
+  // resolves to a real, already-seeded Ladakh Destination (or, for the overland route,
+  // an existing Kashmir/Himachal destination). Khardung La is mentioned only as a route
+  // highlight, never as a destinationSlug. No permit/access/snowfall guarantee anywhere
+  // below — every border-adjacent leg carries the same conservative "requirements can
+  // change, confirm before travel" language already established in
+  // config/ladakhFoundation.config.ts. Every itinerary opens with a genuine
+  // acclimatisation day (or, for the overland route, the gradual road ascent itself)
+  // before any higher-altitude leg — never Pangong/Nubra/Hanle/Tso Moriri on arrival day.
+  // ============================================================
+  {
+    slug: 'leh-nubra-pangong-tour',
+    status: 'draft',
+    name: 'Leh Nubra Pangong Tour',
+    destination: 'Leh, Nubra Valley & Pangong Lake, Ladakh',
+    destinationSlugs: ['leh', 'nubra-valley', 'pangong-lake'],
+    duration: '5 Nights / 6 Days',
+    category: 'Adventure',
+    shortDescription: 'The core, canonical Ladakh circuit — Leh, Nubra Valley and Pangong Lake — with a genuine acclimatisation day built in before any higher-altitude crossing.',
+    highlights: [
+      'Diskit Monastery and Hunder\'s sand dunes in Nubra Valley',
+      'Pangong Lake\'s changing colours through the day',
+      'Khardung La crossing en route to Nubra (a route highlight, not an overnight stop)',
+      'A full Leh acclimatisation day before any higher crossing'
+    ],
+    itinerary: [
+      { day: 1, title: 'Arrival in Leh', description: 'Arrive in Leh by air; the rest of the day is kept deliberately light — check-in and rest, with no sightseeing scheduled, to allow initial acclimatisation to the altitude.' },
+      { day: 2, title: 'Leh Acclimatisation & Local Time', description: 'A further, still-gentle day around Leh itself — Leh Palace, Shanti Stupa and the town\'s monasteries — before any higher-altitude travel begins.' },
+      { day: 3, title: 'Leh to Nubra Valley', description: 'Travel to Nubra Valley via Khardung La; overnight in the Diskit/Hunder area.' },
+      { day: 4, title: 'Nubra Valley', description: 'Diskit Monastery and Hunder\'s sand dunes.' },
+      { day: 5, title: 'Nubra Valley to Pangong Lake', description: 'Travel to Pangong Lake; overnight lakeside, where accommodation availability allows.' },
+      { day: 6, title: 'Pangong Lake to Leh, Departure', description: 'Return to Leh for onward departure.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Leh',
+    endingCity: 'Leh',
+    idealTraveller: 'Travellers wanting the essential, best-known Ladakh circuit on a standard 6-day schedule.',
+    bestTimeToVisit: 'Broadly May–September, matching Khardung La\'s and the region\'s typical open season — exact dates vary year to year with snowfall and are not fixed here.',
+    importantNotes: [
+      'Travellers should allow appropriate time to acclimatise to high altitude and follow current local/medical guidance where applicable — Day 1 and Day 2 are deliberately kept light for this reason.',
+      'Nubra Valley and Pangong Lake are both permit-gated, border-adjacent areas — an Inner Line Permit (Indian nationals) or Protected Area Permit (foreign nationals) is required, arranged through Leh. Requirements and the approval process can change and should be confirmed at time of booking; a permit is not treated as included or guaranteed at this stage.',
+      'Access to Pangong Lake can, at times, be affected by the security situation in this border-adjacent area — never assumed unchanged from a prior trip.'
+    ],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: [
+      { question: 'Do I need a permit for this trip?', answer: 'Yes — both Nubra Valley and Pangong Lake require an Inner Line Permit (Indian nationals) or Protected Area Permit (foreign nationals), arranged through Leh. Exact requirements and processing can change, so this is confirmed closer to your travel dates rather than assumed.' },
+      { question: 'How much time do I get to acclimatise before going higher?', answer: 'This itinerary keeps Day 1 and Day 2 in Leh itself, with no higher-altitude travel until Day 3 — travellers should still allow appropriate time to acclimatise and follow current local/medical guidance.' },
+      { question: 'Is Khardung La a separate stop on this trip?', answer: 'Khardung La is crossed en route to Nubra Valley as a scenic highlight of the drive — it is not an overnight destination on this itinerary.' }
+    ]
+  },
+  {
+    slug: 'leh-nubra-pangong-turtuk-tour',
+    status: 'draft',
+    name: 'Leh Nubra Pangong Turtuk Tour',
+    destination: 'Leh, Nubra Valley, Turtuk & Pangong Lake, Ladakh',
+    destinationSlugs: ['leh', 'nubra-valley', 'turtuk', 'pangong-lake'],
+    duration: '6 Nights / 7 Days',
+    category: 'Offbeat',
+    shortDescription: 'Extends the core Leh-Nubra-Pangong circuit with Turtuk, a genuinely distinct Balti village — honestly routed with a transit day back through Leh between Turtuk and Pangong, rather than an unrealistic direct crossing.',
+    highlights: [
+      'Turtuk\'s Balti culture, genuinely different from the rest of Ladakh',
+      'Diskit Monastery and Hunder\'s sand dunes in Nubra Valley',
+      'Pangong Lake\'s changing colours through the day',
+      'A full Leh acclimatisation day before any higher-altitude crossing'
+    ],
+    itinerary: [
+      { day: 1, title: 'Arrival in Leh', description: 'Arrive in Leh by air; the rest of the day is kept deliberately light for initial acclimatisation, with no sightseeing scheduled.' },
+      { day: 2, title: 'Leh Acclimatisation & Local Time', description: 'A further, still-gentle day around Leh itself before any higher-altitude travel begins.' },
+      { day: 3, title: 'Leh to Nubra Valley', description: 'Travel to Nubra Valley via Khardung La; overnight in the Diskit/Hunder area.' },
+      { day: 4, title: 'Nubra Valley to Turtuk', description: 'Continue further into the valley to Turtuk, a Balti village genuinely different in culture from the rest of Ladakh.' },
+      { day: 5, title: 'Turtuk back toward Leh', description: 'Turtuk does not connect directly to Pangong Lake by road in a single realistic day — this itinerary honestly routes back toward Leh as a transit day rather than presenting an unrealistic direct crossing.' },
+      { day: 6, title: 'Leh to Pangong Lake', description: 'Travel on to Pangong Lake; overnight lakeside, where accommodation availability allows.' },
+      { day: 7, title: 'Pangong Lake to Leh, Departure', description: 'Return to Leh for onward departure.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Leh',
+    endingCity: 'Leh',
+    idealTraveller: 'Travellers wanting a genuinely different cultural stop (Turtuk) added to the core Ladakh circuit, comfortable with the extra transit day this honestly requires.',
+    bestTimeToVisit: 'Broadly May–September; exact pass and road-opening dates vary year to year with snowfall.',
+    importantNotes: [
+      'Travellers should allow appropriate time to acclimatise to high altitude and follow current local/medical guidance where applicable — Day 1 and Day 2 are deliberately kept light for this reason.',
+      'Nubra Valley, Turtuk and Pangong Lake are all permit-gated, border-adjacent areas — an Inner Line Permit (Indian nationals) or Protected Area Permit (foreign nationals) is required, arranged through Leh. Requirements can change and are confirmed at time of booking, never treated as included or guaranteed at this stage.',
+      'Day 5\'s transit back through Leh exists because Turtuk and Pangong Lake are not honestly connected by a single realistic day\'s drive — this itinerary does not compress that transition.'
+    ],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: [
+      { question: 'Why does the itinerary go back through Leh between Turtuk and Pangong?', answer: 'Turtuk and Pangong Lake are not connected by a realistic single day\'s drive — routing back through Leh is the honest way to sequence this trip rather than compressing an unrealistic direct crossing.' },
+      { question: 'What makes Turtuk different from the rest of the Nubra Valley leg?', answer: 'Turtuk is a Balti Muslim village that was part of Pakistan-administered territory until 1971 and only opened to tourism in 2010 — its culture, language and architecture are genuinely distinct from the Buddhist-majority towns elsewhere in this itinerary.' }
+    ]
+  },
+  {
+    slug: 'leh-nubra-pangong-hanle-tour',
+    status: 'draft',
+    name: 'Leh Nubra Pangong Hanle Tour',
+    destination: 'Leh, Nubra Valley, Pangong Lake & Hanle, Ladakh',
+    destinationSlugs: ['leh', 'nubra-valley', 'pangong-lake', 'hanle'],
+    duration: '6 Nights / 7 Days',
+    category: 'Offbeat',
+    shortDescription: 'Extends the core circuit into the remote Changthang plateau to reach Hanle, home to India\'s first Dark Sky Reserve — for travellers wanting genuine remoteness and stargazing, not just the standard Nubra-Pangong loop.',
+    highlights: [
+      'Diskit Monastery and Hunder\'s sand dunes in Nubra Valley',
+      'Pangong Lake\'s changing colours through the day',
+      'Hanle\'s dark-sky stargazing, weather and moon-phase permitting',
+      'A full Leh acclimatisation day before any higher-altitude crossing'
+    ],
+    itinerary: [
+      { day: 1, title: 'Arrival in Leh', description: 'Arrive in Leh by air; the rest of the day is kept deliberately light for initial acclimatisation, with no sightseeing scheduled.' },
+      { day: 2, title: 'Leh Acclimatisation & Local Time', description: 'A further, still-gentle day around Leh itself before any higher-altitude travel begins.' },
+      { day: 3, title: 'Leh to Nubra Valley', description: 'Travel to Nubra Valley via Khardung La; overnight in the Diskit/Hunder area.' },
+      { day: 4, title: 'Nubra Valley to Pangong Lake', description: 'Travel to Pangong Lake via the Shyok valley route; overnight lakeside, where accommodation availability allows.' },
+      { day: 5, title: 'Pangong Lake to Hanle', description: 'Travel on to Hanle via the Chushul-Nyoma route, a genuinely remote leg — road conditions on this stretch should be confirmed closer to travel.' },
+      { day: 6, title: 'Hanle to Leh', description: 'Time in Hanle (stargazing conditions are weather and moon-phase dependent, never guaranteed on a specific date) before the return drive to Leh.' },
+      { day: 7, title: 'Departure', description: 'Onward departure from Leh.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Leh',
+    endingCity: 'Leh',
+    idealTraveller: 'Travellers specifically wanting the remote Changthang/Hanle stargazing experience added to the core circuit, comfortable with genuinely long driving days.',
+    bestTimeToVisit: 'Broadly May–September; clear-sky stargazing conditions at Hanle vary night to night and are never guaranteed on a specific date.',
+    importantNotes: [
+      'Travellers should allow appropriate time to acclimatise to high altitude and follow current local/medical guidance where applicable — Day 1 and Day 2 are deliberately kept light for this reason.',
+      'Nubra Valley, Pangong Lake and Hanle are all permit-gated, border-adjacent/remote areas — an Inner Line Permit (Indian nationals) or Protected Area Permit (foreign nationals) is required, arranged through Leh. Requirements can change and are confirmed at time of booking, never treated as included or guaranteed at this stage.',
+      'Hanle is genuinely remote with long driving days either side — this is not positioned as a casual add-on.'
+    ],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: [
+      { question: 'Is clear-sky stargazing guaranteed at Hanle?', answer: 'No — stargazing conditions depend on weather and moon phase on the specific night, and are never guaranteed. Hanle\'s Dark Sky Reserve status reflects genuinely low light pollution, not a guaranteed clear-sky outcome.' },
+      { question: 'How remote is the Pangong-to-Hanle leg?', answer: 'Genuinely remote — this is real Changthang plateau driving, on a route with far less infrastructure than the standard Leh-Nubra-Pangong loop. It should be booked by travellers comfortable with long, remote driving days.' }
+    ]
+  },
+  {
+    slug: 'ladakh-hanle-tso-moriri-tour',
+    status: 'draft',
+    name: 'Ladakh Hanle Tso Moriri Tour',
+    destination: 'Leh, Nubra Valley, Pangong Lake, Hanle & Tso Moriri, Ladakh',
+    destinationSlugs: ['leh', 'nubra-valley', 'pangong-lake', 'hanle', 'tso-moriri'],
+    duration: '7 Nights / 8 Days',
+    category: 'Offbeat',
+    shortDescription: 'The fullest Changthang circuit this catalogue offers — Nubra Valley, Pangong Lake, Hanle and Tso Moriri in one trip — for travellers with enough time to see the region\'s full range of high-altitude lakes and remote plateau in a single booking.',
+    highlights: [
+      'Diskit Monastery and Hunder\'s sand dunes in Nubra Valley',
+      'Pangong Lake and the quieter, more remote Tso Moriri, both in one trip',
+      'Hanle\'s dark-sky stargazing, weather and moon-phase permitting',
+      'A full Leh acclimatisation day before any higher-altitude crossing'
+    ],
+    itinerary: [
+      { day: 1, title: 'Arrival in Leh', description: 'Arrive in Leh by air; the rest of the day is kept deliberately light for initial acclimatisation, with no sightseeing scheduled.' },
+      { day: 2, title: 'Leh Acclimatisation & Local Time', description: 'A further, still-gentle day around Leh itself before any higher-altitude travel begins.' },
+      { day: 3, title: 'Leh to Nubra Valley', description: 'Travel to Nubra Valley via Khardung La; overnight in the Diskit/Hunder area.' },
+      { day: 4, title: 'Nubra Valley to Pangong Lake', description: 'Travel to Pangong Lake via the Shyok valley route.' },
+      { day: 5, title: 'Pangong Lake to Hanle', description: 'Travel to Hanle via the Chushul-Nyoma route, a genuinely remote leg.' },
+      { day: 6, title: 'Hanle to Tso Moriri', description: 'Travel on to Tso Moriri, in the same southeastern Changthang region as Hanle — a real connecting route, though genuinely remote.' },
+      { day: 7, title: 'Tso Moriri to Leh', description: 'Return drive to Leh.' },
+      { day: 8, title: 'Departure', description: 'Onward departure from Leh.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Leh',
+    endingCity: 'Leh',
+    idealTraveller: 'Travellers with 8 days available who want the region\'s full range of high-altitude lakes and remote plateau, rather than choosing between Pangong-only and Hanle-only options.',
+    bestTimeToVisit: 'Broadly May–September; clear-sky stargazing at Hanle and road conditions across the Changthang plateau both vary year to year and night to night.',
+    importantNotes: [
+      'Travellers should allow appropriate time to acclimatise to high altitude and follow current local/medical guidance where applicable — Day 1 and Day 2 are deliberately kept light for this reason.',
+      'Every border-adjacent/remote area on this route (Nubra Valley, Pangong Lake, Hanle, Tso Moriri) requires an Inner Line Permit (Indian nationals) or Protected Area Permit (foreign nationals), arranged through Leh. Requirements can change and are confirmed at time of booking, never treated as included or guaranteed at this stage.',
+      'This is the longest and most physically demanding of this catalogue\'s Ladakh circuits — several consecutive days of genuinely remote, high-altitude driving.'
+    ],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: [
+      { question: 'How is this different from the Leh Nubra Pangong Hanle Tour?', answer: 'This itinerary adds Tso Moriri, a quieter and more remote lake in the same southeastern Changthang region as Hanle, over one additional night — for travellers who have the extra day and want the fuller circuit rather than stopping at Hanle.' },
+      { question: 'Is this itinerary suitable for a first-time Ladakh visitor?', answer: 'It is a genuinely demanding, remote circuit best suited to travellers comfortable with several consecutive long driving days at high altitude — the shorter Leh Nubra Pangong Tour may suit a first-time visitor better.' }
+    ]
+  },
+  {
+    slug: 'srinagar-leh-ladakh-tour',
+    status: 'draft',
+    name: 'Srinagar Leh Ladakh Tour',
+    destination: 'Srinagar, Kargil, Leh, Nubra Valley & Pangong Lake',
+    destinationSlugs: ['srinagar', 'kargil', 'lamayuru', 'leh', 'nubra-valley', 'pangong-lake'],
+    duration: '7 Nights / 8 Days',
+    category: 'Adventure',
+    shortDescription: 'A fundamentally different entry into Ladakh — overland from Srinagar via Kargil and Lamayuru rather than flying directly into Leh, using the gradual road ascent itself as a natural approach to acclimatisation.',
+    highlights: [
+      'The Srinagar-Leh highway itself, via Sonamarg, Zoji La and Kargil',
+      'Lamayuru\'s "Moonland" landscape and ancient monastery en route',
+      'Diskit Monastery and Hunder\'s sand dunes in Nubra Valley',
+      'Pangong Lake\'s changing colours through the day'
+    ],
+    itinerary: [
+      { day: 1, title: 'Arrival in Srinagar', description: 'Arrive in Srinagar; evening at leisure.' },
+      { day: 2, title: 'Srinagar to Kargil', description: 'Drive via Sonamarg and Zoji La to Kargil — a genuinely long mountain-road day.' },
+      { day: 3, title: 'Kargil to Leh', description: 'Continue via Lamayuru\'s "Moonland" landscape and ancient monastery to Leh — this gradual overland ascent is itself a natural approach to acclimatisation, unlike flying directly into Leh.' },
+      { day: 4, title: 'Leh Local Time', description: 'A still-gentle day around Leh itself before any higher-altitude crossing, even though the overland route has already helped with gradual acclimatisation.' },
+      { day: 5, title: 'Leh to Nubra Valley', description: 'Travel to Nubra Valley via Khardung La; overnight in the Diskit/Hunder area.' },
+      { day: 6, title: 'Nubra Valley', description: 'Diskit Monastery and Hunder\'s sand dunes.' },
+      { day: 7, title: 'Nubra Valley to Pangong Lake', description: 'Travel to Pangong Lake; overnight lakeside, where accommodation availability allows.' },
+      { day: 8, title: 'Pangong Lake to Leh, Departure', description: 'Return to Leh for onward departure.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Srinagar',
+    endingCity: 'Leh',
+    idealTraveller: 'Travellers who want to see the Srinagar-Leh highway itself as part of the trip, and prefer a gradual overland approach to Ladakh over flying directly into Leh.',
+    bestTimeToVisit: 'Broadly May/June–September, matching the Srinagar-Leh highway\'s typical open season — exact opening/closing dates (particularly at Zoji La) vary year to year with snowfall and are not fixed here.',
+    importantNotes: [
+      'The gradual overland ascent (Srinagar → Kargil → Leh) is a genuine, real-world approach to acclimatisation, but travellers should still allow appropriate time to acclimatise at each stage and follow current local/medical guidance where applicable — Day 4 remains a gentle day in Leh before any higher crossing.',
+      'Nubra Valley and Pangong Lake are permit-gated, border-adjacent areas — an Inner Line Permit (Indian nationals) or Protected Area Permit (foreign nationals) is required, arranged through Leh. Requirements can change and are confirmed at time of booking, never treated as included or guaranteed at this stage.',
+      'The Zoji La crossing (Day 2) is itself a seasonal, weather-dependent mountain pass — this route is not available outside its typical open season.'
+    ],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: [
+      { question: 'Is the overland route safer for acclimatisation than flying into Leh?', answer: 'The gradual ascent over the Srinagar-Leh highway is a genuine, commonly-used approach to acclimatisation, but travellers should still allow appropriate time to acclimatise and follow current local/medical guidance — this itinerary keeps Day 4 in Leh gentle even after the overland approach.' },
+      { question: 'Is Lamayuru a separate overnight stop?', answer: 'Lamayuru is visited as a real stop on the Kargil-to-Leh drive (Day 3) for its landscape and monastery, not as a separate overnight destination on this itinerary.' },
+      { question: 'What happens if Zoji La is closed?', answer: 'Zoji La is a seasonal mountain pass — this overland route is only available within its typical open season, and current conditions should be confirmed before booking.' }
+    ]
   }
 ];
