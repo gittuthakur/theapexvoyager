@@ -73,9 +73,14 @@ export default async function proxy(request: NextRequest) {
   if (journeyMatch) {
     const slug = decodeURIComponent(journeyMatch[1]);
     await connectDB();
-    // No status/publish filter — matches lib/packages.ts's getPackageBySlug exactly
-    // (Journey.findOne({ slug }), no extra filter): the Journey schema has no such field.
-    const exists = await Journey.exists({ slug });
+    // Matches lib/packages.ts's getPackageBySlug exactly (Journey.findOne({ slug,
+    // status: 'published' })) — a draft Journey's slug must genuinely 404 here, in
+    // Proxy, before any route rendering begins, for the same soft-404 reason this whole
+    // mechanism exists: without this filter, a draft would pass this existence check,
+    // reach the page, and only THEN get caught by getPackageBySlug's own filter —
+    // by which point a parent loading.tsx may have already streamed a 200 shell (see
+    // this file's top-level comment for the full mechanism this guards against).
+    const exists = await Journey.exists({ slug, status: 'published' });
     if (!exists) {
       return NextResponse.rewrite(new URL('/__not-found__', request.url));
     }

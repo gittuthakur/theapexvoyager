@@ -9,6 +9,7 @@ import type { TravelPackage } from '@/types/package';
 export const packages: TravelPackage[] = [
   {
     slug: 'manali-premium-escape',
+    status: 'published',
     name: 'Manali Premium Escape',
     destination: 'Manali, Himachal Pradesh',
     destinationSlugs: ['manali'],
@@ -63,6 +64,7 @@ export const packages: TravelPackage[] = [
   },
   {
     slug: 'kashmir-signature-journey',
+    status: 'published',
     name: 'Kashmir Paradise',
     destination: 'Srinagar & Gulmarg, Kashmir',
     // Srinagar (2 nights, dedicated sightseeing day) and Pahalgam (dedicated day trip
@@ -145,6 +147,7 @@ export const packages: TravelPackage[] = [
   },
   {
     slug: 'spiti-valley-adventure',
+    status: 'published',
     name: 'Spiti Circuit Expedition',
     destination: 'Spiti Valley, Himachal Pradesh',
     // 'kinnaur' added alongside the existing 'spiti-valley' value (Chandigarh SEO
@@ -225,6 +228,7 @@ export const packages: TravelPackage[] = [
   },
   {
     slug: 'himachal-himalayan-explorer',
+    status: 'published',
     name: 'Honeymoon in Hills',
     destination: 'Shimla, Manali & Manikaran, Himachal Pradesh',
     // Day 6 is a dedicated Kasol day trip (not optional/alternate) with named stops —
@@ -307,6 +311,7 @@ export const packages: TravelPackage[] = [
   },
   {
     slug: 'dharamshala-dalhousie-escape',
+    status: 'published',
     name: 'Himachal Family Escape',
     destination: 'Dharamshala & Dalhousie, Himachal Pradesh',
     // Day 4 is a dedicated Khajjiar day trip (not optional/alternate) with named stops —
@@ -370,6 +375,7 @@ export const packages: TravelPackage[] = [
     // slug-matched upsert) before this config change, so this reseeds in place
     // rather than creating a duplicate.
     slug: 'uttarakhand-explorer',
+    status: 'published',
     name: 'Uttarakhand Explorer',
     destination: 'Rishikesh, Haridwar & Mussoorie, Uttarakhand',
     // Day 5 is a dedicated Mussoorie day trip (not optional/alternate) with named stops —

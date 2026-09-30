@@ -18,7 +18,9 @@
     "db:backfill-transport-service-type": "tsx scripts/backfillTransportServiceType.ts",
     "db:backfill-brand-name-seo": "tsx scripts/backfillBrandNameSeo.ts",
     "db:backfill-spiti-kinnaur-slug": "tsx scripts/backfillSpitiKinnaurDestinationSlug.ts",
-    "db:migrate-placecache-ttl": "tsx scripts/migratePlaceCacheTtl.ts"
+    "db:migrate-placecache-ttl": "tsx scripts/migratePlaceCacheTtl.ts",
+    "db:backfill-journey-status": "tsx scripts/backfillJourneyPublicationStatus.ts",
+    "db:seed-draft-journeys": "tsx scripts/seedDraftJourneys.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

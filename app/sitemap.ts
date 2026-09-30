@@ -23,10 +23,10 @@ interface SlugRecord {
 //
 // Journey coverage added later (Phase 4 remediation) — same `slug`/`updatedAt`
 // projection, same `Journey` model every other Journey page already reads from
-// (see lib/packages.ts). The Journey schema has no status/published/active field
-// (see models/Journey.ts), so — same as `Destination` above, and same as every
-// other Journey consumer in the app — every document in the collection is the
-// live catalogue; there is no separate "active" subset to filter to.
+// (see lib/packages.ts). UPDATED (Phase 2 draft/publish workflow, 2026-09): Journey now
+// has a `status: 'draft' | 'published'` field (models/Journey.ts) — filtered here to
+// `status: 'published'` exactly like lib/packages.ts's getAllPackages(), so a draft
+// Journey's URL is never submitted for indexing.
 //
 // Experience coverage added later still (Experiences Phase 4 remediation) — same
 // `slug`/`updatedAt` projection and the same reasoning as Journey immediately above:
@@ -47,7 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [destinations, regions, journeys, experiences, experts] = await Promise.all([
     Destination.find().select('slug updatedAt').lean<SlugRecord[]>(),
     Region.find({ status: 'published' }).select('slug updatedAt').lean<SlugRecord[]>(),
-    Journey.find().select('slug updatedAt').lean<SlugRecord[]>(),
+    Journey.find({ status: 'published' }).select('slug updatedAt').lean<SlugRecord[]>(),
     Experience.find().select('slug updatedAt').lean<SlugRecord[]>(),
     Expert.find({ active: true, publiclyListed: true }).select('slug updatedAt').lean<SlugRecord[]>()
   ]);
