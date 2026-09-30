@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { packages } from './packages.config';
+import { destinations } from './destinations.config';
 
 // Regression guard for the Phase 2 draft/publish workflow (Part 2 of the brief: "Do not
 // alter their prices simply for this phase") — the 6 legitimate live packages' commercial
@@ -26,6 +27,15 @@ describe('config/packages.config.ts — existing 6 packages regression guard', (
     for (const expected of EXPECTED_LIVE_PACKAGES) {
       const pkg = packages.find((p) => p.slug === expected.slug);
       expect(pkg?.price).toBe(expected.price);
+    }
+  });
+
+  it('every destinationSlugs entry still resolves to a real, curated destination — the Phase 3B Destination status backfill (which publishes every existing entry) never breaks a Journey→Destination link', () => {
+    const realDestinationSlugs = new Set(destinations.map((d) => d.slug));
+    for (const pkg of packages) {
+      for (const slug of pkg.destinationSlugs ?? []) {
+        expect(realDestinationSlugs.has(slug), `${pkg.slug} references unknown destination "${slug}"`).toBe(true);
+      }
     }
   });
 });

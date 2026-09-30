@@ -140,4 +140,9 @@ export interface Destination extends Partial<GooglePlaceEnrichment> {
    *  the full list is kept so a future fallback search doesn't need another schema change.
    *  Absent for the ordinary majority of the catalogue, where `title` already is correct. */
   stayBaseLocations?: string[];
+  /** Always 'published' on any Destination that reaches app code — lib/destinations.ts's
+   *  getCuratedDestinations()/getCuratedDestinationBySlug() filter on this at the
+   *  database query itself, so a draft Destination is never fetched into this shape at
+   *  all. See models/Destination.ts (Phase 3B). */
+  status?: 'draft' | 'published';
 }

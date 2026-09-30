@@ -68,7 +68,11 @@ export async function getRegionHubData(slug: string): Promise<RegionHubData | nu
 
   const [destinationDocs, journeyDocs, tourDocs, hotelDocs, experienceDocs, routeDocs, vehicleDocs, expertDocs, googleContext, bookingContext] =
     await Promise.all([
-      Destination.find({ regionId: regionObjectId }).sort({ priority: 1 }).lean<DestinationDocument[]>(),
+      // `status: 'published'` required (Phase 3B) — see models/Destination.ts's field
+      // comment. Without it this query would surface draft Destinations (e.g. the
+      // Ladakh foundation) on every Region Hub page's own destination listing — the
+      // same latent-leak pattern already fixed for Journey/Hotel below.
+      Destination.find({ regionId: regionObjectId, status: 'published' }).sort({ priority: 1 }).lean<DestinationDocument[]>(),
       // `status: 'published'` required — see models/Journey.ts's field comment (the
       // Phase 2 draft/publish workflow). Without it this query bypassed lib/packages.ts's
       // getAllPackages() gate entirely and would have surfaced draft Journeys on every

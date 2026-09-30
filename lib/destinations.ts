@@ -141,12 +141,23 @@ export async function getDestinationsWithFallback(): Promise<Destination[]> {
   }
 }
 
+// PUBLIC READ PATH — both functions below filter `status: 'published'` at the database
+// query itself (Phase 3B), mirroring lib/packages.ts's identical Journey convention.
+// This is deliberately the ONE place that rule lives: every public surface (the
+// homepage grid, the /destinations listing and search, the Region Hub's per-region
+// destination list, a Journey's "Explore the Destination" links, related-destination
+// sections, and the public /api/destinations routes) goes through one of these two
+// functions, so a draft Destination is structurally unreachable from any of them. See
+// proxy.ts for the matching existence-check filter that keeps a draft slug's direct URL
+// from soft-404ing instead of cleanly 404ing, and app/sitemap.ts/
+// services/regions/regionHub.service.ts for the two remaining direct-query sites that
+// don't go through this file at all and carry their own matching filter.
+//
 // The curated directory — lives in MongoDB (see models/Destination.ts, seeded from
-// config/destinations.config.ts by scripts/seed.ts). Used by the homepage grid, the
-// /destinations search page, the Region Hub, and as the primary slug lookup below.
+// config/destinations.config.ts by scripts/seed.ts).
 export async function getCuratedDestinations(): Promise<Destination[]> {
   await connectDB();
-  const docs = await DestinationModel.find().sort({ priority: 1 }).lean<DestinationDocument[]>();
+  const docs = await DestinationModel.find({ status: 'published' }).sort({ priority: 1 }).lean<DestinationDocument[]>();
   return JSON.parse(JSON.stringify(docs.map(toDestination)));
 }
 
@@ -155,7 +166,7 @@ export async function getCuratedDestinations(): Promise<Destination[]> {
 // same request, and without memoization that would run the same lookup twice.
 export const getCuratedDestinationBySlug = cache(async (slug: string): Promise<Destination | undefined> => {
   await connectDB();
-  const doc = await DestinationModel.findOne({ slug }).lean<DestinationDocument | null>();
+  const doc = await DestinationModel.findOne({ slug, status: 'published' }).lean<DestinationDocument | null>();
   return doc ? JSON.parse(JSON.stringify(toDestination(doc))) : undefined;
 });
 

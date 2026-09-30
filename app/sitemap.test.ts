@@ -35,6 +35,24 @@ beforeEach(() => {
   expertFindMock.mockReset().mockReturnValue(chain([]));
 });
 
+describe('sitemap — Destination entries exclude drafts (Phase 3B draft/publish workflow)', () => {
+  it('queries Destination.find with an explicit { status: "published" } filter', async () => {
+    await sitemap();
+    expect(destinationFindMock).toHaveBeenCalledWith({ status: 'published' });
+  });
+
+  it('only ever includes URLs for the destinations the (published-only) query actually returned — a draft like Ladakh\'s "leh" never appears', async () => {
+    destinationFindMock.mockReturnValue(chain([{ slug: 'manali', updatedAt: new Date('2026-01-01') }]));
+
+    const entries = await sitemap();
+
+    const destinationUrls = entries.filter((e) => e.url.includes('/destinations/'));
+    expect(destinationUrls).toHaveLength(1);
+    expect(destinationUrls[0].url).toContain('manali');
+    expect(entries.some((e) => e.url.includes('/destinations/leh'))).toBe(false);
+  });
+});
+
 describe('sitemap — Journey entries exclude drafts (Phase 2 draft/publish workflow)', () => {
   it('queries Journey.find with an explicit { status: "published" } filter', async () => {
     await sitemap();

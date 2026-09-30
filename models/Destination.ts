@@ -46,6 +46,16 @@ export interface DestinationDocument extends Document {
   id?: string;
   slug: string;
   title: string;
+  /** Same convention as models/Region.ts and models/Journey.ts — a draft Destination is
+   *  real, in-progress content that must never appear on any public discovery surface
+   *  (listing, homepage, Region Hub, sitemap, search, related-destination sections) or
+   *  resolve at its own public URL. See lib/destinations.ts (both getCuratedDestinations
+   *  and getCuratedDestinationBySlug filter `status: 'published'`) and proxy.ts (the
+   *  existence check gating /destinations/[slug] against soft-404s uses the same
+   *  filter). Required, defaults to 'draft' — a new Destination is never accidentally
+   *  public the moment it's created. Phase 3B (2026-09) — added specifically so the
+   *  Ladakh foundation can be seeded and reviewed before going live. */
+  status: 'draft' | 'published';
   category: string;
   description: string;
   toursCount: number;
@@ -106,6 +116,7 @@ const DestinationSchema = new Schema<DestinationDocument>(
     id: { type: String },
     slug: { type: String, required: true, unique: true },
     title: { type: String, required: true },
+    status: { type: String, enum: ['draft', 'published'], required: true, default: 'draft' },
     category: { type: String, required: true },
     description: { type: String, required: true },
     toursCount: { type: Number, required: true, default: 0 },
@@ -176,6 +187,11 @@ const DestinationSchema = new Schema<DestinationDocument>(
 
 // Supports the Region Hub's per-region destination listing.
 DestinationSchema.index({ regionId: 1 });
+// Supports every public query (lib/destinations.ts, app/sitemap.ts, proxy.ts,
+// services/regions/regionHub.service.ts) — all of them filter on `status` first; this
+// lets that filter read straight off an index rather than scanning the whole
+// collection, mirroring models/Region.ts's and models/Journey.ts's own compound indexes.
+DestinationSchema.index({ status: 1, priority: 1 });
 
 // `models.Destination` survives Next.js dev hot-reloads — without this guard, re-running
 // this module would call `model()` on an already-registered name and throw.

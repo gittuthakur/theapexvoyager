@@ -20,7 +20,9 @@
     "db:backfill-spiti-kinnaur-slug": "tsx scripts/backfillSpitiKinnaurDestinationSlug.ts",
     "db:migrate-placecache-ttl": "tsx scripts/migratePlaceCacheTtl.ts",
     "db:backfill-journey-status": "tsx scripts/backfillJourneyPublicationStatus.ts",
-    "db:seed-draft-journeys": "tsx scripts/seedDraftJourneys.ts"
+    "db:seed-draft-journeys": "tsx scripts/seedDraftJourneys.ts",
+    "db:backfill-destination-status": "tsx scripts/backfillDestinationPublicationStatus.ts",
+    "db:seed-ladakh-foundation": "tsx scripts/seedLadakhFoundation.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

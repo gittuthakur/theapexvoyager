@@ -47,7 +47,11 @@ export default async function proxy(request: NextRequest) {
   if (destinationMatch) {
     const slug = decodeURIComponent(destinationMatch[1]);
     await connectDB();
-    const exists = await Destination.exists({ slug });
+    // Matches lib/destinations.ts's getCuratedDestinationBySlug exactly (Phase 3B) — a
+    // draft Destination's slug must genuinely 404 here, in Proxy, before any route
+    // rendering begins, for the same soft-404 reason this whole mechanism exists (see
+    // this file's top-level comment).
+    const exists = await Destination.exists({ slug, status: 'published' });
     if (!exists) {
       // A genuinely unmatched top-level path (no catch-all route exists under app/) so
       // Next's own global not-found handling renders — the same real 404 a truly unknown

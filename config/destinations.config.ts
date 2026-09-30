@@ -5,7 +5,10 @@ import type { Destination } from '@/types';
 // grid, the /destinations search page, and slug lookups for /destinations/[slug].
 // Distinct from lib/destinations.ts's Google Places aggregation, which returns
 // individual tourist-attraction POIs rather than these top-level hill-station listings.
-export const destinations: Destination[] = [
+// Not exported directly — see `destinations` at the bottom of this file, which marks
+// every one of these `status: 'published'` in one place (Phase 3B draft/publish
+// workflow) rather than repeating that field ~70 times.
+const rawDestinations: Omit<Destination, 'status'>[] = [
   {
     id: 'dest_manali',
     slug: 'manali',
@@ -3111,6 +3114,13 @@ export const destinations: Destination[] = [
     }
   }
 ];
+
+// Every entry above is a real, already-legitimate part of the live catalogue — marked
+// `status: 'published'` here, once, rather than on each of the ~70 entries individually
+// (Phase 3B draft/publish workflow). This also protects against scripts/seed.ts's
+// full-document-replace upsert pattern ever silently resetting an existing destination
+// back to the schema default 'draft' on a future reseed.
+export const destinations: Destination[] = rawDestinations.map((destination) => ({ ...destination, status: 'published' }));
 
 /** Resolves a curated Destination slug to its human-readable title — used where a
  *  caller only has a slug (e.g. a Tour's `destinationSlug`) but needs to build a

@@ -19,7 +19,10 @@ interface SlugRecord {
 // site-wide sitemap. Projected to just `slug`/`updatedAt` (never the full curated
 // record) since that's all a sitemap entry needs, and reuses the same `Destination`/
 // `Region` models every other Destination page already reads from rather than adding
-// a new data path.
+// a new data path. UPDATED (Phase 3B draft/publish workflow, 2026-09): Destination now
+// has a `status: 'draft' | 'published'` field (models/Destination.ts) — filtered here
+// to `status: 'published'` exactly like the Region/Journey entries below, so a draft
+// Destination's URL (e.g. the Ladakh foundation) is never submitted for indexing.
 //
 // Journey coverage added later (Phase 4 remediation) — same `slug`/`updatedAt`
 // projection, same `Journey` model every other Journey page already reads from
@@ -45,7 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   await connectDB();
 
   const [destinations, regions, journeys, experiences, experts] = await Promise.all([
-    Destination.find().select('slug updatedAt').lean<SlugRecord[]>(),
+    Destination.find({ status: 'published' }).select('slug updatedAt').lean<SlugRecord[]>(),
     Region.find({ status: 'published' }).select('slug updatedAt').lean<SlugRecord[]>(),
     Journey.find({ status: 'published' }).select('slug updatedAt').lean<SlugRecord[]>(),
     Experience.find().select('slug updatedAt').lean<SlugRecord[]>(),
