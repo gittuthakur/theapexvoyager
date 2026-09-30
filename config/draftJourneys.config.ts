@@ -272,12 +272,22 @@ export const draftJourneys: DraftTravelPackageInput[] = [
   {
     slug: 'jibhi-tirthan-valley',
     status: 'draft',
-    // No dedicated Jibhi/Tirthan Valley photography exists — the real, published
-    // Destination docs for both ('jibhi', 'tirthan-valley' in destinations.config.ts)
-    // already reuse images.destinations.kasol themselves (the nearest curated photo),
-    // so this Journey reuses the exact same real, already-resolving image those two
-    // live Destination pages show today — never an invented path.
-    image: images.destinations.kasol,
+    // CORRECTED (Phase 4D — site-wide image audit): earlier believed to legitimately
+    // reuse images.destinations.kasol because the real 'jibhi'/'tirthan-valley'
+    // Destination *config records* set that same path — but their actual LIVE
+    // rendering does NOT show that photo: config/destinationImageOverrides.ts's
+    // DESTINATIONS_WITHOUT_VERIFIED_IMAGE set (a prior, documented media-authenticity
+    // audit — see docs/image-sources.md) already flags 'jibhi'/'tirthan-valley'/
+    // 'sainj-valley' as having no rights-cleared, identity-verified photo of
+    // themselves, and DestinationHero/DestinationCard substitute a neutral
+    // icon+label placeholder instead of ever rendering that Kasol photo. This
+    // Journey has no equivalent placeholder mechanism, so it instead reuses
+    // images.destinationsHero — the exact same real, honest, non-misattributing
+    // fallback chail/patnitop/bhaderwah/kullu/pragpur/pangi-valley's own `image`
+    // fields already use for this identical "no verified photo of this specific
+    // place" situation (see docs/site-wide-real-image-audit.md). Never the Ladakh
+    // placeholder (images.hero) — a different, unrelated fallback.
+    image: images.destinationsHero,
     name: 'Jibhi Tirthan Valley',
     destination: 'Jibhi & Tirthan Valley, Himachal Pradesh',
     destinationSlugs: ['jibhi', 'tirthan-valley'],

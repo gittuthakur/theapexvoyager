@@ -26,7 +26,13 @@ const EXPECTED_IMAGES: Record<string, string> = {
   'shimla-manali-tour-package': images.destinations.manali,
   'kinnaur-spiti-circuit': images.destinations.spitiValley,
   'kasol-kheerganga-tosh': images.destinations.kasol,
-  'jibhi-tirthan-valley': images.destinations.kasol,
+  // Phase 4D correction: NOT images.destinations.kasol — see the doc comment on this
+  // package in draftJourneys.config.ts. The real 'jibhi'/'tirthan-valley' Destination
+  // pages never actually render that Kasol photo (DestinationHero substitutes a neutral
+  // placeholder via DESTINATIONS_WITHOUT_VERIFIED_IMAGE); this Journey now uses the same
+  // honest images.destinationsHero fallback chail/patnitop/bhaderwah/kullu/pragpur/
+  // pangi-valley's own Destination records already use for this identical situation.
+  'jibhi-tirthan-valley': images.destinationsHero,
   'kashmir-family-tour': images.destinations.srinagar,
   'kashmir-pahalgam-gulmarg-sonamarg-tour': images.destinations.pahalgam,
   'char-dham-yatra': images.destinations.kedarnath,
@@ -49,7 +55,11 @@ const APPROVED_PRICES: Record<string, number> = {
 };
 
 const LADAKH_GENERIC_PLACEHOLDER = '/images/img-hero-hero.jpg';
-const CURATED_DESTINATION_IMAGES = new Set<string>(Object.values(images.destinations));
+// A resolved image is acceptable when it's either a genuine curated Destination photo,
+// or (jibhi-tirthan-valley only) the site's established "no verified photo of this
+// specific place" fallback — images.destinationsHero — which is NOT the Ladakh
+// placeholder and is already used this same way by several live Destination records.
+const CURATED_DESTINATION_IMAGES = new Set<string>([...Object.values(images.destinations), images.destinationsHero]);
 
 function getTarget(slug: string): DraftTravelPackageInput {
   const journey = draftJourneys.find((j) => j.slug === slug);
@@ -76,6 +86,14 @@ describe('Phase 4C-R — all 10 target Journeys carry a real, resolved curated i
     for (const slug of TARGET_SLUGS) {
       expect(getTarget(slug).image, slug).not.toBe(LADAKH_GENERIC_PLACEHOLDER);
     }
+  });
+
+  it('jibhi-tirthan-valley specifically never uses the Kasol photo — the real Jibhi/Tirthan Valley Destination pages never render it either', async () => {
+    const { DESTINATIONS_WITHOUT_VERIFIED_IMAGE } = await import('@/config/destinationImageOverrides');
+    expect(DESTINATIONS_WITHOUT_VERIFIED_IMAGE.has('jibhi')).toBe(true);
+    expect(DESTINATIONS_WITHOUT_VERIFIED_IMAGE.has('tirthan-valley')).toBe(true);
+    expect(getTarget('jibhi-tirthan-valley').image).not.toBe(images.destinations.kasol);
+    expect(getTarget('jibhi-tirthan-valley').image).toBe(images.destinationsHero);
   });
 });
 
@@ -108,8 +126,13 @@ describe('Phase 4C-R — everything else about the 10 target Journeys remains ex
   });
 });
 
-describe('Phase 4C-R — the 6 live packages and Ladakh foundation images were not touched by this file', () => {
-  it('the live packages config file is untouched (no image-related edit leaked there)', async () => {
+describe('Phase 4C-R — the unaffected live packages and Ladakh foundation images were not touched by THIS file', () => {
+  // Two of the six live packages' images were never the subject of this Phase 4C-R
+  // file's own image-resolution work, so they're checked here as a simple regression
+  // guard. The other three (kashmirSignatureJourney, himachalHimalayanExplorer,
+  // uttarakhandExplorer) legitimately changed as a separate, authorized Phase 4D P1
+  // fix — see config/images.phase4dAudit.test.ts for that coverage.
+  it('two representative already-correct live packages are unaffected', async () => {
     const { packages } = await import('./packages.config');
     expect(packages.find((p) => p.slug === 'manali-premium-escape')?.image).toBe(images.destinations.manali);
     expect(packages.find((p) => p.slug === 'spiti-valley-adventure')?.image).toBe(images.destinations.spitiValley);

@@ -82,16 +82,24 @@ export const images = {
   },
   packages: {
     manaliPremiumEscape: '/images/destination-manali.jpg',
-    kashmirSignatureJourney: '/images/hero-hero.jpg',
+    // P1 fix (Phase 4D site-wide image audit): was '/images/hero-hero.jpg' — a generic,
+    // non-Kashmir-specific image on a live, published Journey page. This package's real
+    // itinerary starts and centers on Srinagar (Dal Lake houseboat, shikara ride, Mughal
+    // Gardens) — the existing, real, verified destination-srinagar.jpg is now used.
+    kashmirSignatureJourney: '/images/destination-srinagar.jpg',
     spitiValleyAdventure: '/images/destination-spiti.jpg',
-    himachalHimalayanExplorer: '/images/feature-tour-hero.jpg',
+    // P1 fix (Phase 4D): was '/images/feature-tour-hero.jpg' — generic. This package's
+    // real itinerary covers Shimla (Days 1-3) then Manali (Days 3-8), with Manali the
+    // larger, dominant portion — the existing, real destination-manali.jpg is now used.
+    himachalHimalayanExplorer: '/images/destination-manali.jpg',
     dharamshalaDalhousieEscape: '/images/destination-dharamshala.jpg',
-    // This package's actual content (itinerary, destinationSlugs) is Rishikesh/Haridwar/
-    // Mussoorie in Uttarakhand — the old key name and its Himachal-branded CTA-banner
-    // image ('/images/cta-real-himachal.jpg') were leftover from an earlier, unrelated
-    // "Sikkim" draft. Same honest generic fallback used for Uttarakhand elsewhere
-    // (config/images.config.ts's experiences.himalayanVista).
-    uttarakhandExplorer: '/images/img-hero-hero.jpg'
+    // P1 fix (Phase 4D): was '/images/img-hero-hero.jpg'. This package's actual content
+    // (itinerary, destinationSlugs) is Rishikesh/Haridwar/Mussoorie in Uttarakhand — the
+    // old key name and its Himachal-branded CTA-banner image were leftover from an
+    // earlier, unrelated "Sikkim" draft. A real, verified destination-rishikesh.jpg now
+    // exists (it didn't when this was last left generic) and is used here — Rishikesh is
+    // this journey's own SEO title/H1 destination (see JOURNEY_SEO_OVERRIDES).
+    uttarakhandExplorer: '/images/destination-rishikesh.jpg'
   },
   // Destination-specific J&K/Uttarakhand photography now exists (see `destinations`
   // above: gulmarg, munsiyari, rishikesh, haridwar). The generic entries below
