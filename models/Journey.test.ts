@@ -118,3 +118,52 @@ describe('Journey model — slug uniqueness (duplicate-slug protection)', () => 
     expect(Journey.schema.path('slug').options.unique).toBe(true);
   });
 });
+
+describe('Journey model — Phase 2C commercial fields, existing-6 backward compatibility', () => {
+  it('a published Journey shaped exactly like the 6 live packages — with NONE of the new commercial fields set — still validates', async () => {
+    // Mirrors the real shape of manali-premium-escape etc.: no pickupInfo, dropInfo,
+    // mealPlan, transportType, minTravellers or roomsIncluded at all. The pre-validate
+    // hook must never have been extended to require these, or every live package would
+    // start failing validation on its next save() without any content change.
+    const doc = new Journey(
+      baseJourneyData({ status: 'published', price: 12999, inclusions: ['Breakfast'], exclusions: ['Flights'], image: '/images/manali.jpg' })
+    );
+    expect(await getValidationError(doc)).toBeUndefined();
+    expect(doc.pickupInfo).toBeUndefined();
+    expect(doc.mealPlan).toBeUndefined();
+    expect(doc.minTravellers).toBeUndefined();
+  });
+
+  it('the new commercial fields are accepted and stored when provided, on a draft', () => {
+    const doc = new Journey(
+      baseJourneyData({
+        status: 'draft',
+        pickupInfo: 'Chandigarh Airport or Railway Station',
+        dropInfo: 'Chandigarh Airport or Railway Station',
+        mealPlan: 'Daily breakfast only (CP)',
+        transportType: 'Private SUV throughout',
+        minTravellers: 2,
+        roomsIncluded: 1
+      })
+    );
+    expect(doc.pickupInfo).toBe('Chandigarh Airport or Railway Station');
+    expect(doc.mealPlan).toBe('Daily breakfast only (CP)');
+    expect(doc.minTravellers).toBe(2);
+  });
+
+  it('a draft remains a draft even once every new commercial field is populated — these fields never affect status', async () => {
+    const doc = new Journey(
+      baseJourneyData({
+        status: 'draft',
+        pickupInfo: 'Chandigarh Airport',
+        dropInfo: 'Chandigarh Airport',
+        mealPlan: 'Daily breakfast (CP)',
+        transportType: 'Private SUV',
+        minTravellers: 2,
+        roomsIncluded: 1
+      })
+    );
+    expect(await getValidationError(doc)).toBeUndefined();
+    expect(doc.status).toBe('draft');
+  });
+});

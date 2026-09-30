@@ -1,22 +1,54 @@
 import type { DraftTravelPackageInput } from '@/types/package';
 
 /**
- * PHASE 2 DRAFT CATALOGUE — NOT the live public catalogue (see config/packages.config.ts
- * for that). Every entry here is `status: 'draft'`, deliberately: no price, no
- * inclusions/exclusions, no hotel/transport-supplier claims — see models/Journey.ts's
- * pre-validate hook, which makes it impossible to mark any of these 'published' in this
- * state. `destinationSlugs` are drawn ONLY from real, already-curated destinations in
- * config/destinations.config.ts (verified against config/stayLocations.config.ts's
- * STAY_LOCATION_RULES, which authoritatively lists all 70). Route/itinerary text uses
- * conservative, conditional language for any weather/road/altitude/permit-dependent
- * leg — never a guaranteed claim. Seeded into MongoDB (as drafts only) by
- * scripts/seedDraftJourneys.ts.
+ * DRAFT CATALOGUE (Phase 2 + Phase 3) — NOT the live public catalogue (see
+ * config/packages.config.ts for that). Every entry here is `status: 'draft'`.
+ * `destinationSlugs` are drawn ONLY from real, already-curated destinations in
+ * config/destinations.config.ts. Route/itinerary text uses conservative, conditional
+ * language for any weather/road/altitude/permit-dependent leg — never a guaranteed
+ * claim. Seeded into MongoDB (as drafts only) by scripts/seedDraftJourneys.ts — NOT yet
+ * executed for the Phase 3 additions; see docs/phase-3-high-intent-catalogue.md.
  *
- * One proposed package — a second "Spiti Valley Adventure" — was evaluated against the
- * existing spiti-valley-adventure ("Spiti Circuit Expedition") and found substantially
- * duplicative (same core Shimla→Kalpa→Tabo→Kaza→Manali loop, same Offbeat/adventure
- * framing, near-identical duration) — it is deliberately NOT included here. See the
- * Phase 2 owner report for the full comparison.
+ * PRICING (Phase 3, Part 6): 10 of the original 11 Phase 2 drafts carry an
+ * owner-approved INDICATIVE starting `price` — see each entry's own comment and
+ * docs/phase-3-high-intent-catalogue.md for the full list. This price is stored on the
+ * still-draft record only; setting it does NOT publish anything (see models/Journey.ts's
+ * pre-validate hook — `status` alone gates publication). Every Phase 3 addition, and the
+ * one still-on-hold Phase 2 draft (`dharamshala-mcleodganj-dalhousie-khajjiar-circuit`),
+ * carries NO price — never inferred from a sibling package.
+ *
+ * DUPLICATES DELIBERATELY NOT CREATED — see docs/phase-3-high-intent-catalogue.md for
+ * the full duplicate-first analysis (Part 1 of the Phase 3 brief) behind every skip:
+ *  - A second "Spiti Valley Adventure" (Phase 2) — substantially duplicative of the live
+ *    spiti-valley-adventure package.
+ *  - Shimla Manali Honeymoon, Manali Couple/Honeymoon, Manali Family Tour (Phase 3) —
+ *    each insufficiently differentiated from an existing live/draft package at the same
+ *    duration.
+ *  - Jibhi Jalori Pass Serolsar Lake (Phase 3) — near-duplicate of the existing Jibhi
+ *    Tirthan Valley draft at the same duration; recommend enriching that draft instead.
+ *  - Kashmir Honeymoon, a shorter Srinagar-Gulmarg-Pahalgam variant, a shorter
+ *    Pahalgam-Gulmarg-Sonamarg variant (Phase 3) — each too close to an existing
+ *    live/draft Kashmir package.
+ *  - Kashmir + Gurez/Doodhpathri/Yusmarg (Phase 3) — none of these three destinations
+ *    has a curated Destination in config/destinations.config.ts; never invented.
+ *  - A plain Haridwar-Rishikesh-Mussoorie variant, a Nainital-Corbett-only variant, a
+ *    Rishikesh+Haridwar-only variant (Phase 3) — each a near-subset duplicate of the
+ *    live uttarakhand-explorer package or an existing draft.
+ *  - Himachal + Amritsar Grand Circuit (Phase 3) — Amritsar has no curated Destination
+ *    in this app and is outside the business's three stated primary regions; out of
+ *    scope for this phase, not invented.
+ *  - A handful of closely-adjacent Himachal concepts (Sangla-Chitkul-Kalpa Escape, Bir
+ *    Billing Adventure Weekend, a 6-stop Chamba-Dalhousie-Khajjiar-Dharamshala-Palampur-
+ *    Bir circuit, a standalone Kedarnath+Chopta/Tungnath combo, a standalone
+ *    Chopta-Tungnath-Chandrashila trek) — deferred (not rejected as duplicates, just not
+ *    authored this phase) to keep this expansion's size deliberate rather than
+ *    maximal — see the Phase 3 report's own reasoning.
+ *
+ * LADAKH: no packages exist here — Ladakh has no curated Region or Destination in this
+ * application yet (verified against the live database and config/destinations.config.ts,
+ * config/regions.config.ts). Per Phase 3 Part 5, that curation must happen first, safely,
+ * as its own piece of work — see docs/phase-3-high-intent-catalogue.md's Ladakh section
+ * for the specific destinations and fields identified as needed.
  */
 export const draftJourneys: DraftTravelPackageInput[] = [
   {
@@ -27,6 +59,12 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     destinationSlugs: ['shimla', 'manali'],
     duration: '5 Nights / 6 Days',
     category: 'Family',
+    // Owner-approved INDICATIVE starting price (Phase 3, Part 6) — stored on this
+    // still-draft record only; status remains 'draft' and this is NOT published by this
+    // change. See docs/phase-3-high-intent-catalogue.md's price-disclaimer section —
+    // any eventual public display of this figure must carry that disclaimer.
+    price: 13999,
+    priceBasis: 'per person (starting price, indicative)',
     shortDescription: 'A classic first Himachal circuit pairing Shimla\'s colonial hill-station charm with Manali\'s valley and adventure-sports base — built for families, couples and groups alike, not framed around any one of those.',
     highlights: [
       'Shimla\'s Mall Road and The Ridge',
@@ -65,6 +103,8 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     destinationSlugs: ['shimla', 'kinnaur', 'sangla-valley', 'chitkul', 'tabo', 'spiti-valley', 'manali'],
     duration: '8 Nights / 9 Days',
     category: 'Offbeat',
+    price: 21999,
+    priceBasis: 'per person (starting price, indicative)',
     shortDescription: 'A full high-altitude circuit through the Baspa valley\'s Sangla and Chitkul before crossing into Spiti\'s monasteries and cold desert — longer and more thorough than a direct Spiti-only run, genuinely covering the Kinnaur valley loop the shorter route does not.',
     highlights: [
       'Sangla and Chitkul in the Baspa valley',
@@ -107,6 +147,8 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     destinationSlugs: ['kasol'],
     duration: '4 Nights / 5 Days',
     category: 'Adventure',
+    price: 9999,
+    priceBasis: 'per person (starting price, indicative)',
     shortDescription: 'A budget-friendly Parvati Valley base in Kasol with a trek up to Kheerganga\'s hot springs and a stop in Tosh — built for friends and young travellers on a trekking-focused trip.',
     highlights: [
       'Kasol\'s riverside cafe culture',
@@ -144,6 +186,8 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     destinationSlugs: ['jibhi', 'tirthan-valley'],
     duration: '3 Nights / 4 Days',
     category: 'Offbeat',
+    price: 11999,
+    priceBasis: 'per person (starting price, indicative)',
     shortDescription: 'A quiet, short offbeat escape pairing Jibhi\'s wooden-guesthouse village lanes with the Tirthan Valley\'s riverside base at Gushaini — built as a weekend-length trip for couples, not a long circuit.',
     highlights: [
       'Jibhi village walks and waterfall',
@@ -213,6 +257,8 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     destinationSlugs: ['srinagar', 'gulmarg', 'pahalgam'],
     duration: '5 Nights / 6 Days',
     category: 'Family',
+    price: 14999,
+    priceBasis: 'per person (starting price, indicative)',
     shortDescription: 'A paced, three-stop Kashmir introduction for families — Srinagar, Gulmarg and Pahalgam only, with rest built into the schedule rather than a packed multi-valley circuit.',
     highlights: [
       'Dal Lake houseboat stay and shikara ride',
@@ -248,6 +294,8 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     destinationSlugs: ['srinagar', 'pahalgam', 'gulmarg', 'sonamarg'],
     duration: '6 Nights / 7 Days',
     category: 'Sightseeing',
+    price: 18999,
+    priceBasis: 'per person (starting price, indicative)',
     shortDescription: 'A broader, four-valley Kashmir sightseeing circuit adding Sonamarg to Srinagar, Pahalgam and Gulmarg — more ground covered than the paced three-stop family version, for travellers who want to see more of the region in one trip.',
     highlights: [
       'Sonamarg\'s glacier-fed valley',
@@ -284,6 +332,8 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     destinationSlugs: ['yamunotri', 'gangotri', 'kedarnath', 'badrinath'],
     duration: '9 Nights / 10 Days',
     category: 'Spiritual',
+    price: 19999,
+    priceBasis: 'per person (starting price, indicative)',
     shortDescription: 'The traditional four-shrine Uttarakhand pilgrimage circuit — Yamunotri, Gangotri, Kedarnath and Badrinath — sequenced in the customary order, with genuine access differences between the road-accessible and trek/helicopter-gated shrines called out honestly.',
     highlights: [
       'Yamunotri shrine and hot springs',
@@ -327,6 +377,8 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     destinationSlugs: ['kedarnath', 'badrinath'],
     duration: '6 Nights / 7 Days',
     category: 'Spiritual',
+    price: 14999,
+    priceBasis: 'per person (starting price, indicative)',
     shortDescription: 'A shorter pilgrimage covering only Kedarnath and Badrinath, for travellers who want these two shrines without the full four-shrine Char Dham circuit.',
     highlights: ['Kedarnath temple (trek or helicopter access)', 'Badrinath temple, road-accessible', 'Mandakini and Alaknanda valley scenery'],
     itinerary: [
@@ -361,6 +413,8 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     destinationSlugs: ['nainital', 'ramnagar-corbett', 'mussoorie'],
     duration: '5 Nights / 6 Days',
     category: 'Family',
+    price: 15999,
+    priceBasis: 'per person (starting price, indicative)',
     shortDescription: 'A family-friendly Kumaon-and-Garhwal circuit pairing Nainital\'s lake town, a Corbett wildlife stop, and Mussoorie\'s hill-station views.',
     highlights: ['Naini Lake boating', 'Jim Corbett wildlife safari (subject to permit/availability)', 'Mussoorie\'s Mall Road and viewpoints'],
     itinerary: [
@@ -391,6 +445,8 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     destinationSlugs: ['joshimath', 'auli', 'chopta'],
     duration: '5 Nights / 6 Days',
     category: 'Adventure',
+    price: 16999,
+    priceBasis: 'per person (starting price, indicative)',
     shortDescription: 'A nature-and-adventure pairing of Auli\'s high meadows above Joshimath with Chopta\'s meadow base for the Tungnath trek — for couples and travellers wanting mountain scenery over a pilgrimage-paced itinerary.',
     highlights: ['Auli\'s ropeway and high-altitude meadows', 'Chopta\'s "mini Switzerland" meadow', 'Tungnath trek, one of the highest Shiva temples'],
     itinerary: [
@@ -410,6 +466,548 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     idealTraveller: 'Couples and nature/adventure travellers wanting meadow and trek scenery rather than a pilgrimage-focused itinerary.',
     bestTimeToVisit: 'Auli suits both a winter snow visit and a summer/autumn green-meadow visit depending on what a traveller wants to see; the Tungnath trail is best avoided in heavy monsoon rain and can be snow-affected in winter — confirm current trail conditions before departure.',
     importantNotes: ['The Tungnath trek\'s difficulty and duration can vary with weather and trail condition on the day — it should not be assumed uniformly easy for every traveller.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+
+  // ============================================================
+  // PHASE 3 — high-intent catalogue expansion (2026-09). Every entry below is a NEW
+  // draft; no price is set on any of them (Part 6 of the Phase 3 brief: owner-approved
+  // prices exist only for the 10 Phase 2 drafts above, never inferred onto a new
+  // package). See docs/phase-3-high-intent-catalogue.md for the full duplicate-first
+  // analysis behind which of the brief's ~60 proposed concepts became these 18 and
+  // which were rejected/deferred as duplicates or insufficiently differentiated.
+  // ============================================================
+
+  // --- Himachal Pradesh (9 new) ---
+  {
+    slug: 'shimla-short-escape',
+    status: 'draft',
+    name: 'Shimla Short Escape',
+    destination: 'Shimla, Himachal Pradesh',
+    destinationSlugs: ['shimla'],
+    duration: '2 Nights / 3 Days',
+    category: 'Sightseeing',
+    shortDescription: 'A short, single-destination Shimla weekend — for travellers with limited time who want the hill-station experience without a longer multi-stop circuit.',
+    highlights: ['Mall Road and The Ridge', 'Jakhoo Temple viewpoint', 'A relaxed, single-base weekend pace'],
+    itinerary: [
+      { day: 1, title: 'Arrival in Shimla', description: 'Arrive and settle in; evening on Mall Road and The Ridge.' },
+      { day: 2, title: 'Shimla Sightseeing', description: 'Jakhoo Temple viewpoint and central Shimla at a relaxed pace; a Kufri excursion can be added where time/road conditions allow.' },
+      { day: 3, title: 'Departure', description: 'Check out and depart.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Chandigarh',
+    endingCity: 'Chandigarh',
+    idealTraveller: 'Weekend travellers wanting a short, single-destination hill-station break rather than a longer circuit.',
+    bestTimeToVisit: 'Broadly year-round; expect snow access at higher points in winter and monsoon rain in July–August — check conditions before travel.',
+    importantNotes: ['This is a short, single-destination itinerary by design — travellers wanting Manali too should consider the Shimla Manali Tour Package instead.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+  {
+    slug: 'manali-short-escape',
+    status: 'draft',
+    name: 'Manali Short Escape',
+    destination: 'Manali, Himachal Pradesh',
+    destinationSlugs: ['manali'],
+    duration: '3 Nights / 4 Days',
+    category: 'Sightseeing',
+    shortDescription: 'A short, single-destination Manali weekend-length trip — a shorter alternative to the existing 5-day Manali Premium Escape for travellers with less time.',
+    highlights: ['Old Manali cafes', 'Hadimba Temple', 'Solang Valley (seasonal activities)'],
+    itinerary: [
+      { day: 1, title: 'Arrival in Manali', description: 'Arrive and settle in; evening at leisure.' },
+      { day: 2, title: 'Manali Sightseeing', description: 'Hadimba Temple, Old Manali lanes and cafes.' },
+      { day: 3, title: 'Solang Valley Excursion', description: 'Day trip to Solang Valley; activities available there are seasonal.' },
+      { day: 4, title: 'Departure', description: 'Check out and depart.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Chandigarh',
+    endingCity: 'Chandigarh',
+    idealTraveller: 'Weekend travellers wanting a short, single-destination Manali trip.',
+    bestTimeToVisit: 'Broadly year-round; higher-altitude excursions are snow/road-condition dependent in winter.',
+    importantNotes: ['This is a shorter alternative to the existing Manali Premium Escape, not a replacement for it — both remain available for different trip lengths.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+  {
+    slug: 'kinnaur-valley-tour',
+    status: 'draft',
+    name: 'Kinnaur Valley Tour',
+    destination: 'Kinnaur, Himachal Pradesh',
+    destinationSlugs: ['shimla', 'narkanda', 'sarahan', 'sangla-valley', 'chitkul', 'kinnaur'],
+    duration: '6 Nights / 7 Days',
+    category: 'Offbeat',
+    shortDescription: 'A Kinnaur-only circuit via Narkanda and Sarahan into the Baspa valley — a lower-altitude, permit-free alternative to the existing Kinnaur Spiti Circuit for travellers who don\'t want to continue into Spiti.',
+    highlights: ['Sarahan\'s Bhimakali Temple', 'Sangla and Chitkul in the Baspa valley', 'Kalpa\'s Kinner Kailash views'],
+    itinerary: [
+      { day: 1, title: 'Shimla to Narkanda', description: 'Drive to Narkanda, a highway hill town.' },
+      { day: 2, title: 'Narkanda to Sarahan', description: 'Continue to Sarahan to see the Bhimakali Temple.' },
+      { day: 3, title: 'Sarahan to Sangla', description: 'Drive into the Baspa valley to Sangla.' },
+      { day: 4, title: 'Chitkul Day Trip', description: 'Day trip to Chitkul and back to the Sangla/Kalpa area.' },
+      { day: 5, title: 'Kalpa', description: 'Kalpa sightseeing, with views toward the Kinner Kailash range where weather allows.' },
+      { day: 6, title: 'Return Toward Shimla', description: 'Begin the return journey.' },
+      { day: 7, title: 'Departure', description: 'Onward departure.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Shimla',
+    endingCity: 'Shimla',
+    idealTraveller: 'Offbeat travellers wanting the Kinnaur/Baspa valley experience without continuing into Spiti\'s higher-altitude, permit-requiring territory.',
+    bestTimeToVisit: 'Broadly March–June and September–November; winter brings snow at higher points and some road sections may be affected.',
+    importantNotes: ['This package deliberately does not continue into Spiti Valley — travellers wanting that should consider the existing Kinnaur Spiti Circuit instead.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+  {
+    slug: 'spiti-winter-expedition',
+    status: 'draft',
+    name: 'Spiti Winter Expedition',
+    destination: 'Spiti Valley, Himachal Pradesh',
+    destinationSlugs: ['shimla', 'kinnaur', 'tabo', 'spiti-valley'],
+    duration: '6 Nights / 7 Days',
+    category: 'Offbeat',
+    shortDescription: 'A winter-specific Spiti itinerary, genuinely different from the existing summer/monsoon-season Spiti packages: the Manali-side route (Kunzum Pass) is closed in winter, so this enters and exits via Shimla and Kinnaur only, and is built around the valley\'s snow-season character rather than the same warm-season loop.',
+    highlights: ['Frozen winter landscapes in the Spiti cold desert', 'Key Monastery and Kaza in winter', 'A genuinely different season/route from the valley\'s summer circuits'],
+    itinerary: [
+      { day: 1, title: 'Shimla to Kalpa', description: 'Drive along the Sutlej river to Kalpa.' },
+      { day: 2, title: 'Kalpa to Tabo', description: 'Cross into the cold desert via Nako to Tabo, continuing to its centuries-old monastery.' },
+      { day: 3, title: 'Tabo to Kaza', description: 'Drive on to Kaza.' },
+      { day: 4, title: 'Kaza Local Time', description: 'Key Monastery and nearby villages, at a winter pace — some higher-altitude side trips may not be accessible.' },
+      { day: 5, title: 'Kaza Area', description: 'A further day around Kaza\'s accessible villages, weather permitting.' },
+      { day: 6, title: 'Return Toward Kalpa', description: 'Begin the return journey — the Manali-side exit is not used in winter.' },
+      { day: 7, title: 'Departure', description: 'Onward departure via Shimla.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Shimla',
+    endingCity: 'Shimla',
+    idealTraveller: 'Offbeat/adventure travellers specifically wanting the winter Spiti experience, comfortable with cold-weather travel and a genuinely more limited/weather-dependent itinerary than the summer circuits.',
+    bestTimeToVisit: 'December–February specifically — this is a winter-season product; outside this window, see the existing summer-season Spiti packages instead. Road conditions, accommodation availability and reachable villages all vary significantly day to day in winter and must be confirmed close to departure.',
+    importantNotes: [
+      'The Manali-side exit (Kunzum Pass) is not used on this itinerary — it is closed in winter. Entry and exit are both via Shimla/Kinnaur.',
+      'Some accommodation in Spiti closes for winter — availability must be confirmed for the specific travel dates before this can be priced or booked.',
+      'This is a genuinely more physically demanding, cold-weather itinerary than the valley\'s summer packages — not positioned as an easier or shorter alternative.'
+    ],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+  {
+    slug: 'kasol-manikaran-weekend',
+    status: 'draft',
+    name: 'Kasol Manikaran Weekend',
+    destination: 'Kasol & Manikaran, Himachal Pradesh',
+    destinationSlugs: ['kasol', 'manikaran'],
+    duration: '2 Nights / 3 Days',
+    category: 'Offbeat',
+    shortDescription: 'A short, non-trekking Parvati Valley weekend pairing Kasol\'s cafe culture with Manikaran\'s hot springs — distinct from the existing Kasol Kheerganga Tosh package, which is trek-focused and longer.',
+    highlights: ['Kasol\'s riverside cafes', 'Manikaran hot springs and gurdwara', 'A relaxed, non-trekking weekend pace'],
+    itinerary: [
+      { day: 1, title: 'Arrival in Kasol', description: 'Arrive in Kasol; evening at leisure by the river.' },
+      { day: 2, title: 'Manikaran Day Trip', description: 'Visit Manikaran\'s hot springs and gurdwara, returning to Kasol.' },
+      { day: 3, title: 'Departure', description: 'Onward departure from Kasol.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Bhuntar',
+    endingCity: 'Bhuntar',
+    idealTraveller: 'Weekend travellers wanting the Parvati Valley experience without a trek — distinct from the existing Kasol Kheerganga Tosh package.',
+    bestTimeToVisit: 'Broadly March–June and September–November; monsoon and heavy winter snow can affect road conditions.',
+    importantNotes: ['This package includes no trek — travellers wanting the Kheerganga hot-springs trek should consider the existing Kasol Kheerganga Tosh package instead.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+  {
+    slug: 'dharamshala-mcleodganj-short-escape',
+    status: 'draft',
+    name: 'Dharamshala McLeodganj Short Escape',
+    destination: 'Dharamshala & McLeod Ganj, Himachal Pradesh',
+    destinationSlugs: ['dharamshala', 'mcleod-ganj'],
+    duration: '3 Nights / 4 Days',
+    category: 'Sightseeing',
+    shortDescription: 'A short, focused Dharamshala/McLeod Ganj trip with no Dalhousie or Khajjiar leg — genuinely distinct from the existing Himachal Family Escape (which includes those) and shorter than the on-hold 7-day extended circuit.',
+    highlights: ['Dalai Lama Temple', 'McLeod Ganj\'s Tibetan quarter', 'Bhagsu Waterfall'],
+    itinerary: [
+      { day: 1, title: 'Arrival in Dharamshala', description: 'Arrive and settle in; evening at leisure.' },
+      { day: 2, title: 'McLeod Ganj', description: 'A full day in McLeod Ganj — the Dalai Lama Temple, the Tibetan quarter and Bhagsu Waterfall.' },
+      { day: 3, title: 'Dharamshala Local Time', description: 'A relaxed day around Dharamshala itself.' },
+      { day: 4, title: 'Departure', description: 'Check out and depart.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Pathankot',
+    endingCity: 'Dharamshala',
+    idealTraveller: 'Short-trip travellers wanting Dharamshala/McLeod Ganj specifically, without Dalhousie or Khajjiar.',
+    bestTimeToVisit: 'Broadly March–June and September–November; winter can bring snow and monsoon brings heavier rain.',
+    importantNotes: ['This package deliberately excludes Dalhousie and Khajjiar — travellers wanting those should consider the existing Himachal Family Escape package.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+  {
+    slug: 'dalhousie-khajjiar-chamba',
+    status: 'draft',
+    name: 'Dalhousie Khajjiar Chamba',
+    destination: 'Dalhousie, Khajjiar & Chamba, Himachal Pradesh',
+    destinationSlugs: ['dalhousie', 'khajjiar', 'chamba'],
+    duration: '4 Nights / 5 Days',
+    category: 'Family',
+    shortDescription: 'A Dalhousie-anchored circuit adding Chamba town — genuinely distinct from the existing Himachal Family Escape, which starts from Dharamshala and does not include Chamba at all.',
+    highlights: ['Dalhousie\'s colonial-era Mall Road', 'Khajjiar meadow and Chamera Lake', 'Chamba\'s historic town and temples'],
+    itinerary: [
+      { day: 1, title: 'Arrival in Dalhousie', description: 'Arrive and settle in; evening walk on Mall Road.' },
+      { day: 2, title: 'Dalhousie Sightseeing', description: 'A full day around Dalhousie\'s colonial-era streets and viewpoints.' },
+      { day: 3, title: 'Khajjiar Day Trip', description: 'Visit Khajjiar\'s meadow and Chamera Lake.' },
+      { day: 4, title: 'Dalhousie to Chamba', description: 'Travel to Chamba to see its historic town and temples.' },
+      { day: 5, title: 'Departure', description: 'Check out and depart.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Pathankot',
+    endingCity: 'Chamba',
+    idealTraveller: 'Families and couples wanting a Dalhousie-Chamba circuit distinct from the existing Dharamshala-anchored package.',
+    bestTimeToVisit: 'Broadly March–June and September–November; winter can bring snow and monsoon brings heavier rain to these hill roads.',
+    importantNotes: ['This package does not include Dharamshala or McLeod Ganj — travellers wanting those should consider the existing Himachal Family Escape or the Dharamshala McLeodganj Short Escape.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+  {
+    slug: 'bir-billing-palampur',
+    status: 'draft',
+    name: 'Bir Billing Palampur',
+    destination: 'Bir Billing & Palampur, Himachal Pradesh',
+    destinationSlugs: ['bir-billing', 'palampur'],
+    duration: '3 Nights / 4 Days',
+    category: 'Adventure',
+    shortDescription: 'A zero-existing-coverage pairing of Bir Billing (India\'s best-known paragliding hub) with Palampur\'s tea gardens — no other package on this site covers either destination.',
+    highlights: ['Paragliding at Bir Billing (subject to weather and licensed operator availability)', 'Palampur\'s tea gardens', 'A relaxed, low-crowd pace'],
+    itinerary: [
+      { day: 1, title: 'Arrival in Bir', description: 'Arrive and settle in; evening at leisure in Bir\'s Chowgan village.' },
+      { day: 2, title: 'Bir Billing Paragliding', description: 'Paragliding at Billing, weather and licensed-operator availability permitting; not guaranteed on every date.' },
+      { day: 3, title: 'Bir to Palampur', description: 'Travel to Palampur to walk through its tea gardens.' },
+      { day: 4, title: 'Departure', description: 'Check out and depart.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Dharamshala',
+    endingCity: 'Palampur',
+    idealTraveller: 'Adventure travellers and paragliding enthusiasts, plus anyone wanting a quieter, less-visited Himachal pairing.',
+    bestTimeToVisit: 'Paragliding at Bir Billing runs broadly October–June, weather dependent; specific date availability with a licensed operator must be confirmed separately, not assumed.',
+    importantNotes: ['Paragliding is a real, weather- and operator-dependent activity — never guaranteed on a specific date, and its cost/inclusion is not yet approved for this draft.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+  {
+    slug: 'grand-himachal-circuit',
+    status: 'draft',
+    name: 'Grand Himachal Circuit',
+    destination: 'Shimla, Manali, Dharamshala, Dalhousie & Khajjiar, Himachal Pradesh',
+    destinationSlugs: ['shimla', 'manali', 'dharamshala', 'dalhousie', 'khajjiar'],
+    duration: '9 Nights / 10 Days',
+    category: 'Sightseeing',
+    shortDescription: 'A comprehensive, zero-existing-coverage "see all of Himachal" circuit combining the existing Shimla-Manali route with the Dharamshala-Dalhousie-Khajjiar route into one longer, single booking — genuinely distinct from either shorter package by scope, not just duration.',
+    highlights: ['Shimla\'s Mall Road and Manali\'s valley base', 'McLeod Ganj\'s Tibetan quarter', 'Dalhousie\'s colonial streets and Khajjiar\'s meadow'],
+    itinerary: [
+      { day: 1, title: 'Chandigarh to Shimla', description: 'Drive from Chandigarh to Shimla; evening at leisure.' },
+      { day: 2, title: 'Shimla Sightseeing', description: 'Local sightseeing around Shimla.' },
+      { day: 3, title: 'Shimla to Manali', description: 'Scenic drive via the Kullu valley.' },
+      { day: 4, title: 'Manali Sightseeing', description: 'Hadimba Temple, Old Manali and Mall Road.' },
+      { day: 5, title: 'Solang Valley Excursion', description: 'Day trip to Solang Valley, seasonal activities permitting.' },
+      { day: 6, title: 'Manali to Dharamshala', description: 'A longer drive back southwest toward Dharamshala.' },
+      { day: 7, title: 'McLeod Ganj', description: 'Dalai Lama Temple, the Tibetan quarter and Bhagsu Waterfall.' },
+      { day: 8, title: 'Dharamshala to Dalhousie', description: 'Travel to Dalhousie; evening on Mall Road.' },
+      { day: 9, title: 'Khajjiar Day Trip', description: 'Visit Khajjiar\'s meadow and Chamera Lake.' },
+      { day: 10, title: 'Departure', description: 'Check out and depart.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Chandigarh',
+    endingCity: 'Dalhousie',
+    idealTraveller: 'Travellers with a longer trip planned who want to see multiple distinct Himachal regions (Shimla-Manali corridor and the Dharamshala-Dalhousie corridor) in one booking, rather than choosing between the two shorter packages.',
+    bestTimeToVisit: 'Broadly March–June and September–November for the most reliable road conditions across this longer route; monsoon and heavy winter snow can affect specific legs.',
+    importantNotes: ['The Manali-to-Dharamshala leg (Day 6) is a genuinely long drive — this itinerary is built for travellers comfortable with a demanding travel day, not positioned as an easy/relaxed pace throughout.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+
+  // --- Jammu & Kashmir (2 new) ---
+  {
+    slug: 'kashmir-winter-snow-tour',
+    status: 'draft',
+    name: 'Kashmir Winter Snow Tour',
+    destination: 'Srinagar, Gulmarg & Pahalgam, Jammu & Kashmir',
+    destinationSlugs: ['srinagar', 'gulmarg', 'pahalgam'],
+    duration: '4 Nights / 5 Days',
+    category: 'Sightseeing',
+    shortDescription: 'A winter-specific Kashmir itinerary built around the region\'s snow season — genuinely different framing and pacing from the existing summer/general-season Kashmir packages, though snow itself is never guaranteed on any specific date.',
+    highlights: ['Gulmarg\'s winter Gondola and snow slopes', 'Srinagar\'s houseboats in winter', 'Pahalgam\'s snow-season valley views'],
+    itinerary: [
+      { day: 1, title: 'Arrival in Srinagar', description: 'Arrive in Srinagar; evening at leisure, houseboat stay where available.' },
+      { day: 2, title: 'Srinagar to Gulmarg', description: 'Travel to Gulmarg for its winter Gondola and snow scenery, conditions permitting.' },
+      { day: 3, title: 'Gulmarg Winter Activities', description: 'A further day in Gulmarg; skiing/snow activities are subject to season, snowfall and operator availability, not guaranteed.' },
+      { day: 4, title: 'Gulmarg to Pahalgam', description: 'Travel to Pahalgam for its winter valley views.' },
+      { day: 5, title: 'Departure via Srinagar', description: 'Return to Srinagar for departure.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Srinagar',
+    endingCity: 'Srinagar',
+    idealTraveller: 'Travellers specifically wanting the winter/snow Kashmir experience, understanding that actual snowfall and road access vary year to year.',
+    bestTimeToVisit: 'December–February specifically — this is a winter-season product. Snowfall amount and timing vary year to year and are never guaranteed; some access roads can be temporarily affected by heavy snow.',
+    importantNotes: ['Snow itself is a real, weather-dependent phenomenon — this itinerary is never sold on a guaranteed-snow basis, and skiing/snow-activity costs are not yet approved for this draft.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+  {
+    slug: 'gulmarg-winter-escape',
+    status: 'draft',
+    name: 'Gulmarg Winter Escape',
+    destination: 'Gulmarg, Jammu & Kashmir',
+    destinationSlugs: ['srinagar', 'gulmarg'],
+    duration: '3 Nights / 4 Days',
+    category: 'Adventure',
+    shortDescription: 'A short, Gulmarg-focused winter/skiing trip — distinct from the broader Kashmir Winter Snow Tour by being single-destination and shorter, for travellers who specifically want Gulmarg\'s slopes rather than a multi-town circuit.',
+    highlights: ['Gulmarg\'s Gondola', 'Skiing and snow activities (season/operator dependent)', 'A focused, single-base winter trip'],
+    itinerary: [
+      { day: 1, title: 'Arrival via Srinagar', description: 'Arrive in Srinagar and transfer to Gulmarg.' },
+      { day: 2, title: 'Gulmarg Gondola & Slopes', description: 'Gondola ride and snow-slope time, conditions permitting.' },
+      { day: 3, title: 'Gulmarg Winter Activities', description: 'A further day in Gulmarg; skiing/snow-activity availability is season and operator dependent.' },
+      { day: 4, title: 'Departure via Srinagar', description: 'Return to Srinagar for departure.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Srinagar',
+    endingCity: 'Srinagar',
+    idealTraveller: 'Skiing/snow-sports travellers wanting a focused Gulmarg trip rather than a multi-town Kashmir circuit.',
+    bestTimeToVisit: 'December–February specifically. Snowfall varies year to year and is never guaranteed.',
+    importantNotes: ['This package is deliberately single-destination — travellers wanting Srinagar/Pahalgam sightseeing too should consider the Kashmir Winter Snow Tour instead.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+
+  // --- Uttarakhand (7 new) ---
+  {
+    slug: 'kedarnath-yatra',
+    status: 'draft',
+    name: 'Kedarnath Yatra',
+    destination: 'Kedarnath, Uttarakhand',
+    destinationSlugs: ['kedarnath'],
+    duration: '4 Nights / 5 Days',
+    category: 'Spiritual',
+    shortDescription: 'A single-shrine Kedarnath yatra — genuinely distinct from the existing 2-shrine and 4-shrine packages, for pilgrims wanting Kedarnath specifically on a shorter schedule.',
+    highlights: ['Kedarnath temple', 'The Mandakini valley trek/helicopter route', 'A focused, single-shrine pilgrimage'],
+    itinerary: [
+      { day: 1, title: 'Arrival in Haridwar/Dehradun', description: 'Arrive and begin travel toward the Kedarnath access base.' },
+      { day: 2, title: 'To Guptkashi/Sonprayag', description: 'Travel toward Guptkashi or Sonprayag, the usual overnight bases for Kedarnath.' },
+      { day: 3, title: 'Kedarnath Darshan', description: 'Visit Kedarnath via the trek from Gaurikund/Sonprayag, or by helicopter where booked and weather permits; genuinely access-gated, not guaranteed on every date.' },
+      { day: 4, title: 'Return to Guptkashi/Sonprayag', description: 'Return from Kedarnath.' },
+      { day: 5, title: 'Departure', description: 'Return journey and departure.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Haridwar',
+    endingCity: 'Haridwar',
+    idealTraveller: 'Pilgrims wanting Kedarnath specifically, on the shortest reasonable schedule.',
+    bestTimeToVisit: 'Open only within the official yatra season (typically around late April/May to early November, weather-dependent) — confirm exact dates for the current year before booking.',
+    importantNotes: ['Kedarnath access is via a trek (or helicopter, subject to weather and availability) — not a guaranteed, road-accessible leg. This package overlaps with the existing Kedarnath Badrinath Yatra and Char Dham Yatra by covering only the Kedarnath leg on its own — choose this one if Badrinath is not needed.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+  {
+    slug: 'badrinath-yatra',
+    status: 'draft',
+    name: 'Badrinath Yatra',
+    destination: 'Badrinath, Uttarakhand',
+    destinationSlugs: ['badrinath'],
+    duration: '3 Nights / 4 Days',
+    category: 'Spiritual',
+    shortDescription: 'A single-shrine Badrinath yatra — road-accessible throughout, genuinely easier and shorter than the trek/helicopter-gated Kedarnath packages, for pilgrims who specifically want Badrinath without the Kedarnath trek.',
+    highlights: ['Badrinath temple', 'The Alaknanda valley drive', 'A fully road-accessible pilgrimage, no trek required'],
+    itinerary: [
+      { day: 1, title: 'Arrival in Haridwar/Dehradun', description: 'Arrive and begin travel toward Badrinath.' },
+      { day: 2, title: 'To Joshimath', description: 'Travel toward Joshimath, the usual overnight base en route to Badrinath.' },
+      { day: 3, title: 'Badrinath Darshan', description: 'Visit the Badrinath temple, directly road-accessible.' },
+      { day: 4, title: 'Departure', description: 'Return journey and departure.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Haridwar',
+    endingCity: 'Haridwar',
+    idealTraveller: 'Pilgrims wanting Badrinath specifically, including travellers preferring a fully road-accessible route without the Kedarnath trek.',
+    bestTimeToVisit: 'Open only within the official yatra season (typically around late April/May to early November, weather-dependent) — confirm exact dates for the current year before booking.',
+    importantNotes: ['This package deliberately does not include Kedarnath — travellers wanting both should consider the existing Kedarnath Badrinath Yatra or Char Dham Yatra.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+  {
+    slug: 'mussoorie-weekend',
+    status: 'draft',
+    name: 'Mussoorie Weekend',
+    destination: 'Mussoorie, Uttarakhand',
+    destinationSlugs: ['mussoorie'],
+    duration: '2 Nights / 3 Days',
+    category: 'Sightseeing',
+    shortDescription: 'A short, single-destination Mussoorie weekend — no existing package is Mussoorie-only; both current Uttarakhand drafts/packages bundle it with other towns.',
+    highlights: ['Mall Road and Camel\'s Back Road', 'Kempty Falls', 'A relaxed, single-base weekend pace'],
+    itinerary: [
+      { day: 1, title: 'Arrival in Mussoorie', description: 'Arrive and settle in; evening on Mall Road.' },
+      { day: 2, title: 'Mussoorie Sightseeing', description: 'Camel\'s Back Road and Kempty Falls.' },
+      { day: 3, title: 'Departure', description: 'Check out and depart.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Dehradun',
+    endingCity: 'Dehradun',
+    idealTraveller: 'Weekend travellers wanting a short, single-destination hill-station break.',
+    bestTimeToVisit: 'Broadly year-round; monsoon brings heavier rain and winter can bring snow at higher points.',
+    importantNotes: ['This is a short, single-destination itinerary by design — travellers wanting Rishikesh/Haridwar or Nainital/Corbett too should consider the existing Uttarakhand Explorer or Nainital Corbett Mussoorie packages.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+  {
+    slug: 'auli-tour',
+    status: 'draft',
+    name: 'Auli Tour',
+    destination: 'Auli, Uttarakhand',
+    destinationSlugs: ['joshimath', 'auli'],
+    duration: '3 Nights / 4 Days',
+    category: 'Adventure',
+    shortDescription: 'A short, Auli-focused trip without the Chopta/Tungnath trek leg — distinct from the existing Auli Chopta Tungnath Tour by being shorter and single-destination.',
+    highlights: ['Auli\'s ropeway', 'High-altitude meadow views', 'A focused, single-destination trip'],
+    itinerary: [
+      { day: 1, title: 'Arrival in Joshimath', description: 'Arrive in Joshimath, the usual base for Auli.' },
+      { day: 2, title: 'Auli Excursion', description: 'Ropeway ride and meadow views, snow-dependent in winter and green in summer.' },
+      { day: 3, title: 'Auli Local Time', description: 'A further, more relaxed day around Auli/Joshimath.' },
+      { day: 4, title: 'Departure', description: 'Return journey and departure.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Rishikesh',
+    endingCity: 'Rishikesh',
+    idealTraveller: 'Travellers wanting Auli specifically, without the Chopta/Tungnath trek leg.',
+    bestTimeToVisit: 'Suits both a winter snow visit and a summer/autumn green-meadow visit depending on what a traveller wants to see.',
+    importantNotes: ['This package deliberately excludes Chopta/Tungnath — travellers wanting that trek should consider the existing Auli Chopta Tungnath Tour instead.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+  {
+    slug: 'valley-of-flowers-hemkund-sahib-trek',
+    status: 'draft',
+    name: 'Valley of Flowers Hemkund Sahib Trek',
+    destination: 'Valley of Flowers & Hemkund Sahib, Uttarakhand',
+    destinationSlugs: ['hemkund-sahib'],
+    duration: '5 Nights / 6 Days',
+    category: 'Adventure',
+    shortDescription: 'A dedicated trek package to the Valley of Flowers and Hemkund Sahib, both reached from Govindghat/Ghangaria — zero existing coverage on this site. Valley of Flowers has no separate curated destination page of its own; this itinerary anchors to the Hemkund Sahib destination, whose own access base (Ghangaria) is the real, shared starting point for both treks.',
+    highlights: ['The Valley of Flowers National Park', 'Hemkund Sahib gurdwara at altitude', 'Ghangaria as the shared trek base'],
+    itinerary: [
+      { day: 1, title: 'Arrival in Joshimath', description: 'Arrive and settle in.' },
+      { day: 2, title: 'Joshimath to Govindghat to Ghangaria', description: 'Travel to Govindghat, then trek to Ghangaria, the base for both onward treks.' },
+      { day: 3, title: 'Valley of Flowers Trek', description: 'Day trek into the Valley of Flowers National Park; what\'s in bloom depends entirely on the visit dates and season.' },
+      { day: 4, title: 'Hemkund Sahib Trek', description: 'Day trek up to Hemkund Sahib; a genuinely demanding high-altitude trek, weather dependent.' },
+      { day: 5, title: 'Ghangaria to Joshimath', description: 'Trek back down to Govindghat and return to Joshimath.' },
+      { day: 6, title: 'Departure', description: 'Onward departure.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Rishikesh',
+    endingCity: 'Rishikesh',
+    idealTraveller: 'Trekkers specifically wanting the Valley of Flowers and Hemkund Sahib, comfortable with two genuinely demanding consecutive trek days.',
+    bestTimeToVisit: 'The Valley of Flowers is typically open only around July–September (flowering season and park opening dates vary year to year and must be confirmed, not assumed); Hemkund Sahib\'s own season is similar. Outside this window neither is accessible.',
+    importantNotes: [
+      'Both treks are genuinely demanding, high-altitude day treks — not positioned as an easy add-on.',
+      'What is actually in bloom in the Valley of Flowers varies by exact visit date and year — never promised as a specific guaranteed sight.',
+      'Park entry/permit requirements for the Valley of Flowers should be confirmed at time of booking, as rules can change.'
+    ],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+  {
+    slug: 'rishikesh-adventure-package',
+    status: 'draft',
+    name: 'Rishikesh Adventure Package',
+    destination: 'Rishikesh, Uttarakhand',
+    destinationSlugs: ['rishikesh'],
+    duration: '3 Nights / 4 Days',
+    category: 'Adventure',
+    shortDescription: 'A dedicated adventure-sports-focused Rishikesh package — genuinely distinct in category and framing from the existing spiritual-positioned Uttarakhand Explorer, which also includes Rishikesh but as one stop in a multi-city pilgrimage-style circuit.',
+    highlights: ['White-water rafting on the Ganges (seasonal)', 'Riverside camping', 'A single-destination, activity-focused trip'],
+    itinerary: [
+      { day: 1, title: 'Arrival in Rishikesh', description: 'Arrive and settle in; evening Ganga aarti.' },
+      { day: 2, title: 'White-Water Rafting', description: 'Rafting on the Ganges, seasonal and water-level dependent, subject to a licensed operator\'s availability and safety assessment on the day.' },
+      { day: 3, title: 'Riverside Camping & Activities', description: 'A day around riverside camping and other adventure activities, availability dependent.' },
+      { day: 4, title: 'Departure', description: 'Check out and depart.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Dehradun',
+    endingCity: 'Dehradun',
+    idealTraveller: 'Adventure-sports travellers wanting a Rishikesh-focused activity trip, distinct from the spiritual/multi-city framing of the existing Uttarakhand Explorer package.',
+    bestTimeToVisit: 'White-water rafting typically runs September–June, water-level and season dependent; not available/safe during peak monsoon high-water periods.',
+    importantNotes: ['Rafting and other adventure activities are real, weather/water-level/operator-dependent activities — never guaranteed on a specific date, and their cost/inclusion is not yet approved for this draft.'],
+    bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
+    faqs: []
+  },
+  {
+    slug: 'uttarakhand-honeymoon-circuit',
+    status: 'draft',
+    name: 'Uttarakhand Honeymoon Circuit',
+    destination: 'Mussoorie & Nainital, Uttarakhand',
+    destinationSlugs: ['mussoorie', 'nainital'],
+    duration: '4 Nights / 5 Days',
+    category: 'Honeymoon',
+    shortDescription: 'A couple-framed Mussoorie-Nainital circuit — genuinely distinct from the existing spiritual-positioned Uttarakhand Explorer and the family-positioned Nainital Corbett Mussoorie package; Uttarakhand currently has no honeymoon-specific product.',
+    highlights: ['Mussoorie\'s Mall Road and viewpoints', 'Naini Lake boating in Nainital', 'A relaxed, couple-paced two-destination circuit'],
+    itinerary: [
+      { day: 1, title: 'Arrival in Mussoorie', description: 'Arrive and settle in; evening on Mall Road.' },
+      { day: 2, title: 'Mussoorie Sightseeing', description: 'Camel\'s Back Road and viewpoints, at a relaxed couple pace.' },
+      { day: 3, title: 'Mussoorie to Nainital', description: 'Travel to Nainital.' },
+      { day: 4, title: 'Nainital Sightseeing', description: 'Boating on Naini Lake and local viewpoints.' },
+      { day: 5, title: 'Departure', description: 'Check out and depart.' }
+    ],
+    inclusions: [],
+    exclusions: [],
+    stayOptions: [],
+    addOns: [],
+    startingCity: 'Dehradun',
+    endingCity: 'Kathgodam',
+    idealTraveller: 'Couples and honeymooners wanting a relaxed two-destination Uttarakhand circuit, distinct from the existing family- and spiritual-positioned packages.',
+    bestTimeToVisit: 'Broadly March–June and September–November; monsoon brings heavier rain and winter can bring snow at higher points.',
+    importantNotes: ['This package deliberately excludes Corbett and Rishikesh/Haridwar — travellers wanting a wildlife stop or a pilgrimage-style circuit should consider the existing Nainital Corbett Mussoorie or Uttarakhand Explorer packages instead.'],
     bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
     faqs: []
   }

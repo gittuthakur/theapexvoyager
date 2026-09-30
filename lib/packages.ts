@@ -43,7 +43,13 @@ export function toTravelPackage(doc: JourneyDocument): TravelPackage {
     importantNotes: doc.importantNotes,
     bookingProcess: doc.bookingProcess,
     updatedAt: doc.updatedAt ? new Date(doc.updatedAt).toISOString() : undefined,
-    status: doc.status
+    status: doc.status,
+    pickupInfo: doc.pickupInfo,
+    dropInfo: doc.dropInfo,
+    mealPlan: doc.mealPlan,
+    transportType: doc.transportType,
+    minTravellers: doc.minTravellers,
+    roomsIncluded: doc.roomsIncluded
   };
 }
 

@@ -104,6 +104,15 @@ export interface TravelPackage {
    *  fetched into this shape at all. Optional here only so existing literals/fixtures
    *  that predate the draft/publish workflow don't need updating. */
   status?: 'draft' | 'published';
+  // --- Commercial-readiness fields (Phase 2C) — see models/Journey.ts for the full
+  // rationale. All optional; never enforced by the pre-validate hook, so the 6 live
+  // packages (which lack all of them today) remain valid without a backfill.
+  pickupInfo?: string;
+  dropInfo?: string;
+  mealPlan?: string;
+  transportType?: string;
+  minTravellers?: number;
+  roomsIncluded?: number;
 }
 
 /** Authoring shape for a NOT-YET-PUBLISHED Journey (config/draftJourneys.config.ts,

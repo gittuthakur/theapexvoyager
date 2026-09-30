@@ -118,6 +118,32 @@ export interface JourneyDocument extends Document {
   importantNotes?: string[];
   /** Plain-language description of how booking actually works end to end. */
   bookingProcess?: string;
+  // --- Commercial-readiness fields (Phase 2C) — all optional, all deliberately unset on
+  // every current Journey (the 6 live packages carry this info only as hand-authored
+  // prose in app/journeys/[slug]/page.tsx's JOURNEY_SEO_OVERRIDES; backfilling that onto
+  // these structured fields is a separate, not-yet-done exercise). See
+  // lib/journeyCommercialReadiness.ts, which reads these to report publish blockers —
+  // never enforced by the pre-validate hook below, specifically so the 6 live packages
+  // (which lack all of them) remain valid, backward-compatible published documents. */
+  /** Real, free-text pickup point(s)/instructions, e.g. "Chandigarh Airport, Chandigarh
+   *  Railway Station, or ISBT Sector 43" — the same content shape as the live packages'
+   *  hand-authored `pickupNote`, promoted to a real field. */
+  pickupInfo?: string;
+  /** Same shape as `pickupInfo`, for the drop leg. */
+  dropInfo?: string;
+  /** Real, free-text meal-plan description, e.g. "Daily breakfast only (CP)" or "All
+   *  meals included (AP)" — never inferred from `inclusions` text. */
+  mealPlan?: string;
+  /** Real, free-text transport description, e.g. "Private SUV throughout" — distinct
+   *  from `transportOptions`' priced tier list; this is the plain-language summary. */
+  transportType?: string;
+  /** The minimum group size this package's costing/itinerary assumes — an owner/costing
+   *  assumption, never a marketing claim about availability. */
+  minTravellers?: number;
+  /** The number of hotel rooms the costing assumes for `minTravellers` (e.g. 2 travellers
+   *  / 1 room = double occupancy) — paired with `minTravellers` to describe the
+   *  occupancy basis a price was actually calculated against. */
+  roomsIncluded?: number;
   // Populated automatically by `{ timestamps: true }` below — declared here only so
   // lib/packages.ts can read doc.updatedAt with type safety.
   createdAt: Date;
@@ -165,7 +191,13 @@ const JourneySchema = new Schema<JourneyDocument>(
     idealTraveller: { type: String },
     bestTimeToVisit: { type: String },
     importantNotes: { type: [String] },
-    bookingProcess: { type: String }
+    bookingProcess: { type: String },
+    pickupInfo: { type: String },
+    dropInfo: { type: String },
+    mealPlan: { type: String },
+    transportType: { type: String },
+    minTravellers: { type: Number },
+    roomsIncluded: { type: Number }
   },
   { timestamps: true }
 );
