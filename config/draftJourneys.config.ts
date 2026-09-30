@@ -1,4 +1,10 @@
 import type { DraftTravelPackageInput } from '@/types/package';
+// Phase 4C-R: real, already-resolving curated Destination photography — the same
+// `images.destinations.*` map config/packages.config.ts's 6 live Journeys already use
+// (e.g. manaliPremiumEscape -> images.destinations.manali). Never a fabricated path;
+// every value below is reused verbatim from an existing, published Destination's own
+// image, confirmed to exist on disk under public/images/.
+import { images } from '@/config/images.config';
 
 /**
  * DRAFT CATALOGUE (Phase 2 + Phase 3) — NOT the live public catalogue (see
@@ -57,6 +63,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
   {
     slug: 'shimla-manali-tour-package',
     status: 'draft',
+    image: images.destinations.manali,
     name: 'Shimla Manali Tour Package',
     destination: 'Shimla & Manali, Himachal Pradesh',
     destinationSlugs: ['shimla', 'manali'],
@@ -126,6 +133,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
   {
     slug: 'kinnaur-spiti-circuit',
     status: 'draft',
+    image: images.destinations.spitiValley,
     name: 'Kinnaur Spiti Circuit',
     destination: 'Kinnaur & Spiti Valley, Himachal Pradesh',
     destinationSlugs: ['shimla', 'kinnaur', 'sangla-valley', 'chitkul', 'tabo', 'spiti-valley', 'manali'],
@@ -197,6 +205,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
   {
     slug: 'kasol-kheerganga-tosh',
     status: 'draft',
+    image: images.destinations.kasol,
     name: 'Kasol Kheerganga Tosh',
     destination: 'Kasol, Parvati Valley, Himachal Pradesh',
     destinationSlugs: ['kasol'],
@@ -263,6 +272,12 @@ export const draftJourneys: DraftTravelPackageInput[] = [
   {
     slug: 'jibhi-tirthan-valley',
     status: 'draft',
+    // No dedicated Jibhi/Tirthan Valley photography exists — the real, published
+    // Destination docs for both ('jibhi', 'tirthan-valley' in destinations.config.ts)
+    // already reuse images.destinations.kasol themselves (the nearest curated photo),
+    // so this Journey reuses the exact same real, already-resolving image those two
+    // live Destination pages show today — never an invented path.
+    image: images.destinations.kasol,
     name: 'Jibhi Tirthan Valley',
     destination: 'Jibhi & Tirthan Valley, Himachal Pradesh',
     destinationSlugs: ['jibhi', 'tirthan-valley'],
@@ -363,6 +378,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
   {
     slug: 'kashmir-family-tour',
     status: 'draft',
+    image: images.destinations.srinagar,
     name: 'Kashmir Family Tour',
     destination: 'Srinagar, Gulmarg & Pahalgam, Jammu & Kashmir',
     destinationSlugs: ['srinagar', 'gulmarg', 'pahalgam'],
@@ -441,6 +457,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
   {
     slug: 'kashmir-pahalgam-gulmarg-sonamarg-tour',
     status: 'draft',
+    image: images.destinations.pahalgam,
     name: 'Kashmir Pahalgam Gulmarg Sonamarg Tour',
     destination: 'Srinagar, Pahalgam, Gulmarg & Sonamarg, Jammu & Kashmir',
     destinationSlugs: ['srinagar', 'pahalgam', 'gulmarg', 'sonamarg'],
@@ -508,6 +525,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
   {
     slug: 'char-dham-yatra',
     status: 'draft',
+    image: images.destinations.kedarnath,
     name: 'Char Dham Yatra',
     destination: 'Yamunotri, Gangotri, Kedarnath & Badrinath, Uttarakhand',
     destinationSlugs: ['yamunotri', 'gangotri', 'kedarnath', 'badrinath'],
@@ -582,6 +600,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
   {
     slug: 'kedarnath-badrinath-yatra',
     status: 'draft',
+    image: images.destinations.badrinath,
     name: 'Kedarnath Badrinath Yatra',
     destination: 'Kedarnath & Badrinath, Uttarakhand',
     destinationSlugs: ['kedarnath', 'badrinath'],
@@ -647,6 +666,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
   {
     slug: 'nainital-corbett-mussoorie-tour',
     status: 'draft',
+    image: images.destinations.nainital,
     name: 'Nainital Corbett Mussoorie Tour',
     destination: 'Nainital, Jim Corbett & Mussoorie, Uttarakhand',
     destinationSlugs: ['nainital', 'ramnagar-corbett', 'mussoorie'],
@@ -707,6 +727,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
   {
     slug: 'auli-chopta-tungnath-tour',
     status: 'draft',
+    image: images.destinations.auli,
     name: 'Auli Chopta Tungnath Tour',
     destination: 'Auli & Chopta, Uttarakhand',
     destinationSlugs: ['joshimath', 'auli', 'chopta'],
