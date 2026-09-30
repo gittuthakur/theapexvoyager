@@ -144,10 +144,20 @@ describe('config/draftJourneys.config.ts — commercial pricing (Phase 3, Part 6
     }
   });
 
-  it('no draft anywhere carries inclusions/exclusions — commercial approval for those remains out of scope', () => {
+  it('no draft OUTSIDE the 10 Phase 4A owner-approved packages carries inclusions/exclusions — commercial approval for the rest remains out of scope', () => {
+    const phase4ApprovedSlugs = new Set(Object.keys(OWNER_APPROVED_PRICES));
     for (const journey of draftJourneys) {
-      expect(journey.inclusions).toEqual([]);
-      expect(journey.exclusions).toEqual([]);
+      if (phase4ApprovedSlugs.has(journey.slug)) continue;
+      expect(journey.inclusions, `${journey.slug} inclusions`).toEqual([]);
+      expect(journey.exclusions, `${journey.slug} exclusions`).toEqual([]);
+    }
+  });
+
+  it('every one of the 10 Phase 4A owner-approved packages now carries a real, non-empty inclusions and exclusions list', () => {
+    for (const slug of Object.keys(OWNER_APPROVED_PRICES)) {
+      const journey = draftJourneys.find((j) => j.slug === slug);
+      expect(journey?.inclusions.length, `${slug} inclusions`).toBeGreaterThan(0);
+      expect(journey?.exclusions.length, `${slug} exclusions`).toBeGreaterThan(0);
     }
   });
 });

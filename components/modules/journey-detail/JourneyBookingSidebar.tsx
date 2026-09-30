@@ -8,6 +8,7 @@ import { registerBottomOverlay } from '@/lib/bottomOverlay';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
 import { trackWhatsAppConversion } from '@/lib/googleAds';
 import { formatPriceOrQuote, isValidPrice } from '@/lib/pricing';
+import { buildStartingFromLabel, JOURNEY_PRICE_DISCLAIMER } from '@/lib/journeyPriceDisplay';
 import type { TravelPackage } from '@/types/package';
 
 export interface JourneyBookingSidebarProps {
@@ -52,17 +53,17 @@ export default function JourneyBookingSidebar({ pkg, onCustomize }: JourneyBooki
           the "complementary landmark must be top-level" accessibility rule. */}
       <div className="hidden lg:sticky lg:top-28 lg:block lg:self-start">
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">Starting from</p>
-          <p className="mt-1 text-3xl font-extrabold text-slate-900">
-            {isValidPrice(pkg.price) ? (
-              <>
-                {formatPriceOrQuote(pkg.price)}{' '}
-                <span className="text-sm font-normal text-slate-500">/ {pkg.priceBasis || 'person'}</span>
-              </>
-            ) : (
-              formatPriceOrQuote(pkg.price)
-            )}
-          </p>
+          {isValidPrice(pkg.price) ? (
+            <>
+              <p className="text-3xl font-extrabold text-slate-900">{buildStartingFromLabel(pkg.price)}</p>
+              <p className="mt-2 text-xs leading-5 text-slate-500">{JOURNEY_PRICE_DISCLAIMER}</p>
+            </>
+          ) : (
+            <>
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">Starting from</p>
+              <p className="mt-1 text-3xl font-extrabold text-slate-900">{formatPriceOrQuote(pkg.price)}</p>
+            </>
+          )}
           {pkg.seasonalPricing?.length ? (
             <p className="mt-1 inline-flex gap-1.5 text-xs text-slate-500">
               <CalendarClock size={20} className="text-apex-400 mt-0.5" /> Price varies by season — see live pricing when you customize
@@ -99,8 +100,17 @@ export default function JourneyBookingSidebar({ pkg, onCustomize }: JourneyBooki
       {/* Mobile sticky bottom bar */}
       <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 border-t border-slate-200 bg-white/95 p-4 backdrop-blur-sm lg:hidden">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500">From</p>
-          <p className="text-lg font-bold text-slate-900">{formatPriceOrQuote(pkg.price)}</p>
+          {isValidPrice(pkg.price) ? (
+            <>
+              <p className="text-lg font-bold text-slate-900">{buildStartingFromLabel(pkg.price)}</p>
+              <p className="text-[9px] leading-tight text-slate-400">*Indicative price — see &quot;Good to Know&quot; for details</p>
+            </>
+          ) : (
+            <>
+              <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500">From</p>
+              <p className="text-lg font-bold text-slate-900">{formatPriceOrQuote(pkg.price)}</p>
+            </>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <button

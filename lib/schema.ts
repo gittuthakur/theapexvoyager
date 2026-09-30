@@ -110,7 +110,12 @@ export interface JourneyProductSchemaInput {
   /** Exact canonical journey URL. */
   url: string;
   category: string;
-  price: number;
+  /** The real, owner-approved indicative "Starting From" per-person price — never a
+   *  guaranteed, universally-purchasable fixed price for a specific date/occupancy/group
+   *  size (see lib/journeyPriceDisplay.ts's JOURNEY_PRICE_DISCLAIMER, which is the
+   *  human-readable version of this same fact). Optional so a caller with no valid price
+   *  yet gets an honestly Offer-less schema instead of a fabricated one — see below. */
+  price?: number;
 }
 
 // Real Places-photo URLs (Google, https://...) are already absolute; every locally
@@ -122,14 +127,27 @@ function toAbsoluteImageUrl(image: string): string {
 }
 
 // Deliberately excludes availability, aggregateRating, review, sku/gtin/mpn,
-// priceValidUntil, and any discount/lowPrice/highPrice field — none of these are backed
-// by real data today (no capacity tracking, zero real reviews site-wide, no product
-// identifiers, no "was" price). Adding any of them here would be exactly the kind of
-// invented structured-data claim Google's own policies (and this app's own honest-empty
+// priceValidUntil, and any discount/highPrice field — none of these are backed by real
+// data today (no capacity tracking, zero real reviews site-wide, no product identifiers,
+// no "was" price). Adding any of them here would be exactly the kind of invented
+// structured-data claim Google's own policies (and this app's own honest-empty
 // philosophy elsewhere — see lib/stays.ts, components/modules/stays/*) explicitly warn
 // against. Extend this once a real per-journey signal actually exists — e.g. a
 // `journeyId`-linked, approved+verified Review (see models/Review.ts).
+//
+// PRICE HONESTY (Phase 4A audit): every Journey price in this codebase is an owner-
+// approved INDICATIVE "Starting From" figure (per person, double sharing) — never a
+// single fixed, universally-purchasable price. Plain schema.org `Offer.price` has no
+// "starting from" semantic and would misrepresent that fact to any consumer of this
+// markup. `AggregateOffer.lowPrice` is the standards-compliant way to represent an
+// indicative/starting price without implying a fixed, guaranteed figure — this is the
+// smallest correction that fixes the honesty gap (previously plain `Offer`/`price`,
+// unchanged in every other respect: same fields, same omissions). No `highPrice` or
+// `offerCount` is added — neither is backed by real data (no price range, no real count
+// of distinct current offers), and fabricating either would be the same kind of invented
+// claim this function has always avoided elsewhere.
 export function buildJourneyProductSchema(input: JourneyProductSchemaInput) {
+  const hasRealPrice = typeof input.price === 'number' && Number.isFinite(input.price) && input.price > 0;
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -138,12 +156,18 @@ export function buildJourneyProductSchema(input: JourneyProductSchemaInput) {
     image: toAbsoluteImageUrl(input.image),
     url: input.url,
     category: input.category,
-    offers: {
-      '@type': 'Offer',
-      url: input.url,
-      priceCurrency: 'INR',
-      price: input.price
-    }
+    // Omitted entirely — rather than emitted with a fabricated/invalid price — when no
+    // real price exists yet: an honest absence beats a misleading Offer.
+    ...(hasRealPrice
+      ? {
+          offers: {
+            '@type': 'AggregateOffer',
+            url: input.url,
+            priceCurrency: 'INR',
+            lowPrice: input.price
+          }
+        }
+      : {})
   };
 }
 

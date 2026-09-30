@@ -12,8 +12,12 @@ export type CommercialBlocker =
   | 'MISSING_HOTEL_PLAN'
   | 'MISSING_TRANSPORT_PLAN'
   | 'MISSING_OCCUPANCY'
+  | 'MISSING_PICKUP_INFO'
+  | 'MISSING_DROP_INFO'
+  | 'MISSING_MEAL_PLAN'
   | 'MISSING_INCLUSIONS'
   | 'MISSING_EXCLUSIONS'
+  | 'CANCELLATION_POLICY_OWNER_APPROVAL_REQUIRED'
   | 'OWNER_APPROVAL_REQUIRED';
 
 export interface CommercialReadinessInput {
@@ -25,8 +29,17 @@ export interface CommercialReadinessInput {
   transportOptions?: unknown[];
   minTravellers?: number;
   roomsIncluded?: number;
+  pickupInfo?: string;
+  dropInfo?: string;
+  mealPlan?: string;
   inclusions?: string[];
   exclusions?: string[];
+  /** See models/Journey.ts's own doc comment on the field of the same name — must only
+   *  ever be `true` when the general /cancellation-policy page has actually been
+   *  confirmed live, public, and applicable to Journeys. This function trusts the value
+   *  it's given (the same way it trusts `price`/`inclusions`/every other field is real,
+   *  not fabricated) — it does not and cannot verify the page itself. */
+  usesGeneralCancellationPolicy?: boolean;
 }
 
 /** Every blocker this Journey currently has, in a stable, deterministic order — never
@@ -48,11 +61,31 @@ export function getCommercialBlockers(journey: CommercialReadinessInput): Commer
   if (typeof journey.minTravellers !== 'number' || typeof journey.roomsIncluded !== 'number') {
     blockers.push('MISSING_OCCUPANCY');
   }
+  if (!journey.pickupInfo) {
+    blockers.push('MISSING_PICKUP_INFO');
+  }
+  if (!journey.dropInfo) {
+    blockers.push('MISSING_DROP_INFO');
+  }
+  if (!journey.mealPlan) {
+    blockers.push('MISSING_MEAL_PLAN');
+  }
   if (!journey.inclusions || journey.inclusions.length === 0) {
     blockers.push('MISSING_INCLUSIONS');
   }
   if (!journey.exclusions || journey.exclusions.length === 0) {
     blockers.push('MISSING_EXCLUSIONS');
+  }
+  // Resolved ONLY by usesGeneralCancellationPolicy === true — a statement of fact (the
+  // real, public /cancellation-policy page genuinely covers this Journey), never a
+  // package-specific percentage this codebase doesn't have and never fabricates (see
+  // components/modules/CancellationPolicyContent.tsx, which deliberately only describes
+  // a general, case-by-case policy with no fixed percentages). Approving "use the
+  // general policy" as an approach is not the same fact as "the general policy actually
+  // exists and is publicly reachable" — this field must only be set true once the latter
+  // has actually been verified, never merely because the former was approved.
+  if (!journey.usesGeneralCancellationPolicy) {
+    blockers.push('CANCELLATION_POLICY_OWNER_APPROVAL_REQUIRED');
   }
   // Unconditional for anything not already published — see this module's own doc
   // comment on why this can never be removed by resolving the other blockers.
@@ -66,9 +99,13 @@ export function getCommercialBlockers(journey: CommercialReadinessInput): Commer
 // Convenience read-only check — NEVER wired to any publish action in this codebase.
 // "Ready" here means "every field-level blocker is resolved," not "safe to publish
 // automatically" — OWNER_APPROVAL_REQUIRED is deliberately excluded from this specific
-// check because it is never something a field update can resolve; it always needs a
-// human decision on top, made through whatever process the business uses, not this
+// check because it is never something a field update alone can resolve; it always needs
+// a human decision on top, made through whatever process the business uses, not this
 // function or any code path that calls it.
+// CANCELLATION_POLICY_OWNER_APPROVAL_REQUIRED is NOT excluded here (unlike before
+// usesGeneralCancellationPolicy existed): it is now a genuinely resolvable field-level
+// blocker, exactly like MISSING_PRICE or MISSING_INCLUSIONS — it only clears when that
+// field is truthfully `true`, never by this function treating it as unresolvable.
 export function isCommerciallyContentComplete(journey: CommercialReadinessInput): boolean {
   return getCommercialBlockers(journey).every((blocker) => blocker === 'OWNER_APPROVAL_REQUIRED');
 }

@@ -44,11 +44,14 @@ import type { DraftTravelPackageInput } from '@/types/package';
  *    authored this phase) to keep this expansion's size deliberate rather than
  *    maximal — see the Phase 3 report's own reasoning.
  *
- * LADAKH: no packages exist here — Ladakh has no curated Region or Destination in this
- * application yet (verified against the live database and config/destinations.config.ts,
- * config/regions.config.ts). Per Phase 3 Part 5, that curation must happen first, safely,
- * as its own piece of work — see docs/phase-3-high-intent-catalogue.md's Ladakh section
- * for the specific destinations and fields identified as needed.
+ * LADAKH (Phase 3C, added below the Phase 2/3 catalogue above): exactly 5 canonical
+ * Ladakh Journey drafts — leh-nubra-pangong-tour, leh-nubra-pangong-turtuk-tour,
+ * leh-nubra-pangong-hanle-tour, ladakh-hanle-tso-moriri-tour, srinagar-leh-ladakh-tour.
+ * Each references only real destinationSlugs from config/ladakhFoundation.config.ts's 8
+ * draft Destinations (also still `status: 'draft'`, per Phase 3B) — never an invented
+ * slug, never Khardung La as a standalone destination. No price/inclusions/exclusions on
+ * any of them. See config/ladakhFoundation.config.test.ts for the full route/
+ * acclimatisation/destination-slug validation.
  */
 export const draftJourneys: DraftTravelPackageInput[] = [
   {
@@ -64,7 +67,19 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     // change. See docs/phase-3-high-intent-catalogue.md's price-disclaimer section —
     // any eventual public display of this figure must carry that disclaimer.
     price: 13999,
-    priceBasis: 'per person (starting price, indicative)',
+    priceBasis: 'per person (starting price, indicative, double sharing)',
+    // Verified 2026-09-30 (Phase 4B): /cancellation-policy is live (200), not disallowed
+    // by robots.txt, and its content explicitly covers "journeys" — see
+    // docs/phase-4b-final-commercial-approval.md. This is a statement of that verified
+    // fact, never a bypass — see models/Journey.ts's own doc comment on this field.
+    usesGeneralCancellationPolicy: true,
+    hotelCategoryDescription: 'Deluxe hotel/equivalent — the specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
+    mealPlan: 'Daily breakfast and dinner (MAP) at the hotel for each of the 5 nights on this itinerary.',
+    transportType: 'Private cab throughout, for all pickup/drop transfers and itinerary sightseeing.',
+    pickupInfo: 'Pickup from Chandigarh (exact point and time confirmed at the time of booking).',
+    dropInfo: 'Drop at Chandigarh (exact point and time confirmed at the time of booking).',
+    minTravellers: 2,
+    roomsIncluded: 1,
     shortDescription: 'A classic first Himachal circuit pairing Shimla\'s colonial hill-station charm with Manali\'s valley and adventure-sports base — built for families, couples and groups alike, not framed around any one of those.',
     highlights: [
       'Shimla\'s Mall Road and The Ridge',
@@ -80,8 +95,20 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       { day: 5, title: 'Solang Valley Excursion', description: 'Day trip to Solang Valley for valley views and, where seasonally open, adventure activities; a further excursion toward Atal Tunnel/Rohtang depends on road and permit conditions on the day.' },
       { day: 6, title: 'Manali to Chandigarh', description: 'Return drive to Chandigarh; tour concludes on arrival.' }
     ],
-    inclusions: [],
-    exclusions: [],
+    inclusions: [
+      'Accommodation for 5 nights on a double-sharing basis (Deluxe hotel/equivalent)',
+      'Daily breakfast and dinner (MAP)',
+      'Pickup and drop at Chandigarh',
+      'Itinerary transport and sightseeing by private cab as per the itinerary'
+    ],
+    exclusions: [
+      'Airfare/train fare',
+      'Personal expenses',
+      'Entry tickets',
+      'Adventure activities (e.g. at Solang Valley)',
+      'Any Atal Tunnel/Rohtang Pass excursion, local union/RTO vehicle charges, or other restricted-area transport where separately required',
+      'Anything not specifically mentioned in Inclusions'
+    ],
     stayOptions: [],
     addOns: [],
     startingCity: 'Chandigarh',
@@ -90,7 +117,8 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     bestTimeToVisit: 'Broadly a year-round route; conditions differ by season — expect snow access at higher points (e.g. Solang, Atal Tunnel/Rohtang) mainly in winter and early summer, and monsoon-season landslide risk on some stretches. Confirm current road conditions closer to travel.',
     importantNotes: [
       'Any excursion beyond Solang toward Atal Tunnel/Rohtang Pass depends on seasonal road opening, weather and, at times, permits — it is not a guaranteed part of every departure.',
-      'Hill roads between Shimla and Manali can be affected by weather or landslides, particularly in the monsoon; the exact drive time can vary accordingly.'
+      'Hill roads between Shimla and Manali can be affected by weather or landslides, particularly in the monsoon; the exact drive time can vary accordingly.',
+      'Accommodation shown here is a category ("Deluxe hotel/equivalent"), not a specific named property — the final hotel is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.'
     ],
     bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
     faqs: []
@@ -104,7 +132,19 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     duration: '8 Nights / 9 Days',
     category: 'Offbeat',
     price: 21999,
-    priceBasis: 'per person (starting price, indicative)',
+    priceBasis: 'per person (starting price, indicative, double sharing)',
+    // Verified 2026-09-30 (Phase 4B): /cancellation-policy is live (200), not disallowed
+    // by robots.txt, and its content explicitly covers "journeys" — see
+    // docs/phase-4b-final-commercial-approval.md. This is a statement of that verified
+    // fact, never a bypass — see models/Journey.ts's own doc comment on this field.
+    usesGeneralCancellationPolicy: true,
+    hotelCategoryDescription: 'Standard/Deluxe hotels, guesthouses or equivalent according to each stop — the specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
+    mealPlan: 'Daily breakfast and dinner (MAP) at the hotel/guesthouse for each of the 8 nights on this itinerary; not implied for any meal taken during a transit-day drive.',
+    transportType: 'Package-dependent private or shared vehicle for this multi-leg, high-altitude route — confirmed against group size and the final quotation.',
+    pickupInfo: 'Pickup from Chandigarh, with onward road transfer to Shimla to begin the itinerary (exact point and time confirmed at the time of booking).',
+    dropInfo: 'Drop at Manali on Day 9 (exact point and time confirmed at the time of booking) — a Manali–Chandigarh return transfer is not included in the starting price; see this package\'s important notes.',
+    minTravellers: 2,
+    roomsIncluded: 1,
     shortDescription: 'A full high-altitude circuit through the Baspa valley\'s Sangla and Chitkul before crossing into Spiti\'s monasteries and cold desert — longer and more thorough than a direct Spiti-only run, genuinely covering the Kinnaur valley loop the shorter route does not.',
     highlights: [
       'Sangla and Chitkul in the Baspa valley',
@@ -123,8 +163,21 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       { day: 8, title: 'Kaza to Manali', description: 'Cross Kunzum Pass (seasonal access) to Manali.' },
       { day: 9, title: 'Departure', description: 'Onward departure from Manali.' }
     ],
-    inclusions: [],
-    exclusions: [],
+    inclusions: [
+      'Accommodation for 8 nights on a double-sharing basis (Standard/Deluxe hotels, guesthouses or equivalent)',
+      'Daily breakfast and dinner (MAP)',
+      'Chandigarh pickup with road transfer to Shimla',
+      'Scheduled itinerary transport and sightseeing as per the route (Shimla to Manali)'
+    ],
+    exclusions: [
+      'Airfare/train fare',
+      'Personal expenses',
+      'Entry/monastery fees where applicable',
+      'Inner Line Permit charges and processing',
+      'Manali–Chandigarh return transfer (not part of this itinerary — available on request at additional cost)',
+      'Adventure activities',
+      'Anything not specifically mentioned in Inclusions'
+    ],
     stayOptions: [],
     addOns: [],
     startingCity: 'Shimla',
@@ -134,7 +187,9 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     importantNotes: [
       'This is a genuinely high-altitude circuit (Kaza and surrounding villages sit above 3,500m) — acclimatization matters, and travellers with relevant health conditions should take medical advice before booking.',
       'Chandratal, Kunzum Pass and some Kaza-area excursions are seasonal and weather/road-condition dependent, not guaranteed on every departure.',
-      'Inner-line permit requirements for parts of this route should be confirmed at the time of booking, as rules can change.'
+      'Inner-line permit requirements for parts of this route should be confirmed at the time of booking, as rules can change.',
+      'Accommodation shown here is a category ("Standard/Deluxe hotels, guesthouses or equivalent"), not a specific named property — the final hotel/guesthouse at each stop is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
+      'OWNER-APPROVED (Phase 4B): pickup is from Chandigarh; this itinerary\'s route ends in Manali on Day 9. The ₹21,999 starting price does not include a return transfer from Manali to Chandigarh — this is available on request at additional cost, quoted separately, and is never implied as included.'
     ],
     bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
     faqs: []
@@ -148,7 +203,19 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     duration: '4 Nights / 5 Days',
     category: 'Adventure',
     price: 9999,
-    priceBasis: 'per person (starting price, indicative)',
+    priceBasis: 'per person (starting price, indicative, double sharing)',
+    // Verified 2026-09-30 (Phase 4B): /cancellation-policy is live (200), not disallowed
+    // by robots.txt, and its content explicitly covers "journeys" — see
+    // docs/phase-4b-final-commercial-approval.md. This is a statement of that verified
+    // fact, never a bypass — see models/Journey.ts's own doc comment on this field.
+    usesGeneralCancellationPolicy: true,
+    hotelCategoryDescription: 'Standard hotel/guesthouse or equivalent for the Kasol nights, plus a basic trek/camp stay or equivalent near Kheerganga for that one night — the specific property/stay is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
+    mealPlan: 'Daily breakfast and dinner (MAP) at the hotel for the Kasol nights; meals during the Kheerganga trek night depend on the confirmed trek-stay arrangement and are not guaranteed to match the same MAP standard.',
+    transportType: 'Shared/package-dependent road transport for the Bhuntar–Kasol sector — private cab is not claimed at this starting price. The Barshaini–Kheerganga leg is on foot, not by vehicle.',
+    pickupInfo: 'Pickup from Bhuntar (exact point and time confirmed at the time of booking) — this package\'s starting price is based on the Bhuntar gateway, not a Chandigarh transfer; see this package\'s important notes.',
+    dropInfo: 'Drop at Bhuntar (exact point and time confirmed at the time of booking).',
+    minTravellers: 2,
+    roomsIncluded: 1,
     shortDescription: 'A budget-friendly Parvati Valley base in Kasol with a trek up to Kheerganga\'s hot springs and a stop in Tosh — built for friends and young travellers on a trekking-focused trip.',
     highlights: [
       'Kasol\'s riverside cafe culture',
@@ -163,8 +230,21 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       { day: 4, title: 'Trek Back to Kasol', description: 'Trek back down to Barshaini and return to Kasol.' },
       { day: 5, title: 'Departure', description: 'Onward departure from Kasol.' }
     ],
-    inclusions: [],
-    exclusions: [],
+    inclusions: [
+      'Accommodation for 4 nights (Kasol hotel/guesthouse + 1 night Kheerganga trek/camp stay) on a double-sharing basis',
+      'Daily breakfast and dinner (MAP) at the Kasol hotel; Kheerganga night meals per the confirmed trek-stay arrangement',
+      'Bhuntar pickup/drop',
+      'Scheduled Bhuntar–Kasol road transfer'
+    ],
+    exclusions: [
+      'Airfare/train fare',
+      'Personal expenses',
+      'Trek guide/porter charges for the Kheerganga trek',
+      'Kheerganga trail entry/eco fees where applicable',
+      'Chandigarh road transfer (not part of this itinerary — available on request at additional cost)',
+      'Adventure activities',
+      'Anything not specifically mentioned in Inclusions'
+    ],
     stayOptions: [],
     addOns: [],
     startingCity: 'Bhuntar',
@@ -173,7 +253,9 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     bestTimeToVisit: 'Broadly March–June and September–November, avoiding heavy monsoon rain and the coldest winter weeks — the Kheerganga trail can be slippery or snow-affected outside these windows; confirm current trail conditions before departure.',
     importantNotes: [
       'The Kheerganga trek requires a reasonable level of fitness and is affected by weather — it should not be treated as guaranteed easy or open on every date.',
-      'A local guide is advisable for the Kheerganga trail, particularly outside peak season.'
+      'A local guide is advisable for the Kheerganga trail, particularly outside peak season.',
+      'Accommodation shown here is a category, not a specific named property — the final hotel/guesthouse and trek-stay are confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
+      'OWNER-APPROVED (Phase 4B): this package\'s ₹9,999 starting price is based on Bhuntar pickup/drop. A Chandigarh-origin transfer is not included — available on request at additional cost, quoted separately as an optional add-on, and never implied as included.'
     ],
     bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
     faqs: []
@@ -187,7 +269,19 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     duration: '3 Nights / 4 Days',
     category: 'Offbeat',
     price: 11999,
-    priceBasis: 'per person (starting price, indicative)',
+    priceBasis: 'per person (starting price, indicative, double sharing)',
+    // Verified 2026-09-30 (Phase 4B): /cancellation-policy is live (200), not disallowed
+    // by robots.txt, and its content explicitly covers "journeys" — see
+    // docs/phase-4b-final-commercial-approval.md. This is a statement of that verified
+    // fact, never a bypass — see models/Journey.ts's own doc comment on this field.
+    usesGeneralCancellationPolicy: true,
+    hotelCategoryDescription: 'Deluxe cottage/hotel or equivalent — the specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
+    mealPlan: 'Daily breakfast and dinner (MAP) at the property for each of the 3 nights on this itinerary.',
+    transportType: 'Private cab throughout, for all pickup/drop transfers and itinerary sightseeing.',
+    pickupInfo: 'Pickup from Aut (exact point and time confirmed at the time of booking) — this package\'s starting price is based on the Aut gateway, not a Chandigarh transfer; see this package\'s important notes.',
+    dropInfo: 'Drop at Aut (exact point and time confirmed at the time of booking).',
+    minTravellers: 2,
+    roomsIncluded: 1,
     shortDescription: 'A quiet, short offbeat escape pairing Jibhi\'s wooden-guesthouse village lanes with the Tirthan Valley\'s riverside base at Gushaini — built as a weekend-length trip for couples, not a long circuit.',
     highlights: [
       'Jibhi village walks and waterfall',
@@ -201,15 +295,32 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       { day: 3, title: 'Tirthan Valley (Gushaini)', description: 'Move to the Tirthan Valley\'s Gushaini area for riverside time.' },
       { day: 4, title: 'Departure', description: 'Onward departure from the Tirthan Valley.' }
     ],
-    inclusions: [],
-    exclusions: [],
+    inclusions: [
+      'Accommodation for 3 nights on a double-sharing basis (Deluxe cottage/hotel or equivalent)',
+      'Daily breakfast and dinner (MAP)',
+      'Aut pickup/drop',
+      'Itinerary transport and sightseeing by private cab as per the itinerary'
+    ],
+    exclusions: [
+      'Airfare/train fare',
+      'Personal expenses',
+      'Entry tickets',
+      'Any Jalori Pass or Serolsar Lake excursion (not part of this itinerary — access is never guaranteed regardless of weather/road conditions)',
+      'Chandigarh road transfer (not part of this itinerary — available on request at additional cost)',
+      'Adventure activities',
+      'Anything not specifically mentioned in Inclusions'
+    ],
     stayOptions: [],
     addOns: [],
     startingCity: 'Aut',
     endingCity: 'Aut',
     idealTraveller: 'Couples and small groups wanting a short, quiet weekend-length offbeat trip rather than a longer circuit.',
     bestTimeToVisit: 'Broadly March–June and September–November; monsoon months bring heavier rain to this valley and winter can be cold, so check seasonal conditions before booking.',
-    importantNotes: ['This is a short, low-key itinerary by design — travellers looking for a longer multi-stop circuit should consider a different package.'],
+    importantNotes: [
+      'This is a short, low-key itinerary by design — travellers looking for a longer multi-stop circuit should consider a different package.',
+      'Accommodation shown here is a category, not a specific named property — the final property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
+      'OWNER-APPROVED (Phase 4B): this package\'s ₹11,999 starting price is based on Aut pickup/drop. A Chandigarh-origin transfer is not included — available on request at additional cost, quoted separately as an optional add-on, and never implied as included.'
+    ],
     bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
     faqs: []
   },
@@ -258,7 +369,29 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     duration: '5 Nights / 6 Days',
     category: 'Family',
     price: 14999,
-    priceBasis: 'per person (starting price, indicative)',
+    priceBasis: 'per person (starting price, indicative, double sharing)',
+    // Verified 2026-09-30 (Phase 4B): /cancellation-policy is live (200), not disallowed
+    // by robots.txt, and its content explicitly covers "journeys" — see
+    // docs/phase-4b-final-commercial-approval.md. This is a statement of that verified
+    // fact, never a bypass — see models/Journey.ts's own doc comment on this field.
+    usesGeneralCancellationPolicy: true,
+    // Houseboat check (Phase 4A, Part 5): Day 2 below reads "overnight on a houseboat OR
+    // in a hotel" — an alternative, not a confirmed 1-night houseboat stay. Per the brief's
+    // own instruction ("only state 1N houseboat if the existing itinerary actually
+    // contains and supports that overnight arrangement — otherwise keep accommodation as
+    // Deluxe hotel/equivalent and report the houseboat decision separately") originally
+    // kept this as Deluxe hotel/equivalent only, flagging the houseboat question.
+    // RESOLVED (Phase 4B): the owner approved including 1 night houseboat/equivalent —
+    // the itinerary below now states it as an explicit Day 1 overnight, not an
+    // alternative to a hotel, and the night count still matches 5N/6D exactly (verified
+    // by config/draftJourneys.phase4bFinal.test.ts).
+    hotelCategoryDescription: 'Deluxe hotel/equivalent + 1 night houseboat/equivalent on Dal Lake — the specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
+    mealPlan: 'Daily breakfast and dinner (MAP) at the hotel for each of the 5 nights on this itinerary, including the houseboat night.',
+    transportType: 'Private cab for applicable itinerary sectors (Srinagar, Gulmarg, Pahalgam). Local-union transport/services at any stop are not automatically included.',
+    pickupInfo: 'Pickup from Srinagar Airport (exact time confirmed at the time of booking).',
+    dropInfo: 'Drop at Srinagar Airport (exact time confirmed at the time of booking).',
+    minTravellers: 2,
+    roomsIncluded: 1,
     shortDescription: 'A paced, three-stop Kashmir introduction for families — Srinagar, Gulmarg and Pahalgam only, with rest built into the schedule rather than a packed multi-valley circuit.',
     highlights: [
       'Dal Lake houseboat stay and shikara ride',
@@ -267,22 +400,41 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       'Mughal Gardens in Srinagar'
     ],
     itinerary: [
-      { day: 1, title: 'Arrival in Srinagar', description: 'Arrive in Srinagar; evening shikara ride on Dal Lake.' },
-      { day: 2, title: 'Srinagar Sightseeing', description: 'Visit the Mughal Gardens and central Srinagar; overnight on a houseboat or in a hotel.' },
+      { day: 1, title: 'Arrival in Srinagar — Houseboat Stay', description: 'Arrive in Srinagar; evening shikara ride on Dal Lake, followed by an overnight stay aboard a houseboat/equivalent on Dal Lake.' },
+      { day: 2, title: 'Srinagar Sightseeing', description: 'Visit the Mughal Gardens and central Srinagar; overnight at the hotel.' },
       { day: 3, title: 'Srinagar to Gulmarg', description: 'Day trip or transfer to Gulmarg; Gondola ride where seasonally operating.' },
       { day: 4, title: 'Gulmarg to Pahalgam', description: 'Travel to Pahalgam; evening at leisure by the Lidder river.' },
       { day: 5, title: 'Pahalgam Local Sightseeing', description: 'A relaxed day around Pahalgam\'s valley viewpoints, paced for families.' },
       { day: 6, title: 'Departure via Srinagar', description: 'Return to Srinagar for departure.' }
     ],
-    inclusions: [],
-    exclusions: [],
+    inclusions: [
+      'Accommodation for 5 nights on a double-sharing basis (Deluxe hotel/equivalent + 1 night houseboat/equivalent on Dal Lake)',
+      'Daily breakfast and dinner (MAP)',
+      'Srinagar Airport pickup/drop',
+      'Itinerary transport by private cab for the Srinagar–Gulmarg–Pahalgam sectors',
+      'Dal Lake shikara ride (Day 1, as described in the itinerary)'
+    ],
+    exclusions: [
+      'Airfare',
+      'Personal expenses',
+      'Entry/activity tickets',
+      'Gulmarg Gondola tickets',
+      'Pony rides',
+      'Snow activities',
+      'Local-union transport/services at any stop',
+      'Anything not specifically mentioned in Inclusions'
+    ],
     stayOptions: [],
     addOns: [],
     startingCity: 'Srinagar',
     endingCity: 'Srinagar',
     idealTraveller: 'Families wanting a paced, three-stop Kashmir trip rather than a fuller multi-valley sightseeing circuit.',
     bestTimeToVisit: 'Broadly April–June and September–October for milder weather; winter brings snow (Gulmarg becomes a ski destination but access can be weather-dependent) and access/road conditions should be checked seasonally.',
-    importantNotes: ['The Gulmarg Gondola\'s operation and houseboat availability can vary by season and demand — confirm current status closer to travel.'],
+    importantNotes: [
+      'The Gulmarg Gondola\'s operation can vary by season and demand — confirm current status closer to travel.',
+      'OWNER-APPROVED (Phase 4B): this package includes 1 night aboard a houseboat/equivalent on Dal Lake (Day 1), plus 4 nights at a Deluxe hotel/equivalent — no specific houseboat or hotel name is promised.',
+      'Accommodation shown here is a category, not a specific named property — the final houseboat/hotel is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.'
+    ],
     bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
     faqs: []
   },
@@ -295,7 +447,19 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     duration: '6 Nights / 7 Days',
     category: 'Sightseeing',
     price: 18999,
-    priceBasis: 'per person (starting price, indicative)',
+    priceBasis: 'per person (starting price, indicative, double sharing)',
+    // Verified 2026-09-30 (Phase 4B): /cancellation-policy is live (200), not disallowed
+    // by robots.txt, and its content explicitly covers "journeys" — see
+    // docs/phase-4b-final-commercial-approval.md. This is a statement of that verified
+    // fact, never a bypass — see models/Journey.ts's own doc comment on this field.
+    usesGeneralCancellationPolicy: true,
+    hotelCategoryDescription: 'Deluxe hotel/equivalent — the specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
+    mealPlan: 'Daily breakfast and dinner (MAP) at the hotel for each of the 6 nights on this itinerary.',
+    transportType: 'Private cab for applicable itinerary sectors (Srinagar, Sonamarg, Pahalgam, Gulmarg); local-union transport/services at any stop are excluded where separately required.',
+    pickupInfo: 'Pickup from Srinagar Airport (exact time confirmed at the time of booking).',
+    dropInfo: 'Drop at Srinagar Airport (exact time confirmed at the time of booking).',
+    minTravellers: 2,
+    roomsIncluded: 1,
     shortDescription: 'A broader, four-valley Kashmir sightseeing circuit adding Sonamarg to Srinagar, Pahalgam and Gulmarg — more ground covered than the paced three-stop family version, for travellers who want to see more of the region in one trip.',
     highlights: [
       'Sonamarg\'s glacier-fed valley',
@@ -312,15 +476,32 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       { day: 6, title: 'Gulmarg Sightseeing', description: 'Gondola ride where seasonally operating, and time in Gulmarg\'s meadow.' },
       { day: 7, title: 'Departure via Srinagar', description: 'Return to Srinagar for departure.' }
     ],
-    inclusions: [],
-    exclusions: [],
+    inclusions: [
+      'Accommodation for 6 nights on a double-sharing basis (Deluxe hotel/equivalent)',
+      'Daily breakfast and dinner (MAP)',
+      'Srinagar Airport pickup/drop',
+      'Itinerary transport by private cab for the Srinagar–Sonamarg–Pahalgam–Gulmarg sectors'
+    ],
+    exclusions: [
+      'Airfare',
+      'Personal expenses',
+      'Entry/activity tickets',
+      'Gulmarg Gondola tickets',
+      'Pony rides',
+      'Snow activities',
+      'Local-union transport/services at any stop',
+      'Anything not specifically mentioned in Inclusions'
+    ],
     stayOptions: [],
     addOns: [],
     startingCity: 'Srinagar',
     endingCity: 'Srinagar',
     idealTraveller: 'Couples and families wanting a fuller multi-valley Kashmir circuit rather than the shorter, more paced Kashmir Family Tour.',
     bestTimeToVisit: 'Broadly April–June and September–October; Sonamarg\'s road access and Gulmarg\'s Gondola operation are both seasonal and weather-dependent — confirm current status closer to travel.',
-    importantNotes: ['This itinerary deliberately covers more ground than the shorter Kashmir Family Tour package — travellers wanting a slower pace across fewer stops should consider that package instead.'],
+    importantNotes: [
+      'This itinerary deliberately covers more ground than the shorter Kashmir Family Tour package — travellers wanting a slower pace across fewer stops should consider that package instead.',
+      'Accommodation shown here is a category, not a specific named property — the final hotel is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.'
+    ],
     bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
     faqs: []
   },
@@ -333,7 +514,19 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     duration: '9 Nights / 10 Days',
     category: 'Spiritual',
     price: 19999,
-    priceBasis: 'per person (starting price, indicative)',
+    priceBasis: 'per person (starting price, indicative, double sharing)',
+    // Verified 2026-09-30 (Phase 4B): /cancellation-policy is live (200), not disallowed
+    // by robots.txt, and its content explicitly covers "journeys" — see
+    // docs/phase-4b-final-commercial-approval.md. This is a statement of that verified
+    // fact, never a bypass — see models/Journey.ts's own doc comment on this field.
+    usesGeneralCancellationPolicy: true,
+    hotelCategoryDescription: 'Standard/Deluxe hotels/guesthouses or equivalent according to each stop — the specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
+    mealPlan: 'Daily breakfast and dinner (MAP) at the hotel/guesthouse for each of the 9 nights on this itinerary; not implied for any meal taken during the Kedarnath trek day itself unless specifically arranged as part of a confirmed trek-stay.',
+    transportType: 'Package-dependent road transport between bases; this covers the motorable route only — it does not extend to the Kedarnath shrine itself, which is trek- or helicopter-access only (see this package\'s important notes).',
+    pickupInfo: 'Pickup from Haridwar (exact point and time confirmed at the time of booking).',
+    dropInfo: 'Drop at Haridwar (exact point and time confirmed at the time of booking).',
+    minTravellers: 2,
+    roomsIncluded: 1,
     shortDescription: 'The traditional four-shrine Uttarakhand pilgrimage circuit — Yamunotri, Gangotri, Kedarnath and Badrinath — sequenced in the customary order, with genuine access differences between the road-accessible and trek/helicopter-gated shrines called out honestly.',
     highlights: [
       'Yamunotri shrine and hot springs',
@@ -353,8 +546,23 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       { day: 9, title: 'Badrinath Darshan', description: 'Visit the Badrinath temple.' },
       { day: 10, title: 'Departure', description: 'Return journey and departure.' }
     ],
-    inclusions: [],
-    exclusions: [],
+    inclusions: [
+      'Accommodation for 9 nights on a double-sharing basis (Standard/Deluxe hotels/guesthouses or equivalent)',
+      'Daily breakfast and dinner (MAP)',
+      'Haridwar pickup/drop',
+      'Scheduled road transport between bases as per the itinerary, up to each shrine\'s own roadhead'
+    ],
+    exclusions: [
+      'Airfare/train fare',
+      'Personal expenses',
+      'Helicopter tickets',
+      'Pony/palki/doli charges',
+      'VIP/special darshan',
+      'Porter charges',
+      'Personal pilgrimage services (e.g. pandit/puja arrangements)',
+      'Entry/aarti-seating charges where applicable',
+      'Anything not specifically mentioned in Inclusions'
+    ],
     stayOptions: [],
     addOns: [],
     startingCity: 'Haridwar',
@@ -364,7 +572,9 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     importantNotes: [
       'Kedarnath access is via a trek (or helicopter, subject to weather and availability) — this is not a guaranteed, road-accessible leg like Badrinath or Gangotri.',
       'Road conditions in this region can be affected by landslides, especially around monsoon; the yatra season itself is set to avoid the worst of this, but delays remain possible.',
-      'Physical fitness and, for some travellers, medical advice are relevant given the altitude and trek involved at Kedarnath.'
+      'Physical fitness and, for some travellers, medical advice are relevant given the altitude and trek involved at Kedarnath.',
+      'Road transport covers the motorable route only, up to each shrine\'s roadhead — the Kedarnath leg itself is not a road-vehicle service and is not guaranteed on every date.',
+      'Accommodation shown here is a category, not a specific named property — the final hotel/guesthouse at each stop is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.'
     ],
     bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
     faqs: []
@@ -378,7 +588,19 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     duration: '6 Nights / 7 Days',
     category: 'Spiritual',
     price: 14999,
-    priceBasis: 'per person (starting price, indicative)',
+    priceBasis: 'per person (starting price, indicative, double sharing)',
+    // Verified 2026-09-30 (Phase 4B): /cancellation-policy is live (200), not disallowed
+    // by robots.txt, and its content explicitly covers "journeys" — see
+    // docs/phase-4b-final-commercial-approval.md. This is a statement of that verified
+    // fact, never a bypass — see models/Journey.ts's own doc comment on this field.
+    usesGeneralCancellationPolicy: true,
+    hotelCategoryDescription: 'Standard/Deluxe hotels/guesthouses or equivalent — the specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
+    mealPlan: 'Daily breakfast and dinner (MAP) at the hotel/guesthouse for each of the 6 nights on this itinerary; not implied for any meal taken during the Kedarnath trek day itself unless specifically arranged as part of a confirmed trek-stay.',
+    transportType: 'Package-dependent road transport; this covers the motorable route only — it does not extend to the Kedarnath shrine itself, which is trek- or helicopter-access only (see this package\'s important notes).',
+    pickupInfo: 'Pickup from Haridwar (exact point and time confirmed at the time of booking).',
+    dropInfo: 'Drop at Haridwar (exact point and time confirmed at the time of booking).',
+    minTravellers: 2,
+    roomsIncluded: 1,
     shortDescription: 'A shorter pilgrimage covering only Kedarnath and Badrinath, for travellers who want these two shrines without the full four-shrine Char Dham circuit.',
     highlights: ['Kedarnath temple (trek or helicopter access)', 'Badrinath temple, road-accessible', 'Mandakini and Alaknanda valley scenery'],
     itinerary: [
@@ -390,8 +612,23 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       { day: 6, title: 'Badrinath Darshan', description: 'Visit the Badrinath temple.' },
       { day: 7, title: 'Departure', description: 'Return journey and departure.' }
     ],
-    inclusions: [],
-    exclusions: [],
+    inclusions: [
+      'Accommodation for 6 nights on a double-sharing basis (Standard/Deluxe hotels/guesthouses or equivalent)',
+      'Daily breakfast and dinner (MAP)',
+      'Haridwar pickup/drop',
+      'Scheduled road transport between bases as per the itinerary, up to each shrine\'s own roadhead'
+    ],
+    exclusions: [
+      'Airfare/train fare',
+      'Personal expenses',
+      'Helicopter tickets',
+      'Pony/palki/doli charges',
+      'VIP/special darshan',
+      'Porter charges',
+      'Personal pilgrimage services',
+      'Entry/aarti-seating charges where applicable',
+      'Anything not specifically mentioned in Inclusions'
+    ],
     stayOptions: [],
     addOns: [],
     startingCity: 'Haridwar',
@@ -400,7 +637,9 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     bestTimeToVisit: 'Open only within the official yatra season (typically around late April/May to early November, weather-dependent) — confirm exact dates for the current year before booking.',
     importantNotes: [
       'Kedarnath access is via a trek (or helicopter, subject to weather and availability) — not a guaranteed, road-accessible leg like Badrinath.',
-      'This package deliberately overlaps with two of the four stops in the Char Dham Yatra package — choose this one if Yamunotri and Gangotri are not needed.'
+      'This package deliberately overlaps with two of the four stops in the Char Dham Yatra package — choose this one if Yamunotri and Gangotri are not needed.',
+      'Road transport covers the motorable route only, up to Guptkashi/Sonprayag — the Kedarnath leg itself is not a road-vehicle service and is not guaranteed on every date.',
+      'Accommodation shown here is a category, not a specific named property — the final hotel/guesthouse is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.'
     ],
     bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
     faqs: []
@@ -414,7 +653,19 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     duration: '5 Nights / 6 Days',
     category: 'Family',
     price: 15999,
-    priceBasis: 'per person (starting price, indicative)',
+    priceBasis: 'per person (starting price, indicative, double sharing)',
+    // Verified 2026-09-30 (Phase 4B): /cancellation-policy is live (200), not disallowed
+    // by robots.txt, and its content explicitly covers "journeys" — see
+    // docs/phase-4b-final-commercial-approval.md. This is a statement of that verified
+    // fact, never a bypass — see models/Journey.ts's own doc comment on this field.
+    usesGeneralCancellationPolicy: true,
+    hotelCategoryDescription: 'Deluxe hotel/equivalent — the specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
+    mealPlan: 'Daily breakfast and dinner (MAP) at the hotel for each of the 5 nights on this itinerary.',
+    transportType: 'Private cab throughout, for all pickup/drop transfers and itinerary sightseeing.',
+    pickupInfo: 'Pickup from Kathgodam (exact point and time confirmed at the time of booking) — this is the approved, geographically coherent one-way itinerary\'s starting point.',
+    dropInfo: 'Drop at Dehradun (exact point and time confirmed at the time of booking) — this is the approved, geographically coherent one-way itinerary\'s end point; see this package\'s important notes.',
+    minTravellers: 2,
+    roomsIncluded: 1,
     shortDescription: 'A family-friendly Kumaon-and-Garhwal circuit pairing Nainital\'s lake town, a Corbett wildlife stop, and Mussoorie\'s hill-station views.',
     highlights: ['Naini Lake boating', 'Jim Corbett wildlife safari (subject to permit/availability)', 'Mussoorie\'s Mall Road and viewpoints'],
     itinerary: [
@@ -425,15 +676,31 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       { day: 5, title: 'Corbett to Mussoorie', description: 'Travel to Mussoorie; evening on Mall Road.' },
       { day: 6, title: 'Departure', description: 'Mussoorie sightseeing and departure.' }
     ],
-    inclusions: [],
-    exclusions: [],
+    inclusions: [
+      'Accommodation for 5 nights on a double-sharing basis (Deluxe hotel/equivalent)',
+      'Daily breakfast and dinner (MAP)',
+      'Kathgodam pickup, Dehradun drop',
+      'Itinerary transport and sightseeing by private cab as per the itinerary'
+    ],
+    exclusions: [
+      'Airfare/train fare',
+      'Personal expenses',
+      'Entry tickets',
+      'Jim Corbett safari/jeep and park permit charges (not automatically included — permits are limited and allocated separately; availability is never guaranteed)',
+      'Any Delhi transfer at either end (not part of this itinerary)',
+      'Anything not specifically mentioned in Inclusions'
+    ],
     stayOptions: [],
     addOns: [],
     startingCity: 'Kathgodam',
     endingCity: 'Dehradun',
     idealTraveller: 'Families and couples wanting a lake-town, wildlife and hill-station combination rather than a single-destination trip.',
     bestTimeToVisit: 'Broadly March–June and September–November; Corbett\'s core safari zones typically close during the monsoon months (mid-June to mid-November varies by zone) — confirm current park status when booking.',
-    importantNotes: ['Corbett safari permits are limited and allocated in advance — availability on specific dates is not guaranteed and should be confirmed before the trip is finalized.'],
+    importantNotes: [
+      'Corbett safari permits are limited and allocated in advance — availability on specific dates is not guaranteed and should be confirmed before the trip is finalized.',
+      'Accommodation shown here is a category, not a specific named property — the final hotel is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
+      'OWNER-APPROVED (Phase 4B): this itinerary is a deliberate one-way route — pickup from Kathgodam, drop at Dehradun — kept as the geographically coherent configuration this ₹15,999 starting price is based on, rather than restructured to a Delhi round trip. A Delhi transfer at either end is not included.'
+    ],
     bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
     faqs: []
   },
@@ -446,7 +713,19 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     duration: '5 Nights / 6 Days',
     category: 'Adventure',
     price: 16999,
-    priceBasis: 'per person (starting price, indicative)',
+    priceBasis: 'per person (starting price, indicative, double sharing)',
+    // Verified 2026-09-30 (Phase 4B): /cancellation-policy is live (200), not disallowed
+    // by robots.txt, and its content explicitly covers "journeys" — see
+    // docs/phase-4b-final-commercial-approval.md. This is a statement of that verified
+    // fact, never a bypass — see models/Journey.ts's own doc comment on this field.
+    usesGeneralCancellationPolicy: true,
+    hotelCategoryDescription: 'Standard/Deluxe hotel/guesthouse or equivalent — the specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
+    mealPlan: 'Daily breakfast and dinner (MAP) at the hotel/guesthouse for each of the 5 nights on this itinerary; not implied for any meal taken during the Tungnath trek day itself unless specifically arranged as part of a confirmed trek-stay.',
+    transportType: 'Private cab for motorable itinerary sectors (Joshimath/Auli, Chopta); the Tungnath trek itself is on foot, not by vehicle.',
+    pickupInfo: 'Pickup from Haridwar (exact point and time confirmed at the time of booking).',
+    dropInfo: 'Drop at Haridwar (exact point and time confirmed at the time of booking).',
+    minTravellers: 2,
+    roomsIncluded: 1,
     shortDescription: 'A nature-and-adventure pairing of Auli\'s high meadows above Joshimath with Chopta\'s meadow base for the Tungnath trek — for couples and travellers wanting mountain scenery over a pilgrimage-paced itinerary.',
     highlights: ['Auli\'s ropeway and high-altitude meadows', 'Chopta\'s "mini Switzerland" meadow', 'Tungnath trek, one of the highest Shiva temples'],
     itinerary: [
@@ -457,15 +736,37 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       { day: 5, title: 'Chopta Local Time', description: 'A more relaxed day around Chopta\'s meadow.' },
       { day: 6, title: 'Departure', description: 'Return travel and departure.' }
     ],
-    inclusions: [],
-    exclusions: [],
+    inclusions: [
+      'Accommodation for 5 nights on a double-sharing basis (Standard/Deluxe hotel/guesthouse or equivalent)',
+      'Daily breakfast and dinner (MAP)',
+      'Haridwar pickup/drop',
+      'Itinerary transport by private cab for motorable sectors as per the itinerary'
+    ],
+    exclusions: [
+      'Airfare/train fare',
+      'Personal expenses',
+      'Auli ropeway tickets',
+      'Tungnath trek guide/porter charges',
+      'Adventure activities',
+      'Anything not specifically mentioned in Inclusions'
+    ],
     stayOptions: [],
     addOns: [],
-    startingCity: 'Rishikesh',
-    endingCity: 'Rishikesh',
+    // Updated from 'Rishikesh' to 'Haridwar' (Phase 4A) to match the owner-specified
+    // pickup/drop gateway — both are adjacent, commonly interchangeable gateway towns for
+    // this route (Haridwar is already this catalogue's gateway for the Char Dham and
+    // Kedarnath Badrinath packages), a low-materiality substitution unlike the other
+    // flagged pickup/drop conflicts in this file (see Kinnaur Spiti, Kasol Kheerganga
+    // Tosh, Jibhi Tirthan Valley, Nainital Corbett Mussoorie).
+    startingCity: 'Haridwar',
+    endingCity: 'Haridwar',
     idealTraveller: 'Couples and nature/adventure travellers wanting meadow and trek scenery rather than a pilgrimage-focused itinerary.',
     bestTimeToVisit: 'Auli suits both a winter snow visit and a summer/autumn green-meadow visit depending on what a traveller wants to see; the Tungnath trail is best avoided in heavy monsoon rain and can be snow-affected in winter — confirm current trail conditions before departure.',
-    importantNotes: ['The Tungnath trek\'s difficulty and duration can vary with weather and trail condition on the day — it should not be assumed uniformly easy for every traveller.'],
+    importantNotes: [
+      'The Tungnath trek\'s difficulty and duration can vary with weather and trail condition on the day — it should not be assumed uniformly easy for every traveller.',
+      'Snowfall, ropeway operation and Tungnath trek accessibility are not guaranteed on any specific date — each is weather/season dependent, confirmed closer to travel.',
+      'Accommodation shown here is a category, not a specific named property — the final hotel/guesthouse is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.'
+    ],
     bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
     faqs: []
   },

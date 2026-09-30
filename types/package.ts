@@ -113,6 +113,10 @@ export interface TravelPackage {
   transportType?: string;
   minTravellers?: number;
   roomsIncluded?: number;
+  /** See models/Journey.ts's own doc comment — true only when this Journey's
+   *  cancellation terms are genuinely covered by the real, live, public general
+   *  /cancellation-policy page; never a bypass or a fabricated percentage. */
+  usesGeneralCancellationPolicy?: boolean;
 }
 
 /** Authoring shape for a NOT-YET-PUBLISHED Journey (config/draftJourneys.config.ts,

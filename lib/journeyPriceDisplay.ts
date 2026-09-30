@@ -31,6 +31,23 @@ export function roundForDisplay({ rawCalculatedPrice, roundToNearest = 1 }: Pric
 export const JOURNEY_PRICE_DISCLAIMER =
   'Starting price is indicative and based on selected occupancy/package configuration. Final price may vary by travel dates, group size, hotel category, transport, season and availability.';
 
+function formatINR(amount: number): string {
+  return `₹${Math.round(amount).toLocaleString('en-IN')}`;
+}
+
+// The exact public-facing contract (Phase 4, Part 2): always "Starting From", always
+// qualified "per person", always carrying the trailing asterisk that ties back to
+// JOURNEY_PRICE_DISCLAIMER above — never a bare, unqualified figure that could read as a
+// fixed, guaranteed price. Throws rather than silently rendering a fabricated-looking
+// price for 0/negative/non-finite input — the same "never treated as set" rule
+// lib/journeyCommercialReadiness.ts's MISSING_PRICE blocker already enforces.
+export function buildStartingFromLabel(price: number): string {
+  if (!Number.isFinite(price) || price <= 0) {
+    throw new Error(`price must be a real, positive number — received ${price}.`);
+  }
+  return `Starting From ${formatINR(price)} per person*`;
+}
+
 export interface PublicDisplayPrice {
   rawCalculatedPrice: number;
   roundedPrice: number;

@@ -10,7 +10,8 @@ import JourneyHero from '@/components/modules/journey-detail/JourneyHero';
 import JourneyBookingSidebar from '@/components/modules/journey-detail/JourneyBookingSidebar';
 import JourneySection from '@/components/modules/journey-detail/JourneySection';
 import RelatedJourneys from '@/components/modules/journey-detail/RelatedJourneys';
-import { formatINR } from '@/lib/pricing';
+import { formatINR, isValidPrice } from '@/lib/pricing';
+import { JOURNEY_PRICE_DISCLAIMER } from '@/lib/journeyPriceDisplay';
 import type { TravelPackage } from '@/types/package';
 
 /** A curated Destination this journey genuinely covers — only ever built from a real
@@ -188,11 +189,26 @@ export default function PackageDetailContent({
             {pkg.idealTraveller ||
             pkg.bestTimeToVisit ||
             pkg.hotelCategoryDescription ||
+            pkg.mealPlan ||
+            pkg.transportType ||
+            pkg.pickupInfo ||
+            pkg.dropInfo ||
             pkg.bookingProcess ||
             pkg.importantNotes?.length ||
+            isValidPrice(pkg.price) ||
             (pkg.startingCity && pkg.endingCity) ? (
               <JourneySection title="Good to Know">
                 <dl className="space-y-4 text-sm text-slate-700">
+                  {/* The price-disclaimer counterpart to JourneyBookingSidebar's "Starting
+                      From ₹X per person*" — rendered here too (not only in the sidebar)
+                      specifically so the asterisk has a real, always-visible path to its
+                      disclaimer on mobile, where the desktop sidebar is `hidden`. */}
+                  {isValidPrice(pkg.price) ? (
+                    <div>
+                      <dt className="font-semibold text-slate-900">Price*</dt>
+                      <dd className="mt-1">{JOURNEY_PRICE_DISCLAIMER}</dd>
+                    </div>
+                  ) : null}
                   {pkg.startingCity && pkg.endingCity ? (
                     <div>
                       <dt className="font-semibold text-slate-900">Route</dt>
@@ -215,8 +231,32 @@ export default function PackageDetailContent({
                   ) : null}
                   {pkg.hotelCategoryDescription ? (
                     <div>
-                      <dt className="font-semibold text-slate-900">Hotel category</dt>
+                      <dt className="font-semibold text-slate-900">Accommodation</dt>
                       <dd className="mt-1">{pkg.hotelCategoryDescription}</dd>
+                    </div>
+                  ) : null}
+                  {pkg.mealPlan ? (
+                    <div>
+                      <dt className="font-semibold text-slate-900">Meals</dt>
+                      <dd className="mt-1">{pkg.mealPlan}</dd>
+                    </div>
+                  ) : null}
+                  {pkg.transportType ? (
+                    <div>
+                      <dt className="font-semibold text-slate-900">Transport</dt>
+                      <dd className="mt-1">{pkg.transportType}</dd>
+                    </div>
+                  ) : null}
+                  {pkg.pickupInfo ? (
+                    <div>
+                      <dt className="font-semibold text-slate-900">Pickup</dt>
+                      <dd className="mt-1">{pkg.pickupInfo}</dd>
+                    </div>
+                  ) : null}
+                  {pkg.dropInfo ? (
+                    <div>
+                      <dt className="font-semibold text-slate-900">Drop</dt>
+                      <dd className="mt-1">{pkg.dropInfo}</dd>
                     </div>
                   ) : null}
                   {pkg.bookingProcess ? (

@@ -144,6 +144,17 @@ export interface JourneyDocument extends Document {
    *  / 1 room = double occupancy) — paired with `minTravellers` to describe the
    *  occupancy basis a price was actually calculated against. */
   roomsIncluded?: number;
+  /** True ONLY when this Journey's cancellation/refund terms are genuinely covered by
+   *  the real, live, publicly-accessible general site policy at /cancellation-policy
+   *  (components/modules/CancellationPolicyContent.tsx — case-by-case, no fixed
+   *  percentages, explicitly covers "journeys"). This is a statement of fact, never a
+   *  bypass: `lib/journeyCommercialReadiness.ts`'s `getCommercialBlockers()` only clears
+   *  `CANCELLATION_POLICY_OWNER_APPROVAL_REQUIRED` when this is `true`, and it must only
+   *  ever be set `true` after that page has actually been confirmed live and public (see
+   *  docs/phase-4b-final-commercial-approval.md's verification) — never merely because an
+   *  owner approved using it, and never to fabricate a package-specific percentage this
+   *  field does not and cannot represent. */
+  usesGeneralCancellationPolicy?: boolean;
   // Populated automatically by `{ timestamps: true }` below — declared here only so
   // lib/packages.ts can read doc.updatedAt with type safety.
   createdAt: Date;
@@ -197,7 +208,8 @@ const JourneySchema = new Schema<JourneyDocument>(
     mealPlan: { type: String },
     transportType: { type: String },
     minTravellers: { type: Number },
-    roomsIncluded: { type: Number }
+    roomsIncluded: { type: Number },
+    usesGeneralCancellationPolicy: { type: Boolean }
   },
   { timestamps: true }
 );

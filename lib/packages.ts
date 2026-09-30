@@ -49,7 +49,8 @@ export function toTravelPackage(doc: JourneyDocument): TravelPackage {
     mealPlan: doc.mealPlan,
     transportType: doc.transportType,
     minTravellers: doc.minTravellers,
-    roomsIncluded: doc.roomsIncluded
+    roomsIncluded: doc.roomsIncluded,
+    usesGeneralCancellationPolicy: doc.usesGeneralCancellationPolicy
   };
 }
 

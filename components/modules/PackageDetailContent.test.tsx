@@ -30,11 +30,20 @@ function basePkg(overrides: Partial<TravelPackage> = {}): TravelPackage {
 }
 
 describe('PackageDetailContent — AI-readable content fields (Phase 1)', () => {
-  it('renders no "Good to Know" section for an existing journey with none of the new optional fields set — no fabricated content', () => {
+  it('"Good to Know" always renders for a journey with a real price (Price* + Cancellation, Phase 4B) — but none of the OTHER optional fields, when unset', () => {
     const html = renderToStaticMarkup(<PackageDetailContent pkg={basePkg()} />);
-    expect(html).not.toContain('Good to Know');
+    expect(html).toContain('Good to Know');
+    expect(html).toContain('Price*');
+    expect(html).toContain('Starting price is indicative and based on selected occupancy/package configuration');
+    expect(html).toContain('Cancellation');
     expect(html).not.toContain('Ideal for');
     expect(html).not.toContain('Best time to visit');
+  });
+
+  it('never renders the Price* row for a journey with no valid price', () => {
+    const html = renderToStaticMarkup(<PackageDetailContent pkg={basePkg({ price: 0 })} />);
+    expect(html).not.toContain('Price*');
+    expect(html).not.toContain('indicative');
   });
 
   it('renders only the populated optional fields, and none of the unpopulated ones', () => {
@@ -90,11 +99,56 @@ describe('PackageDetailContent — AI-readable content fields (Phase 1)', () => 
     expect(withLinks).toContain('Manali');
   });
 
-  it('uses pkg.priceBasis in the sidebar when set, and falls back to "person" (unchanged behavior) when not', () => {
-    const withoutBasis = renderToStaticMarkup(<PackageDetailContent pkg={basePkg()} />);
-    expect(withoutBasis).toContain('/ person');
+  it('renders the Phase 4A "Starting From ₹X per person*" contract in the sidebar for any valid price, with the disclaimer directly below it', () => {
+    const html = renderToStaticMarkup(<PackageDetailContent pkg={basePkg({ price: 13999 })} />);
+    expect(html).toContain('Starting From ₹13,999 per person*');
+    expect(html).toContain('Starting price is indicative and based on selected occupancy/package configuration');
+  });
 
-    const withBasis = renderToStaticMarkup(<PackageDetailContent pkg={basePkg({ priceBasis: 'couple' })} />);
-    expect(withBasis).toContain('/ couple');
+  it('falls back to the custom-quote label, with no disclaimer, when the package has no valid price', () => {
+    const html = renderToStaticMarkup(<PackageDetailContent pkg={basePkg({ price: 0 })} />);
+    expect(html).toContain('Get Your Custom Quote');
+    expect(html).not.toContain('Starting From');
+    expect(html).not.toContain('indicative');
+  });
+
+  it('Phase 4B: the mobile price line carries a visible path from the asterisk to the disclaimer (the "Good to Know" section), without any page redesign', () => {
+    const html = renderToStaticMarkup(<PackageDetailContent pkg={basePkg({ price: 13999 })} />);
+    expect(html).toContain('Indicative price');
+    expect(html).toContain('Good to Know');
+  });
+});
+
+describe('PackageDetailContent — Phase 4A commercial fields (Accommodation/Meals/Transport/Pickup/Drop)', () => {
+  it('renders each commercial field only when actually populated, under its own "Good to Know" label', () => {
+    const html = renderToStaticMarkup(
+      <PackageDetailContent
+        pkg={basePkg({
+          hotelCategoryDescription: 'Deluxe hotel/equivalent',
+          mealPlan: 'Daily breakfast and dinner (MAP)',
+          transportType: 'Private cab throughout',
+          pickupInfo: 'Pickup from Chandigarh',
+          dropInfo: 'Drop at Chandigarh'
+        })}
+      />
+    );
+    expect(html).toContain('Accommodation');
+    expect(html).toContain('Deluxe hotel/equivalent');
+    expect(html).toContain('Meals');
+    expect(html).toContain('Daily breakfast and dinner (MAP)');
+    expect(html).toContain('Transport');
+    expect(html).toContain('Private cab throughout');
+    expect(html).toContain('Pickup');
+    expect(html).toContain('Pickup from Chandigarh');
+    expect(html).toContain('Drop');
+    expect(html).toContain('Drop at Chandigarh');
+  });
+
+  it('renders none of these five rows for a journey with none of the fields set — no fabricated content', () => {
+    const html = renderToStaticMarkup(<PackageDetailContent pkg={basePkg()} />);
+    expect(html).not.toContain('Meals</dt>');
+    expect(html).not.toContain('Transport</dt>');
+    expect(html).not.toContain('Pickup</dt>');
+    expect(html).not.toContain('Drop</dt>');
   });
 });
