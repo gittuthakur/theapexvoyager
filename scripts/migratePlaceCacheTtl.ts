@@ -25,6 +25,7 @@
  *   npx tsx scripts/migratePlaceCacheTtl.ts --execute    (actually drops the index, if found)
  */
 import mongoose from 'mongoose';
+import { pathToFileURL } from 'node:url';
 import { connectDB } from '../lib/mongodb';
 
 const COLLECTION_NAME = 'placecaches';
@@ -117,7 +118,11 @@ async function main() {
 // Only runs when this file is executed directly (`tsx scripts/migratePlaceCacheTtl.ts`)
 // — guarded so scripts/migratePlaceCacheTtl.test.ts can import findTtlIndexCandidates
 // without triggering a real MongoDB connection attempt as a side effect of the import.
-const isDirectExecution = process.argv[1] && import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}`;
+// Uses Node's own pathToFileURL rather than hand-building a `file://` string — a naive
+// `file://${path}` is wrong on Windows (a drive-letter absolute path needs the extra
+// leading slash `file:///D:/...`, not `file://D:/...`), which silently made this guard
+// always false there and the script a no-op with zero output.
+const isDirectExecution = Boolean(process.argv[1]) && import.meta.url === pathToFileURL(process.argv[1]).href;
 if (isDirectExecution) {
   main().catch((error) => {
     console.error('PlaceCache TTL migration failed:', error);

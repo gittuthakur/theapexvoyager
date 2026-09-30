@@ -9,16 +9,18 @@ import { siteConfig } from '@/config/site.config';
 import { buildBreadcrumbListSchema, buildFaqPageSchema, buildJourneyProductSchema } from '@/lib/schema';
 import JsonLd from '@/components/seo/JsonLd';
 
-// ISR, matching the Destination detail page's caching strategy (app/destinations/[slug]/
-// page.tsx) — was previously fully dynamic (a live, uncached Mongo round-trip on every
-// request), the one major detail template without any caching. An empty
-// generateStaticParams means nothing is pre-rendered at build time; every slug is
-// rendered on first request and then served from cache for up to 5 minutes, so a Journey
-// edit is never stale for longer than that.
-export const revalidate = 300;
-export async function generateStaticParams() {
-  return [];
-}
+// REVERTED (2026-09, production incident): an ISR attempt here (`revalidate = 300` +
+// an empty `generateStaticParams`, matching the Destination detail page's strategy)
+// shipped to production and made EVERY /journeys/[slug] request 500 with a
+// DYNAMIC_SERVER_USAGE digest. This route reads `searchParams` (the `?book=1` deep
+// link, below) — combining that with generateStaticParams/revalidate is what triggered
+// the crash; Next.js does not gracefully fall back to per-request dynamic rendering
+// here the way plain SSR does. Caught by production log inspection immediately after
+// deploy, not by the local build (which reported this route as prerenderable and gave
+// no error). Reverted to fully dynamic rendering — correct and safe, exactly how this
+// route behaved before that change. Do not reintroduce revalidate/generateStaticParams
+// on this route without first confirming (in a real deployment, not just `next build`)
+// that searchParams usage doesn't retrigger this.
 
 // The 'sikkim-mountain-escape' → 'uttarakhand-explorer' legacy-slug redirect (this
 // journey's content was always Rishikesh/Haridwar/Mussoorie, Uttarakhand —
