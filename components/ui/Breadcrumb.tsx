@@ -28,10 +28,10 @@ export default function Breadcrumb({ items, className }: BreadcrumbProps) {
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
           return (
-            <li key={`${item.label}-${index}`} className="flex items-center gap-1.5">
+            <li key={`${item.label}-${index}`} className="flex min-w-0 max-w-full items-center gap-1.5">
               {index > 0 ? <ChevronRight size={14} className="shrink-0 text-white/40" aria-hidden="true" /> : null}
               {isLast || !item.href ? (
-                <span aria-current={isLast ? 'page' : undefined} className="text-white">
+                <span aria-current={isLast ? 'page' : undefined} className="min-w-0 break-words text-white [overflow-wrap:anywhere]">
                   {item.label}
                 </span>
               ) : (

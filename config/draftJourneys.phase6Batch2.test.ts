@@ -162,6 +162,15 @@ describe('Phase 6 Batch 2 — itinerary-verified pickup/drop (no Phase 4A-style 
 });
 
 describe('Phase 6 Batch 2 — package-specific safety (no unsupported activity silently included)', () => {
+  it('does not infer a private cab from an itinerary that specifies no vehicle type', () => {
+    for (const slug of ['shimla-short-escape', 'manali-short-escape', 'dalhousie-khajjiar-chamba', 'bir-billing-palampur', 'mussoorie-weekend', 'rishikesh-adventure-package']) {
+      const journey = getTarget(slug);
+      expect(journey.transportType).toMatch(/Package-dependent/);
+      expect(journey.inclusions.join(' ')).not.toMatch(/private cab/i);
+      expect(journey.importantNotes?.join(' ')).toContain('OWNER DECISION REQUIRED');
+    }
+  });
+
   function includesAny(items: string[], patterns: RegExp[]): boolean {
     return items.some((item) => patterns.some((pattern) => pattern.test(item)));
   }
