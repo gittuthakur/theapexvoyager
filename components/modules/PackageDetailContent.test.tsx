@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import PackageDetailContent from './PackageDetailContent';
 import type { TravelPackage } from '@/types/package';
+import { GULMARG_WINTER_IMAGE } from '@/config/imageCredits.config';
 
 // BackButton (rendered unconditionally at the top of PackageDetailContent) calls
 // next/navigation's useRouter(), which throws outside a mounted App Router — these tests
@@ -30,6 +31,19 @@ function basePkg(overrides: Partial<TravelPackage> = {}): TravelPackage {
 }
 
 describe('PackageDetailContent — AI-readable content fields (Phase 1)', () => {
+  it('shows source, author, license and resizing disclosure beside the credited Journey hero only', () => {
+    const credited = renderToStaticMarkup(<PackageDetailContent pkg={basePkg({ image: GULMARG_WINTER_IMAGE })} />);
+    const uncredited = renderToStaticMarkup(<PackageDetailContent pkg={basePkg()} />);
+
+    expect(credited).toContain('Photo credit:');
+    expect(credited).toContain('Koshur');
+    expect(credited).toContain('CC BY-SA 4.0');
+    expect(credited).toContain('Resized by Wikimedia Commons');
+    expect(credited).toContain('https://commons.wikimedia.org/wiki/File:Snowfall_In_Gulmarg.jpg');
+    expect(credited).toContain('https://creativecommons.org/licenses/by-sa/4.0/');
+    expect(uncredited).not.toContain('Photo credit:');
+  });
+
   it('"Good to Know" always renders for a journey with a real price (Price* + Cancellation, Phase 4B) — but none of the OTHER optional fields, when unset', () => {
     const html = renderToStaticMarkup(<PackageDetailContent pkg={basePkg()} />);
     expect(html).toContain('Good to Know');

@@ -613,6 +613,20 @@ No rights-cleared, identity-verified photograph of Chail, Patnitop, or Bhaderwah
 
 No rights-cleared, identity-verified photograph of Pangi Valley was approved during Destinations Batch D (Phase D2) sourcing. Every Commons candidate found either fell short of the 1,600px hero-image floor, or lacked independently corroborated identity evidence (a Commons category, GPS coordinates, or third-party usage) strong enough for a valley this easy to misattribute — including one candidate that met the resolution floor by exactly 1,600px but had no supporting category or coordinates, and an 1860s archival public-domain print with the strongest identity evidence of the set that fell 64px short of the floor. Its `image` field points at the generic `destinationsHero` asset (never a misattributed specific-place photo) and it is listed in `config/destinationImageOverrides.ts`'s `DESTINATIONS_WITHOUT_VERIFIED_IMAGE` set, so the UI shows the honest neutral placeholder instead. Add a real entry here only once a verified photo is sourced and shipped.
 
+## Gulmarg winter Journey
+
+- Local file: `public/images/gulmarg-winter-snow.jpg`
+- Source: Wikimedia Commons — `File:Snowfall_In_Gulmarg.jpg`
+- Source page: https://commons.wikimedia.org/wiki/File:Snowfall_In_Gulmarg.jpg
+- Creator: Koshur
+- Original media: https://upload.wikimedia.org/wikipedia/commons/6/64/Snowfall_In_Gulmarg.jpg
+- Downloaded media: https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Snowfall_In_Gulmarg.jpg/1280px-Snowfall_In_Gulmarg.jpg
+- Original resolution: 4,096 × 3,072; local resolution: 1,280 × 960
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)
+- Change notice: resized rendition from Wikimedia Commons; no crop or other edits. Treat the resized image as CC BY-SA 4.0; this license applies to the image derivative only, not the site as a whole.
+- Attribution: “Snowfall In Gulmarg” by Koshur, via Wikimedia Commons, CC BY-SA 4.0; resized from 4,096 × 3,072 to 1,280 × 960.
+- Visual review: snow-covered Gulmarg scene, no visible watermark in the downloaded 1,280 × 960 image. It depicts snow cover, not active snowfall or guaranteed current conditions.
+
 ## On-site attribution
 
 All attribution-required entries above are credited on `/photo-credits`,

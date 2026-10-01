@@ -2,6 +2,7 @@ import { Clock, MapPin } from 'lucide-react';
 import DetailHero from '@/components/modules/detail/DetailHero';
 import { DetailMetaItem } from '@/components/modules/detail/DetailMeta';
 import Breadcrumb, { type BreadcrumbItem } from '@/components/ui/Breadcrumb';
+import ImageAttribution from '@/components/ui/ImageAttribution';
 import type { TravelPackage } from '@/types/package';
 
 export interface JourneyHeroProps {
@@ -23,19 +24,22 @@ export interface JourneyHeroProps {
 // with a frosted-pill style unique to this route).
 export default function JourneyHero({ pkg, titleOverride, breadcrumbItems }: JourneyHeroProps) {
   return (
-    <DetailHero
-      image={pkg.image}
-      imageAlt={pkg.name}
-      imageSizes="(min-width: 1024px) 1200px, 100vw"
-      breadcrumb={breadcrumbItems?.length ? <Breadcrumb items={breadcrumbItems} /> : undefined}
-      eyebrow={pkg.category}
-      title={titleOverride ?? pkg.name}
-      meta={
-        <>
-          <DetailMetaItem icon={MapPin}>{pkg.destination}</DetailMetaItem>
-          <DetailMetaItem icon={Clock}>{pkg.duration}</DetailMetaItem>
-        </>
-      }
-    />
+    <>
+      <DetailHero
+        image={pkg.image}
+        imageAlt={pkg.name}
+        imageSizes="(min-width: 1024px) 1200px, 100vw"
+        breadcrumb={breadcrumbItems?.length ? <Breadcrumb items={breadcrumbItems} /> : undefined}
+        eyebrow={pkg.category}
+        title={titleOverride ?? pkg.name}
+        meta={
+          <>
+            <DetailMetaItem icon={MapPin}>{pkg.destination}</DetailMetaItem>
+            <DetailMetaItem icon={Clock}>{pkg.duration}</DetailMetaItem>
+          </>
+        }
+      />
+      <ImageAttribution imagePath={pkg.image} />
+    </>
   );
 }

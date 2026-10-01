@@ -1,4 +1,5 @@
 import { Camera } from 'lucide-react';
+import { JOURNEY_IMAGE_CREDITS } from '@/config/imageCredits.config';
 
 interface PhotoCredit {
   destination: string;
@@ -7,6 +8,7 @@ interface PhotoCredit {
   license: string;
   licenseUrl: string;
   sourceUrl: string;
+  changes?: string;
 }
 
 const credits: PhotoCredit[] = [
@@ -452,7 +454,16 @@ const credits: PhotoCredit[] = [
     license: 'CC BY-SA 4.0',
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Gurdwara_Manikaran.jpg'
-  }
+  },
+  ...JOURNEY_IMAGE_CREDITS.map((credit) => ({
+    destination: credit.destination,
+    title: credit.title,
+    creator: credit.author,
+    license: credit.licenseName,
+    licenseUrl: credit.licenseUrl,
+    sourceUrl: credit.sourceUrl,
+    changes: credit.modificationDescription
+  }))
 ];
 
 export default function PhotoCreditsContent() {
@@ -465,7 +476,7 @@ export default function PhotoCreditsContent() {
           </div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">Photo Credits</h1>
           <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
-            Destination photography on this site comes from our own archive or from Wikimedia Commons under a
+            Destination and Journey photography on this site comes from our own archive or from Wikimedia Commons under a
             Creative Commons license. Where a license requires attribution, the photographer and license are credited
             below.
           </p>
@@ -494,6 +505,7 @@ export default function PhotoCreditsContent() {
                       &ldquo;{credit.title}&rdquo;
                     </a>{' '}
                     by {credit.creator}
+                    {credit.changes ? <span className="mt-1 block text-xs text-slate-500">{credit.changes}</span> : null}
                   </td>
                   <td className="px-4 py-4 align-top text-slate-600 sm:px-6">
                     <a
