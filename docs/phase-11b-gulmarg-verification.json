@@ -1,12 +1,27 @@
 {
   "phase": "11B",
-  "checkedAt": "2026-10-02T00:00:00.000Z",
+  "checkedAt": "2026-10-01T21:16:15.992Z",
   "publicationAuthorized": false,
+  "productionBefore": {
+    "status": "draft",
+    "price": null,
+    "duration": "3 Nights / 4 Days",
+    "startingCity": "Srinagar",
+    "endingCity": "Srinagar",
+    "inclusions": [],
+    "exclusions": [],
+    "day2": "Gondola ride and snow-slope time, conditions permitting."
+  },
   "image": {
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Snowfall_In_Gulmarg.jpg",
     "author": "Koshur",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "commercialReusePermitted": true,
+    "adaptationPermitted": true,
+    "attributionAndLicenseLinkRequired": true,
+    "changeNoticeRequired": true,
+    "shareAlikeRequiredForAdaptations": true,
     "originalResolution": "4096x3072",
     "originalMediaUrl": "https://upload.wikimedia.org/wikipedia/commons/6/64/Snowfall_In_Gulmarg.jpg",
     "downloadedMediaUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Snowfall_In_Gulmarg.jpg/1280px-Snowfall_In_Gulmarg.jpg",
@@ -18,7 +33,11 @@
     "modificationDescription": "Resized by Wikimedia Commons from 4096x3072 to 1280x960; no crop or other edits.",
     "visuallyReviewed": true,
     "attributionImplemented": true,
-    "productionHttpStatus": null
+    "productionHttpStatus": 200,
+    "productionContentType": "image/jpeg",
+    "productionBytes": 362239,
+    "productionPhotoCreditsHttpStatus": 200,
+    "productionPhotoCreditsVisible": true
   },
   "commercialUpdate": {
     "initialDryRun": {
@@ -29,24 +48,39 @@
       "published": 0,
       "protectedFieldsUnchanged": true
     },
-    "executed": false,
-    "updated": null,
-    "idempotentWouldUpdate": null,
-    "idempotentAlreadyCorrect": null,
-    "readinessBlockers": null
+    "execution": {
+      "mode": "EXECUTE",
+      "targetCount": 1,
+      "updated": 1,
+      "refused": 0,
+      "conflicts": 0,
+      "published": 0,
+      "status": "draft"
+    },
+    "idempotency": {
+      "wouldUpdate": 0,
+      "alreadyCorrect": 1,
+      "refused": 0,
+      "conflicts": 0
+    },
+    "readinessBlockers": ["OWNER_APPROVAL_REQUIRED"],
+    "protectedJourneySnapshotUnchanged": true
   },
   "deployment": {
-    "commit": null,
-    "head": null,
-    "originMain": null,
-    "dashboardReady": null,
-    "behavioralVerification": null
+    "commit": "0f554146aa6407f6ca1afc849b5bd7f9585aee9f",
+    "head": "0f554146aa6407f6ca1afc849b5bd7f9585aee9f",
+    "originMain": "0f554146aa6407f6ca1afc849b5bd7f9585aee9f",
+    "vercelStatus": "Ready",
+    "productionAlias": "https://www.theapexvoyager.in",
+    "behavioralVerification": true
   },
   "publicIsolation": {
     "status": "draft",
-    "urlHttpStatus": null,
-    "catalogueCount": null,
-    "sitemapCount": null
+    "urlHttpStatus": 404,
+    "catalogueCount": 27,
+    "catalogueIncludesGulmarg": false,
+    "sitemapCount": 27,
+    "sitemapIncludesGulmarg": false
   },
   "globalCounts": {
     "total": 40,
@@ -54,10 +88,10 @@
     "draft": 13
   },
   "validation": {
-    "focusedTests": "passed",
-    "fullTests": null,
-    "typecheck": null,
-    "lint": null,
-    "build": null
+    "focusedTests": "22 passed",
+    "fullTests": "1261 passed across 101 files",
+    "typecheck": "passed",
+    "lint": "passed for all changed source/test files",
+    "build": "passed"
   }
 }
