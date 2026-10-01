@@ -1,0 +1,523 @@
+{
+  "preflight": {
+    "checkedAt": "2026-10-01T14:11:26.018Z",
+    "mode": "DRY RUN",
+    "targetCount": 2,
+    "wouldUpdate": 2,
+    "alreadyCorrect": 0,
+    "refused": [],
+    "conflicts": 0,
+    "updated": 0,
+    "published": 0,
+    "counts": {
+      "total": 40,
+      "published": 24,
+      "draft": 16
+    },
+    "nonTargetsUnchanged": true,
+    "protectedFieldsUnchanged": true,
+    "destinationsAndRegionsUnchanged": true,
+    "targets": [
+      {
+        "slug": "dharamshala-mcleodganj-short-escape",
+        "status": "draft",
+        "blockers": [
+          "MISSING_PRICE",
+          "MISSING_HOTEL_PLAN",
+          "MISSING_TRANSPORT_PLAN",
+          "MISSING_OCCUPANCY",
+          "MISSING_PICKUP_INFO",
+          "MISSING_DROP_INFO",
+          "MISSING_MEAL_PLAN",
+          "MISSING_INCLUSIONS",
+          "MISSING_EXCLUSIONS",
+          "CANCELLATION_POLICY_OWNER_APPROVAL_REQUIRED",
+          "OWNER_APPROVAL_REQUIRED"
+        ]
+      },
+      {
+        "slug": "grand-himachal-circuit",
+        "status": "draft",
+        "blockers": [
+          "MISSING_PRICE",
+          "MISSING_HOTEL_PLAN",
+          "MISSING_TRANSPORT_PLAN",
+          "MISSING_OCCUPANCY",
+          "MISSING_PICKUP_INFO",
+          "MISSING_DROP_INFO",
+          "MISSING_MEAL_PLAN",
+          "MISSING_INCLUSIONS",
+          "MISSING_EXCLUSIONS",
+          "CANCELLATION_POLICY_OWNER_APPROVAL_REQUIRED",
+          "OWNER_APPROVAL_REQUIRED"
+        ]
+      }
+    ]
+  },
+  "execution": {
+    "checkedAt": "2026-10-01T14:12:24.476Z",
+    "mode": "EXECUTE",
+    "targetCount": 2,
+    "wouldUpdate": 2,
+    "alreadyCorrect": 0,
+    "refused": [],
+    "conflicts": 0,
+    "updated": 2,
+    "published": 0,
+    "counts": {
+      "total": 40,
+      "published": 24,
+      "draft": 16
+    },
+    "nonTargetsUnchanged": true,
+    "protectedFieldsUnchanged": true,
+    "destinationsAndRegionsUnchanged": true,
+    "targets": [
+      {
+        "slug": "dharamshala-mcleodganj-short-escape",
+        "status": "draft",
+        "blockers": [
+          "OWNER_APPROVAL_REQUIRED"
+        ],
+        "price": 10999,
+        "image": "/images/destination-mcleod-ganj.jpg"
+      },
+      {
+        "slug": "grand-himachal-circuit",
+        "status": "draft",
+        "blockers": [
+          "OWNER_APPROVAL_REQUIRED"
+        ],
+        "price": 29999,
+        "image": "/images/destination-dalhousie.jpg"
+      }
+    ]
+  },
+  "idempotency": {
+    "checkedAt": "2026-10-01T14:12:49.617Z",
+    "mode": "DRY RUN",
+    "targetCount": 2,
+    "wouldUpdate": 0,
+    "alreadyCorrect": 2,
+    "refused": [],
+    "conflicts": 0,
+    "updated": 0,
+    "published": 0,
+    "counts": {
+      "total": 40,
+      "published": 24,
+      "draft": 16
+    },
+    "nonTargetsUnchanged": true,
+    "protectedFieldsUnchanged": true,
+    "destinationsAndRegionsUnchanged": true,
+    "targets": [
+      {
+        "slug": "dharamshala-mcleodganj-short-escape",
+        "status": "draft",
+        "blockers": [
+          "OWNER_APPROVAL_REQUIRED"
+        ],
+        "price": 10999,
+        "image": "/images/destination-mcleod-ganj.jpg"
+      },
+      {
+        "slug": "grand-himachal-circuit",
+        "status": "draft",
+        "blockers": [
+          "OWNER_APPROVAL_REQUIRED"
+        ],
+        "price": 29999,
+        "image": "/images/destination-dalhousie.jpg"
+      }
+    ]
+  },
+  "changed": [
+    {
+      "slug": "dharamshala-mcleodganj-short-escape",
+      "changedFields": [
+        "endingCity",
+        "exclusions",
+        "inclusions",
+        "dropInfo",
+        "hotelCategoryDescription",
+        "image",
+        "mealPlan",
+        "minTravellers",
+        "pickupInfo",
+        "price",
+        "roomsIncluded",
+        "transportType",
+        "usesGeneralCancellationPolicy"
+      ],
+      "commercial": {
+        "price": 10999,
+        "pickupInfo": "Pickup from an agreed railway station or local point in Pathankot for the Day-1 transfer to Dharamshala. Exact location and arrival time must allow the road transfer and are confirmed before booking.",
+        "dropInfo": "Return transfer to an agreed railway station or local point in Pathankot after checkout on Day 4. Confirm departure timings with sufficient road-transfer time before booking.",
+        "mealPlan": "Breakfast and dinner during the three-night stay: three breakfasts and three dinners. Lunch and meals outside this stated plan are excluded.",
+        "transportType": "Private cab for the approved Pathankot-Dharamshala-Pathankot transfers and motorable Dharamshala/McLeod Ganj sightseeing sectors. Route and timing depend on road/weather conditions; vehicle use is limited to the agreed itinerary.",
+        "minTravellers": 2,
+        "roomsIncluded": 1,
+        "hotelCategoryDescription": "Three nights in a Standard/Deluxe hotel or equivalent in the Dharamshala/McLeod Ganj area, on double sharing for two adults in one room. This is an accommodation category, not a confirmed named property or star rating; the hotel and room are confirmed before booking, subject to availability.",
+        "inclusions": [
+          "Three nights in the approved Standard/Deluxe hotel category or equivalent, in one double-sharing room for two adults.",
+          "Three breakfasts and three dinners during the three-night stay.",
+          "Private cab pickup in Pathankot and return drop in Pathankot at the agreed locations and timings.",
+          "Private cab for approved motorable Dharamshala and McLeod Ganj sightseeing sectors; attraction admissions and paid activities are not included.",
+          "Indicative Starting From price per person on double sharing for two adults in one room; final quote depends on travel dates, confirmed services and availability."
+        ],
+        "exclusions": [
+          "Air/train fares to and from Pathankot; personal expenses and shopping.",
+          "Lunch, drinks and any meals outside the stated breakfast-and-dinner plan.",
+          "Entry tickets, paid activities, guides, porter services and trekking arrangements, including a Triund trek.",
+          "Restricted-sector or local-union transport unless specifically included in the confirmed quote.",
+          "Dalhousie/Khajjiar extensions, additional vehicle use and services not specifically included.",
+          "Additional nights or services caused by road/weather disruption are not automatically included; alternatives and any extra cost require separate confirmation."
+        ],
+        "image": "/images/destination-mcleod-ganj.jpg",
+        "regionId": "6a8acd3bb91782afaca681c4",
+        "usesGeneralCancellationPolicy": true,
+        "endingCity": "Pathankot"
+      }
+    },
+    {
+      "slug": "grand-himachal-circuit",
+      "changedFields": [
+        "exclusions",
+        "inclusions",
+        "dropInfo",
+        "hotelCategoryDescription",
+        "image",
+        "mealPlan",
+        "minTravellers",
+        "pickupInfo",
+        "price",
+        "roomsIncluded",
+        "transportType",
+        "usesGeneralCancellationPolicy"
+      ],
+      "commercial": {
+        "price": 29999,
+        "pickupInfo": "Pickup from an agreed airport, railway station or local point in Chandigarh for the Day-1 drive to Shimla. Exact location and departure time are confirmed before booking.",
+        "dropInfo": "Local drop at an agreed point in Dalhousie after checkout on Day 10. The package ends in Dalhousie; onward transfers to Pathankot, Chandigarh or another destination require a separate quote.",
+        "mealPlan": "Breakfast and dinner where operationally provided during the nine-night hotel itinerary. The exact included meal schedule is confirmed in writing before booking; meals outside that confirmed schedule are excluded.",
+        "transportType": "Private cab for approved road sectors from Chandigarh through Shimla, Manali and Dharamshala to Dalhousie, with accessible Solang/Khajjiar sightseeing transfers. Day 6 from Manali to Dharamshala is a long, dedicated transfer day requiring suitable departure time and rest stops. Road/weather conditions may require a revised plan agreed with the traveller; this is not unlimited vehicle use.",
+        "minTravellers": 2,
+        "roomsIncluded": 1,
+        "hotelCategoryDescription": "Nine nights in Standard/Deluxe hotels or equivalent: Shimla 2 nights, Manali 3 nights, Dharamshala 2 nights and Dalhousie 2 nights. Double sharing for two adults in one room. This is an accommodation category, not a confirmed named property or star rating; hotels and rooms are confirmed before booking, subject to availability.",
+        "inclusions": [
+          "Nine nights in the approved Standard/Deluxe hotel category or equivalent, in one double-sharing room for two adults: Shimla 2, Manali 3, Dharamshala 2 and Dalhousie 2 nights.",
+          "Breakfast and dinner where operationally provided, according to the meal schedule confirmed in writing before booking.",
+          "Private cab for approved Chandigarh-Shimla-Manali-Dharamshala-Dalhousie road transfers, ending with local Dalhousie drop.",
+          "Approved motorable sightseeing transfers including accessible Solang Valley and Khajjiar/Chamera sectors, subject to road and weather conditions; attraction admissions and paid activities are excluded.",
+          "Day 6 is a long Manali-to-Dharamshala transfer, not a short or relaxed sightseeing day; departure time and rest stops are confirmed for the route.",
+          "Indicative Starting From price per person on double sharing for two adults in one room; final quote depends on travel dates, confirmed services and availability."
+        ],
+        "exclusions": [
+          "Air/train fares, personal expenses and meals outside the confirmed meal schedule.",
+          "Entry tickets, adventure activities, guides, porter services and equipment hire.",
+          "Rohtang/Atal Tunnel extensions and restricted-sector or local-union vehicles unless explicitly included in the confirmed quote.",
+          "Onward travel beyond the agreed Dalhousie local drop, including transfers to Pathankot or Chandigarh.",
+          "Extra vehicle use, off-route excursions and services not specifically included.",
+          "Additional nights or services due to road/weather disruption are not automatically included; any revised itinerary, services and cost are confirmed with the traveller."
+        ],
+        "image": "/images/destination-dalhousie.jpg",
+        "regionId": "6a8acd3bb91782afaca681c4",
+        "usesGeneralCancellationPolicy": true,
+        "endingCity": "Dalhousie"
+      }
+    }
+  ],
+  "validation": {
+    "focused": 4,
+    "files": 97,
+    "tests": 1244,
+    "typecheck": "PASS",
+    "lint": "PASS",
+    "build": "PASS"
+  },
+  "productionRegression": {
+    "checkedAt": "2026-10-01T14:12:53.969Z",
+    "pages": [
+      {
+        "slug": "shimla-short-escape",
+        "http": 200,
+        "price": 7999,
+        "image": "/images/destination-shimla.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      },
+      {
+        "slug": "manali-short-escape",
+        "http": 200,
+        "price": 8999,
+        "image": "/images/destination-manali.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      },
+      {
+        "slug": "kasol-manikaran-weekend",
+        "http": 200,
+        "price": 6999,
+        "image": "/images/destination-kasol.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      },
+      {
+        "slug": "dalhousie-khajjiar-chamba",
+        "http": 200,
+        "price": 10999,
+        "image": "/images/destination-dalhousie.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      },
+      {
+        "slug": "bir-billing-palampur",
+        "http": 200,
+        "price": 9999,
+        "image": "/images/destination-bir-billing.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      },
+      {
+        "slug": "mussoorie-weekend",
+        "http": 200,
+        "price": 7999,
+        "image": "/images/destination-mussoorie.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      },
+      {
+        "slug": "valley-of-flowers-hemkund-sahib-trek",
+        "http": 200,
+        "price": 12999,
+        "image": "/images/destination-hemkund-sahib.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      },
+      {
+        "slug": "rishikesh-adventure-package",
+        "http": 200,
+        "price": 8999,
+        "image": "/images/destination-rishikesh.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      }
+    ],
+    "relationships": [
+      {
+        "region": "himachal-pradesh",
+        "journeys": 13,
+        "pass": true
+      },
+      {
+        "region": "kashmir",
+        "journeys": 3,
+        "pass": true
+      },
+      {
+        "region": "uttarakhand",
+        "journeys": 8,
+        "pass": true
+      },
+      {
+        "destination": "shimla",
+        "targets": [
+          "shimla-short-escape"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "manali",
+        "targets": [
+          "manali-short-escape"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "kasol",
+        "targets": [
+          "kasol-manikaran-weekend"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "manikaran",
+        "targets": [
+          "kasol-manikaran-weekend"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "dalhousie",
+        "targets": [
+          "dalhousie-khajjiar-chamba"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "khajjiar",
+        "targets": [
+          "dalhousie-khajjiar-chamba"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "chamba",
+        "targets": [
+          "dalhousie-khajjiar-chamba"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "bir-billing",
+        "targets": [
+          "bir-billing-palampur"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "palampur",
+        "targets": [
+          "bir-billing-palampur"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "mussoorie",
+        "targets": [
+          "mussoorie-weekend"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "hemkund-sahib",
+        "targets": [
+          "valley-of-flowers-hemkund-sahib-trek"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "rishikesh",
+        "targets": [
+          "rishikesh-adventure-package"
+        ],
+        "pass": true
+      }
+    ],
+    "drafts": [
+      {
+        "slug": "auli-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "badrinath-yatra",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "dharamshala-mcleodganj-dalhousie-khajjiar-circuit",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "dharamshala-mcleodganj-short-escape",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "grand-himachal-circuit",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "gulmarg-winter-escape",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "kashmir-winter-snow-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "kedarnath-yatra",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "kinnaur-valley-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "ladakh-hanle-tso-moriri-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "leh-nubra-pangong-hanle-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "leh-nubra-pangong-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "leh-nubra-pangong-turtuk-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "spiti-winter-expedition",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "srinagar-leh-ladakh-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "uttarakhand-honeymoon-circuit",
+        "http": 404,
+        "leak": false
+      }
+    ],
+    "ladakh": {
+      "region": "draft",
+      "destinations": 8,
+      "journeys": 5,
+      "leak": false
+    },
+    "catalogueCount": 24,
+    "sitemapCount": 24
+  }
+}

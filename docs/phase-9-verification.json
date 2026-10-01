@@ -1,0 +1,420 @@
+{
+  "checkedAt": "2026-10-01T13:42:14.363Z",
+  "counts": {
+    "total": 40,
+    "published": 24,
+    "draft": 16
+  },
+  "productionWrites": 0,
+  "images": [
+    {
+      "slug": "kinnaur-valley-tour",
+      "source": "sangla-valley",
+      "path": "/images/destination-sangla-valley.jpg",
+      "fileExists": true,
+      "http": 200,
+      "type": "image/jpeg",
+      "bytes": 414990
+    },
+    {
+      "slug": "dharamshala-mcleodganj-short-escape",
+      "source": "mcleod-ganj",
+      "path": "/images/destination-mcleod-ganj.jpg",
+      "fileExists": true,
+      "http": 200,
+      "type": "image/jpeg",
+      "bytes": 204069
+    },
+    {
+      "slug": "grand-himachal-circuit",
+      "source": "dalhousie",
+      "path": "/images/destination-dalhousie.jpg",
+      "fileExists": true,
+      "http": 200,
+      "type": "image/jpeg",
+      "bytes": 318659
+    }
+  ],
+  "blockers": [
+    {
+      "slug": "dharamshala-mcleodganj-short-escape",
+      "blockers": [
+        "MISSING_PRICE",
+        "MISSING_HOTEL_PLAN",
+        "MISSING_TRANSPORT_PLAN",
+        "MISSING_OCCUPANCY",
+        "MISSING_PICKUP_INFO",
+        "MISSING_DROP_INFO",
+        "MISSING_MEAL_PLAN",
+        "MISSING_INCLUSIONS",
+        "MISSING_EXCLUSIONS",
+        "CANCELLATION_POLICY_OWNER_APPROVAL_REQUIRED",
+        "OWNER_APPROVAL_REQUIRED"
+      ]
+    },
+    {
+      "slug": "grand-himachal-circuit",
+      "blockers": [
+        "MISSING_PRICE",
+        "MISSING_HOTEL_PLAN",
+        "MISSING_TRANSPORT_PLAN",
+        "MISSING_OCCUPANCY",
+        "MISSING_PICKUP_INFO",
+        "MISSING_DROP_INFO",
+        "MISSING_MEAL_PLAN",
+        "MISSING_INCLUSIONS",
+        "MISSING_EXCLUSIONS",
+        "CANCELLATION_POLICY_OWNER_APPROVAL_REQUIRED",
+        "OWNER_APPROVAL_REQUIRED"
+      ]
+    },
+    {
+      "slug": "gulmarg-winter-escape",
+      "blockers": [
+        "MISSING_PRICE",
+        "MISSING_HOTEL_PLAN",
+        "MISSING_TRANSPORT_PLAN",
+        "MISSING_OCCUPANCY",
+        "MISSING_PICKUP_INFO",
+        "MISSING_DROP_INFO",
+        "MISSING_MEAL_PLAN",
+        "MISSING_INCLUSIONS",
+        "MISSING_EXCLUSIONS",
+        "CANCELLATION_POLICY_OWNER_APPROVAL_REQUIRED",
+        "OWNER_APPROVAL_REQUIRED"
+      ]
+    },
+    {
+      "slug": "kashmir-winter-snow-tour",
+      "blockers": [
+        "MISSING_PRICE",
+        "MISSING_HOTEL_PLAN",
+        "MISSING_TRANSPORT_PLAN",
+        "MISSING_OCCUPANCY",
+        "MISSING_PICKUP_INFO",
+        "MISSING_DROP_INFO",
+        "MISSING_MEAL_PLAN",
+        "MISSING_INCLUSIONS",
+        "MISSING_EXCLUSIONS",
+        "CANCELLATION_POLICY_OWNER_APPROVAL_REQUIRED",
+        "OWNER_APPROVAL_REQUIRED"
+      ]
+    },
+    {
+      "slug": "kinnaur-valley-tour",
+      "blockers": [
+        "MISSING_PRICE",
+        "MISSING_HOTEL_PLAN",
+        "MISSING_TRANSPORT_PLAN",
+        "MISSING_OCCUPANCY",
+        "MISSING_PICKUP_INFO",
+        "MISSING_DROP_INFO",
+        "MISSING_MEAL_PLAN",
+        "MISSING_INCLUSIONS",
+        "MISSING_EXCLUSIONS",
+        "CANCELLATION_POLICY_OWNER_APPROVAL_REQUIRED",
+        "OWNER_APPROVAL_REQUIRED"
+      ]
+    },
+    {
+      "slug": "spiti-winter-expedition",
+      "blockers": [
+        "MISSING_PRICE",
+        "MISSING_HOTEL_PLAN",
+        "MISSING_TRANSPORT_PLAN",
+        "MISSING_OCCUPANCY",
+        "MISSING_PICKUP_INFO",
+        "MISSING_DROP_INFO",
+        "MISSING_MEAL_PLAN",
+        "MISSING_INCLUSIONS",
+        "MISSING_EXCLUSIONS",
+        "CANCELLATION_POLICY_OWNER_APPROVAL_REQUIRED",
+        "OWNER_APPROVAL_REQUIRED"
+      ]
+    }
+  ],
+  "regression": {
+    "checkedAt": "2026-10-01T13:38:47.778Z",
+    "pages": [
+      {
+        "slug": "shimla-short-escape",
+        "http": 200,
+        "price": 7999,
+        "image": "/images/destination-shimla.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      },
+      {
+        "slug": "manali-short-escape",
+        "http": 200,
+        "price": 8999,
+        "image": "/images/destination-manali.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      },
+      {
+        "slug": "kasol-manikaran-weekend",
+        "http": 200,
+        "price": 6999,
+        "image": "/images/destination-kasol.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      },
+      {
+        "slug": "dalhousie-khajjiar-chamba",
+        "http": 200,
+        "price": 10999,
+        "image": "/images/destination-dalhousie.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      },
+      {
+        "slug": "bir-billing-palampur",
+        "http": 200,
+        "price": 9999,
+        "image": "/images/destination-bir-billing.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      },
+      {
+        "slug": "mussoorie-weekend",
+        "http": 200,
+        "price": 7999,
+        "image": "/images/destination-mussoorie.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      },
+      {
+        "slug": "valley-of-flowers-hemkund-sahib-trek",
+        "http": 200,
+        "price": 12999,
+        "image": "/images/destination-hemkund-sahib.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      },
+      {
+        "slug": "rishikesh-adventure-package",
+        "http": 200,
+        "price": 8999,
+        "image": "/images/destination-rishikesh.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      }
+    ],
+    "relationships": [
+      {
+        "region": "himachal-pradesh",
+        "journeys": 13,
+        "pass": true
+      },
+      {
+        "region": "kashmir",
+        "journeys": 3,
+        "pass": true
+      },
+      {
+        "region": "uttarakhand",
+        "journeys": 8,
+        "pass": true
+      },
+      {
+        "destination": "shimla",
+        "targets": [
+          "shimla-short-escape"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "manali",
+        "targets": [
+          "manali-short-escape"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "kasol",
+        "targets": [
+          "kasol-manikaran-weekend"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "manikaran",
+        "targets": [
+          "kasol-manikaran-weekend"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "dalhousie",
+        "targets": [
+          "dalhousie-khajjiar-chamba"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "khajjiar",
+        "targets": [
+          "dalhousie-khajjiar-chamba"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "chamba",
+        "targets": [
+          "dalhousie-khajjiar-chamba"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "bir-billing",
+        "targets": [
+          "bir-billing-palampur"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "palampur",
+        "targets": [
+          "bir-billing-palampur"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "mussoorie",
+        "targets": [
+          "mussoorie-weekend"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "hemkund-sahib",
+        "targets": [
+          "valley-of-flowers-hemkund-sahib-trek"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "rishikesh",
+        "targets": [
+          "rishikesh-adventure-package"
+        ],
+        "pass": true
+      }
+    ],
+    "drafts": [
+      {
+        "slug": "auli-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "badrinath-yatra",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "dharamshala-mcleodganj-dalhousie-khajjiar-circuit",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "dharamshala-mcleodganj-short-escape",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "grand-himachal-circuit",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "gulmarg-winter-escape",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "kashmir-winter-snow-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "kedarnath-yatra",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "kinnaur-valley-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "ladakh-hanle-tso-moriri-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "leh-nubra-pangong-hanle-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "leh-nubra-pangong-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "leh-nubra-pangong-turtuk-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "spiti-winter-expedition",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "srinagar-leh-ladakh-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "uttarakhand-honeymoon-circuit",
+        "http": 404,
+        "leak": false
+      }
+    ],
+    "ladakh": {
+      "region": "draft",
+      "destinations": 8,
+      "journeys": 5,
+      "leak": false
+    },
+    "catalogueCount": 24,
+    "sitemapCount": 24
+  }
+}
