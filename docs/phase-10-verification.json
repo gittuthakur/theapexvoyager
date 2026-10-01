@@ -1,0 +1,1135 @@
+{
+  "phase": "10",
+  "checkedAt": "2026-10-01T16:34:36.119Z",
+  "housekeeping": {
+    "commit": "452f5c775f910d91cfdf829cb505b3aa2e758ef1",
+    "files": [
+      "scripts/publishPhase9BJourneys.ts",
+      "scripts/publishPhase9BJourneys.test.ts",
+      "docs/phase-9b-publication.md",
+      "docs/phase-9b-verification.json"
+    ],
+    "pushed": false,
+    "newDeployment": false,
+    "originMain": "4a19c434295c2c3de9f38acefade0dbc89ef3dc1"
+  },
+  "sourceAudit": {
+    "journeys": [
+      {
+        "_id": "6abd16d55e8a5f6cab73ba08",
+        "slug": "gulmarg-winter-escape",
+        "__v": 0,
+        "addOns": [],
+        "bestTimeToVisit": "December–February specifically. Snowfall varies year to year and is never guaranteed.",
+        "bookingProcess": "Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.",
+        "category": "Adventure",
+        "createdAt": "2026-09-30T14:04:02.848Z",
+        "destination": "Gulmarg, Jammu & Kashmir",
+        "destinationSlugs": [
+          "srinagar",
+          "gulmarg"
+        ],
+        "duration": "3 Nights / 4 Days",
+        "endingCity": "Srinagar",
+        "exclusions": [],
+        "faqs": [],
+        "highlights": [
+          "Gulmarg's Gondola",
+          "Skiing and snow activities (season/operator dependent)",
+          "A focused, single-base winter trip"
+        ],
+        "idealTraveller": "Skiing/snow-sports travellers wanting a focused Gulmarg trip rather than a multi-town Kashmir circuit.",
+        "importantNotes": [
+          "This package is deliberately single-destination — travellers wanting Srinagar/Pahalgam sightseeing too should consider the Kashmir Winter Snow Tour instead."
+        ],
+        "inclusions": [],
+        "itinerary": [
+          {
+            "day": 1,
+            "title": "Arrival via Srinagar",
+            "description": "Arrive in Srinagar and transfer to Gulmarg.",
+            "_id": "6abd22168cd0ce0daa75618f"
+          },
+          {
+            "day": 2,
+            "title": "Gulmarg Gondola & Slopes",
+            "description": "Gondola ride and snow-slope time, conditions permitting.",
+            "_id": "6abd22168cd0ce0daa756190"
+          },
+          {
+            "day": 3,
+            "title": "Gulmarg Winter Activities",
+            "description": "A further day in Gulmarg; skiing/snow-activity availability is season and operator dependent.",
+            "_id": "6abd22168cd0ce0daa756191"
+          },
+          {
+            "day": 4,
+            "title": "Departure via Srinagar",
+            "description": "Return to Srinagar for departure.",
+            "_id": "6abd22168cd0ce0daa756192"
+          }
+        ],
+        "name": "Gulmarg Winter Escape",
+        "pace": [],
+        "seasonalPricing": [],
+        "shortDescription": "A short, Gulmarg-focused winter/skiing trip — distinct from the broader Kashmir Winter Snow Tour by being single-destination and shorter, for travellers who specifically want Gulmarg's slopes rather than a multi-town circuit.",
+        "signatureMoments": [],
+        "startingCity": "Srinagar",
+        "status": "draft",
+        "stayOptions": [],
+        "transportOptions": [],
+        "updatedAt": "2026-09-30T17:03:23.072Z",
+        "regionId": "6a8acd3bb91782afaca681c5"
+      },
+      {
+        "_id": "6abd16d55e8a5f6cab73ba07",
+        "slug": "kashmir-winter-snow-tour",
+        "__v": 0,
+        "addOns": [],
+        "bestTimeToVisit": "December–February specifically — this is a winter-season product. Snowfall amount and timing vary year to year and are never guaranteed; some access roads can be temporarily affected by heavy snow.",
+        "bookingProcess": "Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.",
+        "category": "Sightseeing",
+        "createdAt": "2026-09-30T14:04:02.772Z",
+        "destination": "Srinagar, Gulmarg & Pahalgam, Jammu & Kashmir",
+        "destinationSlugs": [
+          "srinagar",
+          "gulmarg",
+          "pahalgam"
+        ],
+        "duration": "4 Nights / 5 Days",
+        "endingCity": "Srinagar",
+        "exclusions": [],
+        "faqs": [],
+        "highlights": [
+          "Gulmarg's winter Gondola and snow slopes",
+          "Srinagar's houseboats in winter",
+          "Pahalgam's snow-season valley views"
+        ],
+        "idealTraveller": "Travellers specifically wanting the winter/snow Kashmir experience, understanding that actual snowfall and road access vary year to year.",
+        "importantNotes": [
+          "Snow itself is a real, weather-dependent phenomenon — this itinerary is never sold on a guaranteed-snow basis, and skiing/snow-activity costs are not yet approved for this draft."
+        ],
+        "inclusions": [],
+        "itinerary": [
+          {
+            "day": 1,
+            "title": "Arrival in Srinagar",
+            "description": "Arrive in Srinagar; evening at leisure, houseboat stay where available.",
+            "_id": "6abd22168cd0ce0daa756185"
+          },
+          {
+            "day": 2,
+            "title": "Srinagar to Gulmarg",
+            "description": "Travel to Gulmarg for its winter Gondola and snow scenery, conditions permitting.",
+            "_id": "6abd22168cd0ce0daa756186"
+          },
+          {
+            "day": 3,
+            "title": "Gulmarg Winter Activities",
+            "description": "A further day in Gulmarg; skiing/snow activities are subject to season, snowfall and operator availability, not guaranteed.",
+            "_id": "6abd22168cd0ce0daa756187"
+          },
+          {
+            "day": 4,
+            "title": "Gulmarg to Pahalgam",
+            "description": "Travel to Pahalgam for its winter valley views.",
+            "_id": "6abd22168cd0ce0daa756188"
+          },
+          {
+            "day": 5,
+            "title": "Departure via Srinagar",
+            "description": "Return to Srinagar for departure.",
+            "_id": "6abd22168cd0ce0daa756189"
+          }
+        ],
+        "name": "Kashmir Winter Snow Tour",
+        "pace": [],
+        "seasonalPricing": [],
+        "shortDescription": "A winter-specific Kashmir itinerary built around the region's snow season — genuinely different framing and pacing from the existing summer/general-season Kashmir packages, though snow itself is never guaranteed on any specific date.",
+        "signatureMoments": [],
+        "startingCity": "Srinagar",
+        "status": "draft",
+        "stayOptions": [],
+        "transportOptions": [],
+        "updatedAt": "2026-09-30T17:03:23.033Z",
+        "regionId": "6a8acd3bb91782afaca681c5"
+      },
+      {
+        "_id": "6abd16d45e8a5f6cab73ba00",
+        "slug": "kinnaur-valley-tour",
+        "__v": 0,
+        "addOns": [],
+        "bestTimeToVisit": "Broadly March–June and September–November; winter brings snow at higher points and some road sections may be affected.",
+        "bookingProcess": "Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.",
+        "category": "Offbeat",
+        "createdAt": "2026-09-30T14:04:02.203Z",
+        "destination": "Kinnaur, Himachal Pradesh",
+        "destinationSlugs": [
+          "shimla",
+          "narkanda",
+          "sarahan",
+          "sangla-valley",
+          "chitkul",
+          "kinnaur"
+        ],
+        "duration": "6 Nights / 7 Days",
+        "endingCity": "Shimla",
+        "exclusions": [],
+        "faqs": [],
+        "highlights": [
+          "Sarahan's Bhimakali Temple",
+          "Sangla and Chitkul in the Baspa valley",
+          "Kalpa's Kinner Kailash views"
+        ],
+        "idealTraveller": "Offbeat travellers wanting the Kinnaur/Baspa valley experience without continuing into Spiti's higher-altitude, permit-requiring territory.",
+        "importantNotes": [
+          "This package deliberately does not continue into Spiti Valley — travellers wanting that should consider the existing Kinnaur Spiti Circuit instead."
+        ],
+        "inclusions": [],
+        "itinerary": [
+          {
+            "day": 1,
+            "title": "Shimla to Narkanda",
+            "description": "Drive to Narkanda, a highway hill town.",
+            "_id": "6abd22158cd0ce0daa756135"
+          },
+          {
+            "day": 2,
+            "title": "Narkanda to Sarahan",
+            "description": "Continue to Sarahan to see the Bhimakali Temple.",
+            "_id": "6abd22158cd0ce0daa756136"
+          },
+          {
+            "day": 3,
+            "title": "Sarahan to Sangla",
+            "description": "Drive into the Baspa valley to Sangla.",
+            "_id": "6abd22158cd0ce0daa756137"
+          },
+          {
+            "day": 4,
+            "title": "Chitkul Day Trip",
+            "description": "Day trip to Chitkul and back to the Sangla/Kalpa area.",
+            "_id": "6abd22158cd0ce0daa756138"
+          },
+          {
+            "day": 5,
+            "title": "Kalpa",
+            "description": "Kalpa sightseeing, with views toward the Kinner Kailash range where weather allows.",
+            "_id": "6abd22158cd0ce0daa756139"
+          },
+          {
+            "day": 6,
+            "title": "Return Toward Shimla",
+            "description": "Begin the return journey.",
+            "_id": "6abd22158cd0ce0daa75613a"
+          },
+          {
+            "day": 7,
+            "title": "Departure",
+            "description": "Onward departure.",
+            "_id": "6abd22158cd0ce0daa75613b"
+          }
+        ],
+        "name": "Kinnaur Valley Tour",
+        "pace": [],
+        "seasonalPricing": [],
+        "shortDescription": "A Kinnaur-only circuit via Narkanda and Sarahan into the Baspa valley — a lower-altitude, permit-free alternative to the existing Kinnaur Spiti Circuit for travellers who don't want to continue into Spiti.",
+        "signatureMoments": [],
+        "startingCity": "Shimla",
+        "status": "draft",
+        "stayOptions": [],
+        "transportOptions": [],
+        "updatedAt": "2026-09-30T17:03:22.746Z",
+        "regionId": "6a8acd3bb91782afaca681c4"
+      },
+      {
+        "_id": "6abd16d45e8a5f6cab73ba01",
+        "slug": "spiti-winter-expedition",
+        "__v": 0,
+        "addOns": [],
+        "bestTimeToVisit": "December–February specifically — this is a winter-season product; outside this window, see the existing summer-season Spiti packages instead. Road conditions, accommodation availability and reachable villages all vary significantly day to day in winter and must be confirmed close to departure.",
+        "bookingProcess": "Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.",
+        "category": "Offbeat",
+        "createdAt": "2026-09-30T14:04:02.284Z",
+        "destination": "Spiti Valley, Himachal Pradesh",
+        "destinationSlugs": [
+          "shimla",
+          "kinnaur",
+          "tabo",
+          "spiti-valley"
+        ],
+        "duration": "6 Nights / 7 Days",
+        "endingCity": "Shimla",
+        "exclusions": [],
+        "faqs": [],
+        "highlights": [
+          "Frozen winter landscapes in the Spiti cold desert",
+          "Key Monastery and Kaza in winter",
+          "A genuinely different season/route from the valley's summer circuits"
+        ],
+        "idealTraveller": "Offbeat/adventure travellers specifically wanting the winter Spiti experience, comfortable with cold-weather travel and a genuinely more limited/weather-dependent itinerary than the summer circuits.",
+        "importantNotes": [
+          "The Manali-side exit (Kunzum Pass) is not used on this itinerary — it is closed in winter. Entry and exit are both via Shimla/Kinnaur.",
+          "Some accommodation in Spiti closes for winter — availability must be confirmed for the specific travel dates before this can be priced or booked.",
+          "This is a genuinely more physically demanding, cold-weather itinerary than the valley's summer packages — not positioned as an easier or shorter alternative."
+        ],
+        "inclusions": [],
+        "itinerary": [
+          {
+            "day": 1,
+            "title": "Shimla to Kalpa",
+            "description": "Drive along the Sutlej river to Kalpa.",
+            "_id": "6abd22158cd0ce0daa756143"
+          },
+          {
+            "day": 2,
+            "title": "Kalpa to Tabo",
+            "description": "Cross into the cold desert via Nako to Tabo, continuing to its centuries-old monastery.",
+            "_id": "6abd22158cd0ce0daa756144"
+          },
+          {
+            "day": 3,
+            "title": "Tabo to Kaza",
+            "description": "Drive on to Kaza.",
+            "_id": "6abd22158cd0ce0daa756145"
+          },
+          {
+            "day": 4,
+            "title": "Kaza Local Time",
+            "description": "Key Monastery and nearby villages, at a winter pace — some higher-altitude side trips may not be accessible.",
+            "_id": "6abd22158cd0ce0daa756146"
+          },
+          {
+            "day": 5,
+            "title": "Kaza Area",
+            "description": "A further day around Kaza's accessible villages, weather permitting.",
+            "_id": "6abd22158cd0ce0daa756147"
+          },
+          {
+            "day": 6,
+            "title": "Return Toward Kalpa",
+            "description": "Begin the return journey — the Manali-side exit is not used in winter.",
+            "_id": "6abd22158cd0ce0daa756148"
+          },
+          {
+            "day": 7,
+            "title": "Departure",
+            "description": "Onward departure via Shimla.",
+            "_id": "6abd22158cd0ce0daa756149"
+          }
+        ],
+        "name": "Spiti Winter Expedition",
+        "pace": [],
+        "seasonalPricing": [],
+        "shortDescription": "A winter-specific Spiti itinerary, genuinely different from the existing summer/monsoon-season Spiti packages: the Manali-side route (Kunzum Pass) is closed in winter, so this enters and exits via Shimla and Kinnaur only, and is built around the valley's snow-season character rather than the same warm-season loop.",
+        "signatureMoments": [],
+        "startingCity": "Shimla",
+        "status": "draft",
+        "stayOptions": [],
+        "transportOptions": [],
+        "updatedAt": "2026-09-30T17:03:22.787Z",
+        "regionId": "6a8acd3bb91782afaca681c4"
+      }
+    ],
+    "destinations": [
+      {
+        "slug": "chitkul",
+        "title": "Chitkul",
+        "status": "published",
+        "regionId": "6a8acd3bb91782afaca681c4",
+        "image": "/images/destination-chitkul.jpg",
+        "description": "The last inhabited village on the old Hindustan-Tibet trade route, deep in the Baspa Valley.",
+        "editorialDescription": "Chitkul sits at the road’s end in the Baspa Valley, past Sangla and past most itineraries. At close to 3,450 m it’s noticeably colder and starker than the valley below — fewer trees, wider skies, and a village that still runs on its own slow rhythm rather than a tourist one. It rewards travelers looking for the quiet, high end of a Kinnaur trip rather than a full itinerary in itself.",
+        "places": [
+          {
+            "title": "Baspa riverbank",
+            "description": "A short walk from the village to the river, with the valley opening out around it.",
+            "_id": "6aa10201e9a8426e5c280c09"
+          },
+          {
+            "title": "Batseri village",
+            "description": "A quieter orchard village on the way in from Sangla, often skipped entirely.",
+            "_id": "6aa10201e9a8426e5c280c0a"
+          },
+          {
+            "title": "Sangla",
+            "description": "The larger town 24–25 km back down the valley — most Chitkul trips are based there.",
+            "_id": "6aa10201e9a8426e5c280c0b"
+          }
+        ],
+        "travelTips": [
+          "The road from Sangla can be rough in places — build in extra time, especially after rain.",
+          "Evenings turn cold fast even in summer — pack a proper layer, not just a light jacket.",
+          "Stay options are limited — book ahead in peak season rather than arriving without a plan."
+        ]
+      },
+      {
+        "slug": "kinnaur",
+        "title": "Kinnaur",
+        "status": "published",
+        "regionId": "6a8acd3bb91782afaca681c4",
+        "image": "/images/destination-kinnaur.jpg",
+        "description": "Ancient villages, apple orchards and dramatic valleys along the historic Hindustan–Tibet Road.",
+        "editorialDescription": "Kinnaur unfolds slowly: apple orchards, cliffside roads, wooden temples and villages that look across the borderlands of the high Himalaya. It is a journey for travellers who prefer depth over hurry.",
+        "places": [
+          {
+            "title": "Kalpa",
+            "description": "A quiet village with unforgettable Kinner Kailash views.",
+            "_id": "6a946bd36342a71fe07822f7"
+          },
+          {
+            "title": "Sangla",
+            "description": "An orchard-filled valley beside the Baspa river.",
+            "_id": "6a946bd36342a71fe07822f8"
+          },
+          {
+            "title": "Chitkul",
+            "description": "A high Himalayan village at the end of the road.",
+            "_id": "6a946bd36342a71fe07822f9"
+          },
+          {
+            "title": "Nako",
+            "description": "A high-altitude lake village on the road to Spiti.",
+            "_id": "6a946bd36342a71fe07822fa"
+          }
+        ],
+        "travelTips": [
+          "Roads are narrow and cliffside in places — plan daytime driving.",
+          "Visit September–October for the apple harvest at its peak.",
+          "Network coverage is patchy beyond Reckong Peo."
+        ]
+      },
+      {
+        "slug": "narkanda",
+        "title": "Narkanda",
+        "status": "published",
+        "regionId": "6a8acd3bb91782afaca681c4",
+        "image": "/images/destination-narkanda.jpg",
+        "description": "An apple-country hill town on the old Hindustan-Tibet road, and the base for Hatu Peak.",
+        "editorialDescription": "Narkanda sits about 65 km beyond Shimla on the old Hindustan-Tibet road, in the heart of Himachal’s apple country. Samuel Evans Stokes introduced apple cultivation to the surrounding orchards in the 1910s, and that legacy still shapes the area. Hatu Peak, the region’s high point, rises just above the town.",
+        "places": [
+          {
+            "title": "Hatu Peak",
+            "description": "A small temple and viewpoint at the summit, reachable by a walkable trail.",
+            "_id": "6aab17be18cc9982239772d5"
+          },
+          {
+            "title": "Tani Jubbar Lake",
+            "description": "A quiet forest lake near the highway.",
+            "_id": "6aab17be18cc9982239772d6"
+          },
+          {
+            "title": "Stokes Farm, Kotgarh",
+            "description": "The orchard associated with Samuel Evans Stokes, who introduced apple cultivation to the region in the 1910s.",
+            "_id": "6aab17be18cc9982239772d7"
+          }
+        ],
+        "travelTips": [
+          "Roads can be snowbound in peak winter — check conditions before a December–February trip.",
+          "Orchard-season visits (September–October) coincide with the apple harvest."
+        ]
+      },
+      {
+        "slug": "sangla-valley",
+        "title": "Sangla Valley",
+        "status": "published",
+        "regionId": "6a8acd3bb91782afaca681c4",
+        "image": "/images/destination-sangla-valley.jpg",
+        "description": "Apple orchards and apricot groves along the Baspa river, deep in the Kinnaur Himalayas.",
+        "editorialDescription": "Sangla is the Baspa Valley’s main town — the practical base for the whole valley, rather than a quiet extension of it. Orchards run down to the river on both sides, and Kamru Fort watches over the town from a hill just above it. Kinnaur itself is the wider district; Sangla is where most travelers actually stay, using it as the launch point for Chitkul further up the valley.",
+        "places": [
+          {
+            "title": "Kamru Fort",
+            "description": "A short hike or drive above Sangla town, including the Badri Vishal temple complex.",
+            "_id": "6aa10201e9a8426e5c280c28"
+          },
+          {
+            "title": "Sangla Bazaar",
+            "description": "The town’s small main market, the valley’s only real shopping stop.",
+            "_id": "6aa10201e9a8426e5c280c29"
+          },
+          {
+            "title": "Chitkul",
+            "description": "A further, higher village around 25 km up the valley — an onward excursion rather than part of Sangla itself.",
+            "_id": "6aa10201e9a8426e5c280c2a"
+          }
+        ],
+        "travelTips": [
+          "Kamru Fort involves a short, steep climb — comfortable footwear helps.",
+          "Sangla is the last reliable place to withdraw cash before Chitkul — plan accordingly.",
+          "Roads beyond Sangla can close after heavy rain — check conditions before continuing up-valley."
+        ]
+      },
+      {
+        "slug": "sarahan",
+        "title": "Sarahan",
+        "status": "published",
+        "regionId": "6a8acd3bb91782afaca681c4",
+        "image": "/images/destination-sarahan.jpg",
+        "description": "A temple town on the old Hindustan-Tibet road, built around the Bhimakali Temple and known as the gateway to Kinnaur.",
+        "editorialDescription": "Sarahan sits above the Sutlej River, about 180 km from Shimla, and is built almost entirely around the Bhimakali Temple — one of the 51 Shaktipeethas of Hindu tradition. Most travelers heading into Kinnaur pass through or stay a night here, which has earned it the label \"gateway to Kinnaur.\"",
+        "places": [
+          {
+            "title": "Bhimakali Temple",
+            "description": "The town’s central temple complex, an active place of worship.",
+            "_id": "6aab17be18cc9982239772db"
+          },
+          {
+            "title": "Sarahan bazaar",
+            "description": "The small town market below the temple.",
+            "_id": "6aab17be18cc9982239772dc"
+          }
+        ],
+        "travelTips": [
+          "The temple is a working shrine — dress modestly and expect to remove footwear.",
+          "Roads beyond Sarahan into Kinnaur can be affected by monsoon landslides — check conditions before continuing."
+        ]
+      },
+      {
+        "slug": "shimla",
+        "title": "Shimla",
+        "status": "published",
+        "regionId": "6a8acd3bb91782afaca681c4",
+        "image": "/images/destination-shimla.jpg",
+        "description": "Pine-clad ridgelines and heritage architecture along the historic Mall Road.",
+        "editorialDescription": "Shimla pairs colonial-era character with cool cedar slopes and easy access to quieter mountain corners. It is equal parts heritage promenade, family escape and a graceful beginning to a longer Himalayan journey.",
+        "places": [
+          {
+            "title": "Mall Road",
+            "description": "Shimla’s storied promenade of cafés and heritage facades.",
+            "_id": "6aad5e455bcedf843df58959"
+          },
+          {
+            "title": "The Ridge",
+            "description": "An open viewpoint at the heart of the city.",
+            "_id": "6aad5e455bcedf843df5895a"
+          },
+          {
+            "title": "Kufri",
+            "description": "A nearby hill escape for wide views and seasonal snow.",
+            "_id": "6aad5e455bcedf843df5895b"
+          },
+          {
+            "title": "Jakhoo",
+            "description": "A forested hill crowned by a temple and panoramic outlook.",
+            "_id": "6aad5e455bcedf843df5895c"
+          },
+          {
+            "title": "Mashobra",
+            "description": "A peaceful cedar retreat beyond the bustle — now its own destination page.",
+            "_id": "6aad5e455bcedf843df5895d"
+          }
+        ],
+        "travelTips": [
+          "Mall Road is pedestrian-only — plan parking outside the core.",
+          "Book toy-train tickets ahead during peak season.",
+          "Kufri gets crowded on weekends — visit on a weekday if you can."
+        ]
+      }
+    ]
+  },
+  "kinnaur": {
+    "routeJudgment": "KINNAUR_ROUTE_CORRECTION_RECOMMENDED",
+    "preflight": {
+      "checkedAt": "2026-10-01T16:24:32.840Z",
+      "mode": "DRY RUN",
+      "wouldUpdate": 1,
+      "alreadyCorrect": 0,
+      "updated": 0,
+      "refused": 0,
+      "conflicts": 0,
+      "published": 0,
+      "counts": {
+        "total": 40,
+        "published": 26,
+        "draft": 14
+      },
+      "nonTargetsUnchanged": true,
+      "protectedFieldsUnchanged": true,
+      "destinationsAndRegionsUnchanged": true,
+      "image": {
+        "source": "sangla-valley",
+        "path": "/images/destination-sangla-valley.jpg",
+        "local": true,
+        "http": 200
+      },
+      "target": {
+        "slug": "kinnaur-valley-tour",
+        "status": "draft",
+        "blockers": [
+          "MISSING_PRICE",
+          "MISSING_HOTEL_PLAN",
+          "MISSING_TRANSPORT_PLAN",
+          "MISSING_OCCUPANCY",
+          "MISSING_PICKUP_INFO",
+          "MISSING_DROP_INFO",
+          "MISSING_MEAL_PLAN",
+          "MISSING_INCLUSIONS",
+          "MISSING_EXCLUSIONS",
+          "CANCELLATION_POLICY_OWNER_APPROVAL_REQUIRED",
+          "OWNER_APPROVAL_REQUIRED"
+        ]
+      }
+    },
+    "execution": {
+      "checkedAt": "2026-10-01T16:31:38.948Z",
+      "mode": "EXECUTE",
+      "wouldUpdate": 1,
+      "alreadyCorrect": 0,
+      "updated": 1,
+      "refused": 0,
+      "conflicts": 0,
+      "published": 0,
+      "counts": {
+        "total": 40,
+        "published": 26,
+        "draft": 14
+      },
+      "nonTargetsUnchanged": true,
+      "protectedFieldsUnchanged": true,
+      "destinationsAndRegionsUnchanged": true,
+      "image": {
+        "source": "sangla-valley",
+        "path": "/images/destination-sangla-valley.jpg",
+        "local": true,
+        "http": 200
+      },
+      "target": {
+        "slug": "kinnaur-valley-tour",
+        "status": "draft",
+        "price": 22999,
+        "blockers": [
+          "OWNER_APPROVAL_REQUIRED"
+        ]
+      }
+    },
+    "idempotency": {
+      "checkedAt": "2026-10-01T16:32:16.521Z",
+      "mode": "DRY RUN",
+      "wouldUpdate": 0,
+      "alreadyCorrect": 1,
+      "updated": 0,
+      "refused": 0,
+      "conflicts": 0,
+      "published": 0,
+      "counts": {
+        "total": 40,
+        "published": 26,
+        "draft": 14
+      },
+      "nonTargetsUnchanged": true,
+      "protectedFieldsUnchanged": true,
+      "destinationsAndRegionsUnchanged": true,
+      "image": {
+        "source": "sangla-valley",
+        "path": "/images/destination-sangla-valley.jpg",
+        "local": true,
+        "http": 200
+      },
+      "target": {
+        "slug": "kinnaur-valley-tour",
+        "status": "draft",
+        "price": 22999,
+        "blockers": [
+          "OWNER_APPROVAL_REQUIRED"
+        ]
+      }
+    },
+    "diff": {
+      "changedFields": [
+        "exclusions",
+        "inclusions",
+        "itinerary",
+        "dropInfo",
+        "hotelCategoryDescription",
+        "image",
+        "mealPlan",
+        "minTravellers",
+        "pickupInfo",
+        "price",
+        "roomsIncluded",
+        "transportType",
+        "usesGeneralCancellationPolicy"
+      ],
+      "changedDays": [
+        4,
+        6,
+        7
+      ],
+      "otherJourneysUnchanged": 39,
+      "allDestinationsRegionsUnchanged": true,
+      "updatedAtUnchanged": true
+    },
+    "after": {
+      "_id": "6abd16d45e8a5f6cab73ba00",
+      "slug": "kinnaur-valley-tour",
+      "__v": 0,
+      "addOns": [],
+      "bestTimeToVisit": "Broadly March–June and September–November; winter brings snow at higher points and some road sections may be affected.",
+      "bookingProcess": "Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.",
+      "category": "Offbeat",
+      "createdAt": "2026-09-30T14:04:02.203Z",
+      "destination": "Kinnaur, Himachal Pradesh",
+      "destinationSlugs": [
+        "shimla",
+        "narkanda",
+        "sarahan",
+        "sangla-valley",
+        "chitkul",
+        "kinnaur"
+      ],
+      "duration": "6 Nights / 7 Days",
+      "endingCity": "Shimla",
+      "exclusions": [
+        "Air/train fares to and from Shimla, personal expenses and shopping.",
+        "Lunch, drinks and meals outside the written confirmed meal schedule.",
+        "Entry tickets, paid activities, guides, porter services and trekking arrangements.",
+        "Restricted-sector or local-union transport unless specifically included in the confirmed quote.",
+        "Spiti extensions, off-route excursions, extra vehicle use and anything not specifically included.",
+        "Additional nights or services caused by weather, road conditions, local restrictions, landslides or temporary closures are not automatically included; revised arrangements and any extra costs require confirmation."
+      ],
+      "faqs": [],
+      "highlights": [
+        "Sarahan's Bhimakali Temple",
+        "Sangla and Chitkul in the Baspa valley",
+        "Kalpa's Kinner Kailash views"
+      ],
+      "idealTraveller": "Offbeat travellers wanting the Kinnaur/Baspa valley experience without continuing into Spiti's higher-altitude, permit-requiring territory.",
+      "importantNotes": [
+        "This package deliberately does not continue into Spiti Valley — travellers wanting that should consider the existing Kinnaur Spiti Circuit instead."
+      ],
+      "inclusions": [
+        "Six nights of approved hotel or guesthouse accommodation in one double-sharing room for two adults: Narkanda 2, Sarahan 1, Sangla 1 and Kalpa 2 nights.",
+        "Breakfast and dinner where operationally provided, according to the meal schedule confirmed in writing before booking.",
+        "Private hill-road vehicle for the approved Shimla-return itinerary, including agreed Shimla pickup and drop.",
+        "Approved motorable sightseeing transfers for the stored Narkanda, Sarahan, Sangla, Chitkul and Kalpa itinerary, subject to local access and road conditions; admissions and paid activities are excluded.",
+        "Indicative Starting From price per person onwards on double sharing for two adults in one room; final quote depends on travel dates, confirmed services and availability."
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Shimla to Narkanda",
+          "description": "Drive to Narkanda, a highway hill town.",
+          "_id": "6abd22158cd0ce0daa756135"
+        },
+        {
+          "day": 2,
+          "title": "Narkanda to Sarahan",
+          "description": "Continue to Sarahan to see the Bhimakali Temple.",
+          "_id": "6abd22158cd0ce0daa756136"
+        },
+        {
+          "day": 3,
+          "title": "Sarahan to Sangla",
+          "description": "Drive into the Baspa valley to Sangla.",
+          "_id": "6abd22158cd0ce0daa756137"
+        },
+        {
+          "day": 4,
+          "title": "Sangla to Chitkul to Kalpa",
+          "description": "Travel from Sangla to Chitkul, subject to road and weather conditions, then return through Sangla and continue to Kalpa. Overnight in Kalpa.",
+          "_id": "6abd22158cd0ce0daa756138"
+        },
+        {
+          "day": 5,
+          "title": "Kalpa",
+          "description": "Kalpa sightseeing, with views toward the Kinner Kailash range where weather allows.",
+          "_id": "6abd22158cd0ce0daa756139"
+        },
+        {
+          "day": 6,
+          "title": "Kalpa to Narkanda",
+          "description": "Begin the return toward Shimla, driving from Kalpa to Narkanda. Overnight in Narkanda.",
+          "_id": "6abd22158cd0ce0daa75613a"
+        },
+        {
+          "day": 7,
+          "title": "Narkanda to Shimla Departure",
+          "description": "Drive from Narkanda to Shimla for the agreed departure/drop.",
+          "_id": "6abd22158cd0ce0daa75613b"
+        }
+      ],
+      "name": "Kinnaur Valley Tour",
+      "pace": [],
+      "seasonalPricing": [],
+      "shortDescription": "A Kinnaur-only circuit via Narkanda and Sarahan into the Baspa valley — a lower-altitude, permit-free alternative to the existing Kinnaur Spiti Circuit for travellers who don't want to continue into Spiti.",
+      "signatureMoments": [],
+      "startingCity": "Shimla",
+      "status": "draft",
+      "stayOptions": [],
+      "transportOptions": [],
+      "updatedAt": "2026-09-30T17:03:22.746Z",
+      "regionId": "6a8acd3bb91782afaca681c4",
+      "dropInfo": "Drop at an agreed local point in Shimla on Day 7 after the drive from Narkanda. Confirm onward departure timings with sufficient road-transfer time before booking.",
+      "hotelCategoryDescription": "Six nights in Standard/Deluxe hotels or guesthouse equivalents appropriate to the route: Narkanda 2 nights (Nights 1 and 6), Sarahan 1 night (Night 2), Sangla 1 night (Night 3), and Kalpa 2 nights (Nights 4 and 5). Double sharing for two adults in one room. Properties and rooms are confirmed before booking, subject to availability; no named hotel or star rating is guaranteed.",
+      "image": "/images/destination-sangla-valley.jpg",
+      "mealPlan": "Breakfast and dinner where operationally provided during the six-night itinerary. The exact included meal schedule is confirmed in writing before booking; meals outside that schedule are excluded.",
+      "minTravellers": 2,
+      "pickupInfo": "Pickup from an agreed local point in Shimla for the Day-1 drive to Narkanda. Exact location and departure time are confirmed before booking.",
+      "price": 22999,
+      "roomsIncluded": 1,
+      "transportType": "Private hill-road vehicle for itinerary-approved motorable sectors from Shimla through Narkanda, Sarahan, Sangla, Chitkul and Kalpa, returning via Narkanda to Shimla. Operation depends on weather, road conditions, local restrictions, landslides and temporary closures. Chitkul access and unrestricted year-round access are not guaranteed. Any necessary route alteration and final operational arrangements are subject to local conditions and confirmation with the traveller; vehicle use is limited to the agreed itinerary.",
+      "usesGeneralCancellationPolicy": true
+    },
+    "publicCreditVerified": true
+  },
+  "winter": {
+    "productionMutations": 0,
+    "priceWrites": 0,
+    "imageAssignments": 0,
+    "published": 0,
+    "decisions": [
+      {
+        "slug": "spiti-winter-expedition",
+        "duration": "6N/7D",
+        "night6": "Kalpa recommended, supplier confirmation required",
+        "internalPrice": 29999,
+        "pricingResult": "REVISE BEFORE APPROVAL"
+      },
+      {
+        "slug": "kashmir-winter-snow-tour",
+        "duration": "4N/5D",
+        "overnights": {
+          "Srinagar": 1,
+          "Gulmarg": 2,
+          "Pahalgam": 1
+        },
+        "options": [
+          "All hotels",
+          "One Srinagar winter-operating houseboat night"
+        ],
+        "selected": null,
+        "internalPrice": 21999,
+        "pricingResult": "REVISE BEFORE APPROVAL"
+      },
+      {
+        "slug": "gulmarg-winter-escape",
+        "duration": "3N/4D",
+        "overnights": {
+          "Gulmarg": 3
+        },
+        "gateway": "Srinagar Airport",
+        "internalPrice": 19999,
+        "pricingResult": "COHERENT FOR OWNER APPROVAL",
+        "priceApproved": false
+      }
+    ]
+  },
+  "winterImages": {
+    "downloadedOrAdded": false,
+    "ownerSelectionRequired": true,
+    "candidates": [
+      {
+        "source": "https://commons.wikimedia.org/wiki/File:SPITI_IN_WINTER.jpg",
+        "author": "Konu-9712",
+        "license": "CC BY-SA 4.0",
+        "resolution": "4608x3456",
+        "visualReview": "Browser source preview",
+        "result": "REJECT CANDIDATE",
+        "reason": "Visible Shot on OnePlus watermark; open river and snow-striped slopes, not frozen-river depiction"
+      },
+      {
+        "source": "https://commons.wikimedia.org/wiki/File:Snowfall_In_Gulmarg.jpg",
+        "author": "Koshur",
+        "license": "CC BY-SA 4.0",
+        "resolution": "4096x3072",
+        "visualReview": "Browser source preview",
+        "result": "APPROVE CANDIDATE",
+        "reason": "Clear snow cover and conifers; no obvious watermark in preview; owner selection and crop test pending"
+      },
+      {
+        "source": "https://commons.wikimedia.org/wiki/File:Snow_in_Gulmarg,_Kashmir.jpg",
+        "author": "Nitin Ticku",
+        "license": "CC BY-SA 3.0",
+        "resolution": "4864x2024",
+        "visualReview": "Browser source preview",
+        "result": "NEEDS OWNER VISUAL REVIEW",
+        "reason": "Flat grey panoramic snowfield with lift infrastructure; March capture; mobile composition weaker"
+      }
+    ]
+  },
+  "publicVerification": {
+    "checkedAt": "2026-10-01T16:32:31.278Z",
+    "published": [
+      {
+        "slug": "bir-billing-palampur",
+        "http": 200
+      },
+      {
+        "slug": "auli-chopta-tungnath-tour",
+        "http": 200
+      },
+      {
+        "slug": "char-dham-yatra",
+        "http": 200
+      },
+      {
+        "slug": "dharamshala-dalhousie-escape",
+        "http": 200
+      },
+      {
+        "slug": "dalhousie-khajjiar-chamba",
+        "http": 200
+      },
+      {
+        "slug": "dharamshala-mcleodganj-short-escape",
+        "http": 200
+      },
+      {
+        "slug": "grand-himachal-circuit",
+        "http": 200
+      },
+      {
+        "slug": "himachal-himalayan-explorer",
+        "http": 200
+      },
+      {
+        "slug": "kashmir-pahalgam-gulmarg-sonamarg-tour",
+        "http": 200
+      },
+      {
+        "slug": "kashmir-signature-journey",
+        "http": 200
+      },
+      {
+        "slug": "jibhi-tirthan-valley",
+        "http": 200
+      },
+      {
+        "slug": "kashmir-family-tour",
+        "http": 200
+      },
+      {
+        "slug": "kasol-manikaran-weekend",
+        "http": 200
+      },
+      {
+        "slug": "kasol-kheerganga-tosh",
+        "http": 200
+      },
+      {
+        "slug": "kedarnath-badrinath-yatra",
+        "http": 200
+      },
+      {
+        "slug": "kinnaur-spiti-circuit",
+        "http": 200
+      },
+      {
+        "slug": "manali-premium-escape",
+        "http": 200
+      },
+      {
+        "slug": "manali-short-escape",
+        "http": 200
+      },
+      {
+        "slug": "nainital-corbett-mussoorie-tour",
+        "http": 200
+      },
+      {
+        "slug": "mussoorie-weekend",
+        "http": 200
+      },
+      {
+        "slug": "rishikesh-adventure-package",
+        "http": 200
+      },
+      {
+        "slug": "spiti-valley-adventure",
+        "http": 200
+      },
+      {
+        "slug": "shimla-short-escape",
+        "http": 200
+      },
+      {
+        "slug": "shimla-manali-tour-package",
+        "http": 200
+      },
+      {
+        "slug": "uttarakhand-explorer",
+        "http": 200
+      },
+      {
+        "slug": "valley-of-flowers-hemkund-sahib-trek",
+        "http": 200
+      }
+    ],
+    "drafts": [
+      {
+        "slug": "badrinath-yatra",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "auli-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "dharamshala-mcleodganj-dalhousie-khajjiar-circuit",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "gulmarg-winter-escape",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "kashmir-winter-snow-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "kinnaur-valley-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "kedarnath-yatra",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "ladakh-hanle-tso-moriri-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "leh-nubra-pangong-turtuk-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "leh-nubra-pangong-hanle-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "leh-nubra-pangong-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "spiti-winter-expedition",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "uttarakhand-honeymoon-circuit",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "srinagar-leh-ladakh-tour",
+        "http": 404,
+        "leak": false
+      }
+    ],
+    "ladakh": {
+      "region": "draft",
+      "destinations": [
+        {
+          "slug": "leh",
+          "status": "draft",
+          "http": 404
+        },
+        {
+          "slug": "nubra-valley",
+          "status": "draft",
+          "http": 404
+        },
+        {
+          "slug": "pangong-lake",
+          "status": "draft",
+          "http": 404
+        },
+        {
+          "slug": "turtuk",
+          "status": "draft",
+          "http": 404
+        },
+        {
+          "slug": "hanle",
+          "status": "draft",
+          "http": 404
+        },
+        {
+          "slug": "tso-moriri",
+          "status": "draft",
+          "http": 404
+        },
+        {
+          "slug": "kargil",
+          "status": "draft",
+          "http": 404
+        },
+        {
+          "slug": "lamayuru",
+          "status": "draft",
+          "http": 404
+        }
+      ],
+      "journeys": [
+        {
+          "slug": "leh-nubra-pangong-tour",
+          "status": "draft",
+          "http": 404
+        },
+        {
+          "slug": "leh-nubra-pangong-turtuk-tour",
+          "status": "draft",
+          "http": 404
+        },
+        {
+          "slug": "leh-nubra-pangong-hanle-tour",
+          "status": "draft",
+          "http": 404
+        },
+        {
+          "slug": "ladakh-hanle-tso-moriri-tour",
+          "status": "draft",
+          "http": 404
+        },
+        {
+          "slug": "srinagar-leh-ladakh-tour",
+          "status": "draft",
+          "http": 404
+        }
+      ],
+      "leak": false
+    },
+    "catalogueCount": 26,
+    "sitemapCount": 26
+  },
+  "held": {
+    "uttarakhandHoneymoon": {
+      "status": "draft",
+      "hold": true,
+      "unchanged": true,
+      "priceWritten": false,
+      "imageAssigned": false
+    },
+    "ladakh": "All Region/Destination/Journey documents unchanged; visibility details in publicVerification"
+  },
+  "validation": {
+    "focusedTests": 5,
+    "fullTestFiles": 99,
+    "fullTests": 1251,
+    "typecheck": "PASS",
+    "lint": "PASS",
+    "build": "PASS",
+    "staticPages": 41,
+    "note": "Initial typecheck/build found a test return-type issue; generic return type fixed, then focused tests, typecheck, lint and build passed. Full suite passed before the type-only correction."
+  },
+  "untouched": {
+    "existingPublishedJourneys": 26,
+    "hbx": true,
+    "googlePlaces": true,
+    "placeCache": true,
+    "transportPricing": true,
+    "indexNow": "DEFERRED"
+  }
+}
