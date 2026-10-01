@@ -1,0 +1,311 @@
+{
+  "phase": "9B",
+  "deployment": {
+    "commit": "4a19c434295c2c3de9f38acefade0dbc89ef3dc1",
+    "headMatchesOrigin": true,
+    "ready": true,
+    "url": "https://vercel.com/gittuthakur-1851s-projects/theapexvoyager-oc46/CZo2yXXA7MZYfyj8MgVvYMDY7hmT",
+    "productionAlias": "https://www.theapexvoyager.in"
+  },
+  "preflight": {
+    "checkedAt": "2026-10-01T14:53:08.959Z",
+    "mode": "DRY RUN",
+    "wouldPublish": 2,
+    "published": 0,
+    "skipped": 0,
+    "refused": 0,
+    "counts": {
+      "total": 40,
+      "published": 24,
+      "draft": 16
+    },
+    "statusOnly": true,
+    "nonTargetsUnchanged": true,
+    "destinationsAndRegionsUnchanged": true
+  },
+  "execution": {
+    "checkedAt": "2026-10-01T14:54:23.279Z",
+    "mode": "EXECUTE",
+    "wouldPublish": 2,
+    "published": 2,
+    "skipped": 0,
+    "refused": 0,
+    "counts": {
+      "total": 40,
+      "published": 26,
+      "draft": 14
+    },
+    "statusOnly": true,
+    "nonTargetsUnchanged": true,
+    "destinationsAndRegionsUnchanged": true
+  },
+  "idempotency": {
+    "checkedAt": "2026-10-01T14:56:09.070Z",
+    "mode": "DRY RUN",
+    "wouldPublish": 0,
+    "published": 0,
+    "skipped": 2,
+    "refused": 0,
+    "counts": {
+      "total": 40,
+      "published": 26,
+      "draft": 14
+    },
+    "statusOnly": true,
+    "nonTargetsUnchanged": true,
+    "destinationsAndRegionsUnchanged": true
+  },
+  "live": {
+    "checkedAt": "2026-10-01T15:00:34.224Z",
+    "pages": [
+      {
+        "slug": "dharamshala-mcleodganj-short-escape",
+        "http": 200,
+        "price": 10999,
+        "image": "/images/destination-mcleod-ganj.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      },
+      {
+        "slug": "grand-himachal-circuit",
+        "http": 200,
+        "price": 29999,
+        "image": "/images/destination-dalhousie.jpg",
+        "priceUI": true,
+        "commercial": true,
+        "schema": true,
+        "breadcrumbs": true,
+        "mobile": true
+      }
+    ],
+    "relationships": [
+      {
+        "region": "himachal-pradesh",
+        "journeys": 15,
+        "pass": true
+      },
+      {
+        "region": "kashmir",
+        "journeys": 3,
+        "pass": true
+      },
+      {
+        "region": "uttarakhand",
+        "journeys": 8,
+        "pass": true
+      },
+      {
+        "destination": "dharamshala",
+        "targets": [
+          "dharamshala-mcleodganj-short-escape",
+          "grand-himachal-circuit"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "mcleod-ganj",
+        "targets": [
+          "dharamshala-mcleodganj-short-escape"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "shimla",
+        "targets": [
+          "grand-himachal-circuit"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "manali",
+        "targets": [
+          "grand-himachal-circuit"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "dalhousie",
+        "targets": [
+          "grand-himachal-circuit"
+        ],
+        "pass": true
+      },
+      {
+        "destination": "khajjiar",
+        "targets": [
+          "grand-himachal-circuit"
+        ],
+        "pass": true
+      }
+    ],
+    "drafts": [
+      {
+        "slug": "auli-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "badrinath-yatra",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "dharamshala-mcleodganj-dalhousie-khajjiar-circuit",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "gulmarg-winter-escape",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "kashmir-winter-snow-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "kedarnath-yatra",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "kinnaur-valley-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "ladakh-hanle-tso-moriri-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "leh-nubra-pangong-hanle-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "leh-nubra-pangong-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "leh-nubra-pangong-turtuk-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "spiti-winter-expedition",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "srinagar-leh-ladakh-tour",
+        "http": 404,
+        "leak": false
+      },
+      {
+        "slug": "uttarakhand-honeymoon-circuit",
+        "http": 404,
+        "leak": false
+      }
+    ],
+    "ladakh": {
+      "region": "draft",
+      "destinations": 8,
+      "journeys": 5,
+      "leak": false
+    },
+    "catalogueCount": 26,
+    "sitemapCount": 26
+  },
+  "httpVerification": {
+    "all26Published": 200,
+    "all14Drafts": 404,
+    "note": "Direct URL checks completed on initial run; final browser run resumed relationship and page checks."
+  },
+  "cataloguePagination": {
+    "pages": 3,
+    "uniquePublishedJourneys": 26,
+    "pass": true
+  },
+  "renderedItineraries": {
+    "bothComplete": true,
+    "day6LongTransferPreserved": true
+  },
+  "images": {
+    "valid": 2,
+    "broken": 0
+  },
+  "heldRecords": [
+    {
+      "slug": "kinnaur-valley-tour",
+      "status": "draft",
+      "unchanged": true,
+      "priceWritten": false,
+      "imageAssigned": false
+    },
+    {
+      "slug": "spiti-winter-expedition",
+      "status": "draft",
+      "unchanged": true,
+      "priceWritten": false,
+      "imageAssigned": false
+    },
+    {
+      "slug": "kashmir-winter-snow-tour",
+      "status": "draft",
+      "unchanged": true,
+      "priceWritten": false,
+      "imageAssigned": false
+    },
+    {
+      "slug": "gulmarg-winter-escape",
+      "status": "draft",
+      "unchanged": true,
+      "priceWritten": false,
+      "imageAssigned": false
+    }
+  ],
+  "searchConsole": {
+    "status": "READY FOR SEARCH CONSOLE SUBMISSION",
+    "urls": [
+      {
+        "url": "https://www.theapexvoyager.in/journeys/dharamshala-mcleodganj-short-escape",
+        "http": 200,
+        "canonical": true,
+        "indexable": true,
+        "sitemap": true
+      },
+      {
+        "url": "https://www.theapexvoyager.in/journeys/grand-himachal-circuit",
+        "http": 200,
+        "canonical": true,
+        "indexable": true,
+        "sitemap": true
+      }
+    ],
+    "submitted": false,
+    "indexingClaim": false
+  },
+  "validation": {
+    "focusedTests": 2,
+    "testFiles": 98,
+    "tests": 1246,
+    "typecheck": "PASS",
+    "lint": "PASS",
+    "build": "PASS",
+    "staticPages": 41
+  },
+  "scope": {
+    "hbxUntouched": true,
+    "googlePlacesUntouched": true,
+    "placeCacheUntouched": true,
+    "transportPricingUntouched": true,
+    "indexNow": "DEFERRED",
+    "phase9bArtifacts": "local uncommitted"
+  }
+}
