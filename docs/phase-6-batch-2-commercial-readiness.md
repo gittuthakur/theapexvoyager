@@ -2,11 +2,13 @@
 
 ## Status and evidence
 
-Audit date: 2026-10-01. The existing Phase 6 commit `fea1d27` was already on origin/main, had a successful Vercel deployment, and its eight commercial records were already present in production when this continuation began. No Journey has been published by this work.
+Audit date: 2026-10-01. Commit `8619fba` was explicitly authorized, pushed to origin/main and deployed successfully by Vercel: [deployment 9yVAhmdi8LLQhkMumkaydxidffzV](https://vercel.com/gittuthakur-1851s-projects/theapexvoyager-oc46/9yVAhmdi8LLQhkMumkaydxidffzV). Production alias: https://www.theapexvoyager.in.
 
-Read-only production verification found **40 Journeys: 16 published, 24 draft**. All eight targets were draft, returned genuine HTTP 404, and were absent from `/journeys` and `/sitemap.xml`. All 16 published pages returned 200 with visible breadcrumbs and Product/AggregateOffer lowPrice matching their database price. Production data matched the original Phase 6 config on all eight targets.
+The owner supplied final commercial decisions for all eight and separately authorized correcting the trek's startingCity/endingCity to Joshimath and removing obsolete pending-decision notes. These decisions match the actual day-wise itineraries. No itinerary or status change is authorized or made.
 
-This continuation removes unsupported private-cab commitments from six drafts, adds explicit owner-decision notes, improves long breadcrumb wrapping, and hardens the previously untracked production updater. Deployment and final execution evidence is recorded below when completed.
+Before mutation, production verification found **40 Journeys: 16 published, 24 draft**. All eight targets returned genuine HTTP 404 and were absent from the catalogue, sitemap and public Region pages. All 16 published pages returned 200 with matching Product/AggregateOffer prices and visible breadcrumbs. All eight curated image URLs returned image content with HTTP 200.
+
+Final production execution results are recorded below.
 
 ## Commercial matrix
 
@@ -14,16 +16,16 @@ All prices are **indicative, per person onwards**. Occupancy is 2 adults, double
 
 | Package | Duration | Price | Occupancy | Accommodation | Meals | Transport | Pickup | Drop | Image source/path | Region | Inclusions | Exclusions | Remaining blocker | Ready for publication approval |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Shimla Short Escape | 2N/3D | ₹7,999 | 2/1 | Standard/Deluxe or equivalent | Breakfast + dinner at hotel | Package-dependent motorable sectors | Chandigarh | Chandigarh | Shimla: `/images/destination-shimla.jpg` | HP | 2 nights, meals, stated transfers/sightseeing | Air/train, personal, entry, optional Kufri, union/restricted transport, unlisted services | Owner vehicle decision + publication approval | No: vehicle decision |
-| Manali Short Escape | 3N/4D | ₹8,999 | 2/1 | Standard/Deluxe or equivalent | Breakfast + dinner at hotel | Package-dependent motorable sectors | Chandigarh | Chandigarh | Manali: `/images/destination-manali.jpg` | HP | 3 nights, meals, stated transfers, Solang excursion transport | Air/train, personal, entry, Rohtang/Atal Tunnel, union/restricted vehicles, snow/adventure activities, unlisted services | Owner vehicle decision + publication approval | No: vehicle decision |
-| Kasol Manikaran Weekend | 2N/3D | ₹6,999 | 2/1 | Standard hotel/guesthouse or equivalent | Breakfast + dinner at hotel | Shared/package-dependent | Bhuntar | Bhuntar | Kasol: `/images/destination-kasol.jpg` | HP | 2 nights, meals, Bhuntar transfers, Manikaran day trip | Air/train, personal, entry/donations, adventure activities, unlisted services | Publication approval | Yes, for owner review |
-| Dalhousie Khajjiar Chamba | 4N/5D | ₹10,999 | 2/1 | Standard/Deluxe or equivalent | Breakfast + dinner at hotel | Package-dependent motorable sectors | Pathankot | Chamba | Dalhousie: `/images/destination-dalhousie.jpg` | HP | 4 nights, meals, one-way transfers/sightseeing | Air/train, personal, entry, Chamba–Pathankot return, unlisted services | Owner vehicle decision + publication approval | No: vehicle decision |
-| Bir Billing Palampur | 3N/4D | ₹9,999 | 2/1 | Standard/Deluxe or equivalent | Breakfast + dinner at hotel | Package-dependent motorable sectors | Dharamshala | Palampur | Bir Billing: `/images/destination-bir-billing.jpg` | HP | 3 nights, meals, one-way transfers/sightseeing | Air/train, personal, entry, paragliding, Palampur–Dharamshala return, unlisted services | Owner vehicle decision + publication approval | No: vehicle decision |
-| Mussoorie Weekend | 2N/3D | ₹7,999 | 2/1 | Standard/Deluxe or equivalent | Breakfast + dinner at hotel | Package-dependent motorable sectors | Dehradun | Dehradun | Mussoorie: `/images/destination-mussoorie.jpg` | UK | 2 nights, meals, stated transfers/sightseeing | Air/train, personal, entry, unlisted services | Owner vehicle decision + publication approval | No: vehicle decision |
-| Valley of Flowers / Hemkund Sahib | 5N/6D | ₹12,999 | 2/1 | Joshimath standard hotel/guesthouse; Ghangaria basic trek lodge | Breakfast + dinner at lodging; trek-day meals not implied | Joshimath–Govindghat road sectors; onward trekking on foot | Joshimath, provisional pending gateway decision | Joshimath, provisional pending gateway decision | Hemkund Sahib: `/images/destination-hemkund-sahib.jpg` | UK | 5 nights, stated lodging meals, Joshimath pickup/drop, road transfer | Air/train, personal, Rishikesh transfer, park fees, guide/porter/pony, helicopter, unlisted services | Owner gateway decision + publication approval | No: gateway decision |
-| Rishikesh Adventure | 3N/4D | ₹8,999 | 2/1 | Standard/Deluxe or equivalent | Breakfast + dinner at hotel | Package-dependent pickup/drop road transfers | Dehradun | Dehradun | Rishikesh: `/images/destination-rishikesh.jpg` | UK | 3 nights, meals, stated pickup/drop | Air/train, personal, rafting, camping/adventure activities, entry, unlisted services | Owner vehicle decision + publication approval | No: vehicle decision |
+| Shimla Short Escape | 2N/3D | ₹7,999 | 2/1 | Standard/Deluxe or equivalent | Breakfast + dinner at hotel | Private cab, approved road sectors | Chandigarh | Chandigarh | Shimla: `/images/destination-shimla.jpg` | HP | 2 nights, meals, stated transfers/sightseeing | Air/train, personal, entry, optional Kufri, union/restricted transport, unlisted services | OWNER_APPROVAL_REQUIRED | Yes, for owner review |
+| Manali Short Escape | 3N/4D | ₹8,999 | 2/1 | Standard/Deluxe or equivalent | Breakfast + dinner at hotel | Private cab, approved road sectors | Chandigarh | Chandigarh | Manali: `/images/destination-manali.jpg` | HP | 3 nights, meals, stated transfers, Solang excursion transport | Air/train, personal, entry, Rohtang/Atal Tunnel, union/restricted vehicles, snow/adventure activities, unlisted services | OWNER_APPROVAL_REQUIRED | Yes, for owner review |
+| Kasol Manikaran Weekend | 2N/3D | ₹6,999 | 2/1 | Standard hotel/guesthouse or equivalent | Breakfast + dinner at hotel | Shared/package-dependent | Bhuntar | Bhuntar | Kasol: `/images/destination-kasol.jpg` | HP | 2 nights, meals, Bhuntar transfers, Manikaran day trip | Air/train, personal, entry/donations, adventure activities, unlisted services | OWNER_APPROVAL_REQUIRED | Yes, for owner review |
+| Dalhousie Khajjiar Chamba | 4N/5D | ₹10,999 | 2/1 | Standard/Deluxe or equivalent | Breakfast + dinner at hotel | Private cab, approved road sectors | Pathankot | Chamba | Dalhousie: `/images/destination-dalhousie.jpg` | HP | 4 nights, meals, one-way transfers/sightseeing | Air/train, personal, entry, onward Chamba transfers unless quoted, unlisted services | OWNER_APPROVAL_REQUIRED | Yes, for owner review |
+| Bir Billing Palampur | 3N/4D | ₹9,999 | 2/1 | Standard/Deluxe or equivalent | Breakfast + dinner at hotel | Private cab, approved road sectors | Dharamshala | Palampur | Bir Billing: `/images/destination-bir-billing.jpg` | HP | 3 nights, meals, one-way transfers/sightseeing | Air/train, personal, entry, paragliding, Palampur–Dharamshala return, unlisted services | OWNER_APPROVAL_REQUIRED | Yes, for owner review |
+| Mussoorie Weekend | 2N/3D | ₹7,999 | 2/1 | Standard/Deluxe or equivalent | Breakfast + dinner at hotel | Private cab, approved road sectors | Dehradun | Dehradun | Mussoorie: `/images/destination-mussoorie.jpg` | UK | 2 nights, meals, stated transfers/sightseeing | Air/train, personal, entry, unlisted services | OWNER_APPROVAL_REQUIRED | Yes, for owner review |
+| Valley of Flowers / Hemkund Sahib | 5N/6D | ₹12,999 | 2/1 | Joshimath standard hotel/guesthouse; Ghangaria basic trek lodge | Breakfast + dinner at lodging; trek-day meals not implied | Joshimath–Govindghat road sectors; onward trekking on foot | Joshimath | Joshimath | Hemkund Sahib: `/images/destination-hemkund-sahib.jpg` | UK | 5 nights, stated lodging meals, Joshimath pickup/drop, road transfer | Air/train, personal, other-city transfers, park fees, guide/porter/pony/palki, helicopter, personal equipment, unlisted services | OWNER_APPROVAL_REQUIRED | Yes, for owner review |
+| Rishikesh Adventure | 3N/4D | ₹8,999 | 2/1 | Standard/Deluxe or equivalent | Breakfast + dinner at hotel | Private/package road transfers | Dehradun | Dehradun | Rishikesh: `/images/destination-rishikesh.jpg` | UK | 3 nights, meals, stated pickup/drop | Air/train, personal, rafting, bungee, camping/adventure activities, entry, unlisted services | OWNER_APPROVAL_REQUIRED | Yes, for owner review |
 
-The six package-dependent descriptions exclude activity, local-union and restricted-area transport unless expressly quoted. Ordinary destination overlap is not a blocker.
+Five packages have owner-approved private cabs for the stated road sectors, excluding restricted/local-union services and paid activities unless explicitly listed. Rishikesh uses private/package road transfers; rafting, bungee, camping and other paid activities remain excluded. Kasol remains shared/package-dependent. Ordinary destination overlap is not a blocker.
 
 Preserved disclaimer:
 
@@ -31,13 +33,13 @@ Preserved disclaimer:
 
 ## Itinerary and operational review
 
-Day counts match all eight durations. Pickup/drop for seven packages uses their existing authored gateway fields, with one-way endings at Chamba and Palampur preserved. Their abbreviated arrival/departure days do not establish a particular vehicle class; no private cab is inferred from those days.
+Day counts match all eight durations. Pickup/drop for seven packages uses their existing authored gateway fields, with one-way endings at Chamba and Palampur preserved. The final owner approval explicitly establishes the private-cab basis for Shimla, Manali, Dalhousie, Bir and Mussoorie; it is no longer inferred from abbreviated arrival/departure descriptions. Rishikesh uses the approved private/package road-transfer basis. Kasol retains shared/package-dependent transport.
 
-The trek has a real inconsistency: `startingCity` and `endingCity` say Rishikesh, while Day 1 is arrival in Joshimath and Day 5 returns there before Day 6 departure. Its existing commercial fields describe Joshimath and exclude the Rishikesh transfer. This is a provisional itinerary-supported proposal, **not a resolved owner decision**. Do not publish until the gateway is settled. No route or gateway fields were silently rewritten.
+The trek's actual itinerary starts in Joshimath, reaches Ghangaria via Govindghat, visits the two trek destinations, then returns to Joshimath. The owner confirmed Joshimath pickup/drop and separately approved aligning the stale Rishikesh route-summary metadata. Transfers from any other city remain optional and separately quoted. All day-wise descriptions remain unchanged.
 
-Accommodation is a proposed category, subject to availability and quotation. Trek lodging is basic; no deluxe trek accommodation, trail opening, access, flowering, pony/porter, helicopter or medical-fitness guarantee is offered. Paid paragliding, rafting and other adventure activities remain excluded.
+Accommodation categories, occupancy and lodging meals remain as prepared. Trek-day meals are not implied. Basic trek lodging is not called deluxe. Porter, pony, palki, helicopter and personal trekking equipment are excluded. No trail opening, uninterrupted access, flowering, weather or medical-fitness guarantee is offered.
 
-`getCommercialBlockers()` returns `OWNER_APPROVAL_REQUIRED` for each target because all required descriptive fields exist. That helper checks field presence; it does not resolve commercial judgment or the gateway contradiction. The additional decisions above remain explicit publication holds and must not be mistaken for a clean readiness result.
+All eight are ready for **final publication approval**, with `OWNER_APPROVAL_REQUIRED` remaining. This is not permission to publish.
 
 ## Image and region verification
 
@@ -67,7 +69,7 @@ All destinationSlugs resolve to published Destinations with the expected publish
 
 Reusable `components/ui/Breadcrumb.tsx` renders `<nav aria-label="Breadcrumb"><ol>…</ol></nav>`. Home and Journeys link to real pages. The final item is plain text with `aria-current="page"`. It uses the same visible title as the H1 and BreadcrumbList. Flex wrapping, constrained item width, `min-w-0`, and overflow wrapping accommodate long mobile labels.
 
-All 16 production pages passed HTTP, visible-breadcrumb and Product/AggregateOffer price checks before this continuation's deployment. Existing Product, AggregateOffer, lowPrice and BreadcrumbList remain intact; FAQPage remains conditional on visible FAQs. No Review, AggregateRating, inventory, fake availability/discount, or priceValidUntil was added.
+All 16 production pages passed HTTP, visible-breadcrumb and Product/AggregateOffer price checks after deployment of 8619fba. Existing Product, AggregateOffer, lowPrice and BreadcrumbList remain intact; FAQPage remains conditional on visible FAQs. No Review, AggregateRating, inventory, fake availability/discount, or priceValidUntil was added.
 
 ## Cancellation
 
@@ -77,13 +79,11 @@ The live `/cancellation-policy` returned HTTP 200 and contained Journey-applicab
 
 `scripts/seedPhase6Batch2CommercialData.ts` defaults to a read-only dry run. `--audit-public` also verifies all eight 404s, listing/sitemap exclusion and all 16 live pages. Execution requires `--execute --deployment-ready` after independently verifying Vercel success for the intended commit.
 
-Preflight checks all eight before writing: exact allowlist, draft status, itinerary/duration/destination consistency with production, approved price, local image and real Destination match, valid Region and public cancellation policy. Updates use a transaction and optimistic `updatedAt`/draft guards. Status, itinerary and gateway fields are never written. Unchanged records are skipped. Postchecks verify exact target values, unchanged non-target Journey documents and unchanged global counts.
+Preflight checks all eight before writing: exact allowlist, draft status, itinerary/duration/destination consistency with production, approved price, local image and real Destination match, valid Region and public cancellation policy. Updates use a transaction and optimistic `updatedAt`/draft guards. Status and itinerary fields are never written. The only gateway metadata write is the separately authorized Joshimath correction on the trek; obsolete pending-decision notes may be corrected on these exact eight. Price basis and hotel category fields are excluded from this continuation's update allowlist. Unchanged records are skipped. Pre-mutation HTTP smoke tests cover the homepage, catalogue, destinations, sitemap, cancellation policy and three representative published Journeys. Postchecks verify exact target values, commercial blockers, unchanged non-target Journey documents, unchanged Destination/Region documents and unchanged global counts. Public audits include Region listings and real image responses.
 
 ## Owner decisions still required
 
-1. Confirm vehicle arrangements and covered motorable services at the listed prices for Shimla, Manali, Dalhousie–Chamba, Bir–Palampur, Mussoorie and Rishikesh. Until then their basis is package-dependent, not a guaranteed private cab.
-2. Resolve the trek gateway: retain Joshimath pickup/drop and align the gateway fields in a separately approved correction, or price and describe Rishikesh transfers before including them.
-3. Give separate publication approval for all eight. No publication occurs in this phase.
+Only final publication approval remains for all eight. The six transport questions and the trek gateway question have been resolved by explicit owner decisions. The additional route-summary and obsolete-note corrections were separately authorized in the conversation. No Journey is published in this phase.
 
 ## Deferred and untouched scope
 
@@ -93,10 +93,36 @@ HBX, Google Places, PlaceCache, transport pricing, Ladakh and other drafts are u
 
 ## Validation and deployment record
 
-- Initial focused tests: 37 passed.
-- Updated full suite: 95 files, 1,236 tests passed.
-- ESLint on continuation code: passed. Broader existing Phase 6 files have one pre-existing `set-state-in-effect` warning in PackageDetailContent; no errors.
-- Typecheck: `tsc --noEmit --incremental false` passed. Production build passed with network access (41 static pages); the sandboxed attempt failed on MongoDB DNS during prerendering.
-- Final updater dry run: six transport corrections, two unchanged drafts, zero conflicts; all non-target records unchanged.
-- Final deployment/update evidence: pending deployment of this continuation.
-- Mobile layout: headless Edge checked all 16 live Journey routes against the local production build at 320px. All breadcrumbs were visible, within the viewport, without overflow, with real ancestor links, no current-page self-link and matching BreadcrumbList labels. Additional 360px and 390px checks passed on Auli Chopta Tungnath.
+- Requested commit `8619fba`: pushed; Vercel reports Deployment has completed.
+- Focused tests before the metadata correction: 25 passed.
+- Final full suite: 95 files, 1,237 tests passed, including the authorized gateway-update boundary test.
+- Typecheck: `tsc --noEmit --incremental false` passed.
+- ESLint on changed code: passed without errors or warnings.
+- Production build: passed; 41 static pages generated.
+- Production browser checks: all 16 published Journey pages passed at 320px, 360px and 1280px in headless Edge. Breadcrumbs were visible, within the viewport, without overflow, with the correct ancestor links, no current-page self-link, and labels matching BreadcrumbList. Additional 390px check passed.
+- Final production update: 7 updated, 1 already correct (Kasol Manikaran Weekend), 0 refused, 0 conflicts. No status changes.
+- Idempotency: a subsequent read-only run found 0 updates needed and all 8 records already correct.
+
+## Production execution results
+
+The update ran after Vercel completed deployment of `8619fba` and the following fresh pre-mutation smoke tests returned HTTP 200: `/`, `/journeys`, `/destinations`, `/sitemap.xml`, `/cancellation-policy`, and the Manali Premium Escape, Shimla Manali Tour Package and Uttarakhand Explorer pages.
+
+All eight owner decisions are applied. The seven changed records match the approved fields exactly; Kasol already matched. The trek's route-summary fields now both say Joshimath, its old pending-confirmation note is replaced, and its original six day-wise descriptions are unchanged. No itinerary or publication status was written.
+
+Post-update database results:
+
+- Journeys: **40 total / 16 published / 24 draft**.
+- Batch 2: **8 draft / 0 published**.
+- Commercial blockers: exactly `OWNER_APPROVAL_REQUIRED` on each of the eight.
+- Existing 16 published Journeys and other 16 drafts: all document values unchanged, including prices and commercial content.
+- All Destination and Region documents unchanged, including the Ladakh Region and eight Ladakh Destinations. The five Ladakh Journeys are part of the unchanged non-target Journey set.
+- HBX, Google Places, PlaceCache and transport pricing: no writes or code changes in this work.
+
+Post-update public verification:
+
+- Eight draft URLs: **8 genuine 404s**, no catalogue/sitemap/public Region listing leaks.
+- Eight intended Destination images: **8 real / 0 generic / 0 missing or broken**; exact paths and source Destinations are in the commercial matrix. Every local asset exists and every production image response was HTTP 200 with image content.
+- Existing 16 Journey pages: **16 HTTP 200s**, visible breadcrumbs and Product/AggregateOffer lowPrice matching unchanged database prices.
+- General cancellation policy: public and applicable; all eight retain `usesGeneralCancellationPolicy = true`.
+
+Only separate final publication approval remains. IndexNow remains deferred.

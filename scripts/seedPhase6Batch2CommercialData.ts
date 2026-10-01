@@ -11,7 +11,7 @@ import { Region } from '../models/Region';
 import { draftJourneys } from '../config/draftJourneys.config';
 import { getCommercialBlockers } from '../lib/journeyCommercialReadiness';
 import { DESTINATIONS_WITHOUT_VERIFIED_IMAGE } from '../config/destinationImageOverrides';
-import type { PackageItineraryDay } from '../types/package';
+import type { DraftTravelPackageInput, PackageItineraryDay } from '../types/package';
 
 export const TARGET_PRICES = {
   'shimla-short-escape': 7999,
@@ -24,8 +24,8 @@ export const TARGET_PRICES = {
   'rishikesh-adventure-package': 8999
 } as const;
 export const COMMERCIAL_FIELDS = [
-  'price', 'priceBasis', 'image', 'pickupInfo', 'dropInfo', 'mealPlan',
-  'transportType', 'hotelCategoryDescription', 'minTravellers', 'roomsIncluded',
+  'price', 'image', 'pickupInfo', 'dropInfo', 'mealPlan',
+  'transportType', 'minTravellers', 'roomsIncluded',
   'inclusions', 'exclusions', 'usesGeneralCancellationPolicy', 'importantNotes'
 ] as const;
 
@@ -33,6 +33,18 @@ export function assertDraftTarget(slug: string, status: unknown) {
   if (!Object.prototype.hasOwnProperty.call(TARGET_PRICES, slug) || status !== 'draft') {
     throw new Error(`REFUSING ${slug}: must be an allowlisted existing draft`);
   }
+}
+
+export function buildCommercialUpdate(config: DraftTravelPackageInput): Record<string, unknown> {
+  assertDraftTarget(config.slug, config.status);
+  const values: Record<string, unknown> = Object.fromEntries(COMMERCIAL_FIELDS.map(key => [key, config[key]]));
+  // Separately authorized metadata correction for the trek only. No itinerary edit.
+  if (config.slug === 'valley-of-flowers-hemkund-sahib-trek') {
+    if (config.startingCity !== 'Joshimath' || config.endingCity !== 'Joshimath') throw new Error('Trek gateway must be Joshimath');
+    values.startingCity = config.startingCity;
+    values.endingCity = config.endingCity;
+  }
+  return values;
 }
 
 const site = 'https://www.theapexvoyager.in';
@@ -54,6 +66,14 @@ async function main() {
   const policy = await readPage('/cancellation-policy');
   if (policy.status !== 200 || !/journeys/i.test(policy.html) || !/Booking Cancellation/i.test(policy.html)) {
     throw new Error('Public, Journey-applicable cancellation policy could not be verified');
+  }
+  if (execute) {
+    for (const path of ['/', '/journeys', '/destinations', '/sitemap.xml', '/cancellation-policy',
+      '/journeys/manali-premium-escape', '/journeys/shimla-manali-tour-package', '/journeys/uttarakhand-explorer']) {
+      const page = await readPage(path);
+      if (page.status !== 200) throw new Error(`Pre-update production health failure: ${path} (${page.status})`);
+      console.log(JSON.stringify({ smoke: path, http: page.status }));
+    }
   }
   const plans: { existing: (typeof before)[number]; setDoc: Record<string, unknown>; changed: boolean }[] = [];
   for (const [slug, price] of Object.entries(TARGET_PRICES)) {
@@ -86,7 +106,7 @@ async function main() {
     const source = stops.find(d => d?.image === config.image && !DESTINATIONS_WITHOUT_VERIFIED_IMAGE.has(d.slug));
     if (!source || !config.image?.startsWith('/images/destination-') ||
         !existsSync(resolve('public', config.image.slice(1)))) throw new Error(`Unverified image: ${slug}`);
-    const setDoc = Object.fromEntries(COMMERCIAL_FIELDS.map(key => [key, config[key]]));
+    const setDoc = buildCommercialUpdate(config);
     if (Object.values(setDoc).some(v => v === undefined)) throw new Error(`Missing commercial field: ${slug}`);
     if (!existing.regionId) setDoc.regionId = regionId;
     const changed = Object.entries(setDoc).some(([key, value]) => !isDeepStrictEqual(Reflect.get(existing, key), value));
@@ -126,17 +146,31 @@ async function main() {
     if (execute && Object.entries(plan.setDoc).some(([k, v]) => !isDeepStrictEqual(Reflect.get(record!, k), v))) {
       throw new Error(`Postcheck mismatch: ${plan.existing.slug}`);
     }
+    console.log(JSON.stringify({ postcheck: record!.slug, blockers: getCommercialBlockers(record!) }));
+  }
+  const [destinationsAfter, regionsAfter] = await Promise.all([Destination.find().lean(), Region.find().lean()]);
+  if (!isDeepStrictEqual(destinations, destinationsAfter) || !isDeepStrictEqual(regions, regionsAfter)) {
+    throw new Error('Destination or Region records changed during the update');
   }
   console.log(JSON.stringify({ mode: execute ? 'EXECUTE' : 'DRY RUN', updated, wouldUpdate: plans.filter(p => p.changed).length,
     unchanged: plans.filter(p => !p.changed).length, conflicts: 0, counts: counts(after), nonTargetsUnchanged: true }));
   if (process.argv.includes('--audit-public')) {
     const [listing, sitemap] = await Promise.all([readPage('/journeys'), readPage('/sitemap.xml')]);
+    const regionPages = await Promise.all(regions.filter(r => r.status === 'published').map(r => readPage(`/regions/${r.slug}`)));
+    if (regionPages.some(p => p.status !== 200)) throw new Error('Public Region page unavailable');
     if (listing.status !== 200 || sitemap.status !== 200) throw new Error('Listing/sitemap unavailable');
     for (const slug of Object.keys(TARGET_PRICES)) {
       const page = await readPage(`/journeys/${slug}`);
-      const leaked = listing.html.includes(slug) || sitemap.html.includes(slug);
+      const leaked = listing.html.includes(slug) || sitemap.html.includes(slug) || regionPages.some(p => p.html.includes(slug));
       console.log(JSON.stringify({ slug, http: page.status, leaked }));
       if (page.status !== 404 || leaked) throw new Error(`Draft public leak: ${slug}`);
+      const record = after.find(j => j.slug === slug)!;
+      const asset = await fetch(`${site}${record.image}`, { redirect: 'manual', signal: AbortSignal.timeout(45000) });
+      const bytes = await asset.arrayBuffer();
+      if (asset.status !== 200 || !asset.headers.get('content-type')?.startsWith('image/') || !bytes.byteLength) {
+        throw new Error(`Broken production image: ${slug}`);
+      }
+      console.log(JSON.stringify({ image: record.image, source: destinations.find(d => d.image === record.image && record.destinationSlugs.includes(d.slug))?.slug, http: asset.status }));
     }
     for (const journey of after.filter(j => j.status === 'published')) {
       const page = await readPage(`/journeys/${journey.slug}`);

@@ -156,19 +156,26 @@ describe('Phase 6 Batch 2 — itinerary-verified pickup/drop (no Phase 4A-style 
     expect(journey.pickupInfo).toMatch(/joshimath/i);
     expect(journey.dropInfo).toMatch(/joshimath/i);
     expect(journey.pickupInfo).not.toMatch(/drop at rishikesh|pickup from rishikesh/i);
-    const flagged = journey.importantNotes?.find((n) => /FLAGGED FOR OWNER CONFIRMATION/.test(n));
-    expect(flagged, 'expected a flagged owner-confirmation note about the Rishikesh gateway gap').toBeDefined();
+    expect(journey.startingCity).toBe('Joshimath');
+    expect(journey.endingCity).toBe('Joshimath');
+    expect(journey.importantNotes?.join(' ')).not.toContain('FLAGGED FOR OWNER CONFIRMATION');
+    expect(journey.importantNotes?.join(' ')).toContain('OWNER-APPROVED');
   });
 });
 
 describe('Phase 6 Batch 2 — package-specific safety (no unsupported activity silently included)', () => {
-  it('does not infer a private cab from an itinerary that specifies no vehicle type', () => {
-    for (const slug of ['shimla-short-escape', 'manali-short-escape', 'dalhousie-khajjiar-chamba', 'bir-billing-palampur', 'mussoorie-weekend', 'rishikesh-adventure-package']) {
+  it('applies explicit owner-approved cab scope without adding restricted services', () => {
+    for (const slug of ['shimla-short-escape', 'manali-short-escape', 'dalhousie-khajjiar-chamba', 'bir-billing-palampur', 'mussoorie-weekend']) {
       const journey = getTarget(slug);
-      expect(journey.transportType).toMatch(/Package-dependent/);
-      expect(journey.inclusions.join(' ')).not.toMatch(/private cab/i);
-      expect(journey.importantNotes?.join(' ')).toContain('OWNER DECISION REQUIRED');
+      expect(journey.transportType).toMatch(/Private cab for itinerary-approved/);
+      expect(journey.transportType).toMatch(/local-union vehicles and paid activities are excluded/);
+      expect(journey.inclusions.join(' ')).toMatch(/Private cab for itinerary-approved/);
+      expect(journey.importantNotes?.join(' ')).not.toContain('OWNER DECISION REQUIRED');
     }
+    expect(getTarget('rishikesh-adventure-package').transportType).toMatch(/Private\/package road transfers/);
+    expect(getTarget('rishikesh-adventure-package').exclusions.join(' ')).toMatch(/Bungee jumping/);
+    expect(getTarget('valley-of-flowers-hemkund-sahib-trek').exclusions.join(' ')).toMatch(/palki/);
+    expect(getTarget('valley-of-flowers-hemkund-sahib-trek').exclusions.join(' ')).toMatch(/Personal trekking equipment/);
   });
 
   function includesAny(items: string[], patterns: RegExp[]): boolean {

@@ -826,7 +826,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     image: images.destinations.shimla,
     hotelCategoryDescription: 'Standard/Deluxe hotel or equivalent — the specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
     mealPlan: 'Daily breakfast and dinner (MAP) at the hotel for each of the 2 nights on this itinerary.',
-    transportType: 'Package-dependent road transport for the stated pickup/drop and motorable itinerary sectors; vehicle type and included services must be confirmed in the final quotation. Activity, local-union and restricted-area transport are excluded unless expressly quoted.',
+    transportType: 'Private cab for itinerary-approved road transfers and sightseeing. Restricted-area transport, local-union vehicles and paid activities are excluded unless specifically listed.',
     pickupInfo: 'Pickup from Chandigarh (exact point and time confirmed at the time of booking).',
     dropInfo: 'Drop at Chandigarh (exact point and time confirmed at the time of booking).',
     minTravellers: 2,
@@ -842,7 +842,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       'Accommodation for 2 nights on a double-sharing basis (Standard/Deluxe hotel or equivalent)',
       'Daily breakfast and dinner (MAP)',
       'Chandigarh pickup/drop',
-      'Motorable itinerary transfers and sightseeing on the package-dependent basis confirmed in the final quotation'
+      'Private cab for itinerary-approved road transfers and sightseeing'
     ],
     exclusions: [
       'Airfare/train fare',
@@ -859,7 +859,6 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     idealTraveller: 'Weekend travellers wanting a short, single-destination hill-station break rather than a longer circuit.',
     bestTimeToVisit: 'Broadly year-round; expect snow access at higher points in winter and monsoon rain in July–August — check conditions before travel.',
     importantNotes: [
-      'OWNER DECISION REQUIRED: confirm the vehicle arrangement and included motorable services at this indicative starting price before publication; the itinerary does not establish a private-cab entitlement.',
       'This is a short, single-destination itinerary by design — travellers wanting Manali too should consider the Shimla Manali Tour Package instead.',
       'Accommodation shown here is a category, not a specific named property — the final hotel is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.'
     ],
@@ -880,7 +879,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     image: images.destinations.manali,
     hotelCategoryDescription: 'Standard/Deluxe hotel or equivalent — the specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
     mealPlan: 'Daily breakfast and dinner (MAP) at the hotel for each of the 3 nights on this itinerary.',
-    transportType: 'Package-dependent road transport for the stated pickup/drop and motorable itinerary sectors; vehicle type and included services must be confirmed in the final quotation. Activity, local-union and restricted-area transport are excluded unless expressly quoted.',
+    transportType: 'Private cab for itinerary-approved road transfers and sightseeing. Restricted-area transport, local-union vehicles and paid activities are excluded unless specifically listed.',
     pickupInfo: 'Pickup from Chandigarh (exact point and time confirmed at the time of booking).',
     dropInfo: 'Drop at Chandigarh (exact point and time confirmed at the time of booking).',
     minTravellers: 2,
@@ -897,7 +896,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       'Accommodation for 3 nights on a double-sharing basis (Standard/Deluxe hotel or equivalent)',
       'Daily breakfast and dinner (MAP)',
       'Chandigarh pickup/drop',
-      'Motorable itinerary transfers and sightseeing on the package-dependent basis confirmed in the final quotation',
+      'Private cab for itinerary-approved road transfers and sightseeing',
       'Solang Valley excursion transport (Day 3, as described in the itinerary)'
     ],
     exclusions: [
@@ -915,7 +914,6 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     idealTraveller: 'Weekend travellers wanting a short, single-destination Manali trip.',
     bestTimeToVisit: 'Broadly year-round; higher-altitude excursions are snow/road-condition dependent in winter.',
     importantNotes: [
-      'OWNER DECISION REQUIRED: confirm the vehicle arrangement and included motorable services at this indicative starting price before publication; the itinerary does not establish a private-cab entitlement.',
       'This is a shorter alternative to the existing Manali Premium Escape, not a replacement for it — both remain available for different trip lengths.',
       'Accommodation shown here is a category, not a specific named property — the final hotel is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.'
     ],
@@ -1082,7 +1080,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     image: images.destinations.dalhousie,
     hotelCategoryDescription: 'Standard/Deluxe hotel or equivalent — the specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
     mealPlan: 'Daily breakfast and dinner (MAP) at the hotel for each of the 4 nights on this itinerary.',
-    transportType: 'Package-dependent road transport for the stated pickup/drop and motorable itinerary sectors; vehicle type and included services must be confirmed in the final quotation. Activity, local-union and restricted-area transport are excluded unless expressly quoted.',
+    transportType: 'Private cab for itinerary-approved road transfers and sightseeing. Restricted-area transport, local-union vehicles and paid activities are excluded unless specifically listed.',
     pickupInfo: 'Pickup from Pathankot (exact point and time confirmed at the time of booking).',
     dropInfo: 'Drop at Chamba (exact point and time confirmed at the time of booking) — this itinerary is a one-way route ending in Chamba, not a round-trip to Pathankot; see this package\'s important notes.',
     minTravellers: 2,
@@ -1100,13 +1098,13 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       'Accommodation for 4 nights on a double-sharing basis (Standard/Deluxe hotel or equivalent)',
       'Daily breakfast and dinner (MAP)',
       'Pathankot pickup, Chamba drop',
-      'Motorable itinerary transfers and sightseeing on the package-dependent basis confirmed in the final quotation'
+      'Private cab for itinerary-approved road transfers and sightseeing'
     ],
     exclusions: [
       'Airfare/train fare',
       'Personal expenses',
       'Entry tickets',
-      'Any Pathankot return transfer from Chamba (not part of this itinerary — available on request at additional cost)',
+      'Any onward transfer from Chamba after package completion, including return to Pathankot, unless separately quoted',
       'Anything not specifically mentioned in Inclusions'
     ],
     stayOptions: [],
@@ -1116,7 +1114,6 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     idealTraveller: 'Families and couples wanting a Dalhousie-Chamba circuit distinct from the existing Dharamshala-anchored package.',
     bestTimeToVisit: 'Broadly March–June and September–November; winter can bring snow and monsoon brings heavier rain to these hill roads.',
     importantNotes: [
-      'OWNER DECISION REQUIRED: confirm the vehicle arrangement and included motorable services at this indicative starting price before publication; the itinerary does not establish a private-cab entitlement.',
       'This package does not include Dharamshala or McLeod Ganj — travellers wanting those should consider the existing Himachal Family Escape or the Dharamshala McLeodganj Short Escape.',
       'This itinerary is a one-way route — pickup from Pathankot, drop at Chamba — and does not include a return transfer to Pathankot. Confirm with our travel team if a Pathankot drop is required instead; this would be quoted separately.',
       'Accommodation shown here is a category, not a specific named property — the final hotel is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.'
@@ -1138,7 +1135,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     image: images.destinations.birBilling,
     hotelCategoryDescription: 'Standard/Deluxe hotel or equivalent — the specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
     mealPlan: 'Daily breakfast and dinner (MAP) at the hotel for each of the 3 nights on this itinerary.',
-    transportType: 'Package-dependent road transport for the stated pickup/drop and motorable itinerary sectors; vehicle type and included services must be confirmed in the final quotation. Activity, local-union and restricted-area transport are excluded unless expressly quoted.',
+    transportType: 'Private cab for itinerary-approved road transfers and sightseeing. Restricted-area transport, local-union vehicles and paid activities are excluded unless specifically listed.',
     pickupInfo: 'Pickup from Dharamshala (exact point and time confirmed at the time of booking).',
     dropInfo: 'Drop at Palampur (exact point and time confirmed at the time of booking) — this itinerary is a one-way route ending in Palampur, not a round-trip to Dharamshala; see this package\'s important notes.',
     minTravellers: 2,
@@ -1155,7 +1152,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       'Accommodation for 3 nights on a double-sharing basis (Standard/Deluxe hotel or equivalent)',
       'Daily breakfast and dinner (MAP)',
       'Dharamshala pickup, Palampur drop',
-      'Motorable itinerary transfers and sightseeing on the package-dependent basis confirmed in the final quotation'
+      'Private cab for itinerary-approved road transfers and sightseeing'
     ],
     exclusions: [
       'Airfare/train fare',
@@ -1172,7 +1169,6 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     idealTraveller: 'Adventure travellers and paragliding enthusiasts, plus anyone wanting a quieter, less-visited Himachal pairing.',
     bestTimeToVisit: 'Paragliding at Bir Billing runs broadly October–June, weather dependent; specific date availability with a licensed operator must be confirmed separately, not assumed.',
     importantNotes: [
-      'OWNER DECISION REQUIRED: confirm the vehicle arrangement and included motorable services at this indicative starting price before publication; the itinerary does not establish a private-cab entitlement.',
       'Paragliding is a real, weather- and operator-dependent activity — never guaranteed on a specific date, and its cost is excluded from this starting price (see Exclusions).',
       'This itinerary is a one-way route — pickup from Dharamshala, drop at Palampur — and does not include a return transfer to Dharamshala. Confirm with our travel team if that is required; it would be quoted separately.',
       'Accommodation shown here is a category, not a specific named property — the final hotel is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.'
@@ -1346,7 +1342,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     image: images.destinations.mussoorie,
     hotelCategoryDescription: 'Standard/Deluxe hotel or equivalent — the specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
     mealPlan: 'Daily breakfast and dinner (MAP) at the hotel for each of the 2 nights on this itinerary.',
-    transportType: 'Package-dependent road transport for the stated pickup/drop and motorable itinerary sectors; vehicle type and included services must be confirmed in the final quotation. Activity, local-union and restricted-area transport are excluded unless expressly quoted.',
+    transportType: 'Private cab for itinerary-approved road transfers and sightseeing. Restricted-area transport, local-union vehicles and paid activities are excluded unless specifically listed.',
     pickupInfo: 'Pickup from Dehradun (exact point and time confirmed at the time of booking).',
     dropInfo: 'Drop at Dehradun (exact point and time confirmed at the time of booking).',
     minTravellers: 2,
@@ -1362,7 +1358,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       'Accommodation for 2 nights on a double-sharing basis (Standard/Deluxe hotel or equivalent)',
       'Daily breakfast and dinner (MAP)',
       'Dehradun pickup/drop',
-      'Motorable itinerary transfers and sightseeing on the package-dependent basis confirmed in the final quotation'
+      'Private cab for itinerary-approved road transfers and sightseeing'
     ],
     exclusions: [
       'Airfare/train fare',
@@ -1377,7 +1373,6 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     idealTraveller: 'Weekend travellers wanting a short, single-destination hill-station break.',
     bestTimeToVisit: 'Broadly year-round; monsoon brings heavier rain and winter can bring snow at higher points.',
     importantNotes: [
-      'OWNER DECISION REQUIRED: confirm the vehicle arrangement and included motorable services at this indicative starting price before publication; the itinerary does not establish a private-cab entitlement.',
       'This is a short, single-destination itinerary by design — travellers wanting Rishikesh/Haridwar or Nainital/Corbett too should consider the existing Uttarakhand Explorer or Nainital Corbett Mussoorie packages.',
       'Accommodation shown here is a category, not a specific named property — the final hotel is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.'
     ],
@@ -1424,17 +1419,12 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     priceBasis: 'per person (starting price, indicative, double sharing)',
     usesGeneralCancellationPolicy: true,
     image: images.destinations.hemkundSahib,
-    // Pickup/drop check (Phase 6): startingCity/endingCity below say Rishikesh, but the
-    // itinerary's actual Day 1/Day 6 route begins and ends in Joshimath, ~250km away —
-    // the same class of mismatch flagged and resolved in Phase 4B for other packages.
-    // Pickup/drop are set to Joshimath (itinerary-supported) rather than Rishikesh; the
-    // Rishikesh gateway question is flagged in importantNotes for owner confirmation,
-    // never silently assumed either way.
+    // Owner-confirmed gateway: Joshimath, matching the existing itinerary.
     hotelCategoryDescription: 'Standard hotel/guesthouse or equivalent in Joshimath; basic trek-lodge/guesthouse accommodation in Ghangaria for the trek nights — genuinely basic, operationally appropriate trek-base lodging, never described as "Deluxe". The specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
     mealPlan: 'Daily breakfast and dinner (MAP) at the hotel/guesthouse for each night on this itinerary; meals during the Valley of Flowers and Hemkund Sahib trek days themselves are not implied as part of this package unless specifically arranged.',
     transportType: 'Road transport covers the Joshimath–Govindghat sector only; the Govindghat–Ghangaria–Valley of Flowers/Hemkund Sahib legs are entirely on foot (trek sectors), not by vehicle.',
-    pickupInfo: 'Pickup from Joshimath (exact point and time confirmed at the time of booking) — this itinerary\'s actual day-by-day route begins in Joshimath; see this package\'s important notes on the Rishikesh gateway question.',
-    dropInfo: 'Drop at Joshimath (exact point and time confirmed at the time of booking) — see this package\'s important notes.',
+    pickupInfo: 'Pickup from Joshimath (exact point and time confirmed at booking). Transfers to Joshimath from any other city are optional and charged separately unless specifically quoted.',
+    dropInfo: 'Drop at Joshimath (exact point and time confirmed at booking). Onward transport to any other city is optional and charged separately unless specifically quoted.',
     minTravellers: 2,
     roomsIncluded: 1,
     shortDescription: 'A dedicated trek package to the Valley of Flowers and Hemkund Sahib, both reached from Govindghat/Ghangaria — zero existing coverage on this site. Valley of Flowers has no separate curated destination page of its own; this itinerary anchors to the Hemkund Sahib destination, whose own access base (Ghangaria) is the real, shared starting point for both treks.',
@@ -1456,16 +1446,17 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     exclusions: [
       'Airfare/train fare',
       'Personal expenses',
-      'Any Rishikesh–Joshimath road transfer (not part of this itinerary — available on request at additional cost)',
+      'Transport to or from Joshimath from any other city, including Rishikesh, Haridwar and Dehradun, unless separately quoted',
       'Valley of Flowers National Park entry/permit charges',
-      'Trek guide/porter/pony charges for the Valley of Flowers and Hemkund Sahib treks',
+      'Trek guide/porter/pony/palki charges for the Valley of Flowers and Hemkund Sahib treks',
       'Helicopter services (not part of this itinerary at all)',
+      'Personal trekking equipment',
       'Anything not specifically mentioned in Inclusions'
     ],
     stayOptions: [],
     addOns: [],
-    startingCity: 'Rishikesh',
-    endingCity: 'Rishikesh',
+    startingCity: 'Joshimath',
+    endingCity: 'Joshimath',
     idealTraveller: 'Trekkers specifically wanting the Valley of Flowers and Hemkund Sahib, comfortable with two genuinely demanding consecutive trek days.',
     bestTimeToVisit: 'The Valley of Flowers is typically open only around July–September (flowering season and park opening dates vary year to year and must be confirmed, not assumed); Hemkund Sahib\'s own season is similar. Outside this window neither is accessible.',
     importantNotes: [
@@ -1473,7 +1464,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       'What is actually in bloom in the Valley of Flowers varies by exact visit date and year — never promised as a specific guaranteed sight.',
       'Park entry/permit requirements for the Valley of Flowers should be confirmed at time of booking, as rules can change.',
       'Neither trail opening, weather, nor physical access to the Valley of Flowers or Hemkund Sahib is guaranteed on any specific date. Pony/porter services are not included (see Exclusions) and no helicopter service is part of this itinerary. Genuine medical fitness for two consecutive demanding high-altitude trek days is the traveller\'s own responsibility and should be assessed with appropriate medical advice before booking.',
-      'FLAGGED FOR OWNER CONFIRMATION: pickup/drop is set to Joshimath, matching this itinerary\'s actual Day 1/Day 6 route — it does not currently include a Rishikesh-to-Joshimath road transfer despite Rishikesh being listed as this package\'s broader gateway city. A Rishikesh-origin transfer is not included in this starting price and would need separate confirmation and pricing.',
+      'OWNER-APPROVED: this itinerary starts and ends in Joshimath. Transfers to or from any other city are optional additional services and are excluded unless specifically quoted.',
       'Accommodation shown here is a category, not a specific named property — the final hotel/guesthouse/trek-lodge is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.'
     ],
     bookingProcess: 'Once this itinerary and its inclusions are finalized and priced, enquire via the booking form or WhatsApp to receive a customized quote for your travel dates and group size before confirming.',
@@ -1493,7 +1484,7 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     image: images.destinations.rishikesh,
     hotelCategoryDescription: 'Standard/Deluxe hotel or equivalent — the specific property is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.',
     mealPlan: 'Daily breakfast and dinner (MAP) at the hotel for each of the 3 nights on this itinerary.',
-    transportType: 'Package-dependent road transport for the stated pickup/drop and motorable itinerary sectors; vehicle type and included services must be confirmed in the final quotation. Activity, local-union and restricted-area transport are excluded unless expressly quoted.',
+    transportType: 'Private/package road transfers for itinerary-approved motorable sectors. Rafting, bungee jumping, camping and other paid adventure activities are excluded unless expressly included in the final quotation.',
     pickupInfo: 'Pickup from Dehradun (exact point and time confirmed at the time of booking).',
     dropInfo: 'Drop at Dehradun (exact point and time confirmed at the time of booking).',
     minTravellers: 2,
@@ -1510,13 +1501,13 @@ export const draftJourneys: DraftTravelPackageInput[] = [
       'Accommodation for 3 nights on a double-sharing basis (Standard/Deluxe hotel or equivalent)',
       'Daily breakfast and dinner (MAP)',
       'Dehradun pickup/drop',
-      'Pickup/drop road transfers on the package-dependent basis confirmed in the final quotation'
+      'Private/package road transfers for itinerary-approved pickup/drop sectors'
     ],
     exclusions: [
       'Airfare/train fare',
       'Personal expenses',
       'White-water rafting charges (not included — seasonal, water-level and licensed-operator dependent; quoted and booked separately)',
-      'Riverside camping and other adventure-activity charges (not included, availability dependent)',
+      'Bungee jumping, riverside camping and other adventure-activity charges (not included, availability dependent)',
       'Entry tickets',
       'Anything not specifically mentioned in Inclusions'
     ],
@@ -1527,7 +1518,6 @@ export const draftJourneys: DraftTravelPackageInput[] = [
     idealTraveller: 'Adventure-sports travellers wanting a Rishikesh-focused activity trip, distinct from the spiritual/multi-city framing of the existing Uttarakhand Explorer package.',
     bestTimeToVisit: 'White-water rafting typically runs September–June, water-level and season dependent; not available/safe during peak monsoon high-water periods.',
     importantNotes: [
-      'OWNER DECISION REQUIRED: confirm the vehicle arrangement and included motorable services at this indicative starting price before publication; the itinerary does not establish a private-cab entitlement.',
       'Rafting and other adventure activities are real, weather/water-level/operator-dependent activities — never guaranteed on a specific date, and their cost is excluded from this starting price (see Exclusions).',
       'No safety guarantee is made or implied for rafting or any other adventure activity — all such activities are conducted subject to the licensed operator\'s own safety assessment and conditions on the day.',
       'Accommodation shown here is a category, not a specific named property — the final hotel is confirmed at the time of booking, subject to availability; any material change to this category will be disclosed to you before your booking is confirmed.'
