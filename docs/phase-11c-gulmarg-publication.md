@@ -15,4 +15,18 @@
 
 `scripts/publishPhase11CGulmarg.ts` allowlists exactly one slug and persists only `status: draft -> published`. Dry-run output: targetCount 1, wouldPublish 1, alreadyPublished 0, refused 0; protected fields unchanged. Execute mode requires both `--owner-approved` and `--deployment-ready` and verifies an exact production snapshot before and after the transaction.
 
-The publication execution, idempotency result, post-publication counts, live route/content/structured-data QA, deployment commits, and remaining-draft isolation are recorded in `phase-11c-gulmarg-verification.json` after those gates complete. No other Journey publication is authorized.
+Owner approval was consumed by the explicit `--owner-approved` execute invocation after Vercel reported Ready. Exactly one document was updated, with only `status` changing from `draft` to `published`; no commercial field was rewritten. Execution reported published 1, skipped 0, refused 0. Immediate dry-run reported wouldPublish 0, alreadyPublished 1, refused 0.
+
+## Post-publication verification
+
+- Production database: 40 total, 28 published, 12 draft. Every non-target Journey document matched the pre-publication snapshot.
+- Public Journey API/catalogue: 28 entries; Gulmarg appears exactly once.
+- Journey sitemap: 28 entries; canonical Gulmarg URL appears exactly once.
+- The remaining 12 draft routes each return 404 and are absent from both catalogue and sitemap.
+- Canonical target URL returns HTTP 200 and visibly renders the approved title, duration, starting price, pickup/drop, stay, meals, transport, inclusions/exclusions, Gondola and snow-activity safeguards, winter/cancellation information, breadcrumbs, and image credit.
+- Browser QA passed at desktop 1440×1000 and mobile 390×844; hero image loaded at both sizes, no horizontal overflow, no console errors.
+- Structured data contains Product, AggregateOffer with `lowPrice: 19999` and currency INR, and BreadcrumbList. It contains no unsupported rating, review, availability, inventory, discount or price-validity claims.
+- Production winter image and `/photo-credits` both return HTTP 200; the hero credit links to the Commons source and CC BY-SA 4.0 license and discloses the resize.
+- Vercel reported Ready for implementation commit `dca1e909b0959d2b127cc5d63a350bc340c20d8e` at `https://www.theapexvoyager.in` before publication execution.
+
+Detailed machine-readable evidence is in `phase-11c-gulmarg-verification.json`. No other Journey publication was authorized or performed. Search Console submission is ready but was not submitted; IndexNow remains deferred.

@@ -1,6 +1,8 @@
 {
   "phase": "11C",
+  "checkedAt": "2026-10-02T06:31:53.441Z",
   "publicationAuthorized": true,
+  "ownerApprovalConsumed": true,
   "authorizedSlugs": ["gulmarg-winter-escape"],
   "prePublication": {
     "counts": { "total": 40, "published": 27, "draft": 13 },
@@ -23,35 +25,92 @@
   },
   "execution": {
     "ownerApproved": true,
-    "deploymentReadyVerified": false,
-    "published": null,
-    "skipped": null,
-    "refused": null,
-    "changedFields": null
+    "deploymentReadyVerified": true,
+    "mode": "EXECUTE",
+    "published": 1,
+    "skipped": 0,
+    "refused": 0,
+    "changedFields": ["status"],
+    "from": "draft",
+    "to": "published",
+    "nonTargetsUnchanged": true
   },
   "idempotency": {
-    "wouldPublish": null,
-    "alreadyPublished": null,
-    "refused": null
+    "wouldPublish": 0,
+    "alreadyPublished": 1,
+    "refused": 0
   },
   "postPublication": {
-    "counts": null,
-    "targetStatus": null,
-    "liveUrlHttp": null,
-    "catalogueCount": null,
-    "catalogueOccurrences": null,
-    "sitemapCount": null,
-    "sitemapOccurrences": null,
-    "remainingDraftCount": null,
-    "remainingDraftsIsolated": null
+    "counts": { "total": 40, "published": 28, "draft": 12 },
+    "targetStatus": "published",
+    "liveUrl": "https://www.theapexvoyager.in/journeys/gulmarg-winter-escape",
+    "liveUrlHttp": 200,
+    "catalogueCount": 28,
+    "catalogueOccurrences": 1,
+    "sitemapCount": 28,
+    "sitemapOccurrences": 1,
+    "remainingDraftCount": 12,
+    "remainingDraftsIsolated": true,
+    "nonTargetJourneysUnchanged": true
+  },
+  "livePage": {
+    "desktopViewport": "1440x1000",
+    "mobileViewport": "390x844",
+    "heroImageLoadedBoth": true,
+    "horizontalOverflow": false,
+    "visiblePrice": "Starting From ₹19,999 per person*",
+    "pickupDropStayMealsTransport": true,
+    "inclusionsExclusions": true,
+    "gondolaOptionalSeparatelyPayable": true,
+    "snowActivitiesOptionalSeparatelyPayable": true,
+    "snowfallAndAccessGuaranteesAbsent": true,
+    "generalCancellationReference": true,
+    "photoCreditVisible": true,
+    "breadcrumbsVisible": true,
+    "productSchema": "Product",
+    "offerSchema": "AggregateOffer",
+    "lowPrice": 19999,
+    "currency": "INR",
+    "breadcrumbSchema": "BreadcrumbList",
+    "unsupportedClaimsAbsent": true,
+    "consoleErrors": 0
+  },
+  "imageCredit": {
+    "productionHttp": 200,
+    "photoCreditsHttp": 200,
+    "author": "Koshur",
+    "sourceLink": "https://commons.wikimedia.org/wiki/File:Snowfall_In_Gulmarg.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseLink": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "resizeNoticeVisible": true
+  },
+  "protectedAreas": {
+    "nonTargetJourneyDocumentsUnchanged": true,
+    "kinnaurUnchanged": true,
+    "spitiWinterUnchanged": true,
+    "kashmirWinterUnchanged": true,
+    "uttarakhandHoneymoonUnchanged": true,
+    "ladakhDraftsUnchanged": true,
+    "hbxTouched": false,
+    "googlePlacesTouched": false,
+    "placeCacheTouched": false,
+    "transportPricingTouched": false,
+    "indexNow": "deferred"
   },
   "deployment": {
-    "implementationCommit": null,
+    "implementationCommit": "dca1e909b0959d2b127cc5d63a350bc340c20d8e",
     "verificationCommit": null,
-    "head": null,
-    "originMain": null,
-    "vercelReady": null,
+    "head": "dca1e909b0959d2b127cc5d63a350bc340c20d8e",
+    "originMain": "dca1e909b0959d2b127cc5d63a350bc340c20d8e",
+    "vercelReady": true,
     "productionAlias": "https://www.theapexvoyager.in"
+  },
+  "searchConsole": {
+    "readyForSubmission": true,
+    "submitted": false,
+    "indexed": false,
+    "rankingClaimed": false,
+    "indexNow": "deferred"
   },
   "validation": {
     "focusedPublicationTests": "3 passed",
