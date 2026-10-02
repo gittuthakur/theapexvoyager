@@ -1,0 +1,175 @@
+{
+  "phase": 12,
+  "checkedAt": "2026-10-02T07:06:22.805Z",
+  "baseline": {
+    "head": "20c3c30316ac06529920a1230c277e25b91ac847",
+    "originMain": "20c3c30316ac06529920a1230c277e25b91ac847",
+    "counts": { "total": 40, "published": 28, "draft": 12 },
+    "catalogue": { "http": 200, "count": 28 },
+    "sitemap": { "http": 200, "journeyCount": 28 }
+  },
+  "draftSlugs": [
+    "auli-tour",
+    "badrinath-yatra",
+    "dharamshala-mcleodganj-dalhousie-khajjiar-circuit",
+    "kashmir-winter-snow-tour",
+    "kedarnath-yatra",
+    "ladakh-hanle-tso-moriri-tour",
+    "leh-nubra-pangong-hanle-tour",
+    "leh-nubra-pangong-tour",
+    "leh-nubra-pangong-turtuk-tour",
+    "spiti-winter-expedition",
+    "srinagar-leh-ladakh-tour",
+    "uttarakhand-honeymoon-circuit"
+  ],
+  "inventory": [
+    { "slug": "auli-tour", "title": "Auli Tour", "duration": "3 Nights / 4 Days", "days": 4, "start": "Rishikesh", "end": "Rishikesh", "region": "uttarakhand:published", "destinations": ["joshimath:published", "auli:published"], "price": null, "image": null },
+    { "slug": "badrinath-yatra", "title": "Badrinath Yatra", "duration": "3 Nights / 4 Days", "days": 4, "start": "Haridwar", "end": "Haridwar", "region": "uttarakhand:published", "destinations": ["badrinath:published"], "price": null, "image": null },
+    { "slug": "dharamshala-mcleodganj-dalhousie-khajjiar-circuit", "title": "Dharamshala McLeodganj Dalhousie Khajjiar Circuit", "duration": "6 Nights / 7 Days", "days": 7, "start": "Pathankot", "end": "Dalhousie", "region": "himachal-pradesh:published", "destinations": ["dharamshala:published", "mcleod-ganj:published", "dalhousie:published", "khajjiar:published"], "price": null, "image": null },
+    { "slug": "kashmir-winter-snow-tour", "title": "Kashmir Winter Snow Tour", "duration": "4 Nights / 5 Days", "days": 5, "start": "Srinagar", "end": "Srinagar", "region": "kashmir:published", "destinations": ["srinagar:published", "gulmarg:published", "pahalgam:published"], "price": null, "image": null },
+    { "slug": "kedarnath-yatra", "title": "Kedarnath Yatra", "duration": "4 Nights / 5 Days", "days": 5, "start": "Haridwar", "end": "Haridwar", "region": "uttarakhand:published", "destinations": ["kedarnath:published"], "price": null, "image": null },
+    { "slug": "ladakh-hanle-tso-moriri-tour", "title": "Ladakh Hanle Tso Moriri Tour", "duration": "7 Nights / 8 Days", "days": 8, "start": "Leh", "end": "Leh", "region": null, "destinations": ["leh:draft", "nubra-valley:draft", "pangong-lake:draft", "hanle:draft", "tso-moriri:draft"], "price": null, "image": null },
+    { "slug": "leh-nubra-pangong-hanle-tour", "title": "Leh Nubra Pangong Hanle Tour", "duration": "6 Nights / 7 Days", "days": 7, "start": "Leh", "end": "Leh", "region": null, "destinations": ["leh:draft", "nubra-valley:draft", "pangong-lake:draft", "hanle:draft"], "price": null, "image": null },
+    { "slug": "leh-nubra-pangong-tour", "title": "Leh Nubra Pangong Tour", "duration": "5 Nights / 6 Days", "days": 6, "start": "Leh", "end": "Leh", "region": null, "destinations": ["leh:draft", "nubra-valley:draft", "pangong-lake:draft"], "price": null, "image": null },
+    { "slug": "leh-nubra-pangong-turtuk-tour", "title": "Leh Nubra Pangong Turtuk Tour", "duration": "6 Nights / 7 Days", "days": 7, "start": "Leh", "end": "Leh", "region": null, "destinations": ["leh:draft", "nubra-valley:draft", "turtuk:draft", "pangong-lake:draft"], "price": null, "image": null },
+    { "slug": "spiti-winter-expedition", "title": "Spiti Winter Expedition", "duration": "6 Nights / 7 Days", "days": 7, "start": "Shimla", "end": "Shimla", "region": "himachal-pradesh:published", "destinations": ["shimla:published", "kinnaur:published", "tabo:published", "spiti-valley:published"], "price": null, "image": null },
+    { "slug": "srinagar-leh-ladakh-tour", "title": "Srinagar Leh Ladakh Tour", "duration": "7 Nights / 8 Days", "days": 8, "start": "Srinagar", "end": "Leh", "region": "kashmir:published", "destinations": ["srinagar:published", "kargil:draft", "lamayuru:draft", "leh:draft", "nubra-valley:draft", "pangong-lake:draft"], "price": null, "image": null },
+    { "slug": "uttarakhand-honeymoon-circuit", "title": "Uttarakhand Honeymoon Circuit", "duration": "4 Nights / 5 Days", "days": 5, "start": "Dehradun", "end": "Kathgodam", "region": "uttarakhand:published", "destinations": ["mussoorie:published", "nainital:published"], "price": null, "image": null }
+  ],
+  "declaredDaysMatchStoredItinerary": true,
+  "durationNightArithmeticMatches": true,
+  "routeNightIssues": ["auli-tour", "badrinath-yatra", "dharamshala-mcleodganj-dalhousie-khajjiar-circuit", "kashmir-winter-snow-tour", "kedarnath-yatra", "leh-nubra-pangong-tour", "leh-nubra-pangong-turtuk-tour", "spiti-winter-expedition", "srinagar-leh-ladakh-tour", "uttarakhand-honeymoon-circuit"],
+  "missingCommercialFieldsForAllDrafts": ["price", "pickupInfo", "dropInfo", "mealPlan", "transportType", "minTravellers", "roomsIncluded", "hotelCategoryDescription", "inclusions", "exclusions", "image", "usesGeneralCancellationPolicy"],
+  "priorPriceProposals": {
+    "kashmir-winter-snow-tour": { "price": 21999, "currentApproval": "owner-approved for preparation only", "previousPhase8State": "revise before approval" },
+    "spiti-winter-expedition": { "price": 29999, "approval": "internal proposal only; revise before approval" },
+    "uttarakhand-honeymoon-circuit": { "price": 17999, "approval": "conditional proposal; not finally approved" },
+    "otherNine": "No documented price proposal found in reviewed Phase 2C/3/8/10 records."
+  },
+  "allDraftRoutes404": true,
+  "draftCatalogueLeaks": [],
+  "draftSitemapLeaks": [],
+  "allJourneyImagesMissing": true,
+  "journeyImageStatus": "all 12 image fields null; current image URL/file HTTP is not applicable",
+  "kashmirWinter": {
+    "ownerApprovedPriceForPreparation": 21999,
+    "priceWritten": false,
+    "approvedHotelBasis": "hotel-only; 4 nights; Srinagar 1N, Gulmarg 2N, Pahalgam 1N; Standard/Deluxe winter-operating equivalent; double sharing, 2 adults/1 room",
+    "storedDay1HouseboatContradiction": true,
+    "pickupDropConfirmed": false,
+    "mealSupplierBasisConfirmed": false,
+    "transportSupplierBasisConfirmed": false,
+    "imageVerified": false,
+    "dryRun": {
+      "runs": 2,
+      "inventoryCount": 12,
+      "targetCount": 1,
+      "wouldUpdate": 0,
+      "alreadyCorrect": 0,
+      "refused": 1,
+      "changedFields": [],
+      "reasons": [
+        "SUPPLIER_CONFIRMATION_REQUIRED",
+        "IMAGE_VERIFICATION_REQUIRED",
+        "MISSING_TRANSPORT_PLAN",
+        "MISSING_PICKUP_INFO",
+        "MISSING_DROP_INFO",
+        "MISSING_MEAL_PLAN",
+        "IMAGE_FIELD_MISSING"
+      ]
+    },
+    "execution": { "updated": 0, "published": 0 },
+    "idempotency": "No production update was attempted; rerun remains refused until all gates clear."
+  },
+  "ladakhDependencies": {
+    "region": { "slug": "ladakh", "status": "draft" },
+    "draftDestinationSlugs": ["leh", "nubra-valley", "pangong-lake", "turtuk", "hanle", "tso-moriri", "kargil", "lamayuru"],
+    "draftDestinationCount": 8,
+    "genericPlaceholderImage": "/images/img-hero-hero.jpg",
+    "journeysWithMissingRegionId": [
+      "ladakh-hanle-tso-moriri-tour",
+      "leh-nubra-pangong-hanle-tour",
+      "leh-nubra-pangong-tour",
+      "leh-nubra-pangong-turtuk-tour"
+    ],
+    "srinagarLehRegionIdPointsTo": "published Kashmir Region while five Ladakh destinations remain draft"
+  },
+  "commercialWriteCount": 0,
+  "publicationCount": 0,
+  "readinessBoard": {
+    "readyForFinalOwnerPublicationApproval": [],
+    "ownerDecisionRequired": [
+      "auli-tour",
+      "badrinath-yatra",
+      "dharamshala-mcleodganj-dalhousie-khajjiar-circuit",
+      "kashmir-winter-snow-tour",
+      "kedarnath-yatra",
+      "ladakh-hanle-tso-moriri-tour",
+      "leh-nubra-pangong-hanle-tour",
+      "leh-nubra-pangong-tour",
+      "leh-nubra-pangong-turtuk-tour",
+      "spiti-winter-expedition",
+      "srinagar-leh-ladakh-tour",
+      "uttarakhand-honeymoon-circuit"
+    ],
+    "supplierOperationalRequired": [
+      "auli-tour",
+      "badrinath-yatra",
+      "dharamshala-mcleodganj-dalhousie-khajjiar-circuit",
+      "kashmir-winter-snow-tour",
+      "kedarnath-yatra",
+      "ladakh-hanle-tso-moriri-tour",
+      "leh-nubra-pangong-hanle-tour",
+      "leh-nubra-pangong-tour",
+      "leh-nubra-pangong-turtuk-tour",
+      "spiti-winter-expedition",
+      "srinagar-leh-ladakh-tour",
+      "uttarakhand-honeymoon-circuit"
+    ],
+    "routeContentFixRequired": [
+      "auli-tour",
+      "badrinath-yatra",
+      "dharamshala-mcleodganj-dalhousie-khajjiar-circuit",
+      "kashmir-winter-snow-tour",
+      "kedarnath-yatra",
+      "leh-nubra-pangong-tour",
+      "leh-nubra-pangong-turtuk-tour",
+      "spiti-winter-expedition",
+      "srinagar-leh-ladakh-tour"
+    ],
+    "imageLicenseBlocked": [
+      "auli-tour",
+      "badrinath-yatra",
+      "dharamshala-mcleodganj-dalhousie-khajjiar-circuit",
+      "kashmir-winter-snow-tour",
+      "kedarnath-yatra",
+      "ladakh-hanle-tso-moriri-tour",
+      "leh-nubra-pangong-hanle-tour",
+      "leh-nubra-pangong-tour",
+      "leh-nubra-pangong-turtuk-tour",
+      "spiti-winter-expedition",
+      "srinagar-leh-ladakh-tour",
+      "uttarakhand-honeymoon-circuit"
+    ]
+  },
+  "futurePublicationBatch": [],
+  "projectedPublishedCountIfCurrentReadyBatchApproved": 28,
+  "protectedPublishedJourneysUnchanged": true,
+  "protectedSystemsTouched": {
+    "HBX": false,
+    "GooglePlaces": false,
+    "PlaceCache": false,
+    "transportPricing": false,
+    "IndexNow": "deferred"
+  },
+  "tests": {
+    "focusedGuard": "7 passed",
+    "fullSuite": "1271 passed across 103 files",
+    "typecheck": "passed",
+    "lint": "passed for Phase 12 files",
+    "build": "passed"
+  },
+  "commit": null,
+  "head": null,
+  "originMain": null
+}
