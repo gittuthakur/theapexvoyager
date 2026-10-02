@@ -243,9 +243,9 @@
     "build": "passed"
   },
   "deployment": {
-    "commit": "bd5861cf6faba7fff011024d1c6ffaed5e4c7577",
-    "head": "bd5861cf6faba7fff011024d1c6ffaed5e4c7577",
-    "originMain": "bd5861cf6faba7fff011024d1c6ffaed5e4c7577",
+    "implementationCommit": "bd5861cf6faba7fff011024d1c6ffaed5e4c7577",
+    "headAtImplementationDeployment": "bd5861cf6faba7fff011024d1c6ffaed5e4c7577",
+    "originMainAtImplementationDeployment": "bd5861cf6faba7fff011024d1c6ffaed5e4c7577",
     "vercelStatus": "Ready",
     "productionAlias": "https://www.theapexvoyager.in"
   }
