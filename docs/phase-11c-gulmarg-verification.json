@@ -1,0 +1,64 @@
+{
+  "phase": "11C",
+  "publicationAuthorized": true,
+  "authorizedSlugs": ["gulmarg-winter-escape"],
+  "prePublication": {
+    "counts": { "total": 40, "published": 27, "draft": 13 },
+    "catalogue": 27,
+    "sitemap": 27,
+    "targetStatus": "draft",
+    "targetDuration": "3 Nights / 4 Days",
+    "targetPrice": 19999,
+    "readinessBlockers": ["OWNER_APPROVAL_REQUIRED"],
+    "imageHttp": 200,
+    "photoCreditsHttp": 200,
+    "draftRouteHttp": 404
+  },
+  "dryRun": {
+    "targetCount": 1,
+    "wouldPublish": 1,
+    "alreadyPublished": 0,
+    "refused": 0,
+    "protectedFieldsUnchanged": true
+  },
+  "execution": {
+    "ownerApproved": true,
+    "deploymentReadyVerified": false,
+    "published": null,
+    "skipped": null,
+    "refused": null,
+    "changedFields": null
+  },
+  "idempotency": {
+    "wouldPublish": null,
+    "alreadyPublished": null,
+    "refused": null
+  },
+  "postPublication": {
+    "counts": null,
+    "targetStatus": null,
+    "liveUrlHttp": null,
+    "catalogueCount": null,
+    "catalogueOccurrences": null,
+    "sitemapCount": null,
+    "sitemapOccurrences": null,
+    "remainingDraftCount": null,
+    "remainingDraftsIsolated": null
+  },
+  "deployment": {
+    "implementationCommit": null,
+    "verificationCommit": null,
+    "head": null,
+    "originMain": null,
+    "vercelReady": null,
+    "productionAlias": "https://www.theapexvoyager.in"
+  },
+  "validation": {
+    "focusedPublicationTests": "3 passed",
+    "relatedPublicationTests": "8 passed",
+    "fullTests": "1264 passed across 102 files",
+    "typecheck": "passed",
+    "lint": "passed",
+    "build": "passed"
+  }
+}
