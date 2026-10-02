@@ -1,0 +1,31 @@
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, describe, expect, it } from 'vitest';
+import { approvedPricePreview, changeCostingStatus, listCostings, saveCosting } from './journeyCostingStore.service';
+import { syntheticCosting, SYNTHETIC_JOURNEY } from './journeyCosting.fixture';
+import { COST_CATEGORIES } from '../../models/JourneyCosting';
+let directory = '';
+afterEach(async () => { if (directory) await rm(directory, { recursive: true }); });
+describe('local revisions and Journey protection', () => {
+  it('preserves history, rejects stale saves, requires review/approval, and previews price only', async () => {
+    directory = await mkdtemp(join(tmpdir(), 'journey-costing-test-')); const input = syntheticCosting();
+    let row = await saveCosting(input, SYNTHETIC_JOURNEY, null, directory);
+    expect(() => approvedPricePreview(row, SYNTHETIC_JOURNEY, 'APPLY demo-synthetic')).toThrow();
+    await expect(changeCostingStatus(row, 'READY_FOR_OWNER_REVIEW', '', false, directory)).rejects.toThrow('Review blocked');
+    for (const key of COST_CATEGORIES) for (const line of input[key]) line.confirmationStatus = 'CONFIRMED';
+    row = await saveCosting(input, SYNTHETIC_JOURNEY, row, directory);
+    await expect(saveCosting(input, SYNTHETIC_JOURNEY, { id: row.id, version: 1 }, directory)).rejects.toThrow('Revision conflict');
+    await expect(changeCostingStatus(row, 'OWNER_APPROVED', 'Owner', true, directory)).rejects.toThrow();
+    row = await changeCostingStatus(row, 'READY_FOR_OWNER_REVIEW', '', false, directory);
+    await expect(changeCostingStatus(row, 'OWNER_APPROVED', 'Owner', false, directory)).rejects.toThrow();
+    row = await changeCostingStatus(row, 'OWNER_APPROVED', 'Owner', true, directory);
+    expect(() => approvedPricePreview(row, SYNTHETIC_JOURNEY, '')).toThrow();
+    expect(() => approvedPricePreview(row, { ...SYNTHETIC_JOURNEY, status: 'published' }, 'APPLY demo-synthetic')).toThrow('Published');
+    expect(() => approvedPricePreview(row, { ...SYNTHETIC_JOURNEY, duration: 'Changed' }, 'APPLY demo-synthetic')).toThrow('conflict');
+    const preview = approvedPricePreview(row, SYNTHETIC_JOURNEY, 'APPLY demo-synthetic');
+    expect(preview).toMatchObject({ executionEnabled: false, set: { price: 7999 } }); expect(Object.keys(preview.set)).toEqual(['price']); expect(SYNTHETIC_JOURNEY.status).toBe('draft'); expect(SYNTHETIC_JOURNEY.price).toBeNull();
+    const draft = await saveCosting(input, SYNTHETIC_JOURNEY, row, directory); expect(draft.status).toBe('DRAFT'); expect(draft.approvedBy).toBeNull();
+    expect((await listCostings(directory)).length).toBe(5);
+  });
+});

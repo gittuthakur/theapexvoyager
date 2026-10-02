@@ -1,0 +1,434 @@
+{
+  "phase": 14,
+  "verifiedAt": "2026-10-02T15:48:52.045Z",
+  "baselineHead": "1541f8c304e61bfd95fc3f9725968f3738e5922b",
+  "architecture": {
+    "model": "models/JourneyCosting.ts (domain model, local persistence)",
+    "engine": "services/pricing/journeyCosting.service.ts",
+    "ui": "/internal/journey-costing",
+    "api": "/api/internal/journey-costing",
+    "storage": "LOCAL_ONLY",
+    "productionSafeAdminAuthentication": false,
+    "productionAccess": false,
+    "priceApplication": "GUARDED_PREVIEW_ONLY"
+  },
+  "productionBaseline": {
+    "checkedAt": "2026-10-02T15:33:46.063Z",
+    "total": 40,
+    "published": 28,
+    "draft": 12,
+    "drafts": [
+      "auli-tour",
+      "badrinath-yatra",
+      "dharamshala-mcleodganj-dalhousie-khajjiar-circuit",
+      "kashmir-winter-snow-tour",
+      "kedarnath-yatra",
+      "ladakh-hanle-tso-moriri-tour",
+      "leh-nubra-pangong-hanle-tour",
+      "leh-nubra-pangong-tour",
+      "leh-nubra-pangong-turtuk-tour",
+      "spiti-winter-expedition",
+      "srinagar-leh-ladakh-tour",
+      "uttarakhand-honeymoon-circuit"
+    ],
+    "catalogue": 28,
+    "sitemap": 28,
+    "fingerprint": "444279124d486709b8071ce0caf5fa929bd8f2368581a8400ea0f6095bedff9b",
+    "prices": [
+      {
+        "slug": "auli-chopta-tungnath-tour",
+        "status": "published",
+        "price": 16999
+      },
+      {
+        "slug": "auli-tour",
+        "status": "draft",
+        "price": null
+      },
+      {
+        "slug": "badrinath-yatra",
+        "status": "draft",
+        "price": null
+      },
+      {
+        "slug": "bir-billing-palampur",
+        "status": "published",
+        "price": 9999
+      },
+      {
+        "slug": "char-dham-yatra",
+        "status": "published",
+        "price": 19999
+      },
+      {
+        "slug": "dalhousie-khajjiar-chamba",
+        "status": "published",
+        "price": 10999
+      },
+      {
+        "slug": "dharamshala-dalhousie-escape",
+        "status": "published",
+        "price": 15999
+      },
+      {
+        "slug": "dharamshala-mcleodganj-dalhousie-khajjiar-circuit",
+        "status": "draft",
+        "price": null
+      },
+      {
+        "slug": "dharamshala-mcleodganj-short-escape",
+        "status": "published",
+        "price": 10999
+      },
+      {
+        "slug": "grand-himachal-circuit",
+        "status": "published",
+        "price": 29999
+      },
+      {
+        "slug": "gulmarg-winter-escape",
+        "status": "published",
+        "price": 19999
+      },
+      {
+        "slug": "himachal-himalayan-explorer",
+        "status": "published",
+        "price": 22999
+      },
+      {
+        "slug": "jibhi-tirthan-valley",
+        "status": "published",
+        "price": 11999
+      },
+      {
+        "slug": "kashmir-family-tour",
+        "status": "published",
+        "price": 14999
+      },
+      {
+        "slug": "kashmir-pahalgam-gulmarg-sonamarg-tour",
+        "status": "published",
+        "price": 18999
+      },
+      {
+        "slug": "kashmir-signature-journey",
+        "status": "published",
+        "price": 24999
+      },
+      {
+        "slug": "kashmir-winter-snow-tour",
+        "status": "draft",
+        "price": null
+      },
+      {
+        "slug": "kasol-kheerganga-tosh",
+        "status": "published",
+        "price": 9999
+      },
+      {
+        "slug": "kasol-manikaran-weekend",
+        "status": "published",
+        "price": 6999
+      },
+      {
+        "slug": "kedarnath-badrinath-yatra",
+        "status": "published",
+        "price": 14999
+      },
+      {
+        "slug": "kedarnath-yatra",
+        "status": "draft",
+        "price": null
+      },
+      {
+        "slug": "kinnaur-spiti-circuit",
+        "status": "published",
+        "price": 21999
+      },
+      {
+        "slug": "kinnaur-valley-tour",
+        "status": "published",
+        "price": 22999
+      },
+      {
+        "slug": "ladakh-hanle-tso-moriri-tour",
+        "status": "draft",
+        "price": null
+      },
+      {
+        "slug": "leh-nubra-pangong-hanle-tour",
+        "status": "draft",
+        "price": null
+      },
+      {
+        "slug": "leh-nubra-pangong-tour",
+        "status": "draft",
+        "price": null
+      },
+      {
+        "slug": "leh-nubra-pangong-turtuk-tour",
+        "status": "draft",
+        "price": null
+      },
+      {
+        "slug": "manali-premium-escape",
+        "status": "published",
+        "price": 12999
+      },
+      {
+        "slug": "manali-short-escape",
+        "status": "published",
+        "price": 8999
+      },
+      {
+        "slug": "mussoorie-weekend",
+        "status": "published",
+        "price": 7999
+      },
+      {
+        "slug": "nainital-corbett-mussoorie-tour",
+        "status": "published",
+        "price": 15999
+      },
+      {
+        "slug": "rishikesh-adventure-package",
+        "status": "published",
+        "price": 8999
+      },
+      {
+        "slug": "shimla-manali-tour-package",
+        "status": "published",
+        "price": 13999
+      },
+      {
+        "slug": "shimla-short-escape",
+        "status": "published",
+        "price": 7999
+      },
+      {
+        "slug": "spiti-valley-adventure",
+        "status": "published",
+        "price": 18999
+      },
+      {
+        "slug": "spiti-winter-expedition",
+        "status": "draft",
+        "price": null
+      },
+      {
+        "slug": "srinagar-leh-ladakh-tour",
+        "status": "draft",
+        "price": null
+      },
+      {
+        "slug": "uttarakhand-explorer",
+        "status": "published",
+        "price": 20999
+      },
+      {
+        "slug": "uttarakhand-honeymoon-circuit",
+        "status": "draft",
+        "price": null
+      },
+      {
+        "slug": "valley-of-flowers-hemkund-sahib-trek",
+        "status": "published",
+        "price": 12999
+      }
+    ],
+    "draftChecks": [
+      {
+        "slug": "auli-tour",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "badrinath-yatra",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "dharamshala-mcleodganj-dalhousie-khajjiar-circuit",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "kashmir-winter-snow-tour",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "kedarnath-yatra",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "ladakh-hanle-tso-moriri-tour",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "leh-nubra-pangong-hanle-tour",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "leh-nubra-pangong-tour",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "leh-nubra-pangong-turtuk-tour",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "spiti-winter-expedition",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "srinagar-leh-ladakh-tour",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "uttarakhand-honeymoon-circuit",
+        "page": 404,
+        "api": 404
+      }
+    ],
+    "internalChecks": [
+      {
+        "path": "/internal/journey-costing",
+        "status": 404
+      },
+      {
+        "path": "/api/internal/journey-costing",
+        "status": 404
+      }
+    ],
+    "costingPost": 404,
+    "publicCostingLeak": false
+  },
+  "synthetic": {
+    "label": "DEMO / SYNTHETIC",
+    "baseCost": 11200,
+    "contingency": 560,
+    "totalCost": 11760,
+    "sellingTotal": 14112,
+    "perPerson": 7056,
+    "recommendedStartingPrice": 7999,
+    "grossProfit": 2352,
+    "grossMarginPercent": 16.67,
+    "markupPercent": 20,
+    "productionWrites": 0
+  },
+  "tests": {
+    "focused": {
+      "files": 6,
+      "tests": 44,
+      "status": "PASS"
+    },
+    "fullWorkspace": {
+      "files": 114,
+      "tests": 1357,
+      "status": "PASS",
+      "note": "Includes four temporary archived baseline test files; all passed."
+    },
+    "isolatedRelease": {
+      "files": 98,
+      "tests": 1198,
+      "status": "PASS"
+    },
+    "typecheck": "PASS",
+    "changedFileLint": "PASS",
+    "isolatedProductionBuild": "PASS",
+    "productionBuildDenial": {
+      "pageGet": 404,
+      "apiGet": 404,
+      "apiPost": 404
+    }
+  },
+  "browser": {
+    "desktop": {
+      "label": "DEMO / SYNTHETIC",
+      "journeyOptions": 40,
+      "draftOptions": 12,
+      "widths": [
+        {
+          "width": 1440,
+          "scrollWidth": 1440
+        },
+        {
+          "width": 390,
+          "scrollWidth": 390
+        },
+        {
+          "width": 320,
+          "scrollWidth": 320
+        }
+      ],
+      "controls": [
+        "selector",
+        "add/remove",
+        "quantity",
+        "2/4/6 scenarios",
+        "markup",
+        "margin",
+        "rounding",
+        "validation",
+        "save/reload",
+        "owner approval",
+        "apply preview only"
+      ],
+      "pageErrors": [],
+      "productionWrites": 0
+    },
+    "mobile": {
+      "label": "DEMO / SYNTHETIC",
+      "initialWidth": 390,
+      "journeyOptions": 40,
+      "draftOptions": 12,
+      "widths": [
+        {
+          "width": 1440,
+          "scrollWidth": 1440
+        },
+        {
+          "width": 390,
+          "scrollWidth": 390
+        },
+        {
+          "width": 320,
+          "scrollWidth": 320
+        }
+      ],
+      "controls": [
+        "selector",
+        "add/remove",
+        "quantity",
+        "2/4/6 scenarios",
+        "markup",
+        "margin",
+        "rounding",
+        "validation",
+        "save/reload",
+        "owner approval",
+        "apply preview only"
+      ],
+      "pageErrors": [],
+      "productionWrites": 0
+    }
+  },
+  "journeyWritesExecuted": 0,
+  "journeyPublicationExecuted": false,
+  "unrelatedChangesPreserved": true,
+  "release": {
+    "commit": "See commit containing this document",
+    "remoteVerification": "Pending push"
+  },
+  "deployment": {
+    "status": "Pending Git deployment; production authentication intentionally blocked"
+  }
+}

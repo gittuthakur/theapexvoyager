@@ -52,3 +52,6 @@ blob-report/
 
 # Migration script rollback backups (generated pre-write exports, not source)
 scripts/backups/
+
+# Internal local supplier costing revisions (never deploy or commit supplier data)
+.local-journey-costing/
