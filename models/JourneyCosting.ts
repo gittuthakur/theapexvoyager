@@ -6,6 +6,8 @@ export const CONFIRMATIONS = ['ESTIMATE', 'QUOTED', 'CONFIRMED'] as const;
 export const COSTING_STATUSES = ['DRAFT', 'AWAITING_SUPPLIER_CONFIRMATION', 'READY_FOR_OWNER_REVIEW', 'OWNER_APPROVED'] as const;
 export type CostingStatus = typeof COSTING_STATUSES[number];
 export interface CostLine {
+  mealType?: string;
+  supplierRateSnapshot?: import('./SupplierLibrary').RateSnapshot | null;
   id: string; label: string; supplierName: string; location: string; date: string;
   quantity: number; unit: string; unitCost: number | null; costBasis: typeof COST_BASES[number];
   deadKm: number; vehicle: string; taxIncluded: boolean; notes: string;
@@ -14,6 +16,7 @@ export interface CostLine {
   supplements: { label: string; quantity: number; unitCost: number | null }[];
 }
 export interface JourneyContext {
+  destinationSlugs?: string[]; regionId?: string;
   journeyId: string; journeySlug: string; title: string; duration: string;
   startingCity: string; endingCity: string; status: 'draft' | 'published'; price: number | null;
   itinerary: { day: number; title: string; description: string }[];

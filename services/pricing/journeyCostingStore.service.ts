@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { COSTING_STATUSES, type JourneyCosting, type CostingInput, type JourneyContext, type CostingStatus } from '../../models/JourneyCosting';
 import { calculateJourneyCosting, validateCosting } from './journeyCosting.service';
+import { assertAuthoritativeSnapshots } from './supplierLibraryStore.service';
 
 export const COSTING_STORE_DIRECTORY = join(process.cwd(), '.local-journey-costing');
 export async function listCostings(directory = COSTING_STORE_DIRECTORY): Promise<JourneyCosting[]> {
@@ -21,6 +22,7 @@ export function approvedPricePreview(record: JourneyCosting, journey: JourneyCon
 }
 export async function saveCosting(input: CostingInput, journey: JourneyContext, previous: { id: string; version: number } | null, directory = COSTING_STORE_DIRECTORY) {
   validateCosting(input);
+  await assertAuthoritativeSnapshots(input, join(directory, 'supplier-library'));
   if (input.journeyId !== journey.journeyId || input.journeySlug !== journey.journeySlug) throw new Error('Journey identity mismatch');
   return mutate(directory, async rows => {
     const old = previous ? latest(rows, previous) : null;

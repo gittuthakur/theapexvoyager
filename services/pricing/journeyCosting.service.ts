@@ -1,6 +1,7 @@
 import { isValidCalendarDateISO, todayISOInIST } from '../../lib/dateValidation';
 import { COST_CATEGORIES, COST_BASES, CONFIRMATIONS, type CostingInput, type CostLine, type JourneyContext, type CostCategory } from '../../models/JourneyCosting';
 import type { TransportCostResult } from './transportPricing.types';
+import { validateSnapshot, snapshotFinancials, snapshotWarnings } from './supplierLibrary.service';
 
 export function emptyCosting(journey: Pick<JourneyContext, 'journeyId' | 'journeySlug'>): CostingInput {
   return { journeyId: journey.journeyId, journeySlug: journey.journeySlug, currency: 'INR', scenarioName: 'New supplier costing', travellerCount: 2, adultCount: 2, childCount: 0, roomCount: 1,
@@ -52,7 +53,14 @@ export function validateCosting(value: unknown): asserts value is CostingInput {
   for (const category of COST_CATEGORIES) {
     const lines = value[category]; if (!Array.isArray(lines) || lines.length > 100) throw new Error(`${category}: maximum 100 lines`);
     for (const line of lines) {
-      object(line, Object.keys(emptyLine('', category)), category);
+      object(line, [...Object.keys(emptyLine('', category)), ...('supplierRateSnapshot' in line ? ['supplierRateSnapshot'] : []), ...('mealType' in line ? ['mealType'] : [])], category);
+      if ('mealType' in line) { text(line.mealType, 'meal type', 100); if (category !== 'mealCosts') throw new Error('Meal type is for meal lines'); }
+      if (line.supplierRateSnapshot) {
+        validateSnapshot(line.supplierRateSnapshot);
+        const snapshot = line.supplierRateSnapshot;
+        if (snapshot.selection.category !== category || snapshot.selection.rooms !== value.roomCount || snapshot.selection.travellers !== value.travellerCount) throw new Error('Supplier snapshot scenario changed: reselect rate or convert to manual');
+        for (const [key, expected] of Object.entries(snapshotFinancials(snapshot))) if (JSON.stringify(line[key]) !== JSON.stringify(expected)) throw new Error('Supplier snapshot financial fields changed: reselect rate or convert to manual');
+      } else if (line.supplierRateSnapshot !== undefined && line.supplierRateSnapshot !== null) throw new Error('Invalid supplier snapshot');
       for (const field of ['id', 'label', 'supplierName', 'location', 'unit', 'vehicle', 'notes', 'includedHotelId']) text(line[field], field);
       if (!line.id || ids.has(String(line.id))) throw new Error('Line IDs must be unique'); ids.add(String(line.id));
       number(line.quantity, 'quantity', 100000); number(line.deadKm, 'dead km', 100000);
@@ -66,6 +74,11 @@ export function validateCosting(value: unknown): asserts value is CostingInput {
         if (supplement.unitCost !== null) number(supplement.unitCost, 'supplement cost');
       }
       if (line.costBasis === 'INCLUDED_IN_HOTEL' && (category !== 'mealCosts' || line.unitCost !== 0 || line.supplements.length || !(value.hotelCosts as CostLine[]).some(hotel => hotel.id === line.includedHotelId && hotel.includedInPackage))) throw new Error('Hotel-included meal needs a linked included hotel, zero cost and no supplements');
+      if (category === 'mealCosts' && line.includedInPackage && line.costBasis !== 'INCLUDED_IN_HOTEL' && (((line.unitCost as number | null) ?? 0) > 0 || line.supplements.some((s: { unitCost: number | null }) => (s.unitCost ?? 0) > 0))) {
+        const meal = String(line.mealType || line.label).trim().toLowerCase();
+        const includedHotel = (value.hotelCosts as CostLine[]).find(hotel => hotel.includedInPackage && hotel.supplierRateSnapshot?.snapshotRate.hotel?.includedMeals.some(name => name.trim().toLowerCase() === meal) && (!line.date || (String(line.date) >= hotel.supplierRateSnapshot.selection.travelFrom && String(line.date) < hotel.supplierRateSnapshot.selection.travelTo)));
+        if (includedHotel) throw new Error('Meal already included in supplier hotel rate: use a linked zero-cost INCLUDED_IN_HOTEL line, or date separate meals outside that stay');
+      }
       if (line.costBasis === 'ROOM_NIGHT' && category !== 'hotelCosts') throw new Error('Room-night basis is for hotels');
       if (line.costBasis === 'PER_KM' && category !== 'transportCosts') throw new Error('Per-km basis is for transport');
       if (line.deadKm && line.costBasis !== 'PER_KM') throw new Error('Dead km only applies to per-km transport');
@@ -97,6 +110,10 @@ export function calculateJourneyCosting(input: CostingInput, today = todayISOInI
   const confirmations = { ESTIMATE: 0, QUOTED: 0, CONFIRMED: 0 }; const warnings: string[] = []; const reviewBlockers: string[] = [];
   const lines: CostingResult['lines'] = [];
   for (const category of COST_CATEGORIES) for (const line of input[category]) {
+    if (line.supplierRateSnapshot) {
+      const issues = snapshotWarnings(line.supplierRateSnapshot, today); warnings.push(...issues);
+      if (line.includedInPackage) reviewBlockers.push(...issues.filter(issue => issue.includes('expired') || issue.includes('does not cover')));
+    }
     confirmations[line.confirmationStatus]++;
     if (line.quoteExpires && line.quoteExpires < today) { warnings.push(`Expired quote: ${line.label || line.id}`); if (line.includedInPackage) reviewBlockers.push(`Expired included quote: ${line.id}`); }
     if (!line.includedInPackage) { lines.push({ id: line.id, totalCost: 0, included: false }); continue; }

@@ -1,0 +1,1057 @@
+{
+  "phase": 15,
+  "verifiedAt": "2026-10-02T17:15:30.007Z",
+  "baselineHead": "4baa4dcb3381238606b823a579aae7a8d5fd416b",
+  "architecture": {
+    "supplierModel": "models/SupplierLibrary.ts:Supplier",
+    "rateModel": "models/SupplierLibrary.ts:SupplierRate",
+    "storage": "LOCAL_ONLY under ignored .local-journey-costing/supplier-library",
+    "ui": "/internal/suppliers",
+    "api": "/api/internal/supplier-library",
+    "costingIntegration": "/internal/journey-costing",
+    "productionAuthenticationAvailable": false,
+    "productionAccess": "404",
+    "priceApplication": "PREVIEW_ONLY (not executed)",
+    "snapshot": "Immutable selected historical rate revision; no contacts"
+  },
+  "coverage": {
+    "rows": [
+      {
+        "journeyId": "6abd16d55e8a5f6cab73ba0c",
+        "slug": "auli-tour",
+        "title": "Auli Tour",
+        "duration": "3 Nights / 4 Days",
+        "hotelDestinations": [
+          "joshimath",
+          "auli"
+        ],
+        "hotelMatches": [
+          {
+            "destination": "joshimath",
+            "rates": []
+          },
+          {
+            "destination": "auli",
+            "rates": []
+          }
+        ],
+        "hotelCovered": false,
+        "transportCovered": false,
+        "transportRateIds": [],
+        "overnightEvidence": [
+          {
+            "day": 1,
+            "title": "Arrival in Joshimath",
+            "description": "Arrive in Joshimath, the usual base for Auli."
+          }
+        ],
+        "transportLegs": [
+          {
+            "day": 1,
+            "label": "Arrival in Joshimath"
+          },
+          {
+            "day": 4,
+            "label": "Departure"
+          }
+        ],
+        "route": "Rishikesh → Rishikesh",
+        "possibleLocalServices": [
+          "ropeway"
+        ],
+        "fullyCostable": false,
+        "missing": [
+          "Hotel quote candidate: joshimath",
+          "Hotel quote candidate: auli",
+          "Explicit whole-route supplier transport quote",
+          "Complete confirmed costing scenario (including actual overnight plan, fees and inclusions)"
+        ],
+        "caveat": "Hotel destinations are route candidates, not confirmed overnight requirements. Read the full itinerary and ask the owner to confirm overnight locations. Transport day titles are quote-request context; km and inclusions are unknown. Optional/local services are not included automatically."
+      },
+      {
+        "journeyId": "6abd16d55e8a5f6cab73ba0a",
+        "slug": "badrinath-yatra",
+        "title": "Badrinath Yatra",
+        "duration": "3 Nights / 4 Days",
+        "hotelDestinations": [
+          "badrinath"
+        ],
+        "hotelMatches": [
+          {
+            "destination": "badrinath",
+            "rates": []
+          }
+        ],
+        "hotelCovered": false,
+        "transportCovered": false,
+        "transportRateIds": [],
+        "overnightEvidence": [
+          {
+            "day": 2,
+            "title": "To Joshimath",
+            "description": "Travel toward Joshimath, the usual overnight base en route to Badrinath."
+          }
+        ],
+        "transportLegs": [
+          {
+            "day": 1,
+            "label": "Arrival in Haridwar/Dehradun"
+          },
+          {
+            "day": 2,
+            "label": "To Joshimath"
+          },
+          {
+            "day": 4,
+            "label": "Departure"
+          }
+        ],
+        "route": "Haridwar → Haridwar",
+        "possibleLocalServices": [],
+        "fullyCostable": false,
+        "missing": [
+          "Hotel quote candidate: badrinath",
+          "Explicit whole-route supplier transport quote",
+          "Complete confirmed costing scenario (including actual overnight plan, fees and inclusions)"
+        ],
+        "caveat": "Hotel destinations are route candidates, not confirmed overnight requirements. Read the full itinerary and ask the owner to confirm overnight locations. Transport day titles are quote-request context; km and inclusions are unknown. Optional/local services are not included automatically."
+      },
+      {
+        "journeyId": "6abcebb35e8a5f6cab72338f",
+        "slug": "dharamshala-mcleodganj-dalhousie-khajjiar-circuit",
+        "title": "Dharamshala McLeodganj Dalhousie Khajjiar Circuit",
+        "duration": "6 Nights / 7 Days",
+        "hotelDestinations": [
+          "dharamshala",
+          "mcleod-ganj",
+          "dalhousie",
+          "khajjiar"
+        ],
+        "hotelMatches": [
+          {
+            "destination": "dharamshala",
+            "rates": []
+          },
+          {
+            "destination": "mcleod-ganj",
+            "rates": []
+          },
+          {
+            "destination": "dalhousie",
+            "rates": []
+          },
+          {
+            "destination": "khajjiar",
+            "rates": []
+          }
+        ],
+        "hotelCovered": false,
+        "transportCovered": false,
+        "transportRateIds": [],
+        "overnightEvidence": [],
+        "transportLegs": [
+          {
+            "day": 1,
+            "label": "Arrival in Dharamshala"
+          },
+          {
+            "day": 4,
+            "label": "Dharamshala to Dalhousie"
+          },
+          {
+            "day": 7,
+            "label": "Departure"
+          }
+        ],
+        "route": "Pathankot → Dalhousie",
+        "possibleLocalServices": [],
+        "fullyCostable": false,
+        "missing": [
+          "Hotel quote candidate: dharamshala",
+          "Hotel quote candidate: mcleod-ganj",
+          "Hotel quote candidate: dalhousie",
+          "Hotel quote candidate: khajjiar",
+          "Explicit whole-route supplier transport quote",
+          "Complete confirmed costing scenario (including actual overnight plan, fees and inclusions)"
+        ],
+        "caveat": "Hotel destinations are route candidates, not confirmed overnight requirements. Read the full itinerary and ask the owner to confirm overnight locations. Transport day titles are quote-request context; km and inclusions are unknown. Optional/local services are not included automatically."
+      },
+      {
+        "journeyId": "6abd16d55e8a5f6cab73ba07",
+        "slug": "kashmir-winter-snow-tour",
+        "title": "Kashmir Winter Snow Tour",
+        "duration": "4 Nights / 5 Days",
+        "hotelDestinations": [
+          "srinagar",
+          "gulmarg",
+          "pahalgam"
+        ],
+        "hotelMatches": [
+          {
+            "destination": "srinagar",
+            "rates": []
+          },
+          {
+            "destination": "gulmarg",
+            "rates": []
+          },
+          {
+            "destination": "pahalgam",
+            "rates": []
+          }
+        ],
+        "hotelCovered": false,
+        "transportCovered": false,
+        "transportRateIds": [],
+        "overnightEvidence": [
+          {
+            "day": 1,
+            "title": "Arrival in Srinagar",
+            "description": "Arrive in Srinagar; evening at leisure, houseboat stay where available."
+          }
+        ],
+        "transportLegs": [
+          {
+            "day": 1,
+            "label": "Arrival in Srinagar"
+          },
+          {
+            "day": 2,
+            "label": "Srinagar to Gulmarg"
+          },
+          {
+            "day": 4,
+            "label": "Gulmarg to Pahalgam"
+          },
+          {
+            "day": 5,
+            "label": "Departure via Srinagar"
+          }
+        ],
+        "route": "Srinagar → Srinagar",
+        "possibleLocalServices": [
+          "gondola"
+        ],
+        "fullyCostable": false,
+        "missing": [
+          "Hotel quote candidate: srinagar",
+          "Hotel quote candidate: gulmarg",
+          "Hotel quote candidate: pahalgam",
+          "Explicit whole-route supplier transport quote",
+          "Complete confirmed costing scenario (including actual overnight plan, fees and inclusions)"
+        ],
+        "caveat": "Hotel destinations are route candidates, not confirmed overnight requirements. Read the full itinerary and ask the owner to confirm overnight locations. Transport day titles are quote-request context; km and inclusions are unknown. Optional/local services are not included automatically."
+      },
+      {
+        "journeyId": "6abd16d55e8a5f6cab73ba09",
+        "slug": "kedarnath-yatra",
+        "title": "Kedarnath Yatra",
+        "duration": "4 Nights / 5 Days",
+        "hotelDestinations": [
+          "kedarnath"
+        ],
+        "hotelMatches": [
+          {
+            "destination": "kedarnath",
+            "rates": []
+          }
+        ],
+        "hotelCovered": false,
+        "transportCovered": false,
+        "transportRateIds": [],
+        "overnightEvidence": [
+          {
+            "day": 1,
+            "title": "Arrival in Haridwar/Dehradun",
+            "description": "Arrive and begin travel toward the Kedarnath access base."
+          },
+          {
+            "day": 2,
+            "title": "To Guptkashi/Sonprayag",
+            "description": "Travel toward Guptkashi or Sonprayag, the usual overnight bases for Kedarnath."
+          }
+        ],
+        "transportLegs": [
+          {
+            "day": 1,
+            "label": "Arrival in Haridwar/Dehradun"
+          },
+          {
+            "day": 2,
+            "label": "To Guptkashi/Sonprayag"
+          },
+          {
+            "day": 4,
+            "label": "Return to Guptkashi/Sonprayag"
+          },
+          {
+            "day": 5,
+            "label": "Departure"
+          }
+        ],
+        "route": "Haridwar → Haridwar",
+        "possibleLocalServices": [
+          "helicopter"
+        ],
+        "fullyCostable": false,
+        "missing": [
+          "Hotel quote candidate: kedarnath",
+          "Explicit whole-route supplier transport quote",
+          "Complete confirmed costing scenario (including actual overnight plan, fees and inclusions)"
+        ],
+        "caveat": "Hotel destinations are route candidates, not confirmed overnight requirements. Read the full itinerary and ask the owner to confirm overnight locations. Transport day titles are quote-request context; km and inclusions are unknown. Optional/local services are not included automatically."
+      },
+      {
+        "journeyId": "6abd221b5e8a5f6cab73ba2f",
+        "slug": "ladakh-hanle-tso-moriri-tour",
+        "title": "Ladakh Hanle Tso Moriri Tour",
+        "duration": "7 Nights / 8 Days",
+        "hotelDestinations": [
+          "leh",
+          "nubra-valley",
+          "pangong-lake",
+          "hanle",
+          "tso-moriri"
+        ],
+        "hotelMatches": [
+          {
+            "destination": "leh",
+            "rates": []
+          },
+          {
+            "destination": "nubra-valley",
+            "rates": []
+          },
+          {
+            "destination": "pangong-lake",
+            "rates": []
+          },
+          {
+            "destination": "hanle",
+            "rates": []
+          },
+          {
+            "destination": "tso-moriri",
+            "rates": []
+          }
+        ],
+        "hotelCovered": false,
+        "transportCovered": false,
+        "transportRateIds": [],
+        "overnightEvidence": [
+          {
+            "day": 3,
+            "title": "Leh to Nubra Valley",
+            "description": "Travel to Nubra Valley via Khardung La; overnight in the Diskit/Hunder area."
+          }
+        ],
+        "transportLegs": [
+          {
+            "day": 1,
+            "label": "Arrival in Leh"
+          },
+          {
+            "day": 3,
+            "label": "Leh to Nubra Valley"
+          },
+          {
+            "day": 4,
+            "label": "Nubra Valley to Pangong Lake"
+          },
+          {
+            "day": 5,
+            "label": "Pangong Lake to Hanle"
+          },
+          {
+            "day": 6,
+            "label": "Hanle to Tso Moriri"
+          },
+          {
+            "day": 7,
+            "label": "Tso Moriri to Leh"
+          },
+          {
+            "day": 8,
+            "label": "Departure"
+          }
+        ],
+        "route": "Leh → Leh",
+        "possibleLocalServices": [],
+        "fullyCostable": false,
+        "missing": [
+          "Hotel quote candidate: leh",
+          "Hotel quote candidate: nubra-valley",
+          "Hotel quote candidate: pangong-lake",
+          "Hotel quote candidate: hanle",
+          "Hotel quote candidate: tso-moriri",
+          "Explicit whole-route supplier transport quote",
+          "Complete confirmed costing scenario (including actual overnight plan, fees and inclusions)"
+        ],
+        "caveat": "Hotel destinations are route candidates, not confirmed overnight requirements. Read the full itinerary and ask the owner to confirm overnight locations. Transport day titles are quote-request context; km and inclusions are unknown. Optional/local services are not included automatically."
+      },
+      {
+        "journeyId": "6abd221a5e8a5f6cab73ba2e",
+        "slug": "leh-nubra-pangong-hanle-tour",
+        "title": "Leh Nubra Pangong Hanle Tour",
+        "duration": "6 Nights / 7 Days",
+        "hotelDestinations": [
+          "leh",
+          "nubra-valley",
+          "pangong-lake",
+          "hanle"
+        ],
+        "hotelMatches": [
+          {
+            "destination": "leh",
+            "rates": []
+          },
+          {
+            "destination": "nubra-valley",
+            "rates": []
+          },
+          {
+            "destination": "pangong-lake",
+            "rates": []
+          },
+          {
+            "destination": "hanle",
+            "rates": []
+          }
+        ],
+        "hotelCovered": false,
+        "transportCovered": false,
+        "transportRateIds": [],
+        "overnightEvidence": [
+          {
+            "day": 3,
+            "title": "Leh to Nubra Valley",
+            "description": "Travel to Nubra Valley via Khardung La; overnight in the Diskit/Hunder area."
+          },
+          {
+            "day": 4,
+            "title": "Nubra Valley to Pangong Lake",
+            "description": "Travel to Pangong Lake via the Shyok valley route; overnight lakeside, where accommodation availability allows."
+          }
+        ],
+        "transportLegs": [
+          {
+            "day": 1,
+            "label": "Arrival in Leh"
+          },
+          {
+            "day": 3,
+            "label": "Leh to Nubra Valley"
+          },
+          {
+            "day": 4,
+            "label": "Nubra Valley to Pangong Lake"
+          },
+          {
+            "day": 5,
+            "label": "Pangong Lake to Hanle"
+          },
+          {
+            "day": 6,
+            "label": "Hanle to Leh"
+          },
+          {
+            "day": 7,
+            "label": "Departure"
+          }
+        ],
+        "route": "Leh → Leh",
+        "possibleLocalServices": [],
+        "fullyCostable": false,
+        "missing": [
+          "Hotel quote candidate: leh",
+          "Hotel quote candidate: nubra-valley",
+          "Hotel quote candidate: pangong-lake",
+          "Hotel quote candidate: hanle",
+          "Explicit whole-route supplier transport quote",
+          "Complete confirmed costing scenario (including actual overnight plan, fees and inclusions)"
+        ],
+        "caveat": "Hotel destinations are route candidates, not confirmed overnight requirements. Read the full itinerary and ask the owner to confirm overnight locations. Transport day titles are quote-request context; km and inclusions are unknown. Optional/local services are not included automatically."
+      },
+      {
+        "journeyId": "6abd221a5e8a5f6cab73ba2c",
+        "slug": "leh-nubra-pangong-tour",
+        "title": "Leh Nubra Pangong Tour",
+        "duration": "5 Nights / 6 Days",
+        "hotelDestinations": [
+          "leh",
+          "nubra-valley",
+          "pangong-lake"
+        ],
+        "hotelMatches": [
+          {
+            "destination": "leh",
+            "rates": []
+          },
+          {
+            "destination": "nubra-valley",
+            "rates": []
+          },
+          {
+            "destination": "pangong-lake",
+            "rates": []
+          }
+        ],
+        "hotelCovered": false,
+        "transportCovered": false,
+        "transportRateIds": [],
+        "overnightEvidence": [
+          {
+            "day": 3,
+            "title": "Leh to Nubra Valley",
+            "description": "Travel to Nubra Valley via Khardung La; overnight in the Diskit/Hunder area."
+          },
+          {
+            "day": 5,
+            "title": "Nubra Valley to Pangong Lake",
+            "description": "Travel to Pangong Lake; overnight lakeside, where accommodation availability allows."
+          }
+        ],
+        "transportLegs": [
+          {
+            "day": 1,
+            "label": "Arrival in Leh"
+          },
+          {
+            "day": 3,
+            "label": "Leh to Nubra Valley"
+          },
+          {
+            "day": 5,
+            "label": "Nubra Valley to Pangong Lake"
+          },
+          {
+            "day": 6,
+            "label": "Pangong Lake to Leh, Departure"
+          }
+        ],
+        "route": "Leh → Leh",
+        "possibleLocalServices": [],
+        "fullyCostable": false,
+        "missing": [
+          "Hotel quote candidate: leh",
+          "Hotel quote candidate: nubra-valley",
+          "Hotel quote candidate: pangong-lake",
+          "Explicit whole-route supplier transport quote",
+          "Complete confirmed costing scenario (including actual overnight plan, fees and inclusions)"
+        ],
+        "caveat": "Hotel destinations are route candidates, not confirmed overnight requirements. Read the full itinerary and ask the owner to confirm overnight locations. Transport day titles are quote-request context; km and inclusions are unknown. Optional/local services are not included automatically."
+      },
+      {
+        "journeyId": "6abd221a5e8a5f6cab73ba2d",
+        "slug": "leh-nubra-pangong-turtuk-tour",
+        "title": "Leh Nubra Pangong Turtuk Tour",
+        "duration": "6 Nights / 7 Days",
+        "hotelDestinations": [
+          "leh",
+          "nubra-valley",
+          "turtuk",
+          "pangong-lake"
+        ],
+        "hotelMatches": [
+          {
+            "destination": "leh",
+            "rates": []
+          },
+          {
+            "destination": "nubra-valley",
+            "rates": []
+          },
+          {
+            "destination": "turtuk",
+            "rates": []
+          },
+          {
+            "destination": "pangong-lake",
+            "rates": []
+          }
+        ],
+        "hotelCovered": false,
+        "transportCovered": false,
+        "transportRateIds": [],
+        "overnightEvidence": [
+          {
+            "day": 3,
+            "title": "Leh to Nubra Valley",
+            "description": "Travel to Nubra Valley via Khardung La; overnight in the Diskit/Hunder area."
+          },
+          {
+            "day": 6,
+            "title": "Leh to Pangong Lake",
+            "description": "Travel on to Pangong Lake; overnight lakeside, where accommodation availability allows."
+          }
+        ],
+        "transportLegs": [
+          {
+            "day": 1,
+            "label": "Arrival in Leh"
+          },
+          {
+            "day": 3,
+            "label": "Leh to Nubra Valley"
+          },
+          {
+            "day": 4,
+            "label": "Nubra Valley to Turtuk"
+          },
+          {
+            "day": 6,
+            "label": "Leh to Pangong Lake"
+          },
+          {
+            "day": 7,
+            "label": "Pangong Lake to Leh, Departure"
+          }
+        ],
+        "route": "Leh → Leh",
+        "possibleLocalServices": [],
+        "fullyCostable": false,
+        "missing": [
+          "Hotel quote candidate: leh",
+          "Hotel quote candidate: nubra-valley",
+          "Hotel quote candidate: turtuk",
+          "Hotel quote candidate: pangong-lake",
+          "Explicit whole-route supplier transport quote",
+          "Complete confirmed costing scenario (including actual overnight plan, fees and inclusions)"
+        ],
+        "caveat": "Hotel destinations are route candidates, not confirmed overnight requirements. Read the full itinerary and ask the owner to confirm overnight locations. Transport day titles are quote-request context; km and inclusions are unknown. Optional/local services are not included automatically."
+      },
+      {
+        "journeyId": "6abd16d45e8a5f6cab73ba01",
+        "slug": "spiti-winter-expedition",
+        "title": "Spiti Winter Expedition",
+        "duration": "6 Nights / 7 Days",
+        "hotelDestinations": [
+          "shimla",
+          "kinnaur",
+          "tabo",
+          "spiti-valley"
+        ],
+        "hotelMatches": [
+          {
+            "destination": "shimla",
+            "rates": []
+          },
+          {
+            "destination": "kinnaur",
+            "rates": []
+          },
+          {
+            "destination": "tabo",
+            "rates": []
+          },
+          {
+            "destination": "spiti-valley",
+            "rates": []
+          }
+        ],
+        "hotelCovered": false,
+        "transportCovered": false,
+        "transportRateIds": [],
+        "overnightEvidence": [],
+        "transportLegs": [
+          {
+            "day": 1,
+            "label": "Shimla to Kalpa"
+          },
+          {
+            "day": 2,
+            "label": "Kalpa to Tabo"
+          },
+          {
+            "day": 3,
+            "label": "Tabo to Kaza"
+          },
+          {
+            "day": 6,
+            "label": "Return Toward Kalpa"
+          },
+          {
+            "day": 7,
+            "label": "Departure"
+          }
+        ],
+        "route": "Shimla → Shimla",
+        "possibleLocalServices": [],
+        "fullyCostable": false,
+        "missing": [
+          "Hotel quote candidate: shimla",
+          "Hotel quote candidate: kinnaur",
+          "Hotel quote candidate: tabo",
+          "Hotel quote candidate: spiti-valley",
+          "Explicit whole-route supplier transport quote",
+          "Complete confirmed costing scenario (including actual overnight plan, fees and inclusions)"
+        ],
+        "caveat": "Hotel destinations are route candidates, not confirmed overnight requirements. Read the full itinerary and ask the owner to confirm overnight locations. Transport day titles are quote-request context; km and inclusions are unknown. Optional/local services are not included automatically."
+      },
+      {
+        "journeyId": "6abd221b5e8a5f6cab73ba30",
+        "slug": "srinagar-leh-ladakh-tour",
+        "title": "Srinagar Leh Ladakh Tour",
+        "duration": "7 Nights / 8 Days",
+        "hotelDestinations": [
+          "srinagar",
+          "kargil",
+          "lamayuru",
+          "leh",
+          "nubra-valley",
+          "pangong-lake"
+        ],
+        "hotelMatches": [
+          {
+            "destination": "srinagar",
+            "rates": []
+          },
+          {
+            "destination": "kargil",
+            "rates": []
+          },
+          {
+            "destination": "lamayuru",
+            "rates": []
+          },
+          {
+            "destination": "leh",
+            "rates": []
+          },
+          {
+            "destination": "nubra-valley",
+            "rates": []
+          },
+          {
+            "destination": "pangong-lake",
+            "rates": []
+          }
+        ],
+        "hotelCovered": false,
+        "transportCovered": false,
+        "transportRateIds": [],
+        "overnightEvidence": [
+          {
+            "day": 5,
+            "title": "Leh to Nubra Valley",
+            "description": "Travel to Nubra Valley via Khardung La; overnight in the Diskit/Hunder area."
+          },
+          {
+            "day": 7,
+            "title": "Nubra Valley to Pangong Lake",
+            "description": "Travel to Pangong Lake; overnight lakeside, where accommodation availability allows."
+          }
+        ],
+        "transportLegs": [
+          {
+            "day": 1,
+            "label": "Arrival in Srinagar"
+          },
+          {
+            "day": 2,
+            "label": "Srinagar to Kargil"
+          },
+          {
+            "day": 3,
+            "label": "Kargil to Leh"
+          },
+          {
+            "day": 5,
+            "label": "Leh to Nubra Valley"
+          },
+          {
+            "day": 7,
+            "label": "Nubra Valley to Pangong Lake"
+          },
+          {
+            "day": 8,
+            "label": "Pangong Lake to Leh, Departure"
+          }
+        ],
+        "route": "Srinagar → Leh",
+        "possibleLocalServices": [],
+        "fullyCostable": false,
+        "missing": [
+          "Hotel quote candidate: srinagar",
+          "Hotel quote candidate: kargil",
+          "Hotel quote candidate: lamayuru",
+          "Hotel quote candidate: leh",
+          "Hotel quote candidate: nubra-valley",
+          "Hotel quote candidate: pangong-lake",
+          "Explicit whole-route supplier transport quote",
+          "Complete confirmed costing scenario (including actual overnight plan, fees and inclusions)"
+        ],
+        "caveat": "Hotel destinations are route candidates, not confirmed overnight requirements. Read the full itinerary and ask the owner to confirm overnight locations. Transport day titles are quote-request context; km and inclusions are unknown. Optional/local services are not included automatically."
+      },
+      {
+        "journeyId": "6abd16d55e8a5f6cab73ba0f",
+        "slug": "uttarakhand-honeymoon-circuit",
+        "title": "Uttarakhand Honeymoon Circuit",
+        "duration": "4 Nights / 5 Days",
+        "hotelDestinations": [
+          "mussoorie",
+          "nainital"
+        ],
+        "hotelMatches": [
+          {
+            "destination": "mussoorie",
+            "rates": []
+          },
+          {
+            "destination": "nainital",
+            "rates": []
+          }
+        ],
+        "hotelCovered": false,
+        "transportCovered": false,
+        "transportRateIds": [],
+        "overnightEvidence": [],
+        "transportLegs": [
+          {
+            "day": 1,
+            "label": "Arrival in Mussoorie"
+          },
+          {
+            "day": 3,
+            "label": "Mussoorie to Nainital"
+          },
+          {
+            "day": 5,
+            "label": "Departure"
+          }
+        ],
+        "route": "Dehradun → Kathgodam",
+        "possibleLocalServices": [],
+        "fullyCostable": false,
+        "missing": [
+          "Hotel quote candidate: mussoorie",
+          "Hotel quote candidate: nainital",
+          "Explicit whole-route supplier transport quote",
+          "Complete confirmed costing scenario (including actual overnight plan, fees and inclusions)"
+        ],
+        "caveat": "Hotel destinations are route candidates, not confirmed overnight requirements. Read the full itinerary and ask the owner to confirm overnight locations. Transport day titles are quote-request context; km and inclusions are unknown. Optional/local services are not included automatically."
+      }
+    ],
+    "summary": {
+      "draftJourneys": 12,
+      "hotel": 0,
+      "transport": 0,
+      "fullyCostable": 0,
+      "awaitingQuote": 12,
+      "expired": 0
+    }
+  },
+  "journeyProtection": {
+    "checkedAt": "2026-10-02T17:11:21.654Z",
+    "total": 40,
+    "published": 28,
+    "draft": 12,
+    "catalogue": 28,
+    "sitemap": 28,
+    "fingerprint": "444279124d486709b8071ce0caf5fa929bd8f2368581a8400ea0f6095bedff9b",
+    "pricesChanged": 0,
+    "statusesChanged": 0,
+    "fullJourneyDocumentsUnchanged": true,
+    "draftChecks": [
+      {
+        "slug": "auli-tour",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "badrinath-yatra",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "dharamshala-mcleodganj-dalhousie-khajjiar-circuit",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "kashmir-winter-snow-tour",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "kedarnath-yatra",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "ladakh-hanle-tso-moriri-tour",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "leh-nubra-pangong-hanle-tour",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "leh-nubra-pangong-tour",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "leh-nubra-pangong-turtuk-tour",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "spiti-winter-expedition",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "srinagar-leh-ladakh-tour",
+        "page": 404,
+        "api": 404
+      },
+      {
+        "slug": "uttarakhand-honeymoon-circuit",
+        "page": 404,
+        "api": 404
+      }
+    ],
+    "internalChecks": [
+      {
+        "path": "/internal/journey-costing",
+        "status": 404
+      },
+      {
+        "path": "/api/internal/journey-costing",
+        "status": 404
+      }
+    ],
+    "costingPost": 404,
+    "publicCostingLeak": false
+  },
+  "tests": {
+    "phase14Regression": {
+      "tests": 44,
+      "status": "PASS"
+    },
+    "phase15Focused": {
+      "files": 6,
+      "tests": 33,
+      "status": "PASS"
+    },
+    "fullWorkspace": {
+      "files": 116,
+      "tests": 1359,
+      "status": "PASS"
+    },
+    "isolatedReleaseSuite": {
+      "files": 104,
+      "tests": 1231,
+      "status": "PASS"
+    },
+    "typecheck": "PASS",
+    "changedFileLint": "PASS (no warnings)",
+    "isolatedProductionBuild": "PASS",
+    "productionModeDenial": [
+      {
+        "path": "/internal/suppliers",
+        "method": "GET",
+        "status": 404
+      },
+      {
+        "path": "/api/internal/supplier-library",
+        "method": "GET",
+        "status": 404
+      },
+      {
+        "path": "/api/internal/supplier-library",
+        "method": "POST",
+        "status": 404
+      },
+      {
+        "path": "/internal/journey-costing",
+        "method": "GET",
+        "status": 404
+      },
+      {
+        "path": "/api/internal/journey-costing",
+        "method": "GET",
+        "status": 404
+      },
+      {
+        "path": "/api/internal/journey-costing",
+        "method": "POST",
+        "status": 404
+      }
+    ]
+  },
+  "browser": {
+    "label": "DEMO / SYNTHETIC",
+    "results": [
+      {
+        "width": 1440,
+        "libraryScroll": 1440,
+        "costingScroll": 1440,
+        "controls": [
+          "supplier create/edit/detail/verification/deactivation",
+          "hotel/transport rate forms",
+          "filters/validity/seasonality",
+          "immutable revisions",
+          "explicit costing selection/preview",
+          "save snapshot",
+          "master edit leaves costing unchanged",
+          "coverage",
+          "hotel/transport quote helper"
+        ],
+        "productionWrites": 0,
+        "pageErrors": []
+      },
+      {
+        "width": 390,
+        "libraryScroll": 390,
+        "costingScroll": 390,
+        "controls": [
+          "supplier create/edit/detail/verification/deactivation",
+          "hotel/transport rate forms",
+          "filters/validity/seasonality",
+          "immutable revisions",
+          "explicit costing selection/preview",
+          "save snapshot",
+          "master edit leaves costing unchanged",
+          "coverage",
+          "hotel/transport quote helper"
+        ],
+        "productionWrites": 0,
+        "pageErrors": []
+      },
+      {
+        "width": 320,
+        "libraryScroll": 320,
+        "costingScroll": 320,
+        "controls": [
+          "supplier create/edit/detail/verification/deactivation",
+          "hotel/transport rate forms",
+          "filters/validity/seasonality",
+          "immutable revisions",
+          "explicit costing selection/preview",
+          "save snapshot",
+          "master edit leaves costing unchanged",
+          "coverage",
+          "hotel/transport quote helper"
+        ],
+        "productionWrites": 0,
+        "pageErrors": []
+      }
+    ]
+  },
+  "supplierDatabaseWrites": 0,
+  "journeyDatabaseWrites": 0,
+  "publicationExecuted": false,
+  "applyPriceExecuted": false,
+  "syntheticProductionWrites": 0,
+  "unrelatedWorktreeChangesPreserved": true,
+  "release": {
+    "mode": "LOCAL_COMMIT_ONLY",
+    "sha": "See commit containing this document",
+    "push": "NOT PERFORMED — OWNER AUTHORIZATION REQUIRED",
+    "deployment": "Not performed; production remains Phase 14"
+  }
+}
