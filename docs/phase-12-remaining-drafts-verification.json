@@ -1,6 +1,6 @@
 {
   "phase": 12,
-  "checkedAt": "2026-10-02T07:06:22.805Z",
+  "checkedAt": "2026-10-02T07:57:30.293Z",
   "baseline": {
     "head": "20c3c30316ac06529920a1230c277e25b91ac847",
     "originMain": "20c3c30316ac06529920a1230c277e25b91ac847",
@@ -96,6 +96,37 @@
   },
   "commercialWriteCount": 0,
   "publicationCount": 0,
+  "finalDryRun": {
+    "inventoryCount": 12,
+    "target": "kashmir-winter-snow-tour",
+    "wouldUpdate": 0,
+    "alreadyCorrect": 0,
+    "refused": 1,
+    "changedFields": [],
+    "draftStatusesUnchanged": true,
+    "protectedJourneysUnchanged": true
+  },
+  "finalPublicState": {
+    "counts": { "total": 40, "published": 28, "draft": 12 },
+    "catalogue": 28,
+    "sitemap": 28,
+    "draftRouteStatuses": {
+      "auli-tour": 404,
+      "badrinath-yatra": 404,
+      "dharamshala-mcleodganj-dalhousie-khajjiar-circuit": 404,
+      "kashmir-winter-snow-tour": 404,
+      "kedarnath-yatra": 404,
+      "ladakh-hanle-tso-moriri-tour": 404,
+      "leh-nubra-pangong-hanle-tour": 404,
+      "leh-nubra-pangong-tour": 404,
+      "leh-nubra-pangong-turtuk-tour": 404,
+      "spiti-winter-expedition": 404,
+      "srinagar-leh-ladakh-tour": 404,
+      "uttarakhand-honeymoon-circuit": 404
+    },
+    "catalogueLeaks": [],
+    "sitemapLeaks": []
+  },
   "readinessBoard": {
     "readyForFinalOwnerPublicationApproval": [],
     "ownerDecisionRequired": [
@@ -169,7 +200,11 @@
     "lint": "passed for Phase 12 files",
     "build": "passed"
   },
-  "commit": null,
-  "head": null,
-  "originMain": null
+  "deployment": {
+    "commit": "bd5861cf6faba7fff011024d1c6ffaed5e4c7577",
+    "head": "bd5861cf6faba7fff011024d1c6ffaed5e4c7577",
+    "originMain": "bd5861cf6faba7fff011024d1c6ffaed5e4c7577",
+    "vercelStatus": "Ready",
+    "productionAlias": "https://www.theapexvoyager.in"
+  }
 }
