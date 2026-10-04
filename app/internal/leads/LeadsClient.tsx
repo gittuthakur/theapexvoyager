@@ -10,6 +10,9 @@ const fmt = (iso?: string) => (iso ? new Date(iso).toLocaleString('en-IN', { dat
 const fmtDay = (iso?: string) => (iso ? new Date(iso).toLocaleDateString('en-IN', { dateStyle: 'medium' }) : '—');
 const FOLLOW_UPS = [['', 'Any follow-up'], ['overdue', 'Overdue'], ['today', 'Due today'], ['upcoming', 'Upcoming'], ['none', 'None scheduled']];
 
+const displayName = (lead: InternalLead) => lead.name ?? (lead.captureKind === 'META_LEAD_AD' ? 'Meta lead (no name)' : 'WhatsApp click (no contact details)');
+const isMeta = (lead: InternalLead) => lead.captureKind === 'META_LEAD_AD' || lead.source === 'meta';
+
 const badge = (lead: InternalLead) =>
   lead.followUp === 'OVERDUE' ? 'bg-rose-100 text-rose-800' : lead.followUp === 'DUE_TODAY' ? 'bg-amber-100 text-amber-800' : lead.status === 'NEW' ? 'bg-sky-100 text-sky-800' : 'bg-slate-100 text-slate-700';
 
@@ -142,8 +145,8 @@ export default function LeadsClient({ adminEmail }: { adminEmail: string }) {
               <li key={lead.id}>
                 <button onClick={() => { setSelected(lead); setFollowUp(''); }} className={`w-full min-w-0 rounded-xl border bg-white p-3 text-left ${selected?.id === lead.id ? 'border-slate-900' : 'border-slate-200'}`}>
                   <div className="flex flex-wrap items-start justify-between gap-2">
-                    <p className="min-w-0 break-words font-semibold">{lead.name ?? "WhatsApp click (no contact details)"}</p>
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${badge(lead)}`}>{lead.followUp === 'OVERDUE' ? 'OVERDUE' : lead.status}</span>
+                    <p className="min-w-0 break-words font-semibold">{displayName(lead)}</p>
+                    <span className="flex flex-wrap gap-1">{isMeta(lead) ? <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-800">Meta</span> : null}<span className={`rounded-full px-2 py-0.5 text-xs font-medium ${badge(lead)}`}>{lead.followUp === 'OVERDUE' ? 'OVERDUE' : lead.status}</span></span>
                   </div>
                   <p className="break-words text-sm text-slate-600">{lead.journeySlug ?? lead.destination ?? '—'} · {lead.leadType} · {lead.source}</p>
                   <p className="break-all text-xs text-slate-500">{lead.phone ?? lead.email ?? 'no contact'} · {lead.priority} · travel {fmtDay(lead.travelStartDate)} · follow-up {fmtDay(lead.nextFollowUpAt)} · created {fmtDay(lead.createdAt)}</p>
@@ -156,7 +159,7 @@ export default function LeadsClient({ adminEmail }: { adminEmail: string }) {
         <aside aria-label="Lead detail" className="min-w-0">
           {selected ? (
             <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 text-sm">
-              <h2 className="break-words text-lg font-bold">{selected.name ?? "WhatsApp click (no contact details)"}</h2>
+              <h2 className="break-words text-lg font-bold">{displayName(selected)}</h2>
               <p className="break-all">{selected.phone ?? '—'} · {selected.email ?? '—'}</p>
               <div className="flex flex-wrap gap-2">
                 {selected.phone ? <a className={btnCls} href={`tel:${selected.phone.replace(/[^\d+]/g, '')}`}>Call</a> : null}
@@ -175,6 +178,14 @@ export default function LeadsClient({ adminEmail }: { adminEmail: string }) {
                 ] as [string, string | undefined][]).map(([k, v]) => v ? (<div key={k} className="contents"><dt className="text-slate-500">{k}</dt><dd className="break-words">{v}</dd></div>) : null)}
               </dl>
               {selected.message ? <p className="whitespace-pre-wrap break-words rounded-lg bg-slate-50 p-2">{selected.message}</p> : null}
+              {selected.meta ? (
+                <div className="rounded-lg border border-indigo-100 bg-indigo-50 p-2 text-xs">
+                  <p className="font-semibold text-indigo-900">Meta Lead Ad</p>
+                  <dl className="mt-1 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-0.5">
+                    {([['Campaign', selected.meta.campaignName ?? selected.meta.campaignId], ['Ad set', selected.meta.adSetName ?? selected.meta.adSetId], ['Ad', selected.meta.adName ?? selected.meta.adId], ['Form', selected.meta.formName ?? selected.meta.formId], ['Platform', selected.meta.platform], ['Submitted', fmt(selected.meta.createdTime)], ['Meta lead id', selected.meta.leadId]] as [string, string | undefined][]).map(([k, v]) => v && v !== '—' ? (<div key={k} className="contents"><dt className="text-slate-500">{k}</dt><dd className="break-all">{v}</dd></div>) : null)}
+                  </dl>
+                </div>
+              ) : null}
 
               <div className="grid grid-cols-2 gap-2">
                 <select aria-label="Status" className={inputCls} value={selected.status} disabled={busy}

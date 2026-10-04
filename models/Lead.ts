@@ -1,4 +1,5 @@
 import mongoose, { Schema, type Document } from 'mongoose';
+import type { MetaProvenance } from '@/lib/metaProvenance';
 import { CAPTURE_KINDS, LEAD_PRIORITIES, LEAD_SOURCES, LEAD_STATUSES, LEAD_TYPES, type CaptureKind, type LeadEvent, type LeadPriority, type LeadSource, type LeadStatus, type LeadType } from '@/lib/leads';
 
 const { model, models } = mongoose;
@@ -50,6 +51,7 @@ export interface LeadDocument extends Document {
   assignedTo?: string;
   duplicateOf?: mongoose.Types.ObjectId;
   legacyRef?: { model: string; id: string };
+  meta?: MetaProvenance;
   events: LeadEvent[];
   createdAt: Date;
   updatedAt: Date;
@@ -109,6 +111,14 @@ const LeadSchema = new Schema<LeadDocument>(
     assignedTo: { type: String, maxlength: 100 },
     duplicateOf: { type: Schema.Types.ObjectId },
     legacyRef: { type: new Schema({ model: String, id: String }, { _id: false }) },
+    // Meta Lead Ads provenance (no tokens/secrets). Idempotency is legacyRef = { MetaLeadAd, leadgen id } (unique index above).
+    meta: {
+      type: new Schema({
+        leadId: String, pageId: String, formId: String, formName: String, campaignId: String, campaignName: String,
+        adSetId: String, adSetName: String, adId: String, adName: String, platform: String, isOrganic: Boolean, createdTime: Date,
+        answers: [new Schema({ name: String, values: [String] }, { _id: false })]
+      }, { _id: false })
+    },
     events: { type: [EventSchema], default: [] }
   },
   { timestamps: true }

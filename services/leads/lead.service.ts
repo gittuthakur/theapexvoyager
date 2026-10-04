@@ -25,10 +25,17 @@ export interface InternalLead {
   source: LeadSource; sourceDetail?: string; landingPage?: string; referrer?: string;
   utmSource?: string; utmMedium?: string; utmCampaign?: string; utmContent?: string; utmTerm?: string;
   nextFollowUpAt?: string; lastContactedAt?: string; quotedAmount?: number; finalAmount?: number;
-  assignedTo?: string; duplicateOf?: string; followUp: FollowUpBucket;
+  assignedTo?: string; duplicateOf?: string; followUp: FollowUpBucket; meta?: MetaProvenanceView;
   events: { at: string; type: string; actor: string; text?: string; from?: string; to?: string }[];
   createdAt: string; updatedAt: string;
 }
+
+export type MetaProvenanceView = Omit<NonNullable<LeadDocument['meta']>, 'createdTime'> & { createdTime?: string };
+const toMetaView = (m: NonNullable<LeadDocument['meta']>): MetaProvenanceView => ({
+  leadId: m.leadId, pageId: m.pageId, formId: m.formId, formName: m.formName, campaignId: m.campaignId, campaignName: m.campaignName, adSetId: m.adSetId,
+  adSetName: m.adSetName, adId: m.adId, adName: m.adName, platform: m.platform, isOrganic: m.isOrganic, createdTime: m.createdTime ? new Date(m.createdTime).toISOString() : undefined,
+  answers: (m.answers ?? []).map(a => ({ name: a.name, values: [...a.values] }))
+});
 
 const iso = (d?: Date | null) => (d ? new Date(d).toISOString() : undefined);
 
@@ -47,6 +54,7 @@ export function serializeLead(doc: LeadDocument, now = new Date()): InternalLead
     nextFollowUpAt: iso(doc.nextFollowUpAt), lastContactedAt: iso(doc.lastContactedAt),
     quotedAmount: doc.quotedAmount, finalAmount: doc.finalAmount, assignedTo: doc.assignedTo,
     duplicateOf: doc.duplicateOf ? String(doc.duplicateOf) : undefined,
+    meta: doc.meta ? toMetaView(doc.meta) : undefined,
     followUp: followUpBucket(doc.status, doc.nextFollowUpAt, now),
     events: (doc.events ?? []).map(e => strip({ at: new Date(e.at).toISOString(), type: e.type, actor: e.actor, text: e.text, from: e.from, to: e.to })),
     createdAt: new Date(doc.createdAt).toISOString(), updatedAt: new Date(doc.updatedAt).toISOString()
@@ -85,7 +93,7 @@ export async function createLead(input: LeadInput, actor = 'website', opts: { sk
 
   const { attribution, ...fields } = input;
   const a = attribution ?? {};
-  const base = input.captureKind === 'MANUAL' ? 'manual' : input.captureKind === 'WHATSAPP_CLICK' ? 'whatsapp' : 'website';
+  const base = input.captureKind === 'MANUAL' ? 'manual' : input.captureKind === 'WHATSAPP_CLICK' ? 'whatsapp' : input.captureKind === 'META_LEAD_AD' ? 'meta' : 'website';
   const events: LeadEvent[] = [event('CREATED', actor, { text: `Captured via ${input.captureKind}` })];
   if (duplicate) events.push(event('DUPLICATE_OF', 'system', { text: `Repeat enquiry within 24h of lead ${String(duplicate._id)}` }));
 
@@ -112,10 +120,10 @@ export async function createLead(input: LeadInput, actor = 'website', opts: { sk
 }
 
 /** Validate an untrusted payload and create the lead. */
-export async function captureLead(raw: unknown, actor = 'website') {
-  const parsed = validateLeadInput(raw);
+export async function captureLead(raw: unknown, actor = 'website', options: { allowMeta?: boolean; skipDuplicateCheck?: boolean } = {}) {
+  const parsed = validateLeadInput(raw, { allowMeta: options.allowMeta });
   if (!parsed.ok) return fail(parsed.error);
-  return createLead(parsed.value, actor);
+  return createLead(parsed.value, actor, { skipDuplicateCheck: options.skipDuplicateCheck });
 }
 
 /**

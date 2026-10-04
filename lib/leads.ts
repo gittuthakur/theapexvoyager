@@ -4,6 +4,7 @@
  * Everything stateful lives in services/leads/lead.service.ts.
  */
 import { normalizeCustomerEmail } from '@/lib/customerValidation';
+import { sanitizeMeta, type MetaProvenance } from '@/lib/metaProvenance';
 
 export const LEAD_SOURCES = ['website', 'whatsapp', 'meta', 'instagram', 'google', 'direct', 'referral', 'manual', 'other'] as const;
 export const LEAD_TYPES = ['JOURNEY', 'CUSTOM_TRIP', 'STAY', 'TRANSPORT', 'GENERAL'] as const;
@@ -11,7 +12,7 @@ export const LEAD_STATUSES = ['NEW', 'CONTACTED', 'QUALIFIED', 'QUOTE_SENT', 'FO
 export const LEAD_PRIORITIES = ['LOW', 'NORMAL', 'HIGH', 'URGENT'] as const;
 /** WHATSAPP_CLICK = a click that opened WhatsApp with no contact details captured;
  *  FORM_SUBMITTED = a real enquiry form; MANUAL = entered by staff. */
-export const CAPTURE_KINDS = ['FORM_SUBMITTED', 'WHATSAPP_CLICK', 'MANUAL'] as const;
+export const CAPTURE_KINDS = ['FORM_SUBMITTED', 'WHATSAPP_CLICK', 'MANUAL', 'META_LEAD_AD'] as const;
 
 export type LeadSource = (typeof LEAD_SOURCES)[number];
 export type LeadType = (typeof LEAD_TYPES)[number];
@@ -119,6 +120,8 @@ export interface LeadInput {
   priority?: LeadPriority;
   attribution?: Attribution;
   legacyRef?: { model: string; id: string };
+  /** Meta Lead Ads provenance - only ever set by the server-side Meta ingest (captureKind META_LEAD_AD). */
+  meta?: MetaProvenance;
 }
 
 export type ValidationResult<T> = { ok: true; value: T } | { ok: false; error: string };
@@ -137,7 +140,8 @@ function parseDate(value: unknown): Date | undefined | null {
 
 /** Validates + normalizes an untrusted payload into LeadInput. Unknown keys are ignored,
  *  never persisted. Deliberately has no field for Aadhaar/PAN/passport/payment data. */
-export function validateLeadInput(raw: unknown): ValidationResult<LeadInput> {
+/** `allowMeta` is true only for the server-side Meta ingest; a public/manual payload can never inject provenance. */
+export function validateLeadInput(raw: unknown, options: { allowMeta?: boolean } = {}): ValidationResult<LeadInput> {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { ok: false, error: 'Invalid lead payload' };
   const r = raw as Record<string, unknown>;
 
@@ -149,10 +153,12 @@ export function validateLeadInput(raw: unknown): ValidationResult<LeadInput> {
   if (priority !== undefined && !LEAD_PRIORITIES.includes(priority)) return { ok: false, error: 'Invalid priority' };
 
   const name = clean(r.name, 200);
-  if (!name && captureKind !== 'WHATSAPP_CLICK') return { ok: false, error: 'Name is required' };
+  const nameOptional = captureKind === 'WHATSAPP_CLICK' || captureKind === 'META_LEAD_AD';
+  if (!name && !nameOptional) return { ok: false, error: 'Name is required' };
 
   const phone = r.phone === undefined || r.phone === '' ? undefined : normalizePhone(r.phone);
-  if (r.phone !== undefined && r.phone !== '' && !phone && captureKind !== 'WHATSAPP_CLICK') return { ok: false, error: 'Invalid phone number' };
+  // A Meta form can carry a malformed phone next to a good email: drop the phone, keep the lead.
+  if (r.phone !== undefined && r.phone !== '' && !phone && captureKind !== 'WHATSAPP_CLICK' && captureKind !== 'META_LEAD_AD') return { ok: false, error: 'Invalid phone number' };
   const whatsappNumber = r.whatsappNumber === undefined || r.whatsappNumber === '' ? undefined : normalizePhone(r.whatsappNumber);
   if (r.whatsappNumber !== undefined && r.whatsappNumber !== '' && !whatsappNumber) return { ok: false, error: 'Invalid WhatsApp number' };
   const email = normalizeCustomerEmail(r.email);
@@ -193,7 +199,8 @@ export function validateLeadInput(raw: unknown): ValidationResult<LeadInput> {
       message: clean(r.message, 5000),
       priority,
       attribution: sanitizeAttribution(r.attribution),
-      legacyRef
+      legacyRef,
+      meta: options.allowMeta && captureKind === 'META_LEAD_AD' ? sanitizeMeta(r.meta) : undefined
     }
   };
 }
