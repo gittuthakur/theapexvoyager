@@ -1,8 +1,10 @@
+import Link from 'next/link';
 import {
   Database,
   Fingerprint,
   Lock,
   Mail,
+  Megaphone,
   MessageCircle,
   Phone,
   Share2,
@@ -82,8 +84,36 @@ const SECTIONS: Section[] = [
     )
   },
   {
+    icon: Megaphone,
+    heading: '4. Meta Lead Ads and Instant Forms',
+    body: (
+      <div className="space-y-3 text-sm leading-relaxed text-slate-600 sm:text-base">
+        <p>
+          If you respond to one of our advertisements on Facebook or Instagram by submitting a Meta lead form
+          (an &ldquo;Instant Form&rdquo;), the details you choose to enter in that form are passed to The Apex Voyager
+          India. This may include your name, phone / WhatsApp number, email address, destination or travel interest,
+          travel dates, traveller details and your answers to any other questions in the form. We receive only what
+          you submit in the form. Meta processes your information under its own privacy policy.
+        </p>
+        <p>
+          We may store this information in our private internal customer-enquiry system (CRM), which only authorised
+          members of our team can access, in order to respond to your enquiry, contact you as a prospective traveller,
+          prepare quotations, record our communication and follow-up with you, manage travel enquiries and bookings,
+          and provide customer service. We do not sell customer personal information.
+        </p>
+        <p>
+          To ask us to delete information received through a Meta lead form, see our{' '}
+          <Link href="/data-deletion" className="font-semibold text-apex-700 underline underline-offset-2 hover:text-apex-800">
+            User Data Deletion Instructions
+          </Link>
+          .
+        </p>
+      </div>
+    )
+  },
+  {
     icon: Timer,
-    heading: '4. Cookies, Local Storage and Advertising Measurement',
+    heading: '5. Cookies, Local Storage and Advertising Measurement',
     body: (
       <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
         This website loads the Google Ads tag to measure advertising activity, including clicks that open
@@ -98,7 +128,7 @@ const SECTIONS: Section[] = [
   },
   {
     icon: Share2,
-    heading: '5. Third-Party Services',
+    heading: '6. Third-Party Services',
     body: (
       <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
         We use hosting, database and email providers to operate the website and handle enquiries. Travel details
@@ -110,7 +140,7 @@ const SECTIONS: Section[] = [
   },
   {
     icon: Lock,
-    heading: '6. Data Security',
+    heading: '7. Data Security',
     body: (
       <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
         We take reasonable technical and organisational measures to help protect the information you share with us
@@ -121,23 +151,44 @@ const SECTIONS: Section[] = [
   },
   {
     icon: Timer,
-    heading: '7. Data Retention',
+    heading: '8. Data Retention',
     body: (
-      <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
-        We retain the information you provide for as long as reasonably necessary to respond to your enquiry,
-        process your booking, provide customer support, or meet our legal and business obligations.
-      </p>
+      <div className="space-y-3 text-sm leading-relaxed text-slate-600 sm:text-base">
+        <p>
+          We keep enquiry, lead and customer information only for as long as reasonably necessary for purposes such as:
+        </p>
+        <ul className="list-disc space-y-1.5 pl-5">
+          <li>handling your enquiry and following up with you</li>
+          <li>arranging the travel services you request</li>
+          <li>booking administration and customer service</li>
+          <li>accounting and legal obligations, where applicable</li>
+          <li>resolving disputes</li>
+        </ul>
+        <p>
+          When information is no longer needed for these purposes, it may be securely deleted or anonymised, subject to
+          any legitimate legal and record-keeping obligations.
+        </p>
+      </div>
     )
   },
   {
     icon: Shield,
-    heading: '8. Your Rights',
+    heading: '9. Your Rights',
     body: (
-      <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
-        You can contact us at any time to ask what information we hold about you, to request a correction, or to
-        request that it be deleted — subject to any records we are required to keep for legal or business
-        purposes.
-      </p>
+      <div className="space-y-3 text-sm leading-relaxed text-slate-600 sm:text-base">
+        <p>
+          You can contact us at any time to ask what information we hold about you, to request a correction, or to
+          request that it be deleted — subject to any records we are required to keep for legal or business
+          purposes.
+        </p>
+        <p>
+          <Link href="/data-deletion" className="font-semibold text-apex-700 underline underline-offset-2 hover:text-apex-800">
+            User Data Deletion Instructions
+          </Link>{' '}
+          explain how to ask us to delete information received through our website enquiry forms, Facebook or
+          Instagram lead forms, or held in our internal CRM.
+        </p>
+      </div>
     )
   }
 ];
@@ -161,7 +212,7 @@ export default function PrivacyPolicyContent() {
             when you explore our website, enquire about a journey, or communicate with our travel team.
           </p>
           <p className="text-xs text-slate-400">
-            Last updated: 25 September 2026
+            Last updated: 5 October 2026
           </p>
         </section>
 
@@ -190,7 +241,7 @@ export default function PrivacyPolicyContent() {
               <Mail size={24} />
             </div>
             <div className="min-w-0 space-y-4">
-              <h2 className="text-xl font-bold sm:text-2xl">9. Contact</h2>
+              <h2 className="text-xl font-bold sm:text-2xl">10. Contact</h2>
               <p className="max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
                 If you have any questions about this Privacy Policy or the information we hold about you, please
                 get in touch.

@@ -71,6 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteConfig.url}/careers`, changeFrequency: 'monthly', priority: 0.3 },
     { url: `${siteConfig.url}/privacy`, changeFrequency: 'yearly', priority: 0.2 },
     { url: `${siteConfig.url}/terms`, changeFrequency: 'yearly', priority: 0.2 },
+    { url: `${siteConfig.url}/data-deletion`, changeFrequency: 'yearly', priority: 0.2 },
     { url: `${siteConfig.url}/cancellation-policy`, changeFrequency: 'yearly', priority: 0.2 },
     { url: `${siteConfig.url}/accessibility-policy`, changeFrequency: 'yearly', priority: 0.2 },
     { url: `${siteConfig.url}/photo-credits`, changeFrequency: 'monthly', priority: 0.2 },
