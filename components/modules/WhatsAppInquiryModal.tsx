@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
 import { trackWhatsAppConversion } from '@/lib/googleAds';
+import { getAttribution } from '@/lib/leadAttribution';
 import { FloatingOverlay } from '@/components/ui/FloatingOverlay';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 
@@ -85,7 +86,8 @@ export function WhatsAppInquiryProvider({ children }: { children: ReactNode }) {
           slug: selection.slug,
           destinationSlug: selection.destinationSlug,
           sourcePage: pathname,
-          date: date || undefined
+          date: date || undefined,
+          attribution: getAttribution()
         })
       });
 

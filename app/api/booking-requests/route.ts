@@ -11,6 +11,8 @@ import { normalizeTripPlannerJourney } from '@/lib/tripPlannerRequest';
 import { STAY_TYPE_OPTIONS, TRANSPORT_MODES, EXPERIENCE_OPTIONS } from '@/config/tripPlanner.config';
 import { validateJourneyTravelDate } from '@/lib/dateValidation';
 import { limitPublicForm, isContactPhone } from '@/lib/publicFormRequest';
+import { mirrorLegacyLead } from '@/services/leads/lead.service';
+import { bookingRequestToLeadPayload } from '@/lib/leadLegacyMapping';
 import { MAX_JOURNEY_TRAVELLERS, validateJourneyTravellerCounts } from '@/services/booking/journeyQuote.service';
 
 // 'stay' removed 2026-09: The Apex Voyager India has no booking/pricing agreement with
@@ -468,6 +470,15 @@ export async function POST(request: Request) {
       travelers: travelers?.slice(0, 100),
       details: enrichedDetails
     });
+
+    // Canonical CRM copy — best-effort, never changes this response (see mirrorLegacyLead).
+    await mirrorLegacyLead(bookingRequestToLeadPayload(
+      {
+        referenceId: bookingRequest.referenceId, type, name: bookingRequest.name, phone: bookingRequest.phone, email: bookingRequest.email,
+        itemName: bookingRequest.itemName, destination: bookingRequest.destination, travelers: bookingRequest.travelers, details: enrichedDetails
+      },
+      body?.attribution
+    ));
 
     // Scheduled for after the response is sent — the visitor gets their reference ID (and
     // is about to be redirected to WhatsApp) immediately, without waiting on SMTP, which

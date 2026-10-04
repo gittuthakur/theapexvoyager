@@ -218,17 +218,31 @@ export interface OpenTransportWhatsAppLeadParams {
   journeyContext?: { from?: string; journeySlug?: string };
 }
 
+// A double click (or an impatient re-click) on the same vehicle/route reuses one clickId for
+// a few seconds, so the server's idempotent WHATSAPP_CLICK capture records it once.
+const CLICK_REUSE_MS = 10_000;
+const recentClicks = new Map<string, { id: string; at: number }>();
+
+function clickIdFor(key: string): string {
+  const now = Date.now();
+  const recent = recentClicks.get(key);
+  if (recent && now - recent.at < CLICK_REUSE_MS) return recent.id;
+  const id = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : `click_${now}_${Math.random().toString(36).slice(2)}`;
+  recentClicks.set(key, { id, at: now });
+  if (recentClicks.size > 50) recentClicks.clear();
+  return id;
+}
+
 /**
- * "Customise on WhatsApp" used to open wa.me directly with no record of the lead at
- * all — an analytics/business blind spot (the visitor's intent was never saved
- * anywhere). This saves a lightweight BookingRequest first — reusing the same
- * /api/booking-requests endpoint, TAP-XXXXX reference generator, and BookingRequest
- * model every other transport flow already uses, no new architecture — then opens
- * WhatsApp with that reference in the message. name/phone aren't known at this point
- * (no form was shown, by design), so they're saved as an honest placeholder rather
- * than fabricated: this is a pre-contact WhatsApp lead, not a completed enquiry. If
- * the save fails, the visitor must still reach WhatsApp — only the reference line is
- * dropped from the message.
+ * "Customise on WhatsApp" has no form, so no name/phone/email is known at click time.
+ * Previously this forced a placeholder phone through /api/booking-requests, whose
+ * (correctly strict) validation always rejected it - so nothing was ever saved. It now
+ * records a contactless WHATSAPP_CLICK event via /api/lead-events (no fabricated
+ * customer data, not a qualified enquiry) and opens WhatsApp immediately - the capture
+ * is fire-and-forget, so a CRM failure can never delay or block the handoff. The
+ * Google Ads conversion fires exactly as before.
  */
 export async function openTransportWhatsAppLead({
   vehicle,
@@ -241,40 +255,26 @@ export async function openTransportWhatsAppLead({
   quantity,
   journeyContext
 }: OpenTransportWhatsAppLeadParams): Promise<void> {
-  let referenceId: string | undefined;
-
-  try {
-    const result = await postJSON<{ referenceId: string }>('/api/booking-requests', {
-      type: 'transport',
-      name: 'WhatsApp Lead',
-      phone: 'Not provided (WhatsApp)',
-      itemName: vehicle.name,
-      destination: pickup && destination ? `${pickup} → ${destination}` : destination,
-      dates: date,
-      travelers,
-      details: {
-        serviceType: vehicle.serviceType,
-        vehicleSlug: vehicle.slug ?? vehicle.id,
-        pickup,
-        destination,
-        date,
-        returnDate,
-        travellers: travelers,
-        driveMode,
-        quantity,
-        from: journeyContext?.from,
-        journeySlug: journeyContext?.journeySlug,
-        source: 'transport-whatsapp-customise',
-        channel: 'whatsapp'
-      }
-    });
-    referenceId = result.referenceId;
-  } catch (error) {
-    console.error('Failed to save WhatsApp customise lead', error);
-  }
+  const key = [vehicle.id, pickup, destination, date, returnDate].join('|');
+  postJSON('/api/lead-events', {
+    kind: 'transport-whatsapp-customise',
+    clickId: clickIdFor(key),
+    vehicle: vehicle.name,
+    vehicleSlug: vehicle.slug ?? vehicle.id,
+    serviceType: vehicle.serviceType,
+    pickup,
+    destination,
+    date,
+    returnDate,
+    travellers: travelers,
+    driveMode,
+    quantity,
+    journeySlug: journeyContext?.journeySlug
+  }).catch(() => {
+    console.error('WhatsApp click capture failed');
+  });
 
   const messageText = buildTransportCustomiseMessage({
-    referenceId,
     serviceType: vehicle.serviceType,
     vehicleName: vehicle.name,
     pickup,

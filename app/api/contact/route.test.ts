@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 const { create, sendMail } = vi.hoisted(() => ({ create: vi.fn(), sendMail: vi.fn() }));
 vi.mock('@/lib/mongodb', () => ({ connectDB: vi.fn() }));
+const { mirror } = vi.hoisted(() => ({ mirror: vi.fn() }));
+vi.mock('@/services/leads/lead.service', () => ({ mirrorLegacyLead: mirror }));
 vi.mock('@/models/Enquiry', () => ({ Enquiry: { create } }));
 vi.mock('nodemailer', () => ({ default: { createTransport: () => ({ sendMail }) } }));
 const { POST } = await import('./route');
@@ -42,5 +44,17 @@ describe('contact persistence and notifications', () => {
   it('rejects oversized messages instead of silently truncating them', async () => {
     expect((await POST(request({ ...fixture, message: 'x'.repeat(5001) }))).status).toBe(400);
     expect(create).not.toHaveBeenCalled();
+  });
+});
+
+describe('CRM mirroring', () => {
+  it('mirrors a saved contact enquiry with attribution; a rejected one is not mirrored', async () => {
+    const mirror = (await import('@/services/leads/lead.service')).mirrorLegacyLead as unknown as ReturnType<typeof vi.fn>;
+    mirror.mockClear();
+    expect((await POST(request({ ...fixture, attribution: { utmSource: 'google', utmMedium: 'cpc' } }))).status).toBe(200);
+    expect(mirror).toHaveBeenCalledWith(expect.objectContaining({ email: 'qa@example.invalid', leadType: 'GENERAL', attribution: expect.objectContaining({ source: 'google' }) }));
+    mirror.mockClear();
+    expect((await POST(request({ name: 'x' }))).status).toBe(400);
+    expect(mirror).not.toHaveBeenCalled();
   });
 });

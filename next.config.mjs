@@ -42,6 +42,21 @@ const nextConfig = {
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' }
         ]
+      },
+      {
+        // Private admin pages/APIs (login, CRM): never cached by a browser or CDN, never indexed.
+        source: '/internal/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'private, no-store, max-age=0' },
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }
+        ]
+      },
+      {
+        source: '/api/internal/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'private, no-store, max-age=0' },
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }
+        ]
       }
     ];
   },

@@ -4,6 +4,8 @@ import { connectDB } from '@/lib/mongodb';
 import { Enquiry } from '@/models/Enquiry';
 import { readPublicForm, isContactPhone } from '@/lib/publicFormRequest';
 import { normalizeCustomerEmail } from '@/lib/customerValidation';
+import { mirrorLegacyLead } from '@/services/leads/lead.service';
+import { enquiryToLeadPayload } from '@/lib/leadLegacyMapping';
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const SMTP_HOST = process.env.SMTP_HOST;
@@ -89,13 +91,20 @@ export async function POST(request: Request) {
     const boundedBudgetRange = budgetRange?.slice(0, 100);
 
     await connectDB();
-    await Enquiry.create({
+    const enquiry = await Enquiry.create({
       fullName: boundedName,
       email,
       phone: boundedPhone,
       message: boundedMessage,
       budgetRange: boundedBudgetRange
     });
+    // Canonical CRM copy — best-effort, never changes this response (see mirrorLegacyLead).
+    await mirrorLegacyLead(enquiryToLeadPayload(
+      typeof enquiry?.toObject === 'function'
+        ? enquiry.toObject()
+        : { fullName: boundedName, email, phone: boundedPhone, message: boundedMessage, budgetRange: boundedBudgetRange },
+      body.attribution
+    ));
 
     const safeName = escapeHtml(boundedName);
     const safeEmail = escapeHtml(email);

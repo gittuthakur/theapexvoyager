@@ -12,6 +12,8 @@ vi.mock('next/server', async (importOriginal) => {
 });
 
 vi.mock('@/lib/mongodb', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }));
+const mirrorLegacyLeadMock = vi.fn();
+vi.mock('@/services/leads/lead.service', () => ({ mirrorLegacyLead: mirrorLegacyLeadMock }));
 vi.mock('@/lib/rateLimit', () => ({ isRateLimited: vi.fn().mockReturnValue(false) }));
 vi.mock('@/lib/bookingId', () => ({ generateBookingId: vi.fn().mockResolvedValue('TAP-99999') }));
 
@@ -191,5 +193,35 @@ describe('POST /api/booking-requests — unrelated types are unaffected by the j
     );
     expect(res.status).toBe(201);
     expect(getPackageBySlugMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('POST /api/booking-requests — CRM mirroring', () => {
+  it('mirrors a journey enquiry as a JOURNEY lead with its slug, date and attribution', async () => {
+    mirrorLegacyLeadMock.mockReset();
+    const response = await POST(jsonRequest({ ...journeyBody(), attribution: { utmSource: 'instagram', landingPage: '/journeys/test-journey' } }));
+    expect(response.status).toBe(201);
+    expect(mirrorLegacyLeadMock).toHaveBeenCalledWith(expect.objectContaining({
+      leadType: 'JOURNEY', journeySlug: 'test-journey', travelStartDate: '2026-11-10', adults: 2, captureKind: 'FORM_SUBMITTED',
+      legacyRef: { model: 'BookingRequest', id: 'TAP-99999' }, attribution: expect.objectContaining({ source: 'instagram' })
+    }));
+    expect(Object.keys(await response.json())).toEqual(['referenceId']);
+  });
+  it('does not mirror the transport WhatsApp placeholder (public validation already rejects it, so no legacy row exists)', async () => {
+    mirrorLegacyLeadMock.mockReset();
+    const response = await POST(jsonRequest({ type: 'transport', name: 'WhatsApp Lead', phone: 'Not provided (WhatsApp)', itemName: 'Innova' }));
+    expect(response.status).toBe(400); // placeholder phone is rejected by public validation today
+    expect(mirrorLegacyLeadMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('POST /api/booking-requests - validation stays strict (Phase 16A)', () => {
+  it.each(['Not provided (WhatsApp)', 'n/a', '', '12'])('rejects phone %j without persisting or mirroring', async phone => {
+    mirrorLegacyLeadMock.mockReset();
+    bookingRequestCreateMock.mockClear();
+    const response = await POST(jsonRequest({ type: 'transport', name: 'WhatsApp Lead', phone, itemName: 'Innova' }));
+    expect(response.status).toBe(400);
+    expect(bookingRequestCreateMock).not.toHaveBeenCalled();
+    expect(mirrorLegacyLeadMock).not.toHaveBeenCalled();
   });
 });

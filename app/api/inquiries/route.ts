@@ -3,6 +3,8 @@ import { connectDB } from '@/lib/mongodb';
 import { Inquiry } from '@/models/Inquiry';
 import { readPublicForm, isContactPhone } from '@/lib/publicFormRequest';
 import { sendBookingConfirmationEmails } from '@/lib/mailer';
+import { mirrorLegacyLead } from '@/services/leads/lead.service';
+import { inquiryToLeadPayload } from '@/lib/leadLegacyMapping';
 
 // Saves a WhatsApp lead-capture submission before the browser is redirected to
 // wa.me — this is the record of intent even if the visitor never actually sends
@@ -48,6 +50,9 @@ export async function POST(request: Request) {
       sourcePage: sourcePage?.slice(0, 300),
       date: date?.slice(0, 30)
     });
+
+    // Canonical CRM copy — best-effort, never changes this response (see mirrorLegacyLead).
+    await mirrorLegacyLead(inquiryToLeadPayload(typeof inquiry.toObject === 'function' ? inquiry.toObject() : inquiry, body.attribution));
 
     after(() => sendBookingConfirmationEmails({
       referenceId: String(inquiry._id), type: selectionType, name: inquiry.name,

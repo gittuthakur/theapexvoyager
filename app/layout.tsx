@@ -8,6 +8,7 @@ import { MotionConfig } from 'framer-motion';
 import BackToTopButton from '@/components/ui/BackToTopButton';
 import { Navbar, Footer } from '@/components/layout';
 import NavigationTracker from '@/components/NavigationTracker';
+import AttributionCapture from '@/components/ui/AttributionCapture';
 import { WhatsAppInquiryProvider } from '@/components/modules/WhatsAppInquiryModal';
 import { BookingRequestProvider } from '@/components/modules/BookingRequestModal';
 import { siteConfig } from '@/config/site.config';
@@ -119,6 +120,7 @@ fbq('track', 'PageView');`}
           />
         </noscript>
         <NavigationTracker />
+        <AttributionCapture />
         {/* `reducedMotion="user"` makes every framer-motion `motion.*` component sitewide
             automatically honor the OS-level `prefers-reduced-motion` setting (disabling
             transform/scale/opacity entrance animations) with no per-component changes —
