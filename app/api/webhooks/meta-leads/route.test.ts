@@ -5,7 +5,7 @@ import { join } from 'node:path';
 
 /** Real lead.service + real Meta code against an IN-MEMORY Lead model and a stubbed fetch: no database, no Meta. */
 type Row = Record<string, any>;
-const store = vi.hoisted(() => ({ leads: [] as Row[] }));
+const store = vi.hoisted(() => ({ leads: [] as Row[], failCreate: false }));
 vi.mock('@/lib/mongodb', () => ({ connectDB: vi.fn() }));
 vi.mock('@/models/Lead', () => ({
   Lead: {
@@ -17,7 +17,7 @@ vi.mock('@/models/Lead', () => ({
           .sort((a, b) => +a.createdAt - +b.createdAt)[0] ?? null;
       return { then: (resolve: (v: unknown) => unknown) => resolve(value), sort: () => Promise.resolve(value) };
     },
-    create: async (doc: Row) => { const row = { _id: `lead${store.leads.length + 1}`, createdAt: new Date(), ...doc }; store.leads.push(row); return row; },
+    create: async (doc: Row) => { if (store.failCreate) throw new Error('db down: LEAK-MARKER-DB Synthetic One 9876543210'); const row = { _id: `lead${store.leads.length + 1}`, createdAt: new Date(), ...doc }; store.leads.push(row); return row; },
     updateOne: async () => ({})
   }
 }));
@@ -42,6 +42,7 @@ let logs: ReturnType<typeof vi.spyOn>[];
 
 beforeEach(() => {
   store.leads.length = 0;
+  store.failCreate = false;
   for (const [k, v] of Object.entries(ENV)) vi.stubEnv(k, v);
   fetchMock = vi.fn(async (url: string) => {
     const id = new URL(url).pathname.split('/').pop()!;
@@ -78,6 +79,8 @@ describe('POST leadgen', () => {
       legacyRef: { model: 'MetaLeadAd', id: '555000111222331' }, meta: { leadId: '555000111222331', pageId: '111', formId: '8001', campaignName: 'Winter', platform: 'fb' }
     });
     const [url, init] = fetchMock.mock.calls[0];
+    expect(new URL(url).searchParams.get('fields')).toBe('id,created_time,field_data');
+    for (const banned of ['ad_name', 'adset', 'campaign', 'platform', 'is_organic', 'form_id', 'ad_id']) expect(new URL(url).searchParams.get('fields')).not.toContain(banned);
     expect(url).not.toContain(TOKEN);
     expect(init.headers.Authorization).toBe(`Bearer ${TOKEN}`);
   });
@@ -145,12 +148,113 @@ describe('POST leadgen', () => {
     expect((await route.POST(post(notification('555000111222331')))).status).toBe(200);
     expect(store.leads).toHaveLength(1);
   });
-  it('a permanent Graph rejection (400) or a lead with no contact is acknowledged, not retried forever', async () => {
-    expect((await route.POST(post(notification('999999999999999')))).status).toBe(200); // Graph 400
+  const graphError = (status: number, code?: number, subcode?: number) => async () =>
+    new Response(JSON.stringify({ error: { message: `token ${TOKEN} Synthetic One`, type: 'OAuthException', code, error_subcode: subcode } }), { status });
+  const goodGraph = async (url: string) => new Response(JSON.stringify(graph[new URL(url).pathname.split('/').pop()!]));
+
+  it.each([
+    ['OAuth 190 (400)', 400, 190, 463], ['OAuth 190 (401)', 401, 190, undefined], ['code 102', 400, 102, undefined], ['permission 10', 403, 10, undefined],
+    ['permission 200', 403, 200, undefined], ['permission 283', 400, 283, undefined], ['code 3', 400, 3, undefined], ['100/33 on a real lead', 400, 100, 33],
+    ['HTTP 429', 429, undefined, undefined], ['rate-limit code 4', 400, 4, undefined], ['HTTP 500', 500, undefined, undefined], ['HTTP 503', 503, undefined, undefined],
+    ['ambiguous 4xx', 400, undefined, undefined]
+  ])('RETRYABLE Graph failure %s -> 502 (never acknowledged), nothing saved, redelivery then succeeds once', async (_label, status, code, subcode) => {
+    fetchMock.mockImplementation(graphError(status, code, subcode));
+    const response = await route.POST(post(notification('555000111222331')));
+    expect(response.status).toBe(502);
+    expect(await response.json()).toEqual({ received: false, retry: true });
+    expect(store.leads).toHaveLength(0);
+    fetchMock.mockImplementation(goodGraph);
+    expect((await route.POST(post(notification('555000111222331')))).status).toBe(200);
+    expect((await route.POST(post(notification('555000111222331')))).status).toBe(200); // Meta redelivers again
+    expect(store.leads).toHaveLength(1);
+  });
+  it('network failure and timeout -> 502', async () => {
+    fetchMock.mockImplementation(async () => { throw Object.assign(new Error('timeout ' + TOKEN), { name: 'TimeoutError' }); });
+    expect((await route.POST(post(notification('555000111222331')))).status).toBe(502);
+    fetchMock.mockImplementation(async () => { throw new Error('ECONNRESET'); });
+    expect((await route.POST(post(notification('555000111222331')))).status).toBe(502);
+    expect(store.leads).toHaveLength(0);
+  });
+  it('PERMANENT failures stay acknowledged (200, no lead): HTTP 404 and a code-100 request error', async () => {
+    fetchMock.mockImplementation(graphError(404));
+    expect((await route.POST(post(notification('555000111222331')))).status).toBe(200);
+    fetchMock.mockImplementation(graphError(400, 100, 2500));
+    expect((await route.POST(post(notification('555000111222331')))).status).toBe(200);
+    expect(store.leads).toHaveLength(0);
+  });
+  it('a retrieved lead with no usable phone or email is acknowledged without creating a Lead', async () => {
     graph['555000111222390'] = { id: '555000111222390', field_data: [{ name: 'city', values: ['Pune'] }] };
-    expect((await route.POST(post(notification('555000111222390')))).status).toBe(200);
+    const response = await route.POST(post(notification('555000111222390')));
+    expect(response.status).toBe(200);
     expect(store.leads).toHaveLength(0);
     delete graph['555000111222390'];
+  });
+  it('a genuine DATABASE failure is NOT acknowledged (502); redelivery after recovery creates exactly one lead', async () => {
+    store.failCreate = true;
+    const failed = await route.POST(post(notification('555000111222331')));
+    expect(failed.status).toBe(502);
+    expect(JSON.stringify(await failed.json())).not.toMatch(/LEAK-MARKER|Synthetic|9876543210|db down/);
+    expect(store.leads).toHaveLength(0);
+    store.failCreate = false;
+    expect((await route.POST(post(notification('555000111222331')))).status).toBe(200);
+    expect((await route.POST(post(notification('555000111222331')))).status).toBe(200);
+    expect(store.leads).toHaveLength(1);
+  });
+  it('a mixed batch: the saved lead stays saved and a retryable sibling makes the whole delivery 502; redelivery is idempotent', async () => {
+    graph['555000111222333'] = { id: '555000111222333', field_data: [{ name: 'phone_number', values: ['9111111111'] }] };
+    fetchMock.mockImplementation(async (url: string) => (url.includes('/555000111222332') ? graphError(500)() : goodGraph(url)));
+    expect((await route.POST(post(notification('555000111222331', '555000111222332')))).status).toBe(502);
+    expect(store.leads).toHaveLength(1);
+    fetchMock.mockImplementation(goodGraph);
+    expect((await route.POST(post(notification('555000111222331', '555000111222332')))).status).toBe(200);
+    expect(store.leads).toHaveLength(2);
+    delete graph['555000111222333'];
+  });
+  it('uses the webhook created_time when Graph omits or garbles it, and never invents one', async () => {
+    graph['555000111222340'] = { id: '555000111222340', field_data: [{ name: 'phone_number', values: ['9222222222'] }] }; // no created_time
+    await route.POST(post(notification('555000111222340')));
+    expect(store.leads[0].meta.createdTime.toISOString()).toBe('2023-11-14T22:13:20.000Z'); // webhook 1700000000
+    graph['555000111222341'] = { id: '555000111222341', created_time: 'garbage', field_data: [{ name: 'phone_number', values: ['9333333333'] }] };
+    await route.POST(post(notification('555000111222341')));
+    expect(store.leads[1].meta.createdTime.toISOString()).toBe('2023-11-14T22:13:20.000Z');
+    graph['555000111222342'] = { id: '555000111222342', created_time: '2026-10-01T10:00:00+0000', field_data: [{ name: 'phone_number', values: ['9444444444'] }] };
+    await route.POST(post(notification('555000111222342')));
+    expect(store.leads[2].meta.createdTime.toISOString()).toBe('2026-10-01T10:00:00.000Z'); // Graph wins when valid
+    const noTime = { object: 'page', entry: [{ id: '111', changes: [{ field: 'leadgen', value: { leadgen_id: '555000111222343', page_id: '111' } }] }] };
+    graph['555000111222343'] = { id: '555000111222343', field_data: [{ name: 'phone_number', values: ['9555555555'] }] };
+    await route.POST(post(noTime));
+    expect(store.leads[3].meta.createdTime).toBeUndefined();
+    for (const id of ['40', '41', '42', '43']) delete graph['5550001112223' + id];
+  });
+  it('form_id and ad_id come from the webhook payload now that Graph no longer returns them', async () => {
+    await route.POST(post(notification('555000111222331')));
+    expect(store.leads[0].meta).toMatchObject({ formId: '8001', adId: '7001', pageId: '111' });
+  });
+  it('an old sample-style event for a different Page is still skipped when META_PAGE_ID is configured', async () => {
+    vi.stubEnv('META_PAGE_ID', '111');
+    const sample = { object: 'page', entry: [{ id: '0', changes: [{ field: 'leadgen', value: { leadgen_id: '444444444444', page_id: '444444444444', form_id: '444444444444' } }] }] };
+    expect((await route.POST(post(sample))).status).toBe(200);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+  it('operational logs carry ONLY fixed fields (category, stage, retryable, status, Graph code/subcode)', async () => {
+    fetchMock.mockImplementation(graphError(400, 190, 463));
+    await route.POST(post(notification('555000111222331')));
+    fetchMock.mockImplementation(goodGraph);
+    graph['555000111222391'] = { id: '555000111222391', field_data: [{ name: 'full_name', values: ['Synthetic Nocontact'] }, { name: 'city', values: ['Pune'] }] };
+    await route.POST(post(notification('555000111222391')));
+    store.failCreate = true;
+    await route.POST(post(notification('555000111222331')));
+    store.failCreate = false;
+    delete graph['555000111222391'];
+    const lines = logs.flatMap(l => l.mock.calls.map((c: unknown[]) => String(c[0])));
+    const events = lines.map(l => JSON.parse(l));
+    const byCategory = Object.fromEntries(events.map(e => [e.category, e]));
+    expect(Object.keys(byCategory).sort()).toEqual(['META_GRAPH_AUTH_ERROR', 'META_LEAD_NO_CONTACT', 'META_LEAD_SAVE_ERROR']);
+    expect(byCategory.META_GRAPH_AUTH_ERROR).toEqual({ event: 'META_WEBHOOK_INGEST_FAILURE', category: 'META_GRAPH_AUTH_ERROR', stage: 'GRAPH_RETRIEVAL', retryable: true, status: 400, graphCode: 190, graphSubcode: 463 });
+    expect(byCategory.META_LEAD_NO_CONTACT).toMatchObject({ stage: 'NORMALIZATION', retryable: false });
+    expect(byCategory.META_LEAD_SAVE_ERROR).toMatchObject({ stage: 'SAVE', retryable: true });
+    for (const e of events) expect(Object.keys(e).every(k => ['event', 'category', 'stage', 'retryable', 'status', 'graphCode', 'graphSubcode'].includes(k))).toBe(true);
+    expect(lines.join('\n')).not.toMatch(new RegExp(`${TOKEN}|${SECRET}|555000111222|Synthetic|Nocontact|9876543210|one@example|LEAK-MARKER|db down|OAuth`));
   });
   it('never logs customer data, tokens or secrets', async () => {
     fetchMock.mockImplementation(async () => new Response('boom', { status: 500 }));

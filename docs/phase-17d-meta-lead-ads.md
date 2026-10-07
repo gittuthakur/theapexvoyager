@@ -23,7 +23,9 @@ Meta Instant Form submit
   → MongoDB `leads`  →  /internal/leads
 ```
 * GET `/api/webhooks/meta-leads` is Meta's subscription handshake (`hub.mode/hub.verify_token/hub.challenge`).
-* Transient failures (Graph 5xx/429/network/DB) → HTTP 502 so Meta redelivers; permanent ones (Graph 4xx, no contact detail) → 200 (no retry storm).
+* **Retrieval asks Graph only for `id,created_time,field_data`** (permission-safe). `form_id`, `ad_id` and `created_time` fall back to the webhook payload; ad/campaign enrichment is intentionally not requested (it can need ads permissions and must never block a lead).
+* **Retry rules (Phase 17D.10):** anything that could silently lose a real lead returns HTTP 502 so Meta redelivers (bounded, with backoff): network/timeout, 429, 5xx, Graph rate-limit codes, authentication errors (code 190, 102), permission/access errors (codes 3, 10, 200–299), "object does not exist" 100/33 (indistinguishable from a missing permission), any ambiguous 4xx, and any database failure. Only genuinely permanent cases are acknowledged with 200: HTTP 404, a code-100 request error, a lead with no phone/email, and non-leadgen/other-Page events.
+* **Operational log:** one JSON line per failure with fixed fields only (`category` e.g. META_GRAPH_AUTH_ERROR, `stage`, `retryable`, HTTP `status`, `graphCode`, `graphSubcode`) — never a token, secret, lead id, contact detail, answer or payload.
 * Nothing from the request is trusted before the signature check. No customer data, tokens or Graph response bodies are logged.
 
 ## Data model (minimum change)
