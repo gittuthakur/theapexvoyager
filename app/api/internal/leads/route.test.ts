@@ -3,7 +3,7 @@ import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 const svc = vi.hoisted(() => ({
-  listLeads: vi.fn(), getLeadSummary: vi.fn(), createLead: vi.fn(), serializeLead: vi.fn((x: unknown) => x), getLeadById: vi.fn(),
+  listLeads: vi.fn(), listLeadPage: vi.fn(), getLeadSummary: vi.fn(), createLead: vi.fn(), serializeLead: vi.fn((x: unknown) => x), getLeadById: vi.fn(),
   updateLeadStatus: vi.fn(), setLeadPriority: vi.fn(), addLeadNote: vi.fn(), scheduleLeadFollowUp: vi.fn(),
   recordLeadContacted: vi.fn(), setLeadQuote: vi.fn(), setLeadAssignee: vi.fn()
 }));
@@ -109,7 +109,7 @@ describe('no public CRM surface', () => {
     expect(publicRoutes.length).toBeGreaterThan(5);
     for (const file of publicRoutes) {
       const source = readFileSync(file, 'utf8');
-      expect(source, file).not.toMatch(/serializeLead|listLeads|getLeadById|getLeadSummary|from '@\/models\/Lead'/);
+      expect(source, file).not.toMatch(/serializeLead|listLeads|listLeadPage|getLeadById|getLeadSummary|from '@\/models\/Lead'/);
     }
     expect(existsSync(join(root, 'app', 'api', 'leads'))).toBe(false);
   });
@@ -141,5 +141,41 @@ describe('backfill dry-run safety', () => {
     expect(dryRun).not.toMatch(/\.(insert|update|delete|replace|create|save|bulkWrite|drop)\w*\(/i);
     expect(dryRun).not.toMatch(/console\.log\([^)]*\b(row|name|phone|email|message)\b/);
     expect(script).toMatch(/mongoose\.set\('autoIndex', false\)/);
+  });
+});
+
+describe('explicit cursor pagination and legacy compatibility', () => {
+  it('unpaged GET retains the legacy lead array and summary without pagination metadata', async () => {
+    const leads = Array.from({ length: 200 }, (_, i) => ({ id: String(i), name: 'Synthetic' }));
+    svc.listLeads.mockResolvedValue({ ok: true, value: leads });
+    svc.getLeadSummary.mockResolvedValue({ total: 237 });
+    const response = await list.GET(req('GET', undefined, undefined, url + '?source=meta'));
+    expect(await response.json()).toEqual({ leads, summary: { total: 237 } });
+    expect(svc.listLeads).toHaveBeenCalledWith(expect.objectContaining({ source: 'meta' }));
+    expect(svc.listLeadPage).not.toHaveBeenCalled();
+  });
+  it('explicit pagination forwards all filters, cursor and authenticated owner identity', async () => {
+    const pagination = { page: 2, pageSize: 10, total: 12, shown: 2, hasPrevious: true, hasNext: false, cursor: 'opaque-self' };
+    svc.listLeadPage.mockResolvedValue({ ok: true, value: { leads: [{ id: ID }], pagination } });
+    svc.getLeadSummary.mockResolvedValue({ total: 116 });
+    const params = new URLSearchParams({ pagination: 'cursor', cursor: 'opaque-next', source: 'meta', status: 'NEW', destination: 'Mock', q: '9876', priority: 'HIGH', leadType: 'JOURNEY', followUp: 'none', from: '2026-10-01', to: '2026-10-10' });
+    const response = await list.GET(req('GET', undefined, undefined, url + '?' + params));
+    expect(await response.json()).toEqual({ leads: [{ id: ID }], pagination, summary: { total: 116 } });
+    expect(svc.listLeadPage).toHaveBeenCalledWith({ source: 'meta', status: 'NEW', destination: 'Mock', q: '9876', priority: 'HIGH', leadType: 'JOURNEY', followUp: 'none', from: '2026-10-01', to: '2026-10-10' }, 'opaque-next', 'u1');
+    expect(svc.listLeads).not.toHaveBeenCalled();
+    expect(response.headers.get('cache-control')).toBe('no-store');
+  });
+  it('rejects malformed/ambiguous pagination before service calls', async () => {
+    for (const query of ['page=2', 'pagination=offset', 'cursor=x', 'pagination=cursor&pagination=cursor', 'pagination=cursor&cursor=a&cursor=b', 'source=meta&source=website']) {
+      expect((await list.GET(req('GET', undefined, undefined, url + '?' + query))).status).toBe(400);
+    }
+    expect(svc.listLeads).not.toHaveBeenCalled(); expect(svc.listLeadPage).not.toHaveBeenCalled();
+  });
+  it('cursor failures are actionable 400s and unexpected failures remain generic 503s', async () => {
+    svc.listLeadPage.mockResolvedValueOnce({ ok: false, error: 'Invalid or expired pagination cursor. Refresh the lead list.', status: 400 });
+    expect((await list.GET(req('GET', undefined, undefined, url + '?pagination=cursor&cursor=bad'))).status).toBe(400);
+    svc.listLeadPage.mockRejectedValueOnce(new Error('sensitive backend detail'));
+    const response = await list.GET(req('GET', undefined, undefined, url + '?pagination=cursor'));
+    expect(response.status).toBe(503); expect(await response.json()).toEqual({ error: 'Unable to read leads' });
   });
 });

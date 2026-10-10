@@ -1,3 +1,4 @@
+import { createHash, createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
 import { connectDB } from '@/lib/mongodb';
 import { Lead, type LeadDocument } from '@/models/Lead';
 import { escapeRegExp } from '@/lib/regex';
@@ -292,6 +293,96 @@ export async function listLeads(filters: LeadFilters = {}): Promise<ServiceResul
   const limit = Math.min(Math.max(Math.trunc(filters.limit ?? 200), 1), 500);
   return { ok: true, value: sortLeads(docs, now).slice(0, limit).map(d => serializeLead(d, now)) };
 }
+
+export interface LeadPagination {
+  page: number; pageSize: number; total: number; shown: number;
+  hasPrevious: boolean; hasNext: boolean; cursor: string; nextCursor?: string; expiresAt: string;
+}
+export interface LeadPage { leads: InternalLead[]; pagination: LeadPagination }
+const LEAD_PAGE_SIZE = 10;
+const CURSOR_TTL_MS = 30 * 60_000;
+const MAX_CURSOR_PAGE = 1000;
+type LeadKey = { at: string; id: string };
+type LeadCursor = { v: 1; filter: string; anchor: LeadKey; upper?: LeadKey; lower?: LeadKey; ids?: string[]; page: number; issued: number };
+const FILTER_KEYS = ['status', 'source', 'leadType', 'priority', 'destination', 'followUp', 'from', 'to', 'q'] as const;
+const filterDigest = (filters: LeadFilters) => createHash('sha256').update(JSON.stringify(
+  FILTER_KEYS.map(key => [key, filters[key] || ''])
+)).digest('hex');
+
+// Domain-separated, server-only key; no new environment setting or instance-local state.
+// Rotating the existing DB credential invalidates cursors, never authorization.
+function cursorKey(owner: string): Buffer {
+  const secret = process.env.MONGODB_URI;
+  if (!secret) throw new Error('Cursor configuration unavailable');
+  return createHash('sha256').update('apex-crm-cursor-v1\0').update(secret).update('\0').update(owner).digest();
+}
+function encodeCursor(value: LeadCursor, owner: string): string {
+  const iv = randomBytes(12);
+  const cipher = createCipheriv('aes-256-gcm', cursorKey(owner), iv);
+  const body = Buffer.concat([cipher.update(JSON.stringify(value), 'utf8'), cipher.final()]);
+  return Buffer.concat([iv, cipher.getAuthTag(), body]).toString('base64url');
+}
+function validKey(value: unknown): value is LeadKey {
+  if (!value || typeof value !== 'object') return false;
+  const key = value as LeadKey;
+  return isObjectId(key.id) && typeof key.at === 'string' && Number.isFinite(Date.parse(key.at))
+    && new Date(key.at).toISOString() === key.at;
+}
+function decodeCursor(token: string, owner: string, digest: string): LeadCursor | null {
+  if (!/^[A-Za-z0-9_-]{60,2048}$/.test(token)) return null;
+  try {
+    const bytes = Buffer.from(token, 'base64url');
+    if (bytes.toString('base64url') !== token) return null;
+    const cipher = createDecipheriv('aes-256-gcm', cursorKey(owner), bytes.subarray(0, 12));
+    cipher.setAuthTag(bytes.subarray(12, 28));
+    const data: LeadCursor = JSON.parse(Buffer.concat([cipher.update(bytes.subarray(28)), cipher.final()]).toString('utf8'));
+    if (data.v !== 1 || data.filter !== digest || !validKey(data.anchor)
+      || (data.upper !== undefined && !validKey(data.upper)) || (data.lower !== undefined && !validKey(data.lower))
+      || (data.ids !== undefined && (!Array.isArray(data.ids) || data.ids.length > LEAD_PAGE_SIZE || data.ids.some(id => !isObjectId(id)) || new Set(data.ids).size !== data.ids.length))
+      || !Number.isSafeInteger(data.page) || data.page < 1 || data.page > MAX_CURSOR_PAGE
+      || !Number.isSafeInteger(data.issued) || data.issued > Date.now() || Date.now() - data.issued >= CURSOR_TTL_MS) return null;
+    return data;
+  } catch { return null; }
+}
+const keyOf = (doc: LeadDocument): LeadKey => ({ at: new Date(doc.createdAt).toISOString(), id: String(doc._id) });
+function keyBound(key: LeadKey, direction: 'before' | 'through'): Record<string, unknown> {
+  const idOp = direction === 'before' ? '$lt' : '$lte';
+  return { $or: [{ createdAt: { $lt: new Date(key.at) } }, { createdAt: new Date(key.at), _id: { [idOp]: key.id } }] };
+}
+
+/** Live keyset traversal, not a snapshot. Stable keys and fixed visited-page intervals
+ * prevent offset shifts and page overlap. Current filters still apply; a record that
+ * enters an already traversed interval requires Refresh. Visited-page IDs are frozen;
+ * deleted/nonmatching IDs leave holes. New records above the initial anchor require Refresh. No customer data in tokens. */
+export async function listLeadPage(filters: LeadFilters = {}, token?: string, owner = ''): Promise<ServiceResult<LeadPage>> {
+  const digest = filterDigest(filters);
+  const cursor = token === undefined ? undefined : decodeCursor(token, owner, digest);
+  if (token !== undefined && !cursor) return fail('Invalid or expired pagination cursor. Refresh the lead list.');
+  const now = new Date(cursor?.issued ?? Date.now());
+  const { query, error } = buildLeadQuery(filters, now);
+  if (error) return fail(error);
+  await connectDB();
+  const read = async (conditions: Record<string, unknown>[], limit: number): Promise<LeadDocument[]> =>
+    Lead.find({ $and: [query, ...conditions] }).maxTimeMS(5000).sort({ createdAt: -1, _id: -1 }).limit(limit);
+  const bounds = cursor ? [keyBound(cursor.anchor, 'through'), ...(cursor.upper ? [keyBound(cursor.upper, 'before')] : [])] : [];
+  const rows = await read([...bounds, ...(cursor?.ids ? [{ _id: { $in: cursor.ids } }] : [])], cursor?.ids ? LEAD_PAGE_SIZE : LEAD_PAGE_SIZE + 1);
+  const docs = rows.slice(0, LEAD_PAGE_SIZE);
+  // Empty initial results have no useful key, but retain the same bounded API shape.
+  const anchor = cursor?.anchor ?? (docs.length ? keyOf(docs[0]) : { at: now.toISOString(), id: '000000000000000000000000' });
+  const lower = cursor?.lower ?? (docs.length ? keyOf(docs[docs.length - 1]) : undefined);
+  const state: LeadCursor = { v: 1, filter: digest, anchor, upper: cursor?.upper, lower, ids: cursor?.ids ?? docs.map(doc => String(doc._id)), page: cursor?.page ?? 1, issued: cursor?.issued ?? now.getTime() };
+  const hasNext = cursor?.lower && lower
+    ? (await read([keyBound(anchor, 'through'), keyBound(lower, 'before')], 1)).length > 0
+    : rows.length > LEAD_PAGE_SIZE;
+  const total = await Lead.countDocuments({ $and: [query, keyBound(anchor, 'through')] }).maxTimeMS(5000);
+  return { ok: true, value: { leads: docs.map(doc => serializeLead(doc)), pagination: {
+    page: state.page, pageSize: LEAD_PAGE_SIZE, total, shown: docs.length,
+    hasPrevious: state.page > 1, hasNext, cursor: encodeCursor(state, owner),
+    nextCursor: hasNext && lower ? encodeCursor({ ...state, upper: lower, lower: undefined, ids: undefined, page: state.page + 1 }, owner) : undefined,
+    expiresAt: new Date(state.issued + CURSOR_TTL_MS).toISOString()
+  } } };
+}
+
 
 export interface LeadSummary {
   total: number; newLeads: number; dueToday: number; overdue: number; qualified: number; quoteSent: number; won: number; lost: number;

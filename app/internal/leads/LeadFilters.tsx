@@ -1,15 +1,16 @@
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
+import { FILTER_PANEL_CLASS } from '@/components/modules/filters/filterStyles';
 import { LEAD_PRIORITIES, LEAD_SOURCES, LEAD_STATUSES, LEAD_TYPES } from '@/lib/leads';
 import { sourceLabel, titleCase } from './leadDisplay';
 
 export type LeadFilterValues = Record<string, string>;
-const fieldClass = 'rounded-lg border-slate-300 bg-white px-3 py-2.5 text-sm';
-export function LeadFilters({ filters, onChange, onReset }: { filters: LeadFilterValues; onChange: (key: string, value: string) => void; onReset: () => void }) {
+const fieldClass = 'text-sm';
+export function LeadFilters({ filters, page, onChange, onReset }: { filters: LeadFilterValues; page: number; onChange: (key: string, value: string) => void; onReset: () => void }) {
   const select = (key: string, label: string, options: readonly string[]) => <Select id={`filter-${key}`} label={label} className={fieldClass} value={filters[key] ?? ''} onChange={e => onChange(key, e.target.value)}><option value="">Any {label.toLowerCase()}</option>{options.map(v => <option key={v} value={v}>{key === 'source' ? sourceLabel(v) : titleCase(v)}</option>)}</Select>;
-  return <section aria-label="Lead filters" className="rounded-xl border border-slate-200 bg-white p-4">
-    <div className="mb-4 flex flex-wrap items-center justify-between gap-2"><h2 className="font-semibold">Find leads</h2><Button variant="secondary" size="sm" onClick={onReset} disabled={!Object.values(filters).some(Boolean)}>Reset filters</Button></div>
+  return <section aria-label="Lead filters" className={`${FILTER_PANEL_CLASS} p-4 sm:p-6`}>
+    <div className="mb-4 flex flex-wrap items-center justify-between gap-2"><h2 className="font-semibold">Find leads</h2><Button variant="secondary" size="sm" onClick={onReset} disabled={page === 1 && !Object.values(filters).some(Boolean)}>Reset filters</Button></div>
     <Input id="lead-search" label="Customer name / phone" placeholder="Search name, phone, email or package" className={fieldClass} value={filters.q ?? ''} onChange={e => onChange('q', e.target.value)} />
     <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {select('source', 'Source', LEAD_SOURCES)}{select('status', 'Status', LEAD_STATUSES)}
