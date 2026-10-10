@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useReducer, useRef } from 'react';
 import { ApiError, postJSON } from './api';
 import { buildQuoteRequestPayload, canRequestQuote, isQuoteExpired, mapQuoteErrorStatus, validateQuoteResponse, type QuoteSelections } from './journeyQuoteClient';
 import { INITIAL_QUOTE_STATE, quoteReducer, type QuoteState } from './journeyQuoteReducer';
@@ -43,7 +43,9 @@ export function useJourneyQuote(selections: QuoteSelections): UseJourneyQuoteRes
   const sequenceRef = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
   const selectionsRef = useRef(selections);
-  selectionsRef.current = selections;
+  useLayoutEffect(() => {
+    selectionsRef.current = selections;
+  }, [selections]);
 
   const abortInFlight = useCallback(() => {
     abortRef.current?.abort();
