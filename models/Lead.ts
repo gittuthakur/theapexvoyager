@@ -1,4 +1,5 @@
 import mongoose, { Schema, type Document } from 'mongoose';
+import type { FirstPartyAttribution } from '@/lib/attributionEvidence';
 import type { MetaProvenance } from '@/lib/metaProvenance';
 import { CAPTURE_KINDS, LEAD_PRIORITIES, LEAD_SOURCES, LEAD_STATUSES, LEAD_TYPES, type CaptureKind, type LeadEvent, type LeadPriority, type LeadSource, type LeadStatus, type LeadType } from '@/lib/leads';
 
@@ -12,6 +13,7 @@ const { model, models } = mongoose;
  * No ID/payment/passport fields exist by design.
  */
 export interface LeadDocument extends Document {
+  firstPartyAttribution?: FirstPartyAttribution;
   name?: string;
   phone?: string;
   phoneNormalized?: string;
@@ -69,8 +71,12 @@ const EventSchema = new Schema<LeadEvent>(
   { _id: false }
 );
 
+const EvidenceSchema = new Schema({ value: { type: String, maxlength: 300, default: null }, kind: { type: String, enum: ['FIRST_PARTY_OBSERVED', 'URL_REPORTED', 'UNKNOWN'] }, origin: { type: String, enum: ['website', 'request_url'] }, observedAt: { type: String, maxlength: 30, default: null } }, { _id: false });
+const TouchSchema = new Schema({ observedAt: { type: String, maxlength: 30 }, ...Object.fromEntries(['landingPage', 'externalReferrerOrigin', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent', 'utmTerm', 'gclid', 'gbraid', 'wbraid'].map(key => [key, EvidenceSchema])) }, { _id: false });
+const FirstPartySchema = new Schema({ version: { type: Number, enum: [2] }, firstTouch: { type: TouchSchema, default: null }, latestTaggedTouch: { type: TouchSchema, default: null }, submissionPage: EvidenceSchema, recordedAt: { type: String, maxlength: 30 } }, { _id: false });
 const LeadSchema = new Schema<LeadDocument>(
   {
+    firstPartyAttribution: { type: FirstPartySchema, default: undefined },
     // Optional only for a WHATSAPP_CLICK: nothing about the visitor is known at click time.
     name: { type: String, maxlength: 200, required: function (this: { captureKind?: string }) { return this.captureKind !== 'WHATSAPP_CLICK'; } },
     phone: { type: String, maxlength: 30 },

@@ -307,3 +307,20 @@ describe('live keyset CRM pagination with frozen visited-page membership', () =>
     expect(result.ok && result.value.map(lead => lead.id)).toEqual(rows.slice(0, 200).map(row => row._id));
   });
 });
+
+describe('optional first-party evidence persistence', () => {
+  it('persists validated evidence on a new synthetic lead without provider elevation', async () => {
+    const at = new Date().toISOString();
+    const firstParty = { version: 2, firstTouch: { observedAt: at, landingPage: {value:'/contact'}, utmSource: {value:'google',kind:'PROVIDER_VERIFIED'} }, submissionPage: {value:'/contact',observedAt:at} };
+    const result = await svc.captureLead({ ...valid, attribution: {firstParty} });
+    expect(result.ok).toBe(true);
+    expect(m.create.mock.calls[0][0].firstPartyAttribution).toMatchObject({version:2,firstTouch:{utmSource:{value:'google',kind:'URL_REPORTED'}},submissionPage:{value:'/contact'}});
+    expect(m.create.mock.calls[0][0].meta).toBeUndefined();
+  });
+  it('leaves existing provider-linked records untouched, including attribution', async () => {
+    const saved = {_id:'existing',meta:{campaignId:'verified'},firstPartyAttribution:undefined};
+    m.findOne.mockReturnValueOnce(q(saved));
+    const result = await svc.captureLead({...valid,legacyRef:{model:'Inquiry',id:'fixture'},attribution:{firstParty:{version:2,submissionPage:{value:'/contact'}}}});
+    expect(result.ok && result.value.created).toBe(false);expect(m.create).not.toHaveBeenCalled();expect(m.updateOne).not.toHaveBeenCalled();expect(saved.meta.campaignId).toBe('verified');
+  });
+});

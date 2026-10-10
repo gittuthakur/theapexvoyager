@@ -1,4 +1,5 @@
 import { createHash, createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
+import type { FirstPartyAttribution } from '@/lib/attributionEvidence';
 import { connectDB } from '@/lib/mongodb';
 import { Lead, type LeadDocument } from '@/models/Lead';
 import { escapeRegExp } from '@/lib/regex';
@@ -16,6 +17,7 @@ export type ServiceResult<T> = { ok: true; value: T } | { ok: false; error: stri
 const fail = (error: string, status: 400 | 404 | 409 = 400): { ok: false; error: string; status: 400 | 404 | 409 } => ({ ok: false, error, status });
 
 export interface InternalLead {
+  firstPartyAttribution?: FirstPartyAttribution;
   id: string;
   name?: string; phone?: string; email?: string; whatsappNumber?: string;
   captureKind: string; leadType: LeadType; status: LeadStatus; priority: LeadPriority;
@@ -56,6 +58,7 @@ export function serializeLead(doc: LeadDocument, now = new Date()): InternalLead
     quotedAmount: doc.quotedAmount, finalAmount: doc.finalAmount, assignedTo: doc.assignedTo,
     duplicateOf: doc.duplicateOf ? String(doc.duplicateOf) : undefined,
     meta: doc.meta ? toMetaView(doc.meta) : undefined,
+    firstPartyAttribution: doc.firstPartyAttribution,
     followUp: followUpBucket(doc.status, doc.nextFollowUpAt, now),
     events: (doc.events ?? []).map(e => strip({ at: new Date(e.at).toISOString(), type: e.type, actor: e.actor, text: e.text, from: e.from, to: e.to })),
     createdAt: new Date(doc.createdAt).toISOString(), updatedAt: new Date(doc.updatedAt).toISOString()
@@ -101,6 +104,7 @@ export async function createLead(input: LeadInput, actor = 'website', opts: { sk
   try {
     const lead = await Lead.create({
       ...fields, phoneNormalized,
+      firstPartyAttribution: a.firstParty,
       source: a.source ?? base, sourceDetail: a.sourceDetail, landingPage: a.landingPage, referrer: a.referrer,
       utmSource: a.utmSource, utmMedium: a.utmMedium, utmCampaign: a.utmCampaign, utmContent: a.utmContent, utmTerm: a.utmTerm,
       priority: input.priority ?? 'NORMAL', status: 'NEW',

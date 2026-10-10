@@ -3,6 +3,7 @@
  * status transitions, follow-up bucketing, ordering and the public/internal split.
  * Everything stateful lives in services/leads/lead.service.ts.
  */
+import { sanitizeFirstParty, type FirstPartyAttribution } from '@/lib/attributionEvidence';
 import { normalizeCustomerEmail } from '@/lib/customerValidation';
 import { sanitizeMeta, type MetaProvenance } from '@/lib/metaProvenance';
 
@@ -27,6 +28,7 @@ export const isTerminalStatus = (status: LeadStatus) => TERMINAL_STATUSES.includ
 export const DUPLICATE_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 export interface Attribution {
+  firstParty?: FirstPartyAttribution;
   source?: LeadSource;
   sourceDetail?: string;
   landingPage?: string;
@@ -83,6 +85,7 @@ export function sanitizeAttribution(raw: unknown): Attribution {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
   const r = raw as Record<string, unknown>;
   const out: Attribution = {
+    firstParty: sanitizeFirstParty(r.firstParty),
     sourceDetail: clean(r.sourceDetail, 100),
     landingPage: clean(r.landingPage, 300),
     referrer: clean(r.referrer, 300),
@@ -92,6 +95,12 @@ export function sanitizeAttribution(raw: unknown): Attribution {
     utmContent: clean(r.utmContent, 150),
     utmTerm: clean(r.utmTerm, 150)
   };
+  if (out.firstParty) {
+    const touch = out.firstParty.latestTaggedTouch ?? out.firstParty.firstTouch;
+    out.landingPage = out.firstParty.firstTouch?.landingPage.value ?? undefined;
+    out.referrer = out.firstParty.firstTouch?.externalReferrerOrigin.value ?? undefined;
+    for (const key of ['utmSource', 'utmMedium', 'utmCampaign', 'utmContent', 'utmTerm'] as const) out[key] = touch?.[key].value ?? undefined;
+  }
   out.source = normalizeSource(r.source) ?? inferSource(out.utmSource, out.utmMedium);
   return Object.fromEntries(Object.entries(out).filter(([, v]) => v !== undefined)) as Attribution;
 }
