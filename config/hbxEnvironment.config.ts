@@ -21,3 +21,22 @@
  * don't have one; see hbx.client.ts's normalizeOrigin()).
  */
 export const HBX_APPROVED_PRODUCTION_ORIGINS = new Set<string>([]);
+
+/**
+ * Hotelbeds `sourceMarket` — a business/contractual value tied to which market(s) The
+ * Apex Voyager India's actual Hotelbeds partner contract covers, NOT a per-customer
+ * choice and NOT the guest's country of residence. This codebase has no existing
+ * concept of a customer-selectable market (the whole site is India-only: IST timezone,
+ * INR pricing elsewhere, "The Apex Voyager India" branding) and no evidence of what
+ * market(s) the actual Hotelbeds contract permits — 'IN' is the obvious guess given the
+ * business, but it is still a guess until confirmed against the real contract/Hotelbeds
+ * account setup, so it is recorded here as ONE explicit, named, documented constant
+ * (same "never invent, only confirm" discipline as HBX_APPROVED_PRODUCTION_ORIGINS
+ * above) rather than being hard-coded inline at every call site. Every HBX Availability/
+ * CheckRate/Booking request in this codebase sends this exact value — a rateKey is only
+ * ever valid for the sourceMarket it was originally quoted under, so
+ * services/pricing/stayRateCache.service.ts's cache key includes it too, ensuring a rate
+ * cached under one sourceMarket can never be served for a different one, even if this
+ * value is ever changed later.
+ */
+export const HBX_SOURCE_MARKET = 'IN';

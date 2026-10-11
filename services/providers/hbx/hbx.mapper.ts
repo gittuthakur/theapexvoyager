@@ -83,6 +83,8 @@ export function mapHbxAvailabilityToRates(hotel: HbxAvailabilityHotel, nightCoun
         boardCode: rate.boardCode,
         rateKey: rate.rateKey,
         rateType: rate.rateType,
+        rateCommentsId: rate.rateCommentsId,
+        rateComments: rate.rateComments,
         refundable: isRefundable(cancellationPolicies),
         cancellationPolicies,
         // `rate.allotment` is the supplier's real remaining count — NOT `rate.rooms`,

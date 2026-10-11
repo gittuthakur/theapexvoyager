@@ -105,8 +105,13 @@ export function describeHbxAuth(): { configured: boolean; environment: HbxEnviro
 }
 
 export interface HbxRequestOptions {
-  method?: 'GET' | 'POST';
+  method?: 'GET' | 'POST' | 'DELETE';
   body?: unknown;
+  /** Defaults to REQUEST_TIMEOUT_MS (8s) — too short for Hotelbeds' own certification
+   *  guidance on Booking Confirmation, which can take meaningfully longer than a plain
+   *  Availability/CheckRate read while the supplier finalizes a real reservation. Callers
+   *  creating/cancelling a booking (services/providers/hbx/hbxBooking.service.ts) pass an
+   *  explicit longer value instead of relying on this default. */
   timeoutMs?: number;
 }
 

@@ -1,4 +1,5 @@
 import { getHbxDestinationMapping } from '@/config/hbxDestinations.config';
+import { HBX_SOURCE_MARKET } from '@/config/hbxEnvironment.config';
 import { hbxFetch, isHbxConfigured } from './hbx.client';
 import { logHbxError } from './hbx.errors';
 import { mapHbxAvailabilityToRates } from './hbx.mapper';
@@ -6,11 +7,11 @@ import { getSampleHotelsForDestination } from './hbxHotels.service';
 import type { HbxAvailabilityResponse } from './hbx.types';
 import type { StayPricingProvider, StayPricingQuery, StayPricingResult } from '../../pricing/stayPricing.types';
 
-/** Availability search only — POST /hotel-api/1.0/hotels. This is deliberately the ONLY
- *  HBX Booking API endpoint this codebase calls anywhere: never CheckRate (rate-locking,
- *  consumes quota for no diagnostic benefit over the availability search's own rateKey-
- *  presence field) and never the actual Booking-creation endpoint (would create a real
- *  supplier reservation). See the 2026-09-24 diagnostic's Phase 5 note. */
+/** Availability search only — POST /hotel-api/1.0/hotels. This file itself only ever
+ *  calls Availability — CheckRate and Booking creation/retrieval/cancellation are
+ *  separate, dedicated services (services/providers/hbx/hbxCheckRate.service.ts,
+ *  hbxBooking.service.ts) invoked only by the explicit booking workflow
+ *  (services/pricing/hbxBookingWorkflow.service.ts), never from here. */
 const AVAILABILITY_PATH = '/hotel-api/1.0/hotels';
 
 function nightsBetween(checkIn: string, checkOut: string): number {
@@ -52,7 +53,11 @@ async function getAvailability(query: StayPricingQuery): Promise<StayPricingResu
       body: {
         stay: { checkIn: query.checkIn, checkOut: query.checkOut },
         occupancies: [{ rooms: query.rooms, adults: query.adults, children: query.children }],
-        hotels: { hotel: hotelCodes }
+        hotels: { hotel: hotelCodes },
+        // A rateKey is only ever valid for the sourceMarket it was originally quoted
+        // under (config/hbxEnvironment.config.ts's own doc comment) — sent from
+        // Availability onward, consistently, so CheckRate/Booking never mismatch it.
+        sourceMarket: HBX_SOURCE_MARKET
       }
     });
 

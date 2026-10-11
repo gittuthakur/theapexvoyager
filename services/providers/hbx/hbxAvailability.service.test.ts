@@ -102,6 +102,25 @@ describe('hbxAvailability.service', () => {
     expect(result.rates[0].environment).toBe('test');
   });
 
+  it('sends the explicit HBX_SOURCE_MARKET on every availability request', async () => {
+    const fetchSpy = vi.fn().mockResolvedValue(new Response(JSON.stringify({ hotels: { hotels: [] } }), { status: 200 }));
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await hbxPricingProvider.getAvailability({
+      destinationSlug: 'manali',
+      checkIn: '2026-10-10',
+      checkOut: '2026-10-12',
+      adults: 2,
+      children: 0,
+      rooms: 1,
+      providerHotelIds: ['142378']
+    });
+
+    const [, options] = fetchSpy.mock.calls[0];
+    const body = JSON.parse(options.body);
+    expect(body.sourceMarket).toBe('IN');
+  });
+
   it('returns UNAVAILABLE when HBX responds 200 with no hotels available for the dates', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ hotels: { hotels: [] } }), { status: 200 })));
 

@@ -96,6 +96,31 @@ describe('mapHbxAvailabilityToRates', () => {
     expect(rate.boardCode).toBeUndefined();
   });
 
+  it('preserves rateCommentsId when only an id is returned (typical of Availability), never resolving it to text', () => {
+    const hotel: HbxAvailabilityHotel = {
+      ...baseHotel,
+      rooms: [{ ...baseHotel.rooms[0], rates: [{ ...baseHotel.rooms[0].rates[0], rateCommentsId: 'RC-123' }] }]
+    };
+    const rate = mapHbxAvailabilityToRates(hotel, 2)[0];
+    expect(rate.rateCommentsId).toBe('RC-123');
+    expect(rate.rateComments).toBeUndefined();
+  });
+
+  it('preserves full rateComments text when returned (typical of CheckRate/Booking), never inventing it', () => {
+    const hotel: HbxAvailabilityHotel = {
+      ...baseHotel,
+      rooms: [{ ...baseHotel.rooms[0], rates: [{ ...baseHotel.rooms[0].rates[0], rateComments: 'No smoking. Late check-in after 22:00 not guaranteed.' }] }]
+    };
+    const rate = mapHbxAvailabilityToRates(hotel, 2)[0];
+    expect(rate.rateComments).toBe('No smoking. Late check-in after 22:00 not guaranteed.');
+  });
+
+  it('leaves both rateCommentsId and rateComments undefined when HBX sends neither', () => {
+    const rate = mapHbxAvailabilityToRates(baseHotel, 2)[0];
+    expect(rate.rateCommentsId).toBeUndefined();
+    expect(rate.rateComments).toBeUndefined();
+  });
+
   it('roomsRemaining comes from `allotment`, never from the requested-occupancy `rooms` echo', () => {
     const hotel: HbxAvailabilityHotel = {
       ...baseHotel,

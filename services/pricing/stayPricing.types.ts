@@ -49,6 +49,12 @@ export interface NormalizedRate {
   rateType?: string;
   /** `undefined` when the provider gave no cancellation policy to infer from — never
    *  defaulted to true or false. See hbx.mapper.ts's isRefundable(). */
+  /** Availability typically returns only an id to resolve elsewhere; CheckRate/Booking/
+   *  Booking Detail may instead return the resolved text directly. Never resolve one
+   *  from the other, and never invent/display comment text that wasn't actually returned
+   *  at the stage being shown. */
+  rateCommentsId?: string;
+  rateComments?: string;
   refundable?: boolean;
   /** Every tier the supplier returned, in source order — never truncated to one (see
    *  hbx.mapper.ts's mapCancellationPolicies(), fixed 2026-09-26 Phase-8: HBX can
