@@ -2,6 +2,7 @@ import { getRegionForState } from '@/lib/regions';
 import { matchesStyle, matchesStyleKeywords } from '@/lib/travelStyles';
 import { getSeasonById } from '@/config/seasons.config';
 import type { Destination, DestinationStyleId, PackageFilter, PackageSortOption, RegionId, TravelPackage } from '@/types';
+import { searchPackages } from '@/lib/search/journeySearch';
 
 export interface DurationBucket {
   id: string;
@@ -154,16 +155,20 @@ export function getPackageRating(
  * simply won't match a region/season filter (there's nothing real to join against).
  */
 export function filterPackages(packages: TravelPackage[], filter: PackageFilter, destinationsBySlug: Map<string, Destination>): TravelPackage[] {
-  // Collapsed to a single space between words (not just trimmed at the ends) so a query
-  // like "Manali   Premium" — extra spacebar taps, or a paste artifact — still substring-
-  // matches "Manali Premium Escape" instead of silently finding nothing.
-  const query = (filter.query?.trim().toLowerCase() ?? '').replace(/\s+/g, ' ');
+  // Keyword search (lib/search/journeySearch.ts): normalized (case, whitespace, slug/spaced forms,
+  // punctuation, diacritics) and matched against fields extracted from each eligible journey —
+  // title/slug, destination text, linked destinations, itinerary stops, cities, category and region —
+  // with descriptions only as a fallback. Computed once over the full list so the fallback decision
+  // does not depend on the other filters.
+  const queryHits = filter.query?.trim() ? new Set(searchPackages(packages, filter.query, destinationsBySlug).map((hit) => hit.pkg.slug)) : null;
   const seasonLabels = filter.seasons?.map((id) => getSeasonById(id)?.label).filter((label): label is string => Boolean(label)) ?? [];
   const bucket = filter.duration ? DURATION_BUCKETS.find((candidate) => candidate.id === filter.duration) : undefined;
   const hasPriceFilter = filter.priceMin !== undefined && filter.priceMax !== undefined;
 
   return packages.filter((pkg) => {
-    if (query && !pkg.name.toLowerCase().includes(query) && !pkg.destination.toLowerCase().includes(query)) return false;
+    // A draft journey is never eligible (the loaders already return published only).
+    if (pkg.status === 'draft') return false;
+    if (queryHits && !queryHits.has(pkg.slug)) return false;
     if (filter.category && pkg.category !== filter.category) return false;
     if (filter.region && !getPackageRegionIds(pkg, destinationsBySlug).includes(filter.region)) return false;
     if (filter.styles?.length && !filter.styles.some((styleId) => packageMatchesStyle(pkg, destinationsBySlug, styleId))) return false;

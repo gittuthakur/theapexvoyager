@@ -1,0 +1,1835 @@
+{
+ "_note": "TEST FIXTURE ONLY — a read-only snapshot of the published Journey and Destination catalog taken from the live database. It is never imported by application code; search always reads live records. Regenerate with a read-only query of published journeys/destinations if the catalog changes materially.",
+ "takenAt": "2026-10-11",
+ "draftJourneyCount": 12,
+ "destinations": [
+  {
+   "slug": "dharamshala",
+   "title": "Dharamshala",
+   "state": "Himachal Pradesh",
+   "description": "The Kangra Valley gateway town below the Dhauladhar range — the arrival point for this corner of Himachal, with McLeod Ganj as a separate destination further up"
+  },
+  {
+   "slug": "tirthan-valley",
+   "title": "Tirthan Valley",
+   "state": "Himachal Pradesh",
+   "description": "Crystal-clear rivers, lush forests and peaceful stays."
+  },
+  {
+   "slug": "jibhi",
+   "title": "Jibhi",
+   "state": "Himachal Pradesh",
+   "description": "A sleepy riverside hamlet of wooden cottages and waterfall trails in the Banjar Valley."
+  },
+  {
+   "slug": "chitkul",
+   "title": "Chitkul",
+   "state": "Himachal Pradesh",
+   "description": "The last inhabited village on the old Hindustan-Tibet trade route, deep in the Baspa Valley."
+  },
+  {
+   "slug": "sainj-valley",
+   "title": "Sainj Valley",
+   "state": "Himachal Pradesh",
+   "description": "A quiet valley on the Great Himalayan National Park buffer, built around meadow villages like Shangarh."
+  },
+  {
+   "slug": "bir-billing",
+   "title": "Bir Billing",
+   "state": "Himachal Pradesh",
+   "description": "India's best-known paragliding site, paired with a slow-paced Tibetan settlement village."
+  },
+  {
+   "slug": "sangla-valley",
+   "title": "Sangla Valley",
+   "state": "Himachal Pradesh",
+   "description": "Apple orchards and apricot groves along the Baspa river, deep in the Kinnaur Himalayas."
+  },
+  {
+   "slug": "chamba",
+   "title": "Chamba",
+   "state": "Himachal Pradesh",
+   "description": "A former Himalayan princely capital on the Ravi River, built around temples and a historic town square."
+  },
+  {
+   "slug": "dalhousie",
+   "title": "Dalhousie",
+   "state": "Himachal Pradesh",
+   "description": "A colonial-era hill station spread across five hills, built by the British as a summer retreat in 1850."
+  },
+  {
+   "slug": "khajjiar",
+   "title": "Khajjiar",
+   "state": "Himachal Pradesh",
+   "description": "A small meadow and lake ringed by deodar forest, roughly midway between Dalhousie and Chamba."
+  },
+  {
+   "slug": "munsiyari",
+   "title": "Munsiyari",
+   "state": "Uttarakhand",
+   "description": "A quiet hill town beneath the Panchachuli peaks, gateway to Uttarakhand’s remote Johar Valley."
+  },
+  {
+   "slug": "srinagar",
+   "title": "Srinagar",
+   "state": "Jammu & Kashmir",
+   "description": "Kashmir’s valley capital — Dal Lake, Mughal gardens and centuries of houseboat life."
+  },
+  {
+   "slug": "pahalgam",
+   "title": "Pahalgam",
+   "state": "Jammu & Kashmir",
+   "description": "A Lidder Valley mountain base, and the Kashmir Valley’s classic multi-day retreat."
+  },
+  {
+   "slug": "sonamarg",
+   "title": "Sonamarg",
+   "state": "Jammu & Kashmir",
+   "description": "A high-altitude valley on the Srinagar–Leh road, and gateway to Kashmir’s glacier and lake treks."
+  },
+  {
+   "slug": "dehradun",
+   "title": "Dehradun",
+   "state": "Uttarakhand",
+   "description": "The Doon Valley capital and Garhwal's main gateway, with a quieter identity of its own."
+  },
+  {
+   "slug": "mussoorie",
+   "title": "Mussoorie",
+   "state": "Uttarakhand",
+   "description": "A ridge-top hill station above the Doon Valley, built around Mall Road and its viewpoints."
+  },
+  {
+   "slug": "joshimath",
+   "title": "Joshimath (Jyotirmath)",
+   "state": "Uttarakhand",
+   "description": "Upper Garhwal's practical mountain base, and the gateway town beneath Auli."
+  },
+  {
+   "slug": "auli",
+   "title": "Auli",
+   "state": "Uttarakhand",
+   "description": "A high-altitude slope above Joshimath, India's best-known ski destination in winter."
+  },
+  {
+   "slug": "chopta",
+   "title": "Chopta",
+   "state": "Uttarakhand",
+   "description": "A small meadow base in Rudraprayag district, and the trailhead for Tungnath and Chandrashila."
+  },
+  {
+   "slug": "lansdowne",
+   "title": "Lansdowne",
+   "state": "Uttarakhand",
+   "description": "A quiet cantonment hill town in Pauri Garhwal, built for a short, unhurried break."
+  },
+  {
+   "slug": "nainital",
+   "title": "Nainital",
+   "state": "Uttarakhand",
+   "description": "Kumaon's best-known lake town, built in tiers around the crescent-shaped Naini Lake."
+  },
+  {
+   "slug": "mukteshwar",
+   "title": "Mukteshwar",
+   "state": "Uttarakhand",
+   "description": "A quiet ridge village above the Kumaon orchards, built around a cliff viewpoint and an old temple."
+  },
+  {
+   "slug": "almora",
+   "title": "Almora",
+   "state": "Uttarakhand",
+   "description": "A former Chand-dynasty hill capital, and Kumaon's cultural and market town."
+  },
+  {
+   "slug": "kausani",
+   "title": "Kausani",
+   "state": "Uttarakhand",
+   "description": "A small ridge settlement in Bageshwar district, built almost entirely around its Himalayan panorama."
+  },
+  {
+   "slug": "ranikhet",
+   "title": "Ranikhet",
+   "state": "Uttarakhand",
+   "description": "A quiet cantonment town in Almora district, home to the Kumaon Regiment and its orchard gardens."
+  },
+  {
+   "slug": "badrinath",
+   "title": "Badrinath",
+   "state": "Uttarakhand",
+   "description": "A seasonal Char Dham temple town on the Alaknanda, reached by road beyond Joshimath."
+  },
+  {
+   "slug": "gangotri",
+   "title": "Gangotri",
+   "state": "Uttarakhand",
+   "description": "A road-accessible Char Dham temple town on the Bhagirathi, and the gateway to the separate Gaumukh trek."
+  },
+  {
+   "slug": "kedarnath",
+   "title": "Kedarnath",
+   "state": "Uttarakhand",
+   "description": "A trek-gated Char Dham shrine at 3,583 m — the road ends at Gaurikund, and the final distance is on foot or by seasonal helicopter."
+  },
+  {
+   "slug": "yamunotri",
+   "title": "Yamunotri",
+   "state": "Uttarakhand",
+   "description": "A trek-gated Char Dham shrine above Janki Chatti, the source of the Yamuna in a narrow Himalayan gorge."
+  },
+  {
+   "slug": "hemkund-sahib",
+   "title": "Hemkund Sahib",
+   "state": "Uttarakhand",
+   "description": "The world's highest Gurudwara, on a glacial lake at 4,329 m, reached by trek from the shared Ghangaria base."
+  },
+  {
+   "slug": "kasauli",
+   "title": "Kasauli",
+   "state": "Himachal Pradesh",
+   "description": "A small colonial cantonment town in pine and oak forest, built around 19th-century churches and viewpoints."
+  },
+  {
+   "slug": "mcleod-ganj",
+   "title": "McLeod Ganj",
+   "state": "Himachal Pradesh",
+   "description": "The hillside Tibetan-culture hub above Dharamshala — home to the Dalai Lama’s temple complex and the Tibetan government-in-exile since 1960."
+  },
+  {
+   "slug": "katra",
+   "title": "Katra",
+   "state": "Jammu & Kashmir",
+   "description": "The base town for the Vaishno Devi pilgrimage — where travelers register, stay, and begin the route to the Bhawan."
+  },
+  {
+   "slug": "chail",
+   "title": "Chail",
+   "state": "Himachal Pradesh",
+   "description": "A former royal summer retreat in the Shivalik foothills, with a hillside cricket ground long noted as one of the highest anywhere."
+  },
+  {
+   "slug": "bhaderwah",
+   "title": "Bhaderwah",
+   "state": "Jammu & Kashmir",
+   "description": "A bowl-shaped valley town known regionally as \"Mini Kashmir\" for meadows, orchards and springs, with lighter tourism infrastructure than the Kashmir Valley."
+  },
+  {
+   "slug": "jammu",
+   "title": "Jammu",
+   "state": "Jammu & Kashmir",
+   "description": "The \"City of Temples\" on the Tawi River — Jammu & Kashmir’s winter capital, and a common gateway before Kashmir or the hills beyond."
+  },
+  {
+   "slug": "patnitop",
+   "title": "Patnitop",
+   "state": "Jammu & Kashmir",
+   "description": "A forested hill station on the Jammu–Srinagar highway, known for winter skiing at nearby Madha Top and summer meadow walks."
+  },
+  {
+   "slug": "ramnagar-corbett",
+   "title": "Ramnagar",
+   "state": "Uttarakhand",
+   "description": "The gateway town to Corbett Tiger Reserve, India’s oldest national park."
+  },
+  {
+   "slug": "kangra",
+   "title": "Kangra",
+   "state": "Himachal Pradesh",
+   "description": "A historic fort-and-temple town, home to the largest fort in the Indian Himalayas and the Brajeshwari Devi Temple."
+  },
+  {
+   "slug": "sarahan",
+   "title": "Sarahan",
+   "state": "Himachal Pradesh",
+   "description": "A temple town on the old Hindustan-Tibet road, built around the Bhimakali Temple and known as the gateway to Kinnaur."
+  },
+  {
+   "slug": "palampur",
+   "title": "Palampur",
+   "state": "Himachal Pradesh",
+   "description": "Himachal’s tea-growing town, built around plantations and the Neugal Khad gorge."
+  },
+  {
+   "slug": "pragpur",
+   "title": "Pragpur",
+   "state": "Himachal Pradesh",
+   "description": "India’s first officially declared Heritage Village, built by the Kuthiala Sud clan in the 17th century."
+  },
+  {
+   "slug": "kufri",
+   "title": "Kufri",
+   "state": "Himachal Pradesh",
+   "description": "A Shimla-area hill stop built around a high-altitude nature park and family activity ground."
+  },
+  {
+   "slug": "naggar",
+   "title": "Naggar",
+   "state": "Himachal Pradesh",
+   "description": "The former capital of the Kullu kingdom, home to a 15th-century castle and the Nicholas Roerich estate."
+  },
+  {
+   "slug": "jawalamukhi",
+   "title": "Jawalamukhi",
+   "state": "Himachal Pradesh",
+   "description": "A Shakti Peeth pilgrimage town built around the Jwalamukhi Temple and its natural flame."
+  },
+  {
+   "slug": "narkanda",
+   "title": "Narkanda",
+   "state": "Himachal Pradesh",
+   "description": "An apple-country hill town on the old Hindustan-Tibet road, and the base for Hatu Peak."
+  },
+  {
+   "slug": "kullu",
+   "title": "Kullu",
+   "state": "Himachal Pradesh",
+   "description": "The valley’s administrative and religious center, home to the Raghunath Temple and the internationally recognized Kullu Dussehra festival."
+  },
+  {
+   "slug": "keylong",
+   "title": "Keylong",
+   "state": "Himachal Pradesh",
+   "description": "The district headquarters of Lahaul and Spiti, and a base for exploring the Lahaul valley."
+  },
+  {
+   "slug": "kibber",
+   "title": "Kibber",
+   "state": "Himachal Pradesh",
+   "description": "One of the highest permanently inhabited villages in India, and the base for the Kibber Wildlife Sanctuary."
+  },
+  {
+   "slug": "bharmour",
+   "title": "Bharmour",
+   "state": "Himachal Pradesh",
+   "description": "A Budhil-valley temple town and the traditional base for the Manimahesh Kailash pilgrimage."
+  },
+  {
+   "slug": "tabo",
+   "title": "Tabo",
+   "state": "Himachal Pradesh",
+   "description": "A thousand-year-old monastery town in Spiti, known for murals often compared to the Ajanta Caves."
+  },
+  {
+   "slug": "rewalsar",
+   "title": "Rewalsar",
+   "state": "Himachal Pradesh",
+   "description": "A small lake revered by Hindus, Buddhists and Sikhs alike, known to Tibetan Buddhists as Tso Pema."
+  },
+  {
+   "slug": "renuka-ji",
+   "title": "Renuka Ji",
+   "state": "Himachal Pradesh",
+   "description": "Himachal’s largest natural lake, revered as the embodiment of the goddess Renuka, ringed by a wildlife sanctuary."
+  },
+  {
+   "slug": "dhankar",
+   "title": "Dhankar",
+   "state": "Himachal Pradesh",
+   "description": "A cliffside monastery and village above the Spiti–Pin confluence, and the starting point for the Dhankar Lake trek."
+  },
+  {
+   "slug": "mandi",
+   "title": "Mandi",
+   "state": "Himachal Pradesh",
+   "description": "Known as \"Chhoti Kashi\" for its many temples, set at the confluence of the Suketi and Beas rivers."
+  },
+  {
+   "slug": "paonta-sahib",
+   "title": "Paonta Sahib",
+   "state": "Himachal Pradesh",
+   "description": "A Yamuna-riverside town founded by Guru Gobind Singh, and a significant Sikh pilgrimage site."
+  },
+  {
+   "slug": "naldehra",
+   "title": "Naldehra",
+   "state": "Himachal Pradesh",
+   "description": "A forested meadow around one of North India's earliest hill-station golf courses, about 22 km from Shimla."
+  },
+  {
+   "slug": "manikaran",
+   "title": "Manikaran",
+   "state": "Himachal Pradesh",
+   "description": "A Sikh–Hindu pilgrimage town in the Parvati Valley, built around hot springs and the Gurdwara Sri Manikaran Sahib."
+  },
+  {
+   "slug": "pangi-valley",
+   "title": "Pangi Valley",
+   "state": "Himachal Pradesh",
+   "description": "A remote, tribal Chenab-gorge valley in Chamba district, cut off from the world for much of the year."
+  },
+  {
+   "slug": "chintpurni",
+   "title": "Chintpurni",
+   "state": "Himachal Pradesh",
+   "description": "A Shakti Peeth pilgrimage town in Una district, built around the Mata Chintpurni Temple."
+  },
+  {
+   "slug": "naina-devi",
+   "title": "Naina Devi",
+   "state": "Himachal Pradesh",
+   "description": "A hilltop Shakti Peeth temple in Bilaspur district overlooking Gobind Sagar Lake — distinct from the Naina Devi Temple at Nainital, Uttarakhand."
+  },
+  {
+   "slug": "mashobra",
+   "title": "Mashobra",
+   "state": "Himachal Pradesh",
+   "description": "A cedar-forested hill town beyond Shimla's bustle, home to the Rashtrapati Niwas presidential retreat."
+  },
+  {
+   "slug": "manali",
+   "title": "Manali",
+   "state": "Himachal Pradesh",
+   "description": "Snow peaks, river valleys, and adventure sports."
+  },
+  {
+   "slug": "spiti-valley",
+   "title": "Spiti Valley",
+   "state": "Himachal Pradesh",
+   "description": "Remote high-altitude desert with ancient monasteries and dramatic lunar landscapes."
+  },
+  {
+   "slug": "kinnaur",
+   "title": "Kinnaur",
+   "state": "Himachal Pradesh",
+   "description": "Ancient villages, apple orchards and dramatic valleys along the historic Hindustan–Tibet Road."
+  },
+  {
+   "slug": "shimla",
+   "title": "Shimla",
+   "state": "Himachal Pradesh",
+   "description": "Pine-clad ridgelines and heritage architecture along the historic Mall Road."
+  },
+  {
+   "slug": "gulmarg",
+   "title": "Gulmarg",
+   "state": "Jammu & Kashmir",
+   "description": "Alpine meadows and snow-capped peaks in Kashmir, home to one of the world’s highest gondola rides."
+  },
+  {
+   "slug": "rishikesh",
+   "title": "Rishikesh",
+   "state": "Uttarakhand",
+   "description": "Uttarakhand’s yoga capital, with Ganga aartis, ashrams, and Himalayan white-water rafting."
+  },
+  {
+   "slug": "kasol",
+   "title": "Kasol",
+   "state": "Himachal Pradesh",
+   "description": "Riverside cafés, treks and laid-back mountain life."
+  },
+  {
+   "slug": "haridwar",
+   "title": "Haridwar",
+   "state": "Uttarakhand",
+   "description": "One of Hinduism’s seven holiest cities in Uttarakhand, anchored by the sacred Har Ki Pauri ghat."
+  }
+ ],
+ "journeys": [
+  {
+   "slug": "manali-premium-escape",
+   "name": "Manali Premium Escape",
+   "destination": "Manali, Himachal Pradesh",
+   "destinationSlugs": [
+    "manali"
+   ],
+   "category": "Adventure",
+   "shortDescription": "Snow-capped peaks, riverside cafes, and adventure sports in the heart of Himachal.",
+   "highlights": [
+    "Solang Valley adventure sports",
+    "Old Manali cafe hopping",
+    "Hadimba Temple & Mall Road",
+    "Rohtang Pass excursion (seasonal)"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Manali",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Solang Valley Adventure",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Old Manali & Local Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Rohtang Pass / Kasol Day Trip",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kashmir-signature-journey",
+   "name": "Kashmir Paradise",
+   "destination": "Srinagar & Gulmarg, Kashmir",
+   "destinationSlugs": [
+    "gulmarg",
+    "srinagar",
+    "pahalgam"
+   ],
+   "category": "Luxury",
+   "shortDescription": "Houseboat stays, Mughal gardens, and snow-clad Gulmarg on a signature Kashmir journey.",
+   "highlights": [
+    "Deluxe houseboat stay on Dal Lake",
+    "Gulmarg gondola ride",
+    "Mughal Gardens tour",
+    "Shikara sunset ride"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Srinagar",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Srinagar Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Gulmarg Excursion",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Pahalgam Day Trip",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Leisure & Local Experiences",
+     "description": ""
+    },
+    {
+     "day": 6,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "spiti-valley-adventure",
+   "name": "Spiti Circuit Expedition",
+   "destination": "Spiti Valley, Himachal Pradesh",
+   "destinationSlugs": [
+    "spiti-valley",
+    "kinnaur"
+   ],
+   "category": "Offbeat",
+   "shortDescription": "Cross high-altitude passes to ancient monasteries and lunar landscapes in remote Spiti.",
+   "highlights": [
+    "Key Monastery & Kaza sightseeing",
+    "Chandratal Lake excursion (seasonal, weather and road conditions permitting)",
+    "Hikkim — world's highest post office",
+    "Langza fossil village"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Shimla to Kalpa",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Kalpa to Nako",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Nako to Kaza",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Kaza Local Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Hikkim & Komic",
+     "description": ""
+    },
+    {
+     "day": 6,
+     "title": "Chandratal Lake",
+     "description": ""
+    },
+    {
+     "day": 7,
+     "title": "Kaza to Manali",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "himachal-himalayan-explorer",
+   "name": "Honeymoon in Hills",
+   "destination": "Shimla, Manali & Manikaran, Himachal Pradesh",
+   "destinationSlugs": [
+    "shimla",
+    "manali",
+    "kasol"
+   ],
+   "category": "Honeymoon",
+   "shortDescription": "A romantic Himachal road trip through colonial Shimla, snowy Manali, and serene Manikaran, built for two.",
+   "highlights": [
+    "Candlelight dinner on Shimla’s Mall Road",
+    "Private cable car ride in Solang Valley",
+    "Couple’s stay upgrade at scenic viewpoints",
+    "Manikaran hot springs & riverside walks"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Shimla",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Shimla to Kufri",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Shimla to Manali",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Solang Valley",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Manali to Manikaran",
+     "description": ""
+    },
+    {
+     "day": 6,
+     "title": "Kasol & Parvati Valley",
+     "description": ""
+    },
+    {
+     "day": 7,
+     "title": "Manikaran to Manali",
+     "description": ""
+    },
+    {
+     "day": 8,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "dharamshala-dalhousie-escape",
+   "name": "Himachal Family Escape",
+   "destination": "Dharamshala & Dalhousie, Himachal Pradesh",
+   "destinationSlugs": [
+    "dharamshala",
+    "dalhousie",
+    "khajjiar"
+   ],
+   "category": "Family",
+   "shortDescription": "Pine forests, Tibetan culture, and colonial hill towns on a relaxed family-friendly escape.",
+   "highlights": [
+    "McLeod Ganj & Dalai Lama Temple",
+    "Dalhousie colonial walk",
+    "Khajjiar — Mini Switzerland",
+    "Bhagsu Waterfall"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Dharamshala",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Dharamshala Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Dharamshala to Dalhousie",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Khajjiar Day Trip",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "uttarakhand-explorer",
+   "name": "Uttarakhand Explorer",
+   "destination": "Rishikesh, Haridwar & Mussoorie, Uttarakhand",
+   "destinationSlugs": [
+    "rishikesh",
+    "haridwar",
+    "mussoorie"
+   ],
+   "category": "Spiritual",
+   "shortDescription": "Ganga aartis, Himalayan foothill views, and white-water rafting across Uttarakhand’s holiest towns.",
+   "highlights": [
+    "Ganga Aarti at Har Ki Pauri, Haridwar",
+    "White-water rafting in Rishikesh (seasonal, river conditions permitting)",
+    "Mussoorie hill-station views",
+    "Ashram yoga & meditation session"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Haridwar",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Haridwar Local Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Haridwar to Rishikesh",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Rishikesh Adventure Day",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Mussoorie Day Trip",
+     "description": ""
+    },
+    {
+     "day": 6,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "shimla-manali-tour-package",
+   "name": "Shimla Manali Tour Package",
+   "destination": "Shimla & Manali, Himachal Pradesh",
+   "destinationSlugs": [
+    "shimla",
+    "manali"
+   ],
+   "category": "Family",
+   "startingCity": "Chandigarh",
+   "endingCity": "Chandigarh",
+   "shortDescription": "A classic first Himachal circuit pairing Shimla's colonial hill-station charm with Manali's valley and adventure-sports base — built for families, couples and groups alike, not framed around any one of those.",
+   "highlights": [
+    "Shimla's Mall Road and The Ridge",
+    "Old Manali cafes and Hadimba Temple",
+    "Solang Valley (seasonal adventure activities)",
+    "Scenic Chandigarh–Shimla–Manali drive"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Chandigarh to Shimla",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Shimla Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Shimla to Manali",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Manali Local Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Solang Valley Excursion",
+     "description": ""
+    },
+    {
+     "day": 6,
+     "title": "Manali to Chandigarh",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kinnaur-spiti-circuit",
+   "name": "Kinnaur Spiti Circuit",
+   "destination": "Kinnaur & Spiti Valley, Himachal Pradesh",
+   "destinationSlugs": [
+    "shimla",
+    "kinnaur",
+    "sangla-valley",
+    "chitkul",
+    "tabo",
+    "spiti-valley",
+    "manali"
+   ],
+   "category": "Offbeat",
+   "startingCity": "Shimla",
+   "endingCity": "Manali",
+   "shortDescription": "A full high-altitude circuit through the Baspa valley's Sangla and Chitkul before crossing into Spiti's monasteries and cold desert — longer and more thorough than a direct Spiti-only run, genuinely covering the Kinnaur valley loop the shorter route does not.",
+   "highlights": [
+    "Sangla and Chitkul in the Baspa valley",
+    "Kalpa's Kinner Kailash views",
+    "Tabo's thousand-year-old monastery",
+    "Kaza, Key Monastery and the Spiti cold desert"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Shimla Arrival",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Shimla to Sangla",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Chitkul Day Trip",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Kalpa",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Kalpa to Tabo",
+     "description": ""
+    },
+    {
+     "day": 6,
+     "title": "Tabo to Kaza",
+     "description": ""
+    },
+    {
+     "day": 7,
+     "title": "Kaza Local Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 8,
+     "title": "Kaza to Manali",
+     "description": ""
+    },
+    {
+     "day": 9,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kasol-kheerganga-tosh",
+   "name": "Kasol Kheerganga Tosh",
+   "destination": "Kasol, Parvati Valley, Himachal Pradesh",
+   "destinationSlugs": [
+    "kasol"
+   ],
+   "category": "Adventure",
+   "startingCity": "Bhuntar",
+   "endingCity": "Bhuntar",
+   "shortDescription": "A budget-friendly Parvati Valley base in Kasol with a trek up to Kheerganga's hot springs and a stop in Tosh — built for friends and young travellers on a trekking-focused trip.",
+   "highlights": [
+    "Kasol's riverside cafe culture",
+    "Tosh village views",
+    "Trek to Kheerganga's hot springs",
+    "Parvati river walks"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Kasol",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Tosh Village",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Trek to Kheerganga",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Trek Back to Kasol",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "jibhi-tirthan-valley",
+   "name": "Jibhi Tirthan Valley",
+   "destination": "Jibhi & Tirthan Valley, Himachal Pradesh",
+   "destinationSlugs": [
+    "jibhi",
+    "tirthan-valley"
+   ],
+   "category": "Offbeat",
+   "startingCity": "Aut",
+   "endingCity": "Aut",
+   "shortDescription": "A quiet, short offbeat escape pairing Jibhi's wooden-guesthouse village lanes with the Tirthan Valley's riverside base at Gushaini — built as a weekend-length trip for couples, not a long circuit.",
+   "highlights": [
+    "Jibhi village walks and waterfall",
+    "Tirthan river at Gushaini",
+    "Quiet, low-crowd pace",
+    "Short drive from Aut/Kullu"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Jibhi",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Jibhi Local Walks",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Tirthan Valley (Gushaini)",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kashmir-family-tour",
+   "name": "Kashmir Family Tour",
+   "destination": "Srinagar, Gulmarg & Pahalgam, Jammu & Kashmir",
+   "destinationSlugs": [
+    "srinagar",
+    "gulmarg",
+    "pahalgam"
+   ],
+   "category": "Family",
+   "startingCity": "Srinagar",
+   "endingCity": "Srinagar",
+   "shortDescription": "A paced, three-stop Kashmir introduction for families — Srinagar, Gulmarg and Pahalgam only, with rest built into the schedule rather than a packed multi-valley circuit.",
+   "highlights": [
+    "Dal Lake houseboat stay and shikara ride",
+    "Gulmarg's Gondola cable car",
+    "Pahalgam's Lidder valley",
+    "Mughal Gardens in Srinagar"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Srinagar — Houseboat Stay",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Srinagar Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Srinagar to Gulmarg",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Gulmarg to Pahalgam",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Pahalgam Local Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 6,
+     "title": "Departure via Srinagar",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kashmir-pahalgam-gulmarg-sonamarg-tour",
+   "name": "Kashmir Pahalgam Gulmarg Sonamarg Tour",
+   "destination": "Srinagar, Pahalgam, Gulmarg & Sonamarg, Jammu & Kashmir",
+   "destinationSlugs": [
+    "srinagar",
+    "pahalgam",
+    "gulmarg",
+    "sonamarg"
+   ],
+   "category": "Sightseeing",
+   "startingCity": "Srinagar",
+   "endingCity": "Srinagar",
+   "shortDescription": "A broader, four-valley Kashmir sightseeing circuit adding Sonamarg to Srinagar, Pahalgam and Gulmarg — more ground covered than the paced three-stop family version, for travellers who want to see more of the region in one trip.",
+   "highlights": [
+    "Sonamarg's glacier-fed valley",
+    "Gulmarg's Gondola cable car",
+    "Pahalgam's Lidder valley",
+    "Dal Lake houseboat stay in Srinagar"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Srinagar",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Srinagar to Sonamarg",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Srinagar to Pahalgam",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Pahalgam Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Pahalgam to Gulmarg",
+     "description": ""
+    },
+    {
+     "day": 6,
+     "title": "Gulmarg Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 7,
+     "title": "Departure via Srinagar",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "char-dham-yatra",
+   "name": "Char Dham Yatra",
+   "destination": "Yamunotri, Gangotri, Kedarnath & Badrinath, Uttarakhand",
+   "destinationSlugs": [
+    "yamunotri",
+    "gangotri",
+    "kedarnath",
+    "badrinath"
+   ],
+   "category": "Spiritual",
+   "startingCity": "Haridwar",
+   "endingCity": "Haridwar",
+   "shortDescription": "The traditional four-shrine Uttarakhand pilgrimage circuit — Yamunotri, Gangotri, Kedarnath and Badrinath — sequenced in the customary order, with genuine access differences between the road-accessible and trek/helicopter-gated shrines called out honestly.",
+   "highlights": [
+    "Yamunotri shrine and hot springs",
+    "Gangotri, source of the Ganges",
+    "Kedarnath temple (trek or helicopter access)",
+    "Badrinath temple, road-accessible"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Haridwar/Dehradun",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "To Barkot",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Yamunotri Darshan",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "To Uttarkashi",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Gangotri Darshan",
+     "description": ""
+    },
+    {
+     "day": 6,
+     "title": "To Guptkashi/Sonprayag",
+     "description": ""
+    },
+    {
+     "day": 7,
+     "title": "Kedarnath Darshan",
+     "description": ""
+    },
+    {
+     "day": 8,
+     "title": "To Badrinath",
+     "description": ""
+    },
+    {
+     "day": 9,
+     "title": "Badrinath Darshan",
+     "description": ""
+    },
+    {
+     "day": 10,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kedarnath-badrinath-yatra",
+   "name": "Kedarnath Badrinath Yatra",
+   "destination": "Kedarnath & Badrinath, Uttarakhand",
+   "destinationSlugs": [
+    "kedarnath",
+    "badrinath"
+   ],
+   "category": "Spiritual",
+   "startingCity": "Haridwar",
+   "endingCity": "Haridwar",
+   "shortDescription": "A shorter pilgrimage covering only Kedarnath and Badrinath, for travellers who want these two shrines without the full four-shrine Char Dham circuit.",
+   "highlights": [
+    "Kedarnath temple (trek or helicopter access)",
+    "Badrinath temple, road-accessible",
+    "Mandakini and Alaknanda valley scenery"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Haridwar/Dehradun",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "To Guptkashi/Sonprayag",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Kedarnath Darshan",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Return to Guptkashi/Sonprayag",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "To Badrinath",
+     "description": ""
+    },
+    {
+     "day": 6,
+     "title": "Badrinath Darshan",
+     "description": ""
+    },
+    {
+     "day": 7,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "nainital-corbett-mussoorie-tour",
+   "name": "Nainital Corbett Mussoorie Tour",
+   "destination": "Nainital, Jim Corbett & Mussoorie, Uttarakhand",
+   "destinationSlugs": [
+    "nainital",
+    "ramnagar-corbett",
+    "mussoorie"
+   ],
+   "category": "Family",
+   "startingCity": "Kathgodam",
+   "endingCity": "Dehradun",
+   "shortDescription": "A family-friendly Kumaon-and-Garhwal circuit pairing Nainital's lake town, a Corbett wildlife stop, and Mussoorie's hill-station views.",
+   "highlights": [
+    "Naini Lake boating",
+    "Jim Corbett wildlife safari (subject to permit/availability)",
+    "Mussoorie's Mall Road and viewpoints"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Nainital",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Nainital Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Nainital to Corbett (Ramnagar)",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Corbett Safari",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Corbett to Mussoorie",
+     "description": ""
+    },
+    {
+     "day": 6,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "auli-chopta-tungnath-tour",
+   "name": "Auli Chopta Tungnath Tour",
+   "destination": "Auli & Chopta, Uttarakhand",
+   "destinationSlugs": [
+    "joshimath",
+    "auli",
+    "chopta"
+   ],
+   "category": "Adventure",
+   "startingCity": "Rishikesh",
+   "endingCity": "Rishikesh",
+   "shortDescription": "A nature-and-adventure pairing of Auli's high meadows above Joshimath with Chopta's meadow base for the Tungnath trek — for couples and travellers wanting mountain scenery over a pilgrimage-paced itinerary.",
+   "highlights": [
+    "Auli's ropeway and high-altitude meadows",
+    "Chopta's \"mini Switzerland\" meadow",
+    "Tungnath trek, one of the highest Shiva temples"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Joshimath",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Auli Excursion",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Joshimath to Chopta",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Tungnath Trek",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Chopta Local Time",
+     "description": ""
+    },
+    {
+     "day": 6,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "shimla-short-escape",
+   "name": "Shimla Short Escape",
+   "destination": "Shimla, Himachal Pradesh",
+   "destinationSlugs": [
+    "shimla"
+   ],
+   "category": "Sightseeing",
+   "startingCity": "Chandigarh",
+   "endingCity": "Chandigarh",
+   "shortDescription": "A short, single-destination Shimla weekend — for travellers with limited time who want the hill-station experience without a longer multi-stop circuit.",
+   "highlights": [
+    "Mall Road and The Ridge",
+    "Jakhoo Temple viewpoint",
+    "A relaxed, single-base weekend pace"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Shimla",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Shimla Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "manali-short-escape",
+   "name": "Manali Short Escape",
+   "destination": "Manali, Himachal Pradesh",
+   "destinationSlugs": [
+    "manali"
+   ],
+   "category": "Sightseeing",
+   "startingCity": "Chandigarh",
+   "endingCity": "Chandigarh",
+   "shortDescription": "A short, single-destination Manali weekend-length trip — a shorter alternative to the existing 5-day Manali Premium Escape for travellers with less time.",
+   "highlights": [
+    "Old Manali cafes",
+    "Hadimba Temple",
+    "Solang Valley (seasonal activities)"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Manali",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Manali Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Solang Valley Excursion",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kinnaur-valley-tour",
+   "name": "Kinnaur Valley Tour",
+   "destination": "Kinnaur, Himachal Pradesh",
+   "destinationSlugs": [
+    "shimla",
+    "narkanda",
+    "sarahan",
+    "sangla-valley",
+    "chitkul",
+    "kinnaur"
+   ],
+   "category": "Offbeat",
+   "startingCity": "Shimla",
+   "endingCity": "Shimla",
+   "shortDescription": "A Kinnaur-only circuit via Narkanda and Sarahan into the Baspa valley — a lower-altitude, permit-free alternative to the existing Kinnaur Spiti Circuit for travellers who don't want to continue into Spiti.",
+   "highlights": [
+    "Sarahan's Bhimakali Temple",
+    "Sangla and Chitkul in the Baspa valley",
+    "Kalpa's Kinner Kailash views"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Shimla to Narkanda",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Narkanda to Sarahan",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Sarahan to Sangla",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Sangla to Chitkul to Kalpa",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Kalpa",
+     "description": ""
+    },
+    {
+     "day": 6,
+     "title": "Kalpa to Narkanda",
+     "description": ""
+    },
+    {
+     "day": 7,
+     "title": "Narkanda to Shimla Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kasol-manikaran-weekend",
+   "name": "Kasol Manikaran Weekend",
+   "destination": "Kasol & Manikaran, Himachal Pradesh",
+   "destinationSlugs": [
+    "kasol",
+    "manikaran"
+   ],
+   "category": "Offbeat",
+   "startingCity": "Bhuntar",
+   "endingCity": "Bhuntar",
+   "shortDescription": "A short, non-trekking Parvati Valley weekend pairing Kasol's cafe culture with Manikaran's hot springs — distinct from the existing Kasol Kheerganga Tosh package, which is trek-focused and longer.",
+   "highlights": [
+    "Kasol's riverside cafes",
+    "Manikaran hot springs and gurdwara",
+    "A relaxed, non-trekking weekend pace"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Kasol",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Manikaran Day Trip",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "dharamshala-mcleodganj-short-escape",
+   "name": "Dharamshala McLeodganj Short Escape",
+   "destination": "Dharamshala & McLeod Ganj, Himachal Pradesh",
+   "destinationSlugs": [
+    "dharamshala",
+    "mcleod-ganj"
+   ],
+   "category": "Sightseeing",
+   "startingCity": "Pathankot",
+   "endingCity": "Pathankot",
+   "shortDescription": "A short, focused Dharamshala/McLeod Ganj trip with no Dalhousie or Khajjiar leg — genuinely distinct from the existing Himachal Family Escape (which includes those) and shorter than the on-hold 7-day extended circuit.",
+   "highlights": [
+    "Dalai Lama Temple",
+    "McLeod Ganj's Tibetan quarter",
+    "Bhagsu Waterfall"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Dharamshala",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "McLeod Ganj",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Dharamshala Local Time",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "dalhousie-khajjiar-chamba",
+   "name": "Dalhousie Khajjiar Chamba",
+   "destination": "Dalhousie, Khajjiar & Chamba, Himachal Pradesh",
+   "destinationSlugs": [
+    "dalhousie",
+    "khajjiar",
+    "chamba"
+   ],
+   "category": "Family",
+   "startingCity": "Pathankot",
+   "endingCity": "Chamba",
+   "shortDescription": "A Dalhousie-anchored circuit adding Chamba town — genuinely distinct from the existing Himachal Family Escape, which starts from Dharamshala and does not include Chamba at all.",
+   "highlights": [
+    "Dalhousie's colonial-era Mall Road",
+    "Khajjiar meadow and Chamera Lake",
+    "Chamba's historic town and temples"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Dalhousie",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Dalhousie Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Khajjiar Day Trip",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Dalhousie to Chamba",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "bir-billing-palampur",
+   "name": "Bir Billing Palampur",
+   "destination": "Bir Billing & Palampur, Himachal Pradesh",
+   "destinationSlugs": [
+    "bir-billing",
+    "palampur"
+   ],
+   "category": "Adventure",
+   "startingCity": "Dharamshala",
+   "endingCity": "Palampur",
+   "shortDescription": "A zero-existing-coverage pairing of Bir Billing (India's best-known paragliding hub) with Palampur's tea gardens — no other package on this site covers either destination.",
+   "highlights": [
+    "Paragliding at Bir Billing (subject to weather and licensed operator availability)",
+    "Palampur's tea gardens",
+    "A relaxed, low-crowd pace"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Bir",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Bir Billing Paragliding",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Bir to Palampur",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "grand-himachal-circuit",
+   "name": "Grand Himachal Circuit",
+   "destination": "Shimla, Manali, Dharamshala, Dalhousie & Khajjiar, Himachal Pradesh",
+   "destinationSlugs": [
+    "shimla",
+    "manali",
+    "dharamshala",
+    "dalhousie",
+    "khajjiar"
+   ],
+   "category": "Sightseeing",
+   "startingCity": "Chandigarh",
+   "endingCity": "Dalhousie",
+   "shortDescription": "A comprehensive, zero-existing-coverage \"see all of Himachal\" circuit combining the existing Shimla-Manali route with the Dharamshala-Dalhousie-Khajjiar route into one longer, single booking — genuinely distinct from either shorter package by scope, not just duration.",
+   "highlights": [
+    "Shimla's Mall Road and Manali's valley base",
+    "McLeod Ganj's Tibetan quarter",
+    "Dalhousie's colonial streets and Khajjiar's meadow"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Chandigarh to Shimla",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Shimla Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Shimla to Manali",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Manali Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Solang Valley Excursion",
+     "description": ""
+    },
+    {
+     "day": 6,
+     "title": "Manali to Dharamshala",
+     "description": ""
+    },
+    {
+     "day": 7,
+     "title": "McLeod Ganj",
+     "description": ""
+    },
+    {
+     "day": 8,
+     "title": "Dharamshala to Dalhousie",
+     "description": ""
+    },
+    {
+     "day": 9,
+     "title": "Khajjiar Day Trip",
+     "description": ""
+    },
+    {
+     "day": 10,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "gulmarg-winter-escape",
+   "name": "Gulmarg Winter Escape",
+   "destination": "Gulmarg, Jammu & Kashmir",
+   "destinationSlugs": [
+    "srinagar",
+    "gulmarg"
+   ],
+   "category": "Adventure",
+   "startingCity": "Srinagar",
+   "endingCity": "Srinagar",
+   "shortDescription": "A short, Gulmarg-focused winter/skiing trip — distinct from the broader Kashmir Winter Snow Tour by being single-destination and shorter, for travellers who specifically want Gulmarg's slopes rather than a multi-town circuit.",
+   "highlights": [
+    "Gulmarg's Gondola",
+    "Skiing and snow activities (season/operator dependent)",
+    "A focused, single-base winter trip"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival via Srinagar",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Gulmarg Gondola & Slopes",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Gulmarg Winter Activities",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Departure via Srinagar",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "mussoorie-weekend",
+   "name": "Mussoorie Weekend",
+   "destination": "Mussoorie, Uttarakhand",
+   "destinationSlugs": [
+    "mussoorie"
+   ],
+   "category": "Sightseeing",
+   "startingCity": "Dehradun",
+   "endingCity": "Dehradun",
+   "shortDescription": "A short, single-destination Mussoorie weekend — no existing package is Mussoorie-only; both current Uttarakhand drafts/packages bundle it with other towns.",
+   "highlights": [
+    "Mall Road and Camel's Back Road",
+    "Kempty Falls",
+    "A relaxed, single-base weekend pace"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Mussoorie",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Mussoorie Sightseeing",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "valley-of-flowers-hemkund-sahib-trek",
+   "name": "Valley of Flowers Hemkund Sahib Trek",
+   "destination": "Valley of Flowers & Hemkund Sahib, Uttarakhand",
+   "destinationSlugs": [
+    "hemkund-sahib"
+   ],
+   "category": "Adventure",
+   "startingCity": "Joshimath",
+   "endingCity": "Joshimath",
+   "shortDescription": "A dedicated trek package to the Valley of Flowers and Hemkund Sahib, both reached from Govindghat/Ghangaria — zero existing coverage on this site. Valley of Flowers has no separate curated destination page of its own; this itinerary anchors to the Hemkund Sahib destination, whose own access base (Ghangaria) is the real, shared starting point for both treks.",
+   "highlights": [
+    "The Valley of Flowers National Park",
+    "Hemkund Sahib gurdwara at altitude",
+    "Ghangaria as the shared trek base"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Joshimath",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "Joshimath to Govindghat to Ghangaria",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Valley of Flowers Trek",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Hemkund Sahib Trek",
+     "description": ""
+    },
+    {
+     "day": 5,
+     "title": "Ghangaria to Joshimath",
+     "description": ""
+    },
+    {
+     "day": 6,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "rishikesh-adventure-package",
+   "name": "Rishikesh Adventure Package",
+   "destination": "Rishikesh, Uttarakhand",
+   "destinationSlugs": [
+    "rishikesh"
+   ],
+   "category": "Adventure",
+   "startingCity": "Dehradun",
+   "endingCity": "Dehradun",
+   "shortDescription": "A dedicated adventure-sports-focused Rishikesh package — genuinely distinct in category and framing from the existing spiritual-positioned Uttarakhand Explorer, which also includes Rishikesh but as one stop in a multi-city pilgrimage-style circuit.",
+   "highlights": [
+    "White-water rafting on the Ganges (seasonal)",
+    "Riverside camping",
+    "A single-destination, activity-focused trip"
+   ],
+   "itinerary": [
+    {
+     "day": 1,
+     "title": "Arrival in Rishikesh",
+     "description": ""
+    },
+    {
+     "day": 2,
+     "title": "White-Water Rafting",
+     "description": ""
+    },
+    {
+     "day": 3,
+     "title": "Riverside Camping & Activities",
+     "description": ""
+    },
+    {
+     "day": 4,
+     "title": "Departure",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  }
+ ]
+}

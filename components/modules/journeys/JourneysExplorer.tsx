@@ -39,6 +39,7 @@ import { getAllRegions } from '@/lib/regions';
 import { seasons as seasonOptions } from '@/config/seasons.config';
 import { cn } from '@/lib/utils';
 import type { Destination, PackageSortOption, RegionId, SeasonId, TravelPackage } from '@/types';
+import { rankByRelevance, relevanceScores } from '@/lib/search/journeySearch';
 
 export interface JourneysExplorerProps {
   packages: TravelPackage[];
@@ -186,7 +187,15 @@ export default function JourneysExplorer({
     ]
   );
 
-  const sorted = useMemo(() => sortPackages(filtered, sortBy), [filtered, sortBy]);
+  // Relevance is computed over the FULL package list (its description fallback must not depend on
+  // the other filters). It orders results only for the default sort while a keyword is active —
+  // exact/strong title matches first, then linked destinations and itinerary stops, then
+  // category/region. An explicit user-selected sort (price) always wins.
+  const relevance = useMemo(() => relevanceScores(packages, query, destinationsBySlug), [packages, query, destinationsBySlug]);
+  const sorted = useMemo(() => {
+    const ordered = sortPackages(filtered, sortBy);
+    return query.trim() && sortBy === 'popular' ? rankByRelevance(ordered, relevance) : ordered;
+  }, [filtered, sortBy, query, relevance]);
   const { items: paginated, totalPages, page: safePage } = useMemo(() => paginate(sorted, page, PAGE_SIZE), [sorted, page]);
 
   const activeFilterCount =
