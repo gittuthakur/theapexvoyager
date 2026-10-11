@@ -17,6 +17,7 @@ import { getStayLocationContext } from '@/lib/stayLocation';
 import { findStayTypeBySlug } from '@/config/stayTypes.config';
 import { findStayMoodBySlug } from '@/config/stayMoods.config';
 import { parseValidPriceMax } from '@/components/modules/filters/priceMax';
+import { isCategoryRequestedButUnresolved, isHotelCategory } from '@/components/modules/filters/stayCategoryParam';
 import { images } from '@/config/images.config';
 import { CATEGORY_TO_STAY_TYPE, type Stay } from '@/types/stay';
 import type { HotelCategory, HotelPackage } from '@/types';
@@ -132,11 +133,6 @@ interface StaySearchResultsProps {
 // simply "show a generous first page" rather than "load the whole cache."
 const GLOBAL_SEARCH_RESULT_LIMIT = 60;
 
-const HOTEL_CATEGORIES: HotelCategory[] = ['Hotel', 'Homestay', 'Resort', 'Villa', 'Camp', 'Treehouse', 'Farmstay', 'Hostel', 'Heritage', 'GuestHouse'];
-function isHotelCategory(value?: string): value is HotelCategory {
-  return Boolean(value) && HOTEL_CATEGORIES.includes(value as HotelCategory);
-}
-
 async function StaySearchResults({ destination, checkIn, checkOut, guests, type, priceMax, amenity, mood, category: categoryParam }: StaySearchResultsProps) {
   const stayType = type ? findStayTypeBySlug(type) : undefined;
   const stayMood = !stayType && mood ? findStayMoodBySlug(mood) : undefined;
@@ -153,7 +149,8 @@ async function StaySearchResults({ destination, checkIn, checkOut, guests, type,
   const typeRequestedButUnresolved = Boolean(type) && !stayType;
   const moodRequestedButUnresolved = !stayType && Boolean(mood) && !stayMood;
   const priceRequestedButInvalid = Boolean(priceMax) && priceMaxValue === undefined;
-  const shouldForceEmpty = typeRequestedButUnresolved || moodRequestedButUnresolved || priceRequestedButInvalid;
+  const categoryRequestedButUnresolved = isCategoryRequestedButUnresolved(categoryParam, Boolean(stayType || stayMood));
+  const shouldForceEmpty = typeRequestedButUnresolved || moodRequestedButUnresolved || priceRequestedButInvalid || categoryRequestedButUnresolved;
 
   const allHotels = shouldForceEmpty ? [] : await getHotels({ category, destination });
 
@@ -191,7 +188,11 @@ async function StaySearchResults({ destination, checkIn, checkOut, guests, type,
   // augmentation is simply not attempted while any such filter is active. "Heritage" is
   // also excluded — Google's cache has no heritage-specific category (see
   // app/stays/[...segments]/page.tsx's identical exclusion for the same reason).
-  const includeGoogleData = !isBoutiqueOnly && !moodKeyword && priceMaxValue === undefined && !amenity && category !== 'Heritage';
+  // A forced-empty search (an unresolved type/mood/category or an invalid priceMax) must
+  // also skip the Google augmentation — otherwise the cached Google stays would still
+  // render for a filter that matched nothing, which is the same silent full-catalog
+  // fall-through shouldForceEmpty exists to prevent for the curated hotels.
+  const includeGoogleData = !shouldForceEmpty && !isBoutiqueOnly && !moodKeyword && priceMaxValue === undefined && !amenity && category !== 'Heritage';
   const googleStayType = includeGoogleData && category ? CATEGORY_TO_STAY_TYPE[category] : undefined;
 
   let googleStays: Stay[] = [];

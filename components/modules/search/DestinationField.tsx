@@ -83,6 +83,12 @@ export function DestinationField({
             onChange={(event) => {
               setQuery(event.target.value);
               setOpen(true);
+              // Commit every keystroke to the parent too. The typed text used to live
+              // only in `query` and reach the parent only when the popover closed (outside
+              // click / Escape), so pressing Enter with the popover still open submitted
+              // the form with a stale or empty destination. Clearing the input now clears
+              // the committed value as well (previously the old value silently survived).
+              onChange(event.target.value);
             }}
             placeholder={placeholder}
             className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-500"

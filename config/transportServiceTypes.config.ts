@@ -191,6 +191,24 @@ export function vehicleValueFromLabel(serviceType: ServiceType, label: string): 
 }
 
 /**
+ * Resolves a chauffeured-vehicle `vehicle` value (a Cab with Driver / Group Transport
+ * pick) that may arrive as either the stored category ("Comfort") or the vehicle's
+ * display name ("Sedan"). The homepage panel's dropdown lists names, while /transport
+ * filters on the stored category, so a bare name used to match nothing. Also reports the
+ * vehicle's own service so a Group Transport pick can open under its own service.
+ * Anything unrecognized (including every already-valid category value) is returned
+ * unchanged, so existing URLs keep working.
+ */
+export function resolveChauffeurVehicleParam(raw: string): { value: string; serviceType?: ServiceType } {
+  if (!raw) return { value: '' };
+  const match = vehicleOptions.find(
+    (vehicle) => vehicle.name === raw && (vehicle.serviceType === 'Cab with Driver' || vehicle.serviceType === 'Group Transport')
+  );
+  if (!match) return { value: raw };
+  return { value: match.category ?? match.name, serviceType: match.serviceType as ServiceType };
+}
+
+/**
  * "Two Wheels. Endless Roads." motorcycle-TYPE cards — the customer-facing layer
  * above the raw `category` enum (same relationship TRIP_PURPOSE_UI has to
  * service/tripType). Most types map to exactly one real category value, but
