@@ -52,7 +52,7 @@ export default function StaysHeroSearch({ className }: StaysHeroSearchProps) {
           <DateRangeField value={dateRange} onChange={setDateRange} label="Dates" placeholder="Select dates" />
         </motion.div>
         <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
-          <OccupancyField value={occupancy} onChange={setOccupancy} />
+          <OccupancyField value={occupancy} onChange={setOccupancy} showRooms={false} showPets={false} />
         </motion.div>
       </div>
 

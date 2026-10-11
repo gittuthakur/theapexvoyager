@@ -25,11 +25,14 @@ export function DestinationField({
 }: DestinationFieldProps) {
   const anchorRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState('');
+  // `touched` = the visitor has typed since this popover opened. Until then the suggestion list
+  // is the full, unfiltered list even though the input shows the committed value — otherwise
+  // reopening a field holding "Manali" would hide every destination except Manali.
+  const [touched, setTouched] = useState(false);
 
   const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    if (!needle) return destinations;
+    const needle = value.trim().toLowerCase();
+    if (!touched || !needle) return destinations;
     // Exact match first, then "starts with", then any other substring match — so
     // searching "Spiti" surfaces "Spiti Valley" ahead of an unrelated place that merely
     // contains the letters "spiti" somewhere in the middle of its name.
@@ -40,24 +43,20 @@ export function DestinationField({
       return 2;
     };
     return destinations.filter((name) => name.toLowerCase().includes(needle)).sort((a, b) => rank(a) - rank(b));
-  }, [destinations, query]);
+  }, [destinations, value, touched]);
 
   function selectDestination(name: string) {
     onChange(name);
-    setQuery('');
+    setTouched(false);
     setOpen(false);
   }
 
-  // Closing without picking a suggestion (blur, click-outside, Escape) must still
-  // commit whatever the visitor typed — otherwise free-text entry for a place not
-  // in `destinations` silently vanishes instead of becoming the field's value.
+  // Typed text is committed to the parent on every keystroke (see onChange below), so closing
+  // without picking a suggestion (click-outside, Escape) has nothing left to commit — the
+  // free-text entry for a place not in `destinations` is already the field's value.
   function close() {
     setOpen(false);
-    const typed = query.trim();
-    if (typed && typed !== value) {
-      onChange(typed);
-    }
-    setQuery('');
+    setTouched(false);
   }
 
   return (
@@ -67,13 +66,19 @@ export function DestinationField({
         <span className="min-w-0 flex-1">
           <span className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500">{label}</span>
           <input
-            value={open ? query : value}
+            value={value}
             // Deliberately not onFocus: FieldPopover restores focus to this input
             // whenever the popover closes for *any* reason (picking an option
             // included, since the clicked option unmounts and focus would
             // otherwise fall through to nowhere) — opening on focus would make
             // that restoration immediately reopen the dropdown it just closed.
-            onClick={() => setOpen(true)}
+            onClick={(event) => {
+              setOpen(true);
+              // Show the committed value and select it, so typing replaces it and
+              // Backspace clears it — instead of an empty-looking field that silently
+              // still holds the old destination.
+              event.currentTarget.select();
+            }}
             onKeyDown={(event) => {
               if (!open && (event.key === 'ArrowDown' || event.key === 'Enter')) {
                 event.preventDefault();
@@ -81,13 +86,12 @@ export function DestinationField({
               }
             }}
             onChange={(event) => {
-              setQuery(event.target.value);
+              setTouched(true);
               setOpen(true);
-              // Commit every keystroke to the parent too. The typed text used to live
-              // only in `query` and reach the parent only when the popover closed (outside
-              // click / Escape), so pressing Enter with the popover still open submitted
-              // the form with a stale or empty destination. Clearing the input now clears
-              // the committed value as well (previously the old value silently survived).
+              // Commit every keystroke to the parent. The typed text used to live only in local
+              // state and reach the parent when the popover closed, so pressing Enter with the
+              // popover still open submitted a stale or empty destination. Emptying the input
+              // now clears the committed value as well.
               onChange(event.target.value);
             }}
             placeholder={placeholder}
@@ -132,7 +136,7 @@ export function DestinationField({
               </button>
             </li>
           ))}
-          {filtered.length === 0 ? <li className="px-3 py-2.5 text-sm text-slate-500">No destinations match &ldquo;{query}&rdquo;</li> : null}
+          {filtered.length === 0 ? <li className="px-3 py-2.5 text-sm text-slate-500">No destinations match &ldquo;{value}&rdquo;</li> : null}
         </ul>
       </FieldPopover>
     </div>

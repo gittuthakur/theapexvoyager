@@ -13,6 +13,8 @@ import { images } from '@/config/images.config';
 import { getAllExperts, matchesExpertQuery } from '@/lib/experts';
 import { getPackageBySlug } from '@/lib/packages';
 import type { ExpertFacets } from '@/types/expert';
+import TripPreferencesNote from '@/components/modules/TripPreferencesNote';
+import { readTripPreferences } from '@/lib/tripPreferences';
 
 // Previously missing entirely, which left this page's canonical unset and its OG tags
 // silently inheriting the root layout's generic homepage defaults — anyone sharing an
@@ -54,7 +56,10 @@ interface ExpertsPageProps {
 }
 
 export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
-  const { destination, travelStyle, expertise, q, help } = await searchParams;
+  const resolvedSearchParams = await searchParams;
+  const { destination, travelStyle, expertise, q, help } = resolvedSearchParams;
+  // Preferred date / travelers from the search panel — saved preferences only.
+  const preferences = readTripPreferences(resolvedSearchParams);
 
   // Phase P2J: getExpertFacets() previously called getAllExperts() a second, fully
   // redundant time internally (same query, same data, no request-specific variation) —
@@ -109,6 +114,11 @@ export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
       <ExpertHelpOptions />
 
       <main id="main-content">
+        {Object.keys(preferences).length > 0 ? (
+          <div className="mx-auto max-w-[1440px] px-6 pt-6">
+            <TripPreferencesNote preferences={preferences} />
+          </div>
+        ) : null}
         <section className="mx-auto max-w-[1440px] px-6 pb-16">
           <ExpertGrid experts={experts} />
         </section>

@@ -29,6 +29,7 @@ import { experienceTypes } from '@/config/experiences.config';
 import { vehicleOptions } from '@/config/transport.config';
 import { resolveChauffeurVehicleParam, urlSlugFromServiceType } from '@/config/transportServiceTypes.config';
 import { destinations } from '@/config/destinations.config';
+import { buildGlobalSearchTarget, toSearchUrl } from '@/lib/globalSearchUrl';
 import { cn } from '@/lib/utils';
 import type { DateRange, OccupancyDetails } from '@/types';
 
@@ -151,6 +152,10 @@ function InlineDateTimeField({
   value: string;
   onChange: (value: string) => void;
 }) {
+  // Past dates can't be a travel preference. `min` depends on the visitor's clock/timezone, so the
+  // server render and the client render can legitimately differ around midnight — hence
+  // suppressHydrationWarning on this one attribute-bearing input.
+  const minDate = type === 'date' ? format(new Date(), 'yyyy-MM-dd') : undefined;
   return (
     <label className={SEARCH_FIELD_CLASS}>
       <Icon size={20} className="shrink-0 text-apex-500" />
@@ -158,6 +163,8 @@ function InlineDateTimeField({
         <span className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500">{label}</span>
         <input
           type={type}
+          min={minDate}
+          suppressHydrationWarning
           value={value}
           onChange={(event) => onChange(event.target.value)}
           className="w-full bg-transparent text-sm text-slate-900 outline-none"
@@ -227,71 +234,19 @@ export default function GlobalSearchFilter({
   }
 
   function goTo(path: string, params: Record<string, string | undefined>, hash?: string) {
-    const query = new URLSearchParams();
-    for (const [key, value] of Object.entries(params)) {
-      if (value && value.trim()) query.set(key, value.trim());
-    }
-    const qs = query.toString();
-    const suffix = hash ? `#${hash}` : '';
-    router.push(`${path}${qs ? `?${qs}` : ''}${suffix}`);
+    router.push(toSearchUrl({ path, params, hash }));
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    switch (activeTab) {
-      case 'Destinations':
-        goTo('/destinations', { destination, style: travelStyle, season });
-        return;
-
-      case 'Stays':
-        goTo(staysPath, {
-          destination,
-          category: travelStyle,
-          checkIn: dateRange.checkIn ? format(dateRange.checkIn, 'yyyy-MM-dd') : undefined,
-          checkOut: dateRange.checkOut ? format(dateRange.checkOut, 'yyyy-MM-dd') : undefined,
-          guests: String(occupancy.adults + occupancy.children)
-        });
-        return;
-
-      case 'Journeys':
-        goTo('/journeys', { destination, category: travelStyle });
-        return;
-
-      case 'Experiences':
-        // /experiences reads q/category (see ExperiencesListing), not where/type — date and
-        // participants have no matching filter there, so they stay UI-only.
-        goTo('/experiences', { q: destination, category: travelStyle }, 'listing');
-        return;
-
-      case 'Transport': {
-        // A real form submission (as opposed to a Popular Searches shortcut, see
-        // handlePopularSearch below) is an intentional Transport search — flag it so
-        // /transport opens in focused Search Results Mode instead of the full
-        // Discovery page (see app/transport/page.tsx's `searched` param).
-        // The dropdown lists vehicle NAMES ("Sedan"), but /transport filters on the stored
-        // category ("Comfort") — send the category, and open a Group Transport pick under
-        // its own service (Cab with Driver is the page default, so it needs no param).
-        const resolvedVehicle = resolveChauffeurVehicleParam(travelStyle);
-        goTo('/transport', {
-          pickup,
-          destination: drop,
-          date,
-          time,
-          travellers: String(passengers),
-          vehicle: resolvedVehicle.value,
-          service: resolvedVehicle.serviceType === 'Group Transport' ? urlSlugFromServiceType('Group Transport') : undefined,
-          searched: '1'
-        });
-        return;
-      }
-
-      case 'Travel Experts':
-        // /experts reads `destination` (a real slug) and `travelStyle` (see
-        // ExpertFilters/ExpertsHeroSearch) — not `where`/`need`, which it never read at
-        // all, so every homepage Travel Experts search was previously silently ignored.
-        goTo('/experts', { destination: resolveDestinationSlug(destination), travelStyle: resolveExpertTravelStyle(travelStyle) });
-    }
+    // The field -> URL mapping (and which params filter vs. only carry a saved preference) lives
+    // in lib/globalSearchUrl.ts so it can be tested without a DOM.
+    const target = buildGlobalSearchTarget(
+      activeTab,
+      { destination, pickup, drop, travelStyle, season, dateRange, occupancy, date, time, participants, passengers, travelers },
+      { staysPath, resolveDestinationSlug, resolveExpertTravelStyle }
+    );
+    goTo(target.path, target.params, target.hash);
   }
 
   function handlePopularSearch(place: string) {
@@ -365,7 +320,7 @@ export default function GlobalSearchFilter({
                 <DateRangeField value={dateRange} onChange={setDateRange} label="Dates" placeholder="Select dates" />
               </motion.div>
               <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
-                <OccupancyField value={occupancy} onChange={setOccupancy} />
+                <OccupancyField value={occupancy} onChange={setOccupancy} showRooms={false} showPets={false} />
               </motion.div>
             </>
           )}
@@ -389,7 +344,7 @@ export default function GlobalSearchFilter({
                 <DateRangeField value={dateRange} onChange={setDateRange} label="Travel dates" placeholder="Select dates" />
               </motion.div>
               <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
-                <OccupancyField value={occupancy} onChange={setOccupancy} />
+                <OccupancyField value={occupancy} onChange={setOccupancy} showRooms={false} showPets={false} />
               </motion.div>
             </>
           )}
