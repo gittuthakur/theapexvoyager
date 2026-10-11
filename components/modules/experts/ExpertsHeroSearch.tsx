@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Award, Compass, MapPin, Search } from 'lucide-react';
 import { TravelStyleField, SEARCH_PANEL_CLASS, SEARCH_FIELD_CLASS } from '@/components/modules/search';
+import { copyTripPreferences } from '@/lib/tripPreferences';
 import { cn } from '@/lib/utils';
 
 export interface ExpertOption {
@@ -59,6 +60,9 @@ export default function ExpertsHeroSearch({
     if (destinationValue) params.set('destination', destinationValue);
     if (travelStyle) params.set('travelStyle', travelStyle);
     if (expertise) params.set('expertise', expertise);
+    // This form builds a fresh query, so keep the visitor's saved date/traveler PREFERENCES
+    // (lib/tripPreferences.ts) instead of dropping them when they refine the filters.
+    copyTripPreferences(new URLSearchParams(window.location.search), params);
     const qs = params.toString();
     router.push(qs ? `/experts?${qs}` : '/experts');
   }

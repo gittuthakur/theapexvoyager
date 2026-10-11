@@ -2,10 +2,12 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { parseISO } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
 import { DestinationField, TravelStyleField, DateRangeField, OccupancyField, SEARCH_PANEL_CLASS } from '@/components/modules/search';
 import { destinations as curatedDestinations } from '@/config/destinations.config';
+import { journeyPreferenceParams, readTripPreferences } from '@/lib/tripPreferences';
 import { cn } from '@/lib/utils';
 import type { DateRange, OccupancyDetails } from '@/types';
 
@@ -20,22 +22,36 @@ export interface JourneysHeroSearchProps {
 // name (not just the handful of trending ones) should surface a match.
 const DESTINATION_TITLES = curatedDestinations.map((destination) => destination.title);
 
+/** Seeds the date range from VALID travel-date preferences in the URL (refresh / Back / Forward). */
+function rangeFromSearch(params: { get(key: string): string | null }): DateRange {
+  const prefs = readTripPreferences(params);
+  return {
+    checkIn: prefs.travelStartDate ? parseISO(prefs.travelStartDate) : null,
+    checkOut: prefs.travelEndDate ? parseISO(prefs.travelEndDate) : null
+  };
+}
+
+function occupancyFromSearch(params: { get(key: string): string | null }): OccupancyDetails {
+  const prefs = readTripPreferences(params);
+  return { adults: Number(prefs.adults ?? 2), children: Number(prefs.children ?? 0), rooms: 1, pets: false };
+}
+
 /**
  * A compact, single-purpose search bar for the Journeys hero — not the full
- * multi-tab BookingWidget. Dates and travellers are collected for a premium,
- * complete-feeling search (matching the brief's 4-field layout) but only
- * destination/category actually filter /journeys — JourneysExplorer has no
- * date-based inventory to filter against, mirroring BookingWidget's own
- * "Journeys" tab, which has the same two real params. Selecting any field only
- * updates local state; only submitting runs the actual search.
+ * multi-tab BookingWidget. Only destination/category filter /journeys —
+ * JourneysExplorer has no date-based inventory to filter against. Travel dates and
+ * travelers are kept as customer PREFERENCES in the URL (travelStartDate/travelEndDate/
+ * adults/children — see lib/tripPreferences.ts) for a later enquiry step; they never
+ * filter packages and imply no availability. Selecting any field only updates local
+ * state; only submitting runs the actual search.
  */
 export default function JourneysHeroSearch({ categories, className }: JourneysHeroSearchProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [destination, setDestination] = useState(() => searchParams.get('destination') ?? '');
   const [travelStyle, setTravelStyle] = useState(() => searchParams.get('category') ?? '');
-  const [dateRange, setDateRange] = useState<DateRange>({ checkIn: null, checkOut: null });
-  const [occupancy, setOccupancy] = useState<OccupancyDetails>({ adults: 2, children: 0, rooms: 1, pets: false });
+  const [dateRange, setDateRange] = useState<DateRange>(() => rangeFromSearch(searchParams));
+  const [occupancy, setOccupancy] = useState<OccupancyDetails>(() => occupancyFromSearch(searchParams));
 
   // Reconciles the hero's destination/style with the URL on every navigation that
   // changes it — JourneysExplorer's own filters, a shared /journeys?destination=...
@@ -49,6 +65,8 @@ export default function JourneysHeroSearch({ categories, className }: JourneysHe
     const params = new URLSearchParams(searchParamsString);
     setDestination(params.get('destination') ?? '');
     setTravelStyle(params.get('category') ?? '');
+    setDateRange(rangeFromSearch(params));
+    setOccupancy(occupancyFromSearch(params));
   }, [searchParamsString]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -56,6 +74,9 @@ export default function JourneysHeroSearch({ categories, className }: JourneysHe
     const query = new URLSearchParams();
     if (destination.trim()) query.set('destination', destination.trim());
     if (travelStyle.trim()) query.set('category', travelStyle.trim());
+    for (const [key, value] of Object.entries(journeyPreferenceParams(dateRange, occupancy))) {
+      if (value) query.set(key, value);
+    }
     const qs = query.toString();
     // scroll: false — JourneysExplorer's own results section is what should come into
     // view, not the top of the page Next.js would otherwise jump to.
@@ -86,7 +107,7 @@ export default function JourneysHeroSearch({ categories, className }: JourneysHe
           <DateRangeField value={dateRange} onChange={setDateRange} label="When?" placeholder="Select dates" />
         </motion.div>
         <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
-          <OccupancyField value={occupancy} onChange={setOccupancy} />
+          <OccupancyField value={occupancy} onChange={setOccupancy} showRooms={false} showPets={false} />
         </motion.div>
       </div>
 

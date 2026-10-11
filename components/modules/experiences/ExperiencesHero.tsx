@@ -9,6 +9,7 @@ import { TravelStyleField, SEARCH_PANEL_CLASS } from '@/components/modules/searc
 import { experienceTypes } from '@/config/experiences.config';
 import { images } from '@/config/images.config';
 import { fadeInUp, staggerContainer } from '@/lib/motion';
+import { copyTripPreferences } from '@/lib/tripPreferences';
 import { cn } from '@/lib/utils';
 import type { ExperienceRegion, ExperienceSeason } from '@/types/experience';
 
@@ -27,6 +28,8 @@ export default function ExperiencesHero() {
     if (region) params.set('region', region);
     if (category) params.set('category', category);
     if (season) params.set('season', season);
+    // Keep any saved date/participant PREFERENCES (lib/tripPreferences.ts) when refining here.
+    copyTripPreferences(new URLSearchParams(window.location.search), params);
     const qs = params.toString();
     router.push(`/experiences${qs ? `?${qs}` : ''}#listing`);
   }

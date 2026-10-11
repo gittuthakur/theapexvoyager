@@ -8,6 +8,8 @@ import RegionShowcase from '@/components/modules/experiences/RegionShowcase';
 import { getAllExperiences } from '@/lib/experiences';
 import { images } from '@/config/images.config';
 import type { Metadata } from 'next';
+import TripPreferencesNote from '@/components/modules/TripPreferencesNote';
+import { readTripPreferences } from '@/lib/tripPreferences';
 
 // Previously missing entirely, which left this page's canonical unset and its OG tags
 // silently inheriting the root layout's generic homepage defaults (title "The Apex
@@ -45,7 +47,11 @@ interface ExperiencesPageProps {
 }
 
 export default async function ExperiencesPage({ searchParams }: ExperiencesPageProps) {
-  const { q, region, category, duration, budget, bestFor, season, difficulty, sort } = await searchParams;
+  const resolvedSearchParams = await searchParams;
+  const { q, region, category, duration, budget, bestFor, season, difficulty, sort } = resolvedSearchParams;
+  // Preferred date / participants from the search panels — saved preferences only. No capacity
+  // or availability constraint is applied to the listing.
+  const preferences = readTripPreferences(resolvedSearchParams);
   const experiences = await getAllExperiences();
 
   // ExperiencesHero, ExperienceMoodDiscovery and RegionShowcase all navigate here with
@@ -61,6 +67,11 @@ export default async function ExperiencesPage({ searchParams }: ExperiencesPageP
       <ExperienceMoodDiscovery />
       <FeaturedExperiences />
       <main id="main-content">
+        {Object.keys(preferences).length > 0 ? (
+          <div className="mx-auto max-w-[1400px] px-6 pt-6">
+            <TripPreferencesNote preferences={preferences} />
+          </div>
+        ) : null}
         <ExperiencesListing
           key={listingKey}
           experiences={experiences}

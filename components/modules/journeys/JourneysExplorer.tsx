@@ -33,6 +33,7 @@ import {
   getPackageRegionIds,
   sortPackages
 } from '@/lib/packageFilters';
+import { copyTripPreferences } from '@/lib/tripPreferences';
 import { paginate } from '@/lib/destinationFilters';
 import { getAllRegions } from '@/lib/regions';
 import { seasons as seasonOptions } from '@/config/seasons.config';
@@ -238,6 +239,10 @@ export default function JourneysExplorer({
       if (activeAccommodation) params.set('accommodation', activeAccommodation);
       if (sortBy !== 'popular') params.set('sort', sortBy);
       if (safePage > 1) params.set('page', String(safePage));
+      // This effect rebuilds the whole query string from filter state, so without this the
+      // customer's saved date/traveler PREFERENCES (see lib/tripPreferences.ts) would be
+      // silently erased from the URL the first time any filter changed. They are not filters.
+      copyTripPreferences(new URLSearchParams(window.location.search), params);
       const qs = params.toString();
       lastPushedParamsRef.current = qs;
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });

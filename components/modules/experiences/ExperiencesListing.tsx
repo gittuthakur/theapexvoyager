@@ -21,6 +21,7 @@ import {
   experienceRegions,
   seasonOptions
 } from '@/config/experiences.config';
+import { copyTripPreferences } from '@/lib/tripPreferences';
 import { filterExperiences, sortExperiences, type ExperienceSortOption } from '@/lib/experienceFilters';
 import { cn } from '@/lib/utils';
 import type {
@@ -151,6 +152,9 @@ export default function ExperiencesListing({
       if (seasons.length) params.set('season', seasons.join(','));
       if (difficulties.length) params.set('difficulty', difficulties.join(','));
       if (sort !== 'recommended') params.set('sort', sort);
+      // Keep the visitor's saved date/participant PREFERENCES (see lib/tripPreferences.ts):
+      // this effect rebuilds the query from filter state and would otherwise drop them.
+      copyTripPreferences(new URLSearchParams(window.location.search), params);
       const qs = params.toString();
       router.replace(qs ? `${pathname}?${qs}#listing` : `${pathname}#listing`, { scroll: false });
     }, 300);

@@ -11,6 +11,8 @@ import { getCuratedDestinations } from '@/lib/destinations';
 import { getDestinationRatingsMap } from '@/lib/reviews';
 import { getPackageCategories } from '@/lib/packageFilters';
 import { images } from '@/config/images.config';
+import TripPreferencesNote from '@/components/modules/TripPreferencesNote';
+import { readTripPreferences } from '@/lib/tripPreferences';
 
 // Previously missing entirely, which left this page's canonical unset and its OG tags
 // silently inheriting the root layout's generic homepage defaults (title "The Apex
@@ -63,7 +65,10 @@ interface JourneysPageProps {
 }
 
 export default async function JourneysPage({ searchParams }: JourneysPageProps) {
-  const { destination, category, region, season, priceMin, priceMax, duration, accommodation, sort, page } = await searchParams;
+  const resolvedSearchParams = await searchParams;
+  const { destination, category, region, season, priceMin, priceMax, duration, accommodation, sort, page } = resolvedSearchParams;
+  // Dates / travelers from the search panels — saved preferences only, never a package filter.
+  const preferences = readTripPreferences(resolvedSearchParams);
 
   // Phase P2I: getFeaturedPackages() previously called getAllPackages() a second,
   // fully redundant time internally (same query, same data, no request-specific
@@ -94,6 +99,11 @@ export default async function JourneysPage({ searchParams }: JourneysPageProps) 
       />
 
       <main id="main-content" className="">
+        {Object.keys(preferences).length > 0 ? (
+          <div className="mx-auto max-w-[1440px] px-6 pt-6">
+            <TripPreferencesNote preferences={preferences} />
+          </div>
+        ) : null}
         <JourneysExplorer
           packages={packages}
           destinations={destinations}

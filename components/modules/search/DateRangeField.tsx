@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { addMonths, format, isBefore, startOfDay, startOfMonth } from 'date-fns';
+import { addMonths, format, isBefore, isSameDay, startOfDay, startOfMonth } from 'date-fns';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { FieldPopover } from './FieldPopover';
 import { MonthGrid } from './MonthGrid';
@@ -15,6 +15,13 @@ export interface DateRangeFieldProps {
   onChange: (range: DateRange) => void;
   label?: string;
   placeholder?: string;
+  /**
+   * The "I'm flexible" tab, the flexible-window pills and the "Go anytime in" month buttons.
+   * Off by default: none of them produces a value any search reads, so showing them let a
+   * visitor choose something that was silently discarded. Kept (not deleted) for when a real
+   * flexible-date consumer exists.
+   */
+  showFlexibleOptions?: boolean;
 }
 
 export function formatRange(range: DateRange) {
@@ -31,7 +38,8 @@ export function DateRangeField({
   value,
   onChange,
   label = 'Check In - Check Out',
-  placeholder = 'Select Travel Dates'
+  placeholder = 'Select Travel Dates',
+  showFlexibleOptions = false
 }: DateRangeFieldProps) {
   const anchorRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -44,6 +52,9 @@ export function DateRangeField({
   const rightMonth = addMonths(leftMonth, 1);
 
   function handleSelectDay(day: Date) {
+    // Choosing the check-in day again as the check-out would be a zero-night range — keep
+    // waiting for a real check-out instead.
+    if (value.checkIn && !value.checkOut && isSameDay(day, value.checkIn)) return;
     if (!value.checkIn || (value.checkIn && value.checkOut)) {
       onChange({ checkIn: day, checkOut: null });
       return;
@@ -80,23 +91,25 @@ export function DateRangeField({
       </label>
 
       <FieldPopover open={open} onClose={() => setOpen(false)} anchorRef={anchorRef} width={640}>
-        <div role="tablist" aria-label="Date selection mode" className="flex items-center gap-1 rounded-full bg-slate-100 p-1">
-          {(['calendar', 'flexible'] as const).map((key) => (
-            <button
-              key={key}
-              type="button"
-              role="tab"
-              aria-selected={tab === key}
-              onClick={() => setTab(key)}
-              className={cn(
-                'cursor-hover flex-1 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 ease-in-out',
-                tab === key ? 'bg-apex-500 text-white shadow-lg shadow-apex-500/30' : 'text-slate-600 hover:text-slate-900'
-              )}
-            >
-              {key === 'calendar' ? 'Calendar' : "I'm flexible"}
-            </button>
-          ))}
-        </div>
+        {showFlexibleOptions ? (
+          <div role="tablist" aria-label="Date selection mode" className="flex items-center gap-1 rounded-full bg-slate-100 p-1">
+            {(['calendar', 'flexible'] as const).map((key) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={tab === key}
+                onClick={() => setTab(key)}
+                className={cn(
+                  'cursor-hover flex-1 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 ease-in-out',
+                  tab === key ? 'bg-apex-500 text-white shadow-lg shadow-apex-500/30' : 'text-slate-600 hover:text-slate-900'
+                )}
+              >
+                {key === 'calendar' ? 'Calendar' : "I'm flexible"}
+              </button>
+            ))}
+          </div>
+        ) : null}
 
         {tab === 'calendar' ? (
           <>
@@ -127,24 +140,26 @@ export function DateRangeField({
               </div>
             </div>
 
-            <div className="mt-5 border-t border-slate-200 pt-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Flexible date options</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {flexDateWindows.map((option) => (
-                  <button
-                    key={option}
-                    type="button"
-                    onClick={() => setFlexWindow(option)}
-                    className={cn(
-                      'cursor-hover rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-300 ease-in-out',
-                      flexWindow === option ? 'bg-apex-500 text-white shadow-lg shadow-apex-500/30' : 'bg-slate-100 text-slate-600 hover:text-slate-900'
-                    )}
-                  >
-                    {option}
-                  </button>
-                ))}
+            {showFlexibleOptions ? (
+              <div className="mt-5 border-t border-slate-200 pt-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Flexible date options</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {flexDateWindows.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setFlexWindow(option)}
+                      className={cn(
+                        'cursor-hover rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-300 ease-in-out',
+                        flexWindow === option ? 'bg-apex-500 text-white shadow-lg shadow-apex-500/30' : 'bg-slate-100 text-slate-600 hover:text-slate-900'
+                      )}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : null}
 
             <div className="mt-5 flex items-center justify-between border-t border-slate-200 pt-4">
               <button type="button" onClick={clear} className="cursor-hover text-sm font-medium text-slate-500 hover:text-slate-900">

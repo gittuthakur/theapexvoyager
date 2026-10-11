@@ -21,6 +21,7 @@ import { images } from '@/config/images.config';
 import { buildTouristTripSchema } from '@/lib/schema';
 import { getTours } from '@/lib/tours';
 import { getAllPackages, getPackagesByDestinationSlug } from '@/lib/packages';
+import { getPackageCategories } from '@/lib/packageFilters';
 import { getHotels } from '@/lib/hotels';
 import { getFeaturedExperiences } from '@/lib/experiences';
 import { formatINR } from '@/lib/pricing';
@@ -133,6 +134,7 @@ export default async function HomePage() {
     getHomeHeroRegions(),
     getFeaturedExperiences()
   ]);
+  const journeyCategories = getPackageCategories(allPackages);
 
   const featuredJourneys = FEATURED_JOURNEY_SLUGS.map((slug) => allPackages.find((pkg) => pkg.slug === slug)).filter(
     (pkg): pkg is (typeof allPackages)[number] => Boolean(pkg)
@@ -190,7 +192,14 @@ export default async function HomePage() {
       <div className={homeHeroStyles.scope}>
       <HeroSection
         data={heroData}
-        searchBar={<GlobalSearchFilter destinationStyles={travelStyles.map((style) => style.label)} />}
+        searchBar={
+          <GlobalSearchFilter
+            destinationStyles={travelStyles.map((style) => style.label)}
+            // Live, published-only categories (same source as the /journeys hero) — the panel's
+            // static default list could offer a style with no packages or omit a real one.
+            journeyCategories={journeyCategories.length > 0 ? journeyCategories : undefined}
+          />
+        }
         sidePanel={
           <div className="w-full sm:max-w-sm rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5">
             <div className='flex gap-2 items-center'>

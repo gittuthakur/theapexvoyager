@@ -21,6 +21,7 @@ import { isCategoryRequestedButUnresolved, isHotelCategory } from '@/components/
 import { images } from '@/config/images.config';
 import { CATEGORY_TO_STAY_TYPE, type Stay } from '@/types/stay';
 import type { HotelCategory, HotelPackage } from '@/types';
+import { describeStayPreferences, readStayPreferences, STAY_PREFERENCES_DISCLAIMER } from '@/lib/tripPreferences';
 
 export const dynamic = 'force-dynamic';
 
@@ -65,7 +66,11 @@ interface StaySearchPageProps {
 }
 
 export default async function StaySearchPage({ searchParams }: StaySearchPageProps) {
-  const { destination, checkIn, checkOut, guests, type, priceMax, amenity, mood, category } = await searchParams;
+  const { destination, checkIn: rawCheckIn, checkOut: rawCheckOut, guests: rawGuests, type, priceMax, amenity, mood, category } = await searchParams;
+  // Dates and guests are PREFERENCES carried to a stay's detail page — nothing here checks
+  // availability. Validated so a malformed or past value is never shown or passed on.
+  const { checkIn, checkOut, guests } = readStayPreferences({ checkIn: rawCheckIn, checkOut: rawCheckOut, guests: rawGuests });
+  const preferenceParts = describeStayPreferences({ checkIn, checkOut, guests });
 
   return (
     <main id="main-content" className="px-6 py-10 sm:px-10 lg:px-16">
@@ -78,10 +83,9 @@ export default async function StaySearchPage({ searchParams }: StaySearchPagePro
             {destination ? `Stays in ${destination}` : 'All Himalayan Stays'}
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            {[checkIn && checkOut ? `${checkIn} – ${checkOut}` : null, guests ? `${guests} Guest${guests === '1' ? '' : 's'}` : null]
-              .filter(Boolean)
-              .join(' · ') || 'Any dates · Any guests'}
+            {preferenceParts.length > 0 ? `Your preferences: ${preferenceParts.join(' · ')}` : 'No dates or guest count set'}
           </p>
+          {preferenceParts.length > 0 ? <p className="mt-1 text-xs text-slate-500">{STAY_PREFERENCES_DISCLAIMER}</p> : null}
           <StaySearch
             defaultDestination={destination}
             defaultCheckIn={checkIn}
