@@ -27,6 +27,7 @@ import {
 } from '@/config/search.config';
 import { experienceTypes } from '@/config/experiences.config';
 import { vehicleOptions } from '@/config/transport.config';
+import { resolveChauffeurVehicleParam, urlSlugFromServiceType } from '@/config/transportServiceTypes.config';
 import { destinations } from '@/config/destinations.config';
 import { cn } from '@/lib/utils';
 import type { DateRange, OccupancyDetails } from '@/types';
@@ -263,21 +264,27 @@ export default function GlobalSearchFilter({
         goTo('/experiences', { q: destination, category: travelStyle }, 'listing');
         return;
 
-      case 'Transport':
+      case 'Transport': {
         // A real form submission (as opposed to a Popular Searches shortcut, see
         // handlePopularSearch below) is an intentional Transport search — flag it so
         // /transport opens in focused Search Results Mode instead of the full
         // Discovery page (see app/transport/page.tsx's `searched` param).
+        // The dropdown lists vehicle NAMES ("Sedan"), but /transport filters on the stored
+        // category ("Comfort") — send the category, and open a Group Transport pick under
+        // its own service (Cab with Driver is the page default, so it needs no param).
+        const resolvedVehicle = resolveChauffeurVehicleParam(travelStyle);
         goTo('/transport', {
           pickup,
           destination: drop,
           date,
           time,
           travellers: String(passengers),
-          vehicle: travelStyle,
+          vehicle: resolvedVehicle.value,
+          service: resolvedVehicle.serviceType === 'Group Transport' ? urlSlugFromServiceType('Group Transport') : undefined,
           searched: '1'
         });
         return;
+      }
 
       case 'Travel Experts':
         // /experts reads `destination` (a real slug) and `travelStyle` (see

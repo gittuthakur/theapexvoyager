@@ -23,7 +23,8 @@ import {
 import { images } from '@/config/images.config';
 import { getVehicles, getRoutes, getVehiclesByDestinationSlug } from '@/lib/transport';
 import { findDestinationByLocationText } from '@/lib/destinations';
-import { categoriesForMotorcycleType, serviceTypeFromUrlSlug, SERVICE_TYPE_UI } from '@/config/transportServiceTypes.config';
+import { categoriesForMotorcycleType, resolveChauffeurVehicleParam, serviceTypeFromUrlSlug, SERVICE_TYPE_UI } from '@/config/transportServiceTypes.config';
+import { parseNonNegativeNumberParam } from '@/lib/numericParam';
 
 // Same canonical/OpenGraph shape as /journeys and /experiences: a relative
 // `alternates.canonical` (resolved against the root layout's `metadataBase`) so every
@@ -93,7 +94,7 @@ export default async function TransportPage({ searchParams }: TransportPageProps
     destination,
     date,
     travellers,
-    vehicle,
+    vehicle: rawVehicle,
     service: serviceSlug,
     returnDate,
     returnTime,
@@ -127,6 +128,23 @@ export default async function TransportPage({ searchParams }: TransportPageProps
   // each other. Submitting the hero search additionally narrows *only the section
   // matching the active service* by whatever extra fields were submitted.
   const service = serviceTypeFromUrlSlug(serviceSlug);
+
+  // The homepage search panel used to send a vehicle's display NAME ("Sedan") while the
+  // chauffeur catalog filters on its stored category ("Comfort"), so a bare name matched
+  // nothing. Resolve a recognized name to its category for Cab with Driver / Group
+  // Transport; every already-valid category value (and every other service's own vehicle
+  // values) passes through unchanged, so existing URLs keep working.
+  const vehicle =
+    rawVehicle && (service === 'Cab with Driver' || service === 'Group Transport')
+      ? resolveChauffeurVehicleParam(rawVehicle).value
+      : rawVehicle;
+
+  // Self-Drive's numeric filters: a supplied-but-invalid value (?maxPrice=abc, ?minSeats=-2)
+  // must never silently drop the filter and show the complete inventory — it yields an
+  // explicit invalid-filter state instead (see selfDriveInvalidNumericFilter below).
+  const minSeatsParam = parseNonNegativeNumberParam(minSeats);
+  const maxPriceParam = parseNonNegativeNumberParam(maxPrice);
+  const selfDriveInvalidNumericFilter = minSeatsParam.invalid || maxPriceParam.invalid;
 
   // Vehicles are filtered by category only — serviceAreas are broad regions (Himachal
   // Pradesh, Kashmir, Uttarakhand), while pickup/destination are specific city names, so
@@ -179,13 +197,13 @@ export default async function TransportPage({ searchParams }: TransportPageProps
       // full-results filter bar's real, derived option lists (never a fabricated list).
       getVehicles({ serviceType: 'Self-Drive Car' }),
       // Only meaningfully different from the list above once a real filter is set.
-      selfDriveIsActiveService
+      selfDriveIsActiveService && !selfDriveInvalidNumericFilter
         ? getVehicles({
             serviceType: 'Self-Drive Car',
             category: vehicle,
             transmission,
-            minSeats: minSeats ? Number(minSeats) || undefined : undefined,
-            maxPrice: maxPrice ? Number(maxPrice) || undefined : undefined,
+            minSeats: minSeatsParam.value,
+            maxPrice: maxPriceParam.value,
             serviceArea: resolvedPickup?.state
           })
         : Promise.resolve([]),
@@ -298,7 +316,9 @@ export default async function TransportPage({ searchParams }: TransportPageProps
           returnDate={selfDriveSearchActive ? returnDate : undefined}
           journeyContext={journeyContext}
           activeSearchEmptyMessage={
-            selfDriveIsActiveService && selfDriveVehicles.length === 0
+            selfDriveIsActiveService && selfDriveInvalidNumericFilter
+              ? 'That price or seat filter isn’t a valid number, so no vehicles are shown. Adjust or clear the filter to see rentals.'
+              : selfDriveIsActiveService && selfDriveVehicles.length === 0
               ? vehicle
                 ? `No ${vehicle} rentals are currently listed for this trip.`
                 : "We couldn't find a verified vehicle matching this trip yet."
@@ -307,8 +327,8 @@ export default async function TransportPage({ searchParams }: TransportPageProps
           searchSummary={selfDriveSummary || undefined}
           isActiveService={selfDriveIsActiveService}
           transmission={transmission}
-          minSeats={minSeats ? Number(minSeats) || undefined : undefined}
-          maxPrice={maxPrice ? Number(maxPrice) || undefined : undefined}
+          minSeats={minSeatsParam.value}
+          maxPrice={maxPriceParam.value}
           availableTransmissions={selfDriveAvailableTransmissions}
           availableSeatCounts={selfDriveAvailableSeatCounts}
           vehicleCategory={selfDriveIsActiveService ? vehicle : undefined}
