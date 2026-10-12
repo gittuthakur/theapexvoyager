@@ -66,9 +66,16 @@ export function toTravelPackage(doc: JourneyDocument): TravelPackage {
 // URL from soft-404ing instead of cleanly 404ing.
 //
 /** Journeys live in MongoDB (see models/Journey.ts, seeded from config/packages.config.ts by scripts/seed.ts). */
-export async function getAllPackages(): Promise<TravelPackage[]> {
+export async function getAllPackages(options: { maxTimeMS?: number; projection?: Record<string, 1> } = {}): Promise<TravelPackage[]> {
   await connectDB();
-  const docs = await Journey.find({ status: 'published' }).sort({ featured: -1, createdAt: 1 }).lean<JourneyDocument[]>();
+  // Optional `projection` (global search): read only the fields search uses. The converters below copy fields one by
+  // one and tolerate missing ones, so a projected read is safe. Omitted = every field, as before.
+  // Optional server-side time bound (used by the global search API): with `maxTimeMS` set, MongoDB itself abandons
+  // a slow read, so it cannot keep consuming database resources after the caller gave up. Omitted = the query is
+  // built exactly as before.
+  const base = options.projection ? Journey.find({ status: 'published' }, options.projection) : Journey.find({ status: 'published' });
+  const query = base.sort({ featured: -1, createdAt: 1 });
+  const docs = await (options.maxTimeMS ? query.maxTimeMS(options.maxTimeMS) : query).lean<JourneyDocument[]>();
   const packages = docs.map(toTravelPackage);
   // Ensure all Mongoose/MongoDB specific objects are converted to plain JSON-safe objects
   return JSON.parse(JSON.stringify(packages));
