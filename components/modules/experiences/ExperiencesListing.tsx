@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ArrowRight, RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react';
 import ExperienceCard from '@/components/modules/experiences/ExperienceCard';
 import { FloatingOverlay } from '@/components/ui/FloatingOverlay';
@@ -22,7 +22,9 @@ import {
   seasonOptions
 } from '@/config/experiences.config';
 import { copyTripPreferences } from '@/lib/tripPreferences';
+import { parseExperienceUrlState, shouldAdoptUrlChange } from '@/lib/experienceUrlState';
 import { filterExperiences, sortExperiences, type ExperienceSortOption } from '@/lib/experienceFilters';
+import { experienceRelevanceScores, rankExperiencesByRelevance, type RelatedDestinationRef } from '@/lib/search/experienceSearch';
 import { cn } from '@/lib/utils';
 import type {
   Experience,
@@ -36,6 +38,8 @@ import type {
 
 export interface ExperiencesListingProps {
   experiences: Experience[];
+  /** Published destinations (slug/title/state) used only to resolve real location→destination relationships in keyword search. */
+  relatedDestinations?: RelatedDestinationRef[];
   initialQuery?: string;
   initialRegion?: string;
   initialCategories?: string;
@@ -78,6 +82,7 @@ function isSortOption(value?: string): value is ExperienceSortOption {
 
 export default function ExperiencesListing({
   experiences,
+  relatedDestinations,
   initialQuery = '',
   initialRegion,
   initialCategories,
@@ -90,6 +95,7 @@ export default function ExperiencesListing({
 }: ExperiencesListingProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const [query, setQuery] = useState(initialQuery);
   const [region, setRegion] = useState(initialRegion ?? '');
@@ -103,10 +109,39 @@ export default function ExperiencesListing({
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(INITIAL_BATCH);
   const didMount = useRef(false);
+  // The query string this component last wrote to the address bar, and the one it last reconciled
+  // with — see the reconciliation block below.
+  const searchParamsString = searchParams.toString();
+  const [pushedParams, setPushedParams] = useState<string | null>(null);
+  const [syncedParams, setSyncedParams] = useState(searchParamsString);
 
   const activeFilterCount =
     (region ? 1 : 0) + categories.length + durations.length + budgets.length + bestFor.length + seasons.length + difficulties.length;
   const hasAnyFilter = activeFilterCount > 0 || query.trim().length > 0;
+
+  // Adopt address-bar changes that did NOT originate from this component's own debounced write
+  // below: hero search, mood/region tiles, homepage search and browser Back/Forward all navigate
+  // to /experiences?... while this component stays mounted. The page no longer remounts the
+  // listing on every query-string change (that remount, keyed on the query, stole focus and
+  // dropped keystrokes while a visitor was typing), so the state is re-seeded here instead. The
+  // component's own round-trip is recognised via `pushedParams` and ignored, which leaves the
+  // input, its focus and its caret untouched. Done during render (React's "adjust state when a
+  // value changes" pattern), not in an effect.
+  if (syncedParams !== searchParamsString) {
+    setSyncedParams(searchParamsString);
+    if (shouldAdoptUrlChange(pushedParams, searchParamsString)) {
+      const next = parseExperienceUrlState(searchParamsString);
+      setQuery(next.query);
+      setRegion(next.region);
+      setCategories(next.categories as ExperienceType[]);
+      setDurations(next.durations as ExperienceDurationBand[]);
+      setBudgets(next.budgets);
+      setBestFor(next.bestFor as ExperienceBestFor[]);
+      setSeasons(next.seasons as ExperienceSeason[]);
+      setDifficulties(next.difficulties as ExperienceDifficulty[]);
+      setSort(next.sort);
+    }
+  }
 
   const filtered = useMemo(
     () =>
@@ -118,12 +153,20 @@ export default function ExperiencesListing({
         budgets,
         bestFor,
         seasons,
-        difficulties
+        difficulties,
+        destinations: relatedDestinations
       }),
-    [experiences, query, region, categories, durations, budgets, bestFor, seasons, difficulties]
+    [experiences, relatedDestinations, query, region, categories, durations, budgets, bestFor, seasons, difficulties]
   );
 
-  const sorted = useMemo(() => sortExperiences(filtered, sort), [filtered, sort]);
+  // Relevance is computed over the FULL list (its description fallback must not depend on the
+  // other filters) and orders results only for the default "Recommended" sort while a keyword is
+  // active. Any explicitly chosen sort (price, rating, ...) always wins.
+  const relevance = useMemo(() => experienceRelevanceScores(experiences, query, relatedDestinations), [experiences, query, relatedDestinations]);
+  const sorted = useMemo(() => {
+    const ordered = sortExperiences(filtered, sort);
+    return query.trim() && sort === 'recommended' ? rankExperiencesByRelevance(ordered, relevance) : ordered;
+  }, [filtered, sort, query, relevance]);
   const visible = sorted.slice(0, visibleCount);
 
   // Any change to what's being shown should land the reader back on the first batch —
@@ -156,6 +199,7 @@ export default function ExperiencesListing({
       // this effect rebuilds the query from filter state and would otherwise drop them.
       copyTripPreferences(new URLSearchParams(window.location.search), params);
       const qs = params.toString();
+      setPushedParams(qs);
       router.replace(qs ? `${pathname}?${qs}#listing` : `${pathname}#listing`, { scroll: false });
     }, 300);
     return () => clearTimeout(timeout);

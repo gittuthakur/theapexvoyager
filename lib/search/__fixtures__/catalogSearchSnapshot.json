@@ -1,0 +1,2245 @@
+{
+ "_note": "Read-only snapshot of PUBLISHED catalog fields used by search (no prices, partner or commission data). Test fixture only; application code never imports it.",
+ "experiences": [
+  {
+   "slug": "spiti-valley-village-homestay",
+   "title": "Spiti Valley Village Homestay",
+   "location": "Kaza, Spiti Valley, Himachal Pradesh",
+   "region": "Himachal Pradesh",
+   "category": "Culture",
+   "subCategory": "Village Homestay",
+   "mood": "local-life",
+   "shortDescription": "Live like a local, share a meal and discover the slower side of Spiti.",
+   "highlights": [
+    "Two nights in a real Spitian family home",
+    "Home-cooked meals, including local thukpa and butter tea",
+    "A guided walk through Kaza's old town",
+    "Time with a host family, not a script"
+   ]
+  },
+  {
+   "slug": "himachali-cooking-experience-manali",
+   "title": "Himachali Cooking Experience with a Local Family",
+   "location": "Manali, Himachal Pradesh",
+   "region": "Himachal Pradesh",
+   "category": "Food",
+   "subCategory": "Cooking Class",
+   "mood": "taste-himalayas",
+   "shortDescription": "Cook a full Himachali dham-style spread hands-on, from market run to shared meal.",
+   "highlights": [
+    "Hands-on siddu & dham preparation",
+    "A short market walk for local ingredients",
+    "A recipe card to take home",
+    "A shared family-style meal"
+   ]
+  },
+  {
+   "slug": "parvati-valley-river-rafting-kasol",
+   "title": "Parvati Valley River Rafting",
+   "location": "Kasol, Himachal Pradesh",
+   "region": "Himachal Pradesh",
+   "category": "Adventure",
+   "subCategory": "White-water Rafting",
+   "mood": "adventure",
+   "shortDescription": "Run the Parvati's rapids with certified river guides and full safety gear.",
+   "highlights": [
+    "Certified river guides on every raft",
+    "Full safety briefing and gear",
+    "A graded, beginner-friendly rafting stretch",
+    "Action photos included on most runs"
+   ]
+  },
+  {
+   "slug": "kinnaur-apple-orchard-experience",
+   "title": "Apple Orchard Experience in Kinnaur",
+   "location": "Kinnaur, Himachal Pradesh",
+   "region": "Himachal Pradesh",
+   "category": "Nature",
+   "subCategory": "Orchard Visit",
+   "mood": "local-life",
+   "shortDescription": "Pick apples in a family-run orchard and learn how the harvest reaches the market.",
+   "highlights": [
+    "Orchard fruit-picking during harvest season",
+    "A traditional Kinnauri lunch with the host family",
+    "Kid-friendly farm activities",
+    "A local apple-crate craft demo"
+   ]
+  },
+  {
+   "slug": "tirthan-valley-riverside-camping",
+   "title": "Tirthan Valley Riverside Camping",
+   "location": "Tirthan Valley, Himachal Pradesh",
+   "region": "Himachal Pradesh",
+   "category": "Nature",
+   "subCategory": "Riverside Camping",
+   "mood": "wild-offbeat",
+   "shortDescription": "Fall asleep to the sound of the Tirthan and wake up beside the river.",
+   "highlights": [
+    "A private riverside campsite",
+    "Bonfire evenings with a home-style dinner",
+    "Forest and riverbank walking trails",
+    "Away from the main Manali crowd"
+   ]
+  },
+  {
+   "slug": "himachali-craft-workshop-kullu",
+   "title": "Traditional Himachali Craft Workshop",
+   "location": "Kullu, Himachal Pradesh",
+   "region": "Himachal Pradesh",
+   "category": "Culture",
+   "subCategory": "Craft Workshop",
+   "mood": "local-life",
+   "shortDescription": "Learn the basics of Kullu shawl weaving from artisans who've done it for decades.",
+   "highlights": [
+    "A visit to a working family loom",
+    "Hands-on weaving under artisan guidance",
+    "The story behind Kullu's weaving tradition",
+    "Support for a local craft household"
+   ]
+  },
+  {
+   "slug": "jibhi-forest-village-walk",
+   "title": "Jibhi Forest Village Walk",
+   "location": "Jibhi, Himachal Pradesh",
+   "region": "Himachal Pradesh",
+   "category": "Offbeat",
+   "subCategory": "Village Walk",
+   "mood": "wild-offbeat",
+   "shortDescription": "A quiet walk through pine forest and a wooden-house village most visitors skip.",
+   "highlights": [
+    "A forest trail most tourists never find",
+    "A stop at Jibhi's small waterfall",
+    "A walk through a working wooden-house village",
+    "A local guide, not a fixed script"
+   ]
+  },
+  {
+   "slug": "shimla-heritage-walking-experience",
+   "title": "Shimla Heritage Walking Experience",
+   "location": "Shimla, Himachal Pradesh",
+   "region": "Himachal Pradesh",
+   "category": "Culture",
+   "subCategory": "Heritage Walk",
+   "mood": "local-life",
+   "shortDescription": "A storyteller-led walk through Shimla's colonial architecture and toy-train history.",
+   "highlights": [
+    "The Ridge & Christ Church history stop",
+    "A vintage toy-train viewpoint",
+    "A colonial-era architecture trail",
+    "A local heritage storyteller guide"
+   ]
+  },
+  {
+   "slug": "dal-lake-sunrise-shikara-srinagar",
+   "title": "Dal Lake Sunrise Shikara Experience",
+   "location": "Srinagar, Jammu & Kashmir",
+   "region": "Jammu & Kashmir",
+   "category": "Romance",
+   "subCategory": "Shikara Ride",
+   "mood": "romantic-escapes",
+   "shortDescription": "Glide across a mist-covered Dal Lake at dawn on a private shikara.",
+   "highlights": [
+    "A private shikara with a local boatman",
+    "Floating vegetable market views (seasonal)",
+    "A mist-covered Dal Lake sunrise",
+    "Complimentary Kashmiri kahwa onboard"
+   ]
+  },
+  {
+   "slug": "gulmarg-snow-experience",
+   "title": "Gulmarg Snow Experience",
+   "location": "Gulmarg, Jammu & Kashmir",
+   "region": "Jammu & Kashmir",
+   "category": "Adventure",
+   "subCategory": "Gondola & Snow Play",
+   "mood": "adventure",
+   "shortDescription": "Ride the Gondola into snowfields most visitors only see from the base.",
+   "highlights": [
+    "Gondola ride toward Kongdoori/Apharwat",
+    "Supervised snow play and sledging",
+    "Photo stops at altitude",
+    "A guide who handles tickets and logistics"
+   ]
+  },
+  {
+   "slug": "pahalgam-meadow-pony-trek",
+   "title": "Pahalgam Meadow Pony Trek",
+   "location": "Pahalgam, Jammu & Kashmir",
+   "region": "Jammu & Kashmir",
+   "category": "Family",
+   "subCategory": "Pony Trek",
+   "mood": "family",
+   "shortDescription": "An easy pony ride through Pahalgam's riverside meadows — built for first-timers.",
+   "highlights": [
+    "A gentle, guided pony trail",
+    "Riverside meadow views",
+    "Suitable for first-time riders and children",
+    "A local pony handler throughout"
+   ]
+  },
+  {
+   "slug": "sonamarg-glacier-valley-trek",
+   "title": "Sonamarg Glacier Valley Trek",
+   "location": "Sonamarg, Jammu & Kashmir",
+   "region": "Jammu & Kashmir",
+   "category": "Adventure",
+   "subCategory": "Glacier Trek",
+   "mood": "adventure",
+   "shortDescription": "A full-day trek toward Thajiwas Glacier through pine forest and open valley.",
+   "highlights": [
+    "A trek to the edge of Thajiwas Glacier",
+    "Pine-forest and open-valley trail sections",
+    "A certified trekking guide",
+    "A packed trail lunch included"
+   ]
+  },
+  {
+   "slug": "doodhpathri-meadow-picnic",
+   "title": "Doodhpathri Meadow Picnic & Nature Walk",
+   "location": "Doodhpathri, Jammu & Kashmir",
+   "region": "Jammu & Kashmir",
+   "category": "Wellness",
+   "subCategory": "Meadow Picnic",
+   "mood": "slow-soulful",
+   "shortDescription": "A slow afternoon in one of Kashmir's quietest, least-visited meadows.",
+   "highlights": [
+    "A quiet, lesser-visited Kashmiri meadow",
+    "A short guided nature walk",
+    "A riverside picnic spread",
+    "Minimal crowds compared to Gulmarg/Pahalgam"
+   ]
+  },
+  {
+   "slug": "gurez-valley-offbeat-village-experience",
+   "title": "Gurez Valley Offbeat Village Experience",
+   "location": "Gurez Valley, Jammu & Kashmir",
+   "region": "Jammu & Kashmir",
+   "category": "Offbeat",
+   "subCategory": "Village Homestay",
+   "mood": "wild-offbeat",
+   "shortDescription": "A rare multi-day stay in one of Kashmir's most remote, least-visited valleys.",
+   "highlights": [
+    "One of Kashmir's most remote inhabited valleys",
+    "A village homestay with a Dard-Shin family",
+    "Views of the Habba Khatoon peak",
+    "A genuinely offbeat itinerary"
+   ]
+  },
+  {
+   "slug": "ganga-aarti-spiritual-evening-rishikesh",
+   "title": "Ganga Aarti Spiritual Evening",
+   "location": "Rishikesh, Uttarakhand",
+   "region": "Uttarakhand",
+   "category": "Wellness",
+   "subCategory": "Aarti Ceremony",
+   "mood": "slow-soulful",
+   "shortDescription": "A guided meditation and riverside diya offering ahead of the evening Ganga Aarti.",
+   "highlights": [
+    "A riverside aarti at a Ganges ghat",
+    "A guided meditation before the ceremony",
+    "A diya offering on the Ganges",
+    "A short ashram walkthrough"
+   ]
+  },
+  {
+   "slug": "chopta-sunrise-trek-tungnath",
+   "title": "Chopta Sunrise Trek to Tungnath",
+   "location": "Chopta, Uttarakhand",
+   "region": "Uttarakhand",
+   "category": "Adventure",
+   "subCategory": "Sunrise Trek",
+   "mood": "adventure",
+   "shortDescription": "A pre-dawn climb to the world's highest Shiva temple, timed for sunrise over the peaks.",
+   "highlights": [
+    "A pre-dawn climb timed for sunrise",
+    "Views of Chaukhamba and Nanda Devi",
+    "A visit to the Tungnath temple",
+    "An optional extension to Chandrashila summit"
+   ]
+  },
+  {
+   "slug": "mukteshwar-stargazing-bonfire-night",
+   "title": "Mukteshwar Stargazing & Bonfire Night",
+   "location": "Mukteshwar, Uttarakhand",
+   "region": "Uttarakhand",
+   "category": "Wellness",
+   "subCategory": "Stargazing & Bonfire",
+   "mood": "slow-soulful",
+   "shortDescription": "A guided stargazing session away from city lights, followed by a bonfire evening.",
+   "highlights": [
+    "A guided stargazing session with telescope",
+    "Low light pollution, clear mountain skies",
+    "A bonfire with warm drinks",
+    "Small-group, unhurried pacing"
+   ]
+  },
+  {
+   "slug": "auli-winter-snow-experience",
+   "title": "Auli Winter Snow Experience",
+   "location": "Auli, Uttarakhand",
+   "region": "Uttarakhand",
+   "category": "Adventure",
+   "subCategory": "Snow Experience",
+   "mood": "adventure",
+   "shortDescription": "Cable-car views of Nanda Devi followed by guided snow play on Auli's slopes.",
+   "highlights": [
+    "A ropeway ride with Nanda Devi views",
+    "Supervised snow play on open slopes",
+    "Optional ski/snowboard lessons (extra cost)",
+    "A local guide throughout"
+   ]
+  },
+  {
+   "slug": "valley-of-flowers-guided-nature-walk",
+   "title": "Valley of Flowers Guided Nature Walk",
+   "location": "Valley of Flowers National Park, Uttarakhand",
+   "region": "Uttarakhand",
+   "category": "Nature",
+   "subCategory": "Nature Trek",
+   "mood": "wild-offbeat",
+   "shortDescription": "A two-day guided walk through a UNESCO World Heritage alpine meadow in full monsoon bloom.",
+   "highlights": [
+    "A UNESCO World Heritage alpine meadow",
+    "Peak monsoon wildflower bloom",
+    "A certified naturalist guide",
+    "An overnight stay in Ghangaria",
+    "Ghangaria also serves as the base for the separate Hemkund Sahib pilgrimage"
+   ]
+  },
+  {
+   "slug": "nainital-lake-boating-food-walk",
+   "title": "Nainital Lake Boating & Mall Road Food Walk",
+   "location": "Nainital, Uttarakhand",
+   "region": "Uttarakhand",
+   "category": "Family",
+   "subCategory": "Lake Boating & Food Walk",
+   "mood": "family",
+   "shortDescription": "A relaxed boat ride on Naini Lake followed by a Mall Road street-food trail.",
+   "highlights": [
+    "A rowboat ride on Naini Lake",
+    "A guided Mall Road food trail",
+    "Easy pacing, ideal for kids and grandparents",
+    "A local host who knows the best stalls"
+   ]
+  },
+  {
+   "slug": "spiti-valley-stargazing-night",
+   "title": "Spend a Night Under the Spiti Sky",
+   "location": "Kaza, Spiti Valley, Himachal Pradesh",
+   "region": "Himachal Pradesh",
+   "category": "Offbeat",
+   "subCategory": "Stargazing Night",
+   "mood": "wild-offbeat",
+   "shortDescription": "One of India's darkest skies, seen through a telescope from a cold-desert rooftop.",
+   "highlights": [
+    "One of India's clearest, darkest night skies",
+    "A guided telescope session",
+    "Local tea and rooftop seating",
+    "A naturalist's commentary on the stars above Spiti"
+   ]
+  },
+  {
+   "slug": "mussoorie-candlelit-valley-dinner",
+   "title": "Mussoorie Candlelit Valley Dinner",
+   "location": "Mussoorie, Uttarakhand",
+   "region": "Uttarakhand",
+   "category": "Romance",
+   "subCategory": "Candlelit Dinner",
+   "mood": "romantic-escapes",
+   "shortDescription": "A private candlelit setup with valley views, a bonfire and a chef-curated dinner for two.",
+   "highlights": [
+    "A private candlelit setup with valley views",
+    "A bonfire and speaker setup on request",
+    "A chef-curated dinner for two",
+    "An optional photographer add-on"
+   ]
+  },
+  {
+   "slug": "kashmiri-wazwan-cooking-tasting-srinagar",
+   "title": "Kashmiri Wazwan Cooking & Tasting Experience",
+   "location": "Srinagar, Jammu & Kashmir",
+   "region": "Jammu & Kashmir",
+   "category": "Food",
+   "subCategory": "Wazwan Tasting",
+   "mood": "taste-himalayas",
+   "shortDescription": "Learn the basics of a Wazwan feast and taste it course by course with a local family.",
+   "highlights": [
+    "A scaled-down Wazwan feast experience",
+    "A cooking demonstration with a local family",
+    "Multiple signature dishes to taste",
+    "The story behind Kashmir's feast culture"
+   ]
+  }
+ ],
+ "destinations": [
+  {
+   "slug": "dharamshala",
+   "title": "Dharamshala",
+   "state": "Himachal Pradesh",
+   "category": "Wellness",
+   "description": "The Kangra Valley gateway town below the Dhauladhar range — the arrival point for this corner of Himachal, with McLeod Ganj as a separate destination further up the hill.",
+   "travelStyles": [
+    "Wellness",
+    "Nature",
+    "Slow travel"
+   ],
+   "places": [
+    {
+     "title": "HPCA Cricket Stadium",
+     "description": ""
+    },
+    {
+     "title": "Kangra Art Museum",
+     "description": ""
+    },
+    {
+     "title": "HP State War Memorial",
+     "description": ""
+    },
+    {
+     "title": "Kotwali Bazaar",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "tirthan-valley",
+   "title": "Tirthan Valley",
+   "state": "Himachal Pradesh",
+   "category": "Riverside",
+   "description": "Crystal-clear rivers, lush forests and peaceful stays.",
+   "travelStyles": [
+    "Nature",
+    "Slow travel",
+    "Adventure"
+   ],
+   "places": [
+    {
+     "title": "Gushaini",
+     "description": ""
+    },
+    {
+     "title": "Jibhi",
+     "description": ""
+    },
+    {
+     "title": "Jalori Pass",
+     "description": ""
+    },
+    {
+     "title": "Serolsar Lake",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "jibhi",
+   "title": "Jibhi",
+   "state": "Himachal Pradesh",
+   "category": "Offbeat",
+   "description": "A sleepy riverside hamlet of wooden cottages and waterfall trails in the Banjar Valley.",
+   "travelStyles": [
+    "Offbeat",
+    "Nature",
+    "Slow travel"
+   ],
+   "places": [
+    {
+     "title": "Jibhi Waterfall",
+     "description": ""
+    },
+    {
+     "title": "Chehni Kothi",
+     "description": ""
+    },
+    {
+     "title": "Jalori Pass",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "chitkul",
+   "title": "Chitkul",
+   "state": "Himachal Pradesh",
+   "category": "Adventure",
+   "description": "The last inhabited village on the old Hindustan-Tibet trade route, deep in the Baspa Valley.",
+   "travelStyles": [
+    "Adventure",
+    "Nature",
+    "Offbeat"
+   ],
+   "places": [
+    {
+     "title": "Baspa riverbank",
+     "description": ""
+    },
+    {
+     "title": "Batseri village",
+     "description": ""
+    },
+    {
+     "title": "Sangla",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "sainj-valley",
+   "title": "Sainj Valley",
+   "state": "Himachal Pradesh",
+   "category": "Riverside",
+   "description": "A quiet valley on the Great Himalayan National Park buffer, built around meadow villages like Shangarh.",
+   "travelStyles": [
+    "Slow travel",
+    "Nature",
+    "Offbeat"
+   ],
+   "places": [
+    {
+     "title": "Shangarh village",
+     "description": ""
+    },
+    {
+     "title": "Sainj village",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "bir-billing",
+   "title": "Bir Billing",
+   "state": "Himachal Pradesh",
+   "category": "Adventure",
+   "description": "India's best-known paragliding site, paired with a slow-paced Tibetan settlement village.",
+   "travelStyles": [
+    "Adventure",
+    "Nature"
+   ],
+   "places": [
+    {
+     "title": "Chowgan village",
+     "description": ""
+    },
+    {
+     "title": "Billing meadow",
+     "description": ""
+    },
+    {
+     "title": "Bir Tibetan monasteries",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "sangla-valley",
+   "title": "Sangla Valley",
+   "state": "Himachal Pradesh",
+   "category": "Adventure",
+   "description": "Apple orchards and apricot groves along the Baspa river, deep in the Kinnaur Himalayas.",
+   "travelStyles": [
+    "Adventure",
+    "Nature",
+    "Slow travel"
+   ],
+   "places": [
+    {
+     "title": "Kamru Fort",
+     "description": ""
+    },
+    {
+     "title": "Sangla Bazaar",
+     "description": ""
+    },
+    {
+     "title": "Chitkul",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "chamba",
+   "title": "Chamba",
+   "state": "Himachal Pradesh",
+   "category": "Colonial Charm",
+   "description": "A former Himalayan princely capital on the Ravi River, built around temples and a historic town square.",
+   "travelStyles": [
+    "Culture",
+    "Family"
+   ],
+   "places": [
+    {
+     "title": "Lakshmi Narayan Temple",
+     "description": ""
+    },
+    {
+     "title": "Bhuri Singh Museum",
+     "description": ""
+    },
+    {
+     "title": "The Chaugan",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "dalhousie",
+   "title": "Dalhousie",
+   "state": "Himachal Pradesh",
+   "category": "Colonial Charm",
+   "description": "A colonial-era hill station spread across five hills, built by the British as a summer retreat in 1850.",
+   "travelStyles": [
+    "Culture",
+    "Family",
+    "Slow travel"
+   ],
+   "places": [
+    {
+     "title": "Subhash Baoli",
+     "description": ""
+    },
+    {
+     "title": "St. John’s Church",
+     "description": ""
+    },
+    {
+     "title": "Khajjiar",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "khajjiar",
+   "title": "Khajjiar",
+   "state": "Himachal Pradesh",
+   "category": "Offbeat",
+   "description": "A small meadow and lake ringed by deodar forest, roughly midway between Dalhousie and Chamba.",
+   "travelStyles": [
+    "Offbeat",
+    "Nature",
+    "Romantic"
+   ],
+   "places": [
+    {
+     "title": "Khajjiar Lake",
+     "description": ""
+    },
+    {
+     "title": "Khajji Nag Temple",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "munsiyari",
+   "title": "Munsiyari",
+   "state": "Uttarakhand",
+   "category": "Offbeat",
+   "description": "A quiet hill town beneath the Panchachuli peaks, gateway to Uttarakhand’s remote Johar Valley.",
+   "travelStyles": [
+    "Offbeat",
+    "Nature",
+    "Adventure"
+   ],
+   "places": [
+    {
+     "title": "Khaliya Top",
+     "description": ""
+    },
+    {
+     "title": "Birthi Falls",
+     "description": ""
+    },
+    {
+     "title": "Nanda Devi Temple",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "srinagar",
+   "title": "Srinagar",
+   "state": "Jammu & Kashmir",
+   "category": "Scenic",
+   "description": "Kashmir’s valley capital — Dal Lake, Mughal gardens and centuries of houseboat life.",
+   "travelStyles": [
+    "Nature",
+    "Family",
+    "Culture"
+   ],
+   "places": [
+    {
+     "title": "Dal Lake",
+     "description": ""
+    },
+    {
+     "title": "Shalimar Bagh",
+     "description": ""
+    },
+    {
+     "title": "Nishat Bagh",
+     "description": ""
+    },
+    {
+     "title": "Jama Masjid",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "pahalgam",
+   "title": "Pahalgam",
+   "state": "Jammu & Kashmir",
+   "category": "Adventure",
+   "description": "A Lidder Valley mountain base, and the Kashmir Valley’s classic multi-day retreat.",
+   "travelStyles": [
+    "Nature",
+    "Family",
+    "Adventure"
+   ],
+   "places": [
+    {
+     "title": "Pahalgam town",
+     "description": ""
+    },
+    {
+     "title": "Betaab Valley",
+     "description": ""
+    },
+    {
+     "title": "Aru Valley",
+     "description": ""
+    },
+    {
+     "title": "Chandanwari",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "sonamarg",
+   "title": "Sonamarg",
+   "state": "Jammu & Kashmir",
+   "category": "Scenic",
+   "description": "A high-altitude valley on the Srinagar–Leh road, and gateway to Kashmir’s glacier and lake treks.",
+   "travelStyles": [
+    "Adventure",
+    "Nature"
+   ],
+   "places": [
+    {
+     "title": "Sonamarg town",
+     "description": ""
+    },
+    {
+     "title": "Thajiwas",
+     "description": ""
+    },
+    {
+     "title": "Baltal",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "dehradun",
+   "title": "Dehradun",
+   "state": "Uttarakhand",
+   "category": "Scenic",
+   "description": "The Doon Valley capital and Garhwal's main gateway, with a quieter identity of its own.",
+   "travelStyles": [
+    "Family",
+    "Nature",
+    "Culture"
+   ],
+   "places": [
+    {
+     "title": "Forest Research Institute",
+     "description": ""
+    },
+    {
+     "title": "Robber's Cave (Guchhupani)",
+     "description": ""
+    },
+    {
+     "title": "Sahastradhara",
+     "description": ""
+    },
+    {
+     "title": "Paltan Bazaar",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "mussoorie",
+   "title": "Mussoorie",
+   "state": "Uttarakhand",
+   "category": "Colonial Charm",
+   "description": "A ridge-top hill station above the Doon Valley, built around Mall Road and its viewpoints.",
+   "travelStyles": [
+    "Nature",
+    "Family",
+    "Romantic"
+   ],
+   "places": [
+    {
+     "title": "Mall Road",
+     "description": ""
+    },
+    {
+     "title": "Gun Hill",
+     "description": ""
+    },
+    {
+     "title": "Landour",
+     "description": ""
+    },
+    {
+     "title": "Kempty Falls",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "joshimath",
+   "title": "Joshimath (Jyotirmath)",
+   "state": "Uttarakhand",
+   "category": "Offbeat",
+   "description": "Upper Garhwal's practical mountain base, and the gateway town beneath Auli.",
+   "travelStyles": [
+    "Adventure",
+    "Nature"
+   ],
+   "places": [
+    {
+     "title": "Narsingh Temple",
+     "description": ""
+    },
+    {
+     "title": "Auli ropeway base station",
+     "description": ""
+    },
+    {
+     "title": "Vishnuprayag",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "auli",
+   "title": "Auli",
+   "state": "Uttarakhand",
+   "category": "Adventure",
+   "description": "A high-altitude slope above Joshimath, India's best-known ski destination in winter.",
+   "travelStyles": [
+    "Adventure",
+    "Nature"
+   ],
+   "places": [
+    {
+     "title": "Auli ropeway upper station",
+     "description": ""
+    },
+    {
+     "title": "Auli Bugyal",
+     "description": ""
+    },
+    {
+     "title": "Gorson Bugyal",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "chopta",
+   "title": "Chopta",
+   "state": "Uttarakhand",
+   "category": "Adventure",
+   "description": "A small meadow base in Rudraprayag district, and the trailhead for Tungnath and Chandrashila.",
+   "travelStyles": [
+    "Adventure",
+    "Nature"
+   ],
+   "places": [
+    {
+     "title": "Chopta meadow",
+     "description": ""
+    },
+    {
+     "title": "Tungnath",
+     "description": ""
+    },
+    {
+     "title": "Deoriatal",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "lansdowne",
+   "title": "Lansdowne",
+   "state": "Uttarakhand",
+   "category": "Offbeat",
+   "description": "A quiet cantonment hill town in Pauri Garhwal, built for a short, unhurried break.",
+   "travelStyles": [
+    "Nature",
+    "Family"
+   ],
+   "places": [
+    {
+     "title": "Tip n Top",
+     "description": ""
+    },
+    {
+     "title": "War Memorial",
+     "description": ""
+    },
+    {
+     "title": "Bhulla Tal",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "nainital",
+   "title": "Nainital",
+   "state": "Uttarakhand",
+   "category": "Scenic",
+   "description": "Kumaon's best-known lake town, built in tiers around the crescent-shaped Naini Lake.",
+   "travelStyles": [
+    "Nature",
+    "Family",
+    "Romantic"
+   ],
+   "places": [
+    {
+     "title": "Naini Lake",
+     "description": ""
+    },
+    {
+     "title": "Snow View Point",
+     "description": ""
+    },
+    {
+     "title": "Naina Devi Temple",
+     "description": ""
+    },
+    {
+     "title": "Bhimtal",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "mukteshwar",
+   "title": "Mukteshwar",
+   "state": "Uttarakhand",
+   "category": "Offbeat",
+   "description": "A quiet ridge village above the Kumaon orchards, built around a cliff viewpoint and an old temple.",
+   "travelStyles": [
+    "Nature",
+    "Romantic"
+   ],
+   "places": [
+    {
+     "title": "Chauli ki Jali",
+     "description": ""
+    },
+    {
+     "title": "Mukteshwar Mahadev Temple",
+     "description": ""
+    },
+    {
+     "title": "Orchards around the ridge",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "almora",
+   "title": "Almora",
+   "state": "Uttarakhand",
+   "category": "Offbeat",
+   "description": "A former Chand-dynasty hill capital, and Kumaon's cultural and market town.",
+   "travelStyles": [
+    "Culture",
+    "Nature"
+   ],
+   "places": [
+    {
+     "title": "Bright End Corner",
+     "description": ""
+    },
+    {
+     "title": "Nanda Devi Temple",
+     "description": ""
+    },
+    {
+     "title": "Almora Bazaar",
+     "description": ""
+    },
+    {
+     "title": "Binsar Wildlife Sanctuary",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kausani",
+   "title": "Kausani",
+   "state": "Uttarakhand",
+   "category": "Scenic",
+   "description": "A small ridge settlement in Bageshwar district, built almost entirely around its Himalayan panorama.",
+   "travelStyles": [
+    "Nature",
+    "Romantic"
+   ],
+   "places": [
+    {
+     "title": "Anasakti Ashram",
+     "description": ""
+    },
+    {
+     "title": "Kausani Tea Estate",
+     "description": ""
+    },
+    {
+     "title": "Rudradhari Falls",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "ranikhet",
+   "title": "Ranikhet",
+   "state": "Uttarakhand",
+   "category": "Colonial Charm",
+   "description": "A quiet cantonment town in Almora district, home to the Kumaon Regiment and its orchard gardens.",
+   "travelStyles": [
+    "Nature",
+    "Family"
+   ],
+   "places": [
+    {
+     "title": "Chaubatia Garden",
+     "description": ""
+    },
+    {
+     "title": "Kumaon Regimental Centre Museum",
+     "description": ""
+    },
+    {
+     "title": "Jhula Devi Temple",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "badrinath",
+   "title": "Badrinath",
+   "state": "Uttarakhand",
+   "category": "Pilgrimage",
+   "description": "A seasonal Char Dham temple town on the Alaknanda, reached by road beyond Joshimath.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Nature"
+   ],
+   "places": [
+    {
+     "title": "Badrinath Temple",
+     "description": ""
+    },
+    {
+     "title": "Mana Village",
+     "description": ""
+    },
+    {
+     "title": "Tapt Kund",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "gangotri",
+   "title": "Gangotri",
+   "state": "Uttarakhand",
+   "category": "Pilgrimage",
+   "description": "A road-accessible Char Dham temple town on the Bhagirathi, and the gateway to the separate Gaumukh trek.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Nature"
+   ],
+   "places": [
+    {
+     "title": "Gangotri Temple",
+     "description": ""
+    },
+    {
+     "title": "Harsil",
+     "description": ""
+    },
+    {
+     "title": "Gaumukh (separate trek)",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kedarnath",
+   "title": "Kedarnath",
+   "state": "Uttarakhand",
+   "category": "Pilgrimage",
+   "description": "A trek-gated Char Dham shrine at 3,583 m — the road ends at Gaurikund, and the final distance is on foot or by seasonal helicopter.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Adventure"
+   ],
+   "stayBaseLocations": [
+    "Guptkashi",
+    "Sonprayag"
+   ],
+   "roadHead": "Sonprayag",
+   "places": [
+    {
+     "title": "Sonprayag",
+     "description": ""
+    },
+    {
+     "title": "Gaurikund",
+     "description": ""
+    },
+    {
+     "title": "Kedarnath Temple",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "yamunotri",
+   "title": "Yamunotri",
+   "state": "Uttarakhand",
+   "category": "Pilgrimage",
+   "description": "A trek-gated Char Dham shrine above Janki Chatti, the source of the Yamuna in a narrow Himalayan gorge.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Adventure"
+   ],
+   "stayBaseLocations": [
+    "Barkot"
+   ],
+   "roadHead": "Janki Chatti",
+   "places": [
+    {
+     "title": "Barkot",
+     "description": ""
+    },
+    {
+     "title": "Janki Chatti",
+     "description": ""
+    },
+    {
+     "title": "Yamunotri Temple",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "hemkund-sahib",
+   "title": "Hemkund Sahib",
+   "state": "Uttarakhand",
+   "category": "Pilgrimage",
+   "description": "The world's highest Gurudwara, on a glacial lake at 4,329 m, reached by trek from the shared Ghangaria base.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Adventure"
+   ],
+   "stayBaseLocations": [
+    "Ghangaria"
+   ],
+   "roadHead": "Govindghat",
+   "places": [
+    {
+     "title": "Govindghat",
+     "description": ""
+    },
+    {
+     "title": "Ghangaria",
+     "description": ""
+    },
+    {
+     "title": "Hemkund Sahib",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kasauli",
+   "title": "Kasauli",
+   "state": "Himachal Pradesh",
+   "category": "Colonial Charm",
+   "description": "A small colonial cantonment town in pine and oak forest, built around 19th-century churches and viewpoints.",
+   "travelStyles": [
+    "Culture",
+    "Slow travel",
+    "Nature"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Christ Church",
+     "description": ""
+    },
+    {
+     "title": "Monkey Point",
+     "description": ""
+    },
+    {
+     "title": "Gilbert Trail",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "mcleod-ganj",
+   "title": "McLeod Ganj",
+   "state": "Himachal Pradesh",
+   "category": "Culture",
+   "description": "The hillside Tibetan-culture hub above Dharamshala — home to the Dalai Lama’s temple complex and the Tibetan government-in-exile since 1960.",
+   "travelStyles": [
+    "Culture",
+    "Wellness",
+    "Slow travel"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Tsuglagkhang Complex",
+     "description": ""
+    },
+    {
+     "title": "Bhagsu Nag",
+     "description": ""
+    },
+    {
+     "title": "Dharamkot",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "katra",
+   "title": "Katra",
+   "state": "Jammu & Kashmir",
+   "category": "Pilgrimage",
+   "description": "The base town for the Vaishno Devi pilgrimage — where travelers register, stay, and begin the route to the Bhawan.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Culture"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Yatra Registration Counter, Katra bus stand",
+     "description": ""
+    },
+    {
+     "title": "Banganga",
+     "description": ""
+    },
+    {
+     "title": "Ardhkuwari",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "chail",
+   "title": "Chail",
+   "state": "Himachal Pradesh",
+   "category": "Colonial Charm",
+   "description": "A former royal summer retreat in the Shivalik foothills, with a hillside cricket ground long noted as one of the highest anywhere.",
+   "travelStyles": [
+    "Culture",
+    "Nature",
+    "Slow travel"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Chail Palace",
+     "description": ""
+    },
+    {
+     "title": "Chail Cricket Ground",
+     "description": ""
+    },
+    {
+     "title": "Sadhupul",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "bhaderwah",
+   "title": "Bhaderwah",
+   "state": "Jammu & Kashmir",
+   "category": "Offbeat",
+   "description": "A bowl-shaped valley town known regionally as \"Mini Kashmir\" for meadows, orchards and springs, with lighter tourism infrastructure than the Kashmir Valley.",
+   "travelStyles": [
+    "Nature",
+    "Offbeat",
+    "Slow travel"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Jamia Masjid, Bhaderwah",
+     "description": ""
+    },
+    {
+     "title": "Chinta Valley",
+     "description": ""
+    },
+    {
+     "title": "Padri Pass",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "jammu",
+   "title": "Jammu",
+   "state": "Jammu & Kashmir",
+   "category": "Culture",
+   "description": "The \"City of Temples\" on the Tawi River — Jammu & Kashmir’s winter capital, and a common gateway before Kashmir or the hills beyond.",
+   "travelStyles": [
+    "Culture",
+    "Family"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Raghunath Temple",
+     "description": ""
+    },
+    {
+     "title": "Bahu Fort",
+     "description": ""
+    },
+    {
+     "title": "Tawi riverfront",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "patnitop",
+   "title": "Patnitop",
+   "state": "Jammu & Kashmir",
+   "category": "Adventure",
+   "description": "A forested hill station on the Jammu–Srinagar highway, known for winter skiing at nearby Madha Top and summer meadow walks.",
+   "travelStyles": [
+    "Adventure",
+    "Nature"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Patnitop meadow",
+     "description": ""
+    },
+    {
+     "title": "Madha Top",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "ramnagar-corbett",
+   "title": "Ramnagar",
+   "state": "Uttarakhand",
+   "category": "Wildlife",
+   "description": "The gateway town to Corbett Tiger Reserve, India’s oldest national park.",
+   "travelStyles": [
+    "Wildlife",
+    "Nature",
+    "Family"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Corbett Tiger Reserve entry gates",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kangra",
+   "title": "Kangra",
+   "state": "Himachal Pradesh",
+   "category": "Pilgrimage",
+   "description": "A historic fort-and-temple town, home to the largest fort in the Indian Himalayas and the Brajeshwari Devi Temple.",
+   "travelStyles": [
+    "Culture",
+    "Pilgrimage"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Kangra Fort",
+     "description": ""
+    },
+    {
+     "title": "Brajeshwari Devi Temple",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "sarahan",
+   "title": "Sarahan",
+   "state": "Himachal Pradesh",
+   "category": "Pilgrimage",
+   "description": "A temple town on the old Hindustan-Tibet road, built around the Bhimakali Temple and known as the gateway to Kinnaur.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Culture"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Bhimakali Temple",
+     "description": ""
+    },
+    {
+     "title": "Sarahan bazaar",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "palampur",
+   "title": "Palampur",
+   "state": "Himachal Pradesh",
+   "category": "Nature",
+   "description": "Himachal’s tea-growing town, built around plantations and the Neugal Khad gorge.",
+   "travelStyles": [
+    "Nature",
+    "Slow travel"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Palampur tea gardens",
+     "description": ""
+    },
+    {
+     "title": "Neugal Khad",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "pragpur",
+   "title": "Pragpur",
+   "state": "Himachal Pradesh",
+   "category": "Colonial Charm",
+   "description": "India’s first officially declared Heritage Village, built by the Kuthiala Sud clan in the 17th century.",
+   "travelStyles": [
+    "Culture",
+    "Slow travel"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "The Taal",
+     "description": ""
+    },
+    {
+     "title": "The Judge’s Court",
+     "description": ""
+    },
+    {
+     "title": "Village core streets",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kufri",
+   "title": "Kufri",
+   "state": "Himachal Pradesh",
+   "category": "Adventure",
+   "description": "A Shimla-area hill stop built around a high-altitude nature park and family activity ground.",
+   "travelStyles": [
+    "Adventure",
+    "Family",
+    "Nature"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Himalayan Nature Park",
+     "description": ""
+    },
+    {
+     "title": "Kufri Fun World",
+     "description": ""
+    },
+    {
+     "title": "Mahasu Peak",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "naggar",
+   "title": "Naggar",
+   "state": "Himachal Pradesh",
+   "category": "Colonial Charm",
+   "description": "The former capital of the Kullu kingdom, home to a 15th-century castle and the Nicholas Roerich estate.",
+   "travelStyles": [
+    "Culture",
+    "Slow travel"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Naggar Castle",
+     "description": ""
+    },
+    {
+     "title": "Nicholas Roerich Art Gallery",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "jawalamukhi",
+   "title": "Jawalamukhi",
+   "state": "Himachal Pradesh",
+   "category": "Pilgrimage",
+   "description": "A Shakti Peeth pilgrimage town built around the Jwalamukhi Temple and its natural flame.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Culture"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Jwalamukhi Temple",
+     "description": ""
+    },
+    {
+     "title": "Temple bazaar",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "narkanda",
+   "title": "Narkanda",
+   "state": "Himachal Pradesh",
+   "category": "Nature",
+   "description": "An apple-country hill town on the old Hindustan-Tibet road, and the base for Hatu Peak.",
+   "travelStyles": [
+    "Nature",
+    "Slow travel"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Hatu Peak",
+     "description": ""
+    },
+    {
+     "title": "Tani Jubbar Lake",
+     "description": ""
+    },
+    {
+     "title": "Stokes Farm, Kotgarh",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kullu",
+   "title": "Kullu",
+   "state": "Himachal Pradesh",
+   "category": "Culture",
+   "description": "The valley’s administrative and religious center, home to the Raghunath Temple and the internationally recognized Kullu Dussehra festival.",
+   "travelStyles": [
+    "Culture",
+    "Family"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Raghunath Temple",
+     "description": ""
+    },
+    {
+     "title": "Dhalpur Maidan",
+     "description": ""
+    },
+    {
+     "title": "Sarvari riverfront",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "keylong",
+   "title": "Keylong",
+   "state": "Himachal Pradesh",
+   "category": "Nature",
+   "description": "The district headquarters of Lahaul and Spiti, and a base for exploring the Lahaul valley.",
+   "travelStyles": [
+    "Nature",
+    "Culture"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Keylong town",
+     "description": ""
+    },
+    {
+     "title": "Khardong Monastery",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kibber",
+   "title": "Kibber",
+   "state": "Himachal Pradesh",
+   "category": "Wildlife",
+   "description": "One of the highest permanently inhabited villages in India, and the base for the Kibber Wildlife Sanctuary.",
+   "travelStyles": [
+    "Wildlife",
+    "Adventure"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Kibber Wildlife Sanctuary",
+     "description": ""
+    },
+    {
+     "title": "Kibber village",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "bharmour",
+   "title": "Bharmour",
+   "state": "Himachal Pradesh",
+   "category": "Pilgrimage",
+   "description": "A Budhil-valley temple town and the traditional base for the Manimahesh Kailash pilgrimage.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Culture"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Chaurasi Temple complex",
+     "description": ""
+    },
+    {
+     "title": "Bharmani Mata temple pool",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "tabo",
+   "title": "Tabo",
+   "state": "Himachal Pradesh",
+   "category": "Culture",
+   "description": "A thousand-year-old monastery town in Spiti, known for murals often compared to the Ajanta Caves.",
+   "travelStyles": [
+    "Culture",
+    "Pilgrimage"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Tabo Monastery",
+     "description": ""
+    },
+    {
+     "title": "Monastery caves",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "rewalsar",
+   "title": "Rewalsar",
+   "state": "Himachal Pradesh",
+   "category": "Pilgrimage",
+   "description": "A small lake revered by Hindus, Buddhists and Sikhs alike, known to Tibetan Buddhists as Tso Pema.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Culture"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Rewalsar Lake",
+     "description": ""
+    },
+    {
+     "title": "Gurdwara Rewalsar Sahib",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "renuka-ji",
+   "title": "Renuka Ji",
+   "state": "Himachal Pradesh",
+   "category": "Pilgrimage",
+   "description": "Himachal’s largest natural lake, revered as the embodiment of the goddess Renuka, ringed by a wildlife sanctuary.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Nature"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Renuka Lake",
+     "description": ""
+    },
+    {
+     "title": "Renuka Wildlife Sanctuary",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "dhankar",
+   "title": "Dhankar",
+   "state": "Himachal Pradesh",
+   "category": "Adventure",
+   "description": "A cliffside monastery and village above the Spiti–Pin confluence, and the starting point for the Dhankar Lake trek.",
+   "travelStyles": [
+    "Adventure",
+    "Culture"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Dhankar Monastery",
+     "description": ""
+    },
+    {
+     "title": "Dhankar Lake",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "mandi",
+   "title": "Mandi",
+   "state": "Himachal Pradesh",
+   "category": "Pilgrimage",
+   "description": "Known as \"Chhoti Kashi\" for its many temples, set at the confluence of the Suketi and Beas rivers.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Culture"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Panchvaktra Temple",
+     "description": ""
+    },
+    {
+     "title": "Bhootnath Temple",
+     "description": ""
+    },
+    {
+     "title": "Triloknath Temple",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "paonta-sahib",
+   "title": "Paonta Sahib",
+   "state": "Himachal Pradesh",
+   "category": "Pilgrimage",
+   "description": "A Yamuna-riverside town founded by Guru Gobind Singh, and a significant Sikh pilgrimage site.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Culture"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Gurdwara Paonta Sahib",
+     "description": ""
+    },
+    {
+     "title": "Yamuna riverfront",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "naldehra",
+   "title": "Naldehra",
+   "state": "Himachal Pradesh",
+   "category": "Nature",
+   "description": "A forested meadow around one of North India's earliest hill-station golf courses, about 22 km from Shimla.",
+   "travelStyles": [
+    "Nature",
+    "Family"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Naldehra Golf Course",
+     "description": ""
+    },
+    {
+     "title": "Mahunag Temple",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "manikaran",
+   "title": "Manikaran",
+   "state": "Himachal Pradesh",
+   "category": "Pilgrimage",
+   "description": "A Sikh–Hindu pilgrimage town in the Parvati Valley, built around hot springs and the Gurdwara Sri Manikaran Sahib.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Culture"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Gurdwara Sri Manikaran Sahib",
+     "description": ""
+    },
+    {
+     "title": "Hot spring bathing tanks",
+     "description": ""
+    },
+    {
+     "title": "Rama Temple",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "pangi-valley",
+   "title": "Pangi Valley",
+   "state": "Himachal Pradesh",
+   "category": "Offbeat",
+   "description": "A remote, tribal Chenab-gorge valley in Chamba district, cut off from the world for much of the year.",
+   "travelStyles": [
+    "Adventure",
+    "Offbeat",
+    "Culture"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Killar",
+     "description": ""
+    },
+    {
+     "title": "Sach Pass",
+     "description": ""
+    },
+    {
+     "title": "Dharwas and Sural Bhatori",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "chintpurni",
+   "title": "Chintpurni",
+   "state": "Himachal Pradesh",
+   "category": "Pilgrimage",
+   "description": "A Shakti Peeth pilgrimage town in Una district, built around the Mata Chintpurni Temple.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Culture"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Mata Chintpurni Temple",
+     "description": ""
+    },
+    {
+     "title": "Temple bazaar",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "naina-devi",
+   "title": "Naina Devi",
+   "state": "Himachal Pradesh",
+   "category": "Pilgrimage",
+   "description": "A hilltop Shakti Peeth temple in Bilaspur district overlooking Gobind Sagar Lake — distinct from the Naina Devi Temple at Nainital, Uttarakhand.",
+   "travelStyles": [
+    "Pilgrimage",
+    "Culture"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Shri Naina Devi Ji Temple",
+     "description": ""
+    },
+    {
+     "title": "Gobind Sagar viewpoint",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "mashobra",
+   "title": "Mashobra",
+   "state": "Himachal Pradesh",
+   "category": "Nature",
+   "description": "A cedar-forested hill town beyond Shimla's bustle, home to the Rashtrapati Niwas presidential retreat.",
+   "travelStyles": [
+    "Nature",
+    "Slow travel"
+   ],
+   "stayBaseLocations": [],
+   "places": [
+    {
+     "title": "Mashobra village",
+     "description": ""
+    },
+    {
+     "title": "Sipur",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "manali",
+   "title": "Manali",
+   "state": "Himachal Pradesh",
+   "category": "Most Popular",
+   "description": "Snow peaks, river valleys, and adventure sports.",
+   "travelStyles": [
+    "Adventure",
+    "Nature",
+    "Road trips"
+   ],
+   "places": [
+    {
+     "title": "Solang Valley",
+     "description": ""
+    },
+    {
+     "title": "Old Manali",
+     "description": ""
+    },
+    {
+     "title": "Rohtang Pass",
+     "description": ""
+    },
+    {
+     "title": "Sissu",
+     "description": ""
+    },
+    {
+     "title": "Vashisht",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "spiti-valley",
+   "title": "Spiti Valley",
+   "state": "Himachal Pradesh",
+   "category": "Adventure",
+   "description": "Remote high-altitude desert with ancient monasteries and dramatic lunar landscapes.",
+   "travelStyles": [
+    "Adventure",
+    "Nature",
+    "Culture"
+   ],
+   "places": [
+    {
+     "title": "Kaza",
+     "description": ""
+    },
+    {
+     "title": "Key Monastery",
+     "description": ""
+    },
+    {
+     "title": "Hikkim",
+     "description": ""
+    },
+    {
+     "title": "Langza",
+     "description": ""
+    },
+    {
+     "title": "Chandratal",
+     "description": ""
+    },
+    {
+     "title": "Dhankar",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kinnaur",
+   "title": "Kinnaur",
+   "state": "Himachal Pradesh",
+   "category": "Most Popular",
+   "description": "Ancient villages, apple orchards and dramatic valleys along the historic Hindustan–Tibet Road.",
+   "travelStyles": [
+    "Nature",
+    "Culture",
+    "Road trips"
+   ],
+   "places": [
+    {
+     "title": "Kalpa",
+     "description": ""
+    },
+    {
+     "title": "Sangla",
+     "description": ""
+    },
+    {
+     "title": "Chitkul",
+     "description": ""
+    },
+    {
+     "title": "Nako",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "shimla",
+   "title": "Shimla",
+   "state": "Himachal Pradesh",
+   "category": "Colonial Charm",
+   "description": "Pine-clad ridgelines and heritage architecture along the historic Mall Road.",
+   "travelStyles": [
+    "Culture",
+    "Family",
+    "Nature"
+   ],
+   "places": [
+    {
+     "title": "Mall Road",
+     "description": ""
+    },
+    {
+     "title": "The Ridge",
+     "description": ""
+    },
+    {
+     "title": "Kufri",
+     "description": ""
+    },
+    {
+     "title": "Jakhoo",
+     "description": ""
+    },
+    {
+     "title": "Mashobra",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "gulmarg",
+   "title": "Gulmarg",
+   "state": "Jammu & Kashmir",
+   "category": "Scenic",
+   "description": "Alpine meadows and snow-capped peaks in Kashmir, home to one of the world’s highest gondola rides.",
+   "travelStyles": [
+    "Adventure",
+    "Nature",
+    "Luxury"
+   ],
+   "places": [
+    {
+     "title": "Apharwat Peak",
+     "description": ""
+    },
+    {
+     "title": "Ningle Nallah",
+     "description": ""
+    },
+    {
+     "title": "St. Mary’s Church",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "rishikesh",
+   "title": "Rishikesh",
+   "state": "Uttarakhand",
+   "category": "Spiritual",
+   "description": "Uttarakhand’s yoga capital, with Ganga aartis, ashrams, and Himalayan white-water rafting.",
+   "travelStyles": [
+    "Wellness",
+    "Adventure",
+    "Culture"
+   ],
+   "places": [
+    {
+     "title": "Triveni Ghat",
+     "description": ""
+    },
+    {
+     "title": "Laxman Jhula & Ram Jhula",
+     "description": ""
+    },
+    {
+     "title": "Neer Garh Waterfall",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "kasol",
+   "title": "Kasol",
+   "state": "Himachal Pradesh",
+   "category": "Scenic",
+   "description": "Riverside cafés, treks and laid-back mountain life.",
+   "travelStyles": [
+    "Adventure",
+    "Nature",
+    "Slow travel"
+   ],
+   "places": [
+    {
+     "title": "Chalal",
+     "description": ""
+    },
+    {
+     "title": "Kheerganga",
+     "description": ""
+    },
+    {
+     "title": "Tosh",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  },
+  {
+   "slug": "haridwar",
+   "title": "Haridwar",
+   "state": "Uttarakhand",
+   "category": "Spiritual",
+   "description": "One of Hinduism’s seven holiest cities in Uttarakhand, anchored by the sacred Har Ki Pauri ghat.",
+   "travelStyles": [
+    "Culture",
+    "Family"
+   ],
+   "places": [
+    {
+     "title": "Har Ki Pauri",
+     "description": ""
+    },
+    {
+     "title": "Chandi Devi Temple",
+     "description": ""
+    },
+    {
+     "title": "Mansa Devi Temple",
+     "description": ""
+    }
+   ],
+   "status": "published"
+  }
+ ]
+}

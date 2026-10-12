@@ -6,6 +6,7 @@ import FeaturedExperiences from '@/components/modules/experiences/FeaturedExperi
 import LocalStories from '@/components/modules/experiences/LocalStories';
 import RegionShowcase from '@/components/modules/experiences/RegionShowcase';
 import { getAllExperiences } from '@/lib/experiences';
+import { getCuratedDestinations } from '@/lib/destinations';
 import { images } from '@/config/images.config';
 import type { Metadata } from 'next';
 import TripPreferencesNote from '@/components/modules/TripPreferencesNote';
@@ -52,14 +53,21 @@ export default async function ExperiencesPage({ searchParams }: ExperiencesPageP
   // Preferred date / participants from the search panels — saved preferences only. No capacity
   // or availability constraint is applied to the listing.
   const preferences = readTripPreferences(resolvedSearchParams);
-  const experiences = await getAllExperiences();
+  // Published destinations (slug/title/state only) let keyword search resolve REAL
+  // location→destination relationships (e.g. an alternate title like "Jyotirmath"); if that read
+  // fails the listing still works from the experiences' own fields.
+  const [experiences, relatedDestinations] = await Promise.all([
+    getAllExperiences(),
+    getCuratedDestinations()
+      .then((list) => list.map(({ slug, title, state }) => ({ slug, title, state })))
+      .catch(() => [])
+  ]);
 
-  // ExperiencesHero, ExperienceMoodDiscovery and RegionShowcase all navigate here with
-  // new query params from *outside* ExperiencesListing, but the listing only seeds its
-  // filter state from these props on mount (useState(initialX)) — a later prop change
-  // alone wouldn't reach already-mounted state. Keying on the full query string forces
-  // a fresh, correctly-seeded instance whenever an external link changes it.
-  const listingKey = JSON.stringify({ q, region, category, duration, budget, bestFor, season, difficulty, sort });
+  // ExperiencesHero, ExperienceMoodDiscovery, RegionShowcase and the homepage search all
+  // navigate here with new query params from *outside* ExperiencesListing while it stays
+  // mounted; the listing re-seeds its own filter state from the URL (see its reconciliation
+  // block). It must NOT be remounted by keying on the query string — that remount stole focus
+  // and dropped keystrokes while a visitor was typing in the search box.
 
   return (
     <>
@@ -73,8 +81,8 @@ export default async function ExperiencesPage({ searchParams }: ExperiencesPageP
           </div>
         ) : null}
         <ExperiencesListing
-          key={listingKey}
           experiences={experiences}
+          relatedDestinations={relatedDestinations}
           initialQuery={q}
           initialRegion={region}
           initialCategories={category}

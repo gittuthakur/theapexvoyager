@@ -19,6 +19,7 @@ import {
 } from '@/components/modules/filters/filterStyles';
 import { Pagination } from '@/components/ui';
 import { filterDestinations, getRealStartingPrices, paginate, sortDestinations } from '@/lib/destinationFilters';
+import { destinationRelevanceScores, rankDestinationsByRelevance } from '@/lib/search/destinationSearch';
 import { getAllRegions } from '@/lib/regions';
 import { getAllTravelStyles, resolveTravelStyleFromLabel } from '@/lib/travelStyles';
 import { seasons as seasonOptions } from '@/config/seasons.config';
@@ -167,7 +168,14 @@ export default function DestinationsExplorer({
     [destinations, query, activeRegion, activeStyleIds, activeSeasonIds, isPriceNarrowed, displayedPriceRange, activeBestFor, statsMap]
   );
 
-  const sorted = useMemo(() => sortDestinations(filtered, sortBy, statsMap), [filtered, sortBy, statsMap]);
+  // Relevance is computed over the FULL list (its description fallback must not depend on the other
+  // filters) and orders results only for the default "popular" sort while a keyword is active —
+  // direct title/sub-place matches first, then region/style. An explicit sort always wins.
+  const relevance = useMemo(() => destinationRelevanceScores(destinations, query), [destinations, query]);
+  const sorted = useMemo(() => {
+    const ordered = sortDestinations(filtered, sortBy, statsMap);
+    return query.trim() && sortBy === 'popular' ? rankDestinationsByRelevance(ordered, relevance) : ordered;
+  }, [filtered, sortBy, statsMap, query, relevance]);
   const { items: paginated, totalPages, page: safePage } = useMemo(() => paginate(sorted, page, PAGE_SIZE), [sorted, page]);
 
   const activeFilterCount =

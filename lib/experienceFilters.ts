@@ -1,4 +1,5 @@
 import { budgetBands } from '@/config/experiences.config';
+import { searchExperiences, type RelatedDestinationRef } from '@/lib/search/experienceSearch';
 import type {
   Experience,
   ExperienceBestFor,
@@ -27,23 +28,21 @@ export interface ExperienceFilters {
   bestFor?: ExperienceBestFor[];
   seasons?: ExperienceSeason[];
   difficulties?: ExperienceDifficulty[];
-}
-
-/** Collapses runs of whitespace to a single space so multi-space/tab input matches single-spaced catalog data (and vice versa). */
-function normalizeSearchText(value: string): string {
-  return value.trim().replace(/\s+/g, ' ').toLowerCase();
+  /** Published destinations (slug/title/state only) used to resolve real location→destination relationships for keyword search. */
+  destinations?: readonly RelatedDestinationRef[];
 }
 
 /** Single source of truth for narrowing the catalog — shared by the listing UI and, if needed, any future server-rendered fallback. */
 export function filterExperiences(source: Experience[], filters: ExperienceFilters): Experience[] {
-  const needle = filters.query ? normalizeSearchText(filters.query) : undefined;
+  // Keyword matching lives in lib/search/experienceSearch.ts; hits are computed over the FULL list
+  // so the description fallback never depends on the other filters.
+  const queryHits = filters.query?.trim()
+    ? new Set(searchExperiences(source, filters.query, filters.destinations).map((hit) => hit.experience.slug))
+    : null;
   const activeBudgetBands = filters.budgets?.length ? budgetBands.filter((band) => filters.budgets!.includes(band.id)) : null;
 
   return source.filter((experience) => {
-    if (needle) {
-      const haystack = normalizeSearchText(`${experience.title} ${experience.location} ${experience.category} ${experience.subCategory}`);
-      if (!haystack.includes(needle)) return false;
-    }
+    if (queryHits && !queryHits.has(experience.slug)) return false;
     if (filters.region && experience.region !== filters.region) return false;
     if (filters.categories?.length && !filters.categories.includes(experience.category)) return false;
     if (filters.durations?.length && !filters.durations.includes(experience.durationBand)) return false;
