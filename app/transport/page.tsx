@@ -22,7 +22,7 @@ import {
 } from '@/components/modules/transport';
 import { images } from '@/config/images.config';
 import { getVehicles, getRoutes, getVehiclesByDestinationSlug } from '@/lib/transport';
-import { findDestinationByLocationText } from '@/lib/destinations';
+import { resolveCuratedDestinationForSearch } from '@/lib/destinations';
 import { categoriesForMotorcycleType, resolveChauffeurVehicleParam, serviceTypeFromUrlSlug, SERVICE_TYPE_UI } from '@/config/transportServiceTypes.config';
 import { parseNonNegativeNumberParam } from '@/lib/numericParam';
 
@@ -151,14 +151,14 @@ export default async function TransportPage({ searchParams }: TransportPageProps
   // matching one against the other would false-negative on nearly every real search
   // (e.g. "Manali" never appearing verbatim in a "Himachal Pradesh" service area). Route
   // matching below is genuinely city-level and stays filtered by pickup/destination.
-  const resolvedDestination = destination ? await findDestinationByLocationText(destination) : undefined;
+  const resolvedDestination = destination ? await resolveCuratedDestinationForSearch(destination) : undefined;
 
   // Self-Drive's "pickup destination" filter: resolves to the destination's real
   // `state` (e.g. "Himachal Pradesh") rather than matching city text directly against
   // the broad `serviceAreas` strings — avoids the false-negative the comment above
   // describes, since every seeded self-drive vehicle's serviceAreas already lists that
   // exact state name.
-  const resolvedPickup = pickup ? await findDestinationByLocationText(pickup) : undefined;
+  const resolvedPickup = pickup ? await resolveCuratedDestinationForSearch(pickup) : undefined;
 
   const hasActiveFilter =
     Boolean(vehicle) || Boolean(pickup) || Boolean(destination) || Boolean(date) || Boolean(returnDate) || Boolean(driveMode);

@@ -1,5 +1,6 @@
 import { connectDB } from '@/lib/mongodb';
 import { escapeRegExp } from '@/lib/regex';
+import { filterTransportRoutes } from '@/lib/search/transportSearch';
 import { TransportVehicle, type TransportVehicleDocument } from '@/models/TransportVehicle';
 import { TransportRoute, type TransportRouteDocument } from '@/models/TransportRoute';
 import type { VehicleOption, TransportRoute as TransportRouteType } from '@/types/transport';
@@ -147,16 +148,10 @@ export async function getVehiclesByDestinationSlug(destinationSlug: string): Pro
 export async function getRoutes(filter?: RouteFilter): Promise<TransportRouteType[]> {
   await connectDB();
 
-  const clauses: Record<string, unknown>[] = [{ active: true }];
-  if (filter?.origin) {
-    clauses.push({ origin: new RegExp(escapeRegExp(filter.origin.trim()), 'i') });
-  }
-  if (filter?.destination) {
-    clauses.push({ destination: new RegExp(escapeRegExp(filter.destination.trim()), 'i') });
-  }
-  const query = clauses.length > 1 ? { $and: clauses } : clauses[0];
-
-  const docs = await TransportRoute.find(query).sort({ featured: -1, createdAt: 1 }).lean<TransportRouteDocument[]>();
-  return docs.map(toTransportRoute);
+  // Only active routes are read; pickup/drop matching is done on the live records by
+  // lib/search/transportSearch.ts (strict direction, spelling variants, verified aliases), so a
+  // newly added, edited or deactivated route is reflected without any search configuration.
+  const docs = await TransportRoute.find({ active: true }).sort({ featured: -1, createdAt: 1 }).lean<TransportRouteDocument[]>();
+  return filterTransportRoutes(docs.map(toTransportRoute), filter);
 }
 
