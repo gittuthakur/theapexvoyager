@@ -92,6 +92,50 @@ describe('experience search over structured fields', () => {
     for (const q of ['Secret', 'secret-draft-experience', 'Manali', 'Himachal Pradesh', 'Adventure']) expect(slugs(withDraft, q), q).not.toContain('draft-x');
   });
 
+  // P2.1 regression: "Homestay" found only the experience with "Homestay" in its TITLE and missed one
+  // whose sub-category is "Village Homestay", because sub-categories matched only from their start.
+  describe('multi-word sub-categories', () => {
+    const list = [
+      exp({ slug: 'titled', title: 'Valley Village Homestay', location: 'Kaza', category: 'Culture', subCategory: 'Village Homestay' }),
+      exp({ slug: 'sub-only', title: 'Offbeat Village Experience', location: 'Gurez', category: 'Offbeat', subCategory: 'Village Homestay' }),
+      exp({ slug: 'other', title: 'River Walk', location: 'Kullu', category: 'Nature', subCategory: 'Nature Trek' })
+    ];
+
+    it('a single word at ANY position of the sub-category matches', () => {
+      expect(slugs(list, 'Homestay').sort()).toEqual(['sub-only', 'titled']);
+      expect(slugs(list, 'homestay')[0]).toBe('titled'); // exact-ish title match still ranks first
+      expect(slugs(list, 'Trek')).toEqual(['other']);
+      expect(slugs(list, 'Village').sort()).toEqual(['sub-only', 'titled']);
+    });
+
+    it('the full sub-category and case/whitespace/slug variants still match', () => {
+      expect(slugs(list, 'Village Homestay').sort()).toEqual(['sub-only', 'titled']);
+      expect(slugs(list, '  VILLAGE   homestay ').sort()).toEqual(['sub-only', 'titled']);
+      expect(slugs(list, 'village-homestay').sort()).toEqual(['sub-only', 'titled']);
+    });
+
+    it('fragments of words and absent words do not match', () => {
+      // (Title matching keeps its long-standing substring rule, so use records whose TITLE lacks these.)
+      const subOnly = list.filter((e) => e.slug !== 'titled');
+      expect(slugs(subOnly, 'home')).toEqual([]);
+      expect(slugs(subOnly, 'stay')).toEqual([]);
+      expect(slugs(subOnly, 'ilage')).toEqual([]);
+      expect(slugs(subOnly, 'camping')).toEqual([]);
+    });
+
+    it('a newly added experience with a multi-word sub-category is found with no code change', () => {
+      const next = [...list, exp({ slug: 'new-one', title: 'Plain Title', location: 'Chitkul', category: 'Wellness', subCategory: 'Sunrise Yoga Retreat' })];
+      expect(slugs(next, 'Yoga')).toEqual(['new-one']);
+      expect(slugs(next, 'Retreat')).toEqual(['new-one']);
+      expect(slugs(next, 'Sunrise Yoga Retreat')).toEqual(['new-one']);
+    });
+
+    it('does not broaden description or highlight matching', () => {
+      const text = [exp({ slug: 'desc', title: 'Plain', location: 'Manali', subCategory: 'Walk', shortDescription: 'A homestay nearby', highlights: ['homestay dinner'] }), ...list];
+      expect(slugs(text, 'Homestay').sort()).toEqual(['sub-only', 'titled']); // description-only hit is dropped next to structured matches
+    });
+  });
+
   it('edits to mood, category and location are reflected immediately', () => {
     const base = exp({ slug: 'edit-me', title: 'Plain Outing', location: 'Manali', category: 'Adventure', mood: 'adventure' });
     expect(slugs([base], 'Manali')).toEqual(['edit-me']);

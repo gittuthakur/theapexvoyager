@@ -122,6 +122,14 @@ describe('experiences: exact result sets from structured data', () => {
     }
   });
 
+  it('every whole word of every real sub-category finds its experience (P2.1: "Homestay")', () => {
+    expect(sorted(eSearch('Homestay'))).toEqual(['gurez-valley-offbeat-village-experience', 'spiti-valley-village-homestay']);
+    expect(sorted(eSearch('Village Homestay'))).toEqual(['gurez-valley-offbeat-village-experience', 'spiti-valley-village-homestay']);
+    for (const e of experiences) {
+      for (const word of n(e.subCategory).split(' ').filter((w) => w.length >= 3)) expect(eSearch(word), `${word} -> ${e.slug}`).toContain(e.slug);
+    }
+  });
+
   it('Spiti Valley and spiti-valley agree', () => {
     expect(sorted(eSearch('Spiti Valley'))).toEqual(sorted(eSearch('spiti-valley')));
     expect(eSearch('Spiti Valley').length).toBe(2);
