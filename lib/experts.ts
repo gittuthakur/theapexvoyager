@@ -1,5 +1,8 @@
 import { connectDB } from '@/lib/mongodb';
 import { Expert, type ExpertDocument } from '@/models/Expert';
+import { Region } from '@/models/Region';
+import { getCuratedDestinations } from '@/lib/destinations';
+import { isPublicExpert, searchExperts, type ExpertSearchContext } from '@/lib/search/expertSearch';
 import type { ExpertFacets, TravelExpert } from '@/types/expert';
 
 export function toTravelExpert(doc: ExpertDocument): TravelExpert {
@@ -16,6 +19,7 @@ export function toTravelExpert(doc: ExpertDocument): TravelExpert {
     journeySlugs: doc.journeySlugs,
     featured: doc.featured,
     active: doc.active,
+    publiclyListed: doc.publiclyListed,
     regionIds: doc.regionIds?.map(String)
   };
 }
@@ -46,23 +50,32 @@ export async function getExpertBySlug(slug: string): Promise<TravelExpert | unde
   return doc ? JSON.parse(JSON.stringify(toTravelExpert(doc))) : undefined;
 }
 
-/** Collapses runs of whitespace to a single space so multi-space/tab input matches
- *  single-spaced catalog data (and vice versa) — same normalization already proven for
- *  Experiences (lib/experienceFilters.ts's normalizeSearchText). */
-export function normalizeExpertSearchText(value: string): string {
-  return value.trim().replace(/\s+/g, ' ').toLowerCase();
+/** Free-text expert search over the PUBLIC catalog: name, role, expertise, travel styles, linked
+ *  destination titles/slugs, linked regions (`regionIds` resolved through real Region records) and,
+ *  as a low-confidence fallback, the bio. Context is read only when a query is present, and a
+ *  failed context read degrades to the expert's own fields — it never widens or empties results.
+ *  Pure matching lives in lib/search/expertSearch.ts. */
+export async function searchPublicExperts(experts: TravelExpert[], query: string | undefined): Promise<TravelExpert[]> {
+  const eligible = experts.filter(isPublicExpert);
+  if (!query?.trim()) return eligible;
+  return searchExperts(eligible, query, await loadExpertSearchContext(eligible));
 }
 
-/** Whether `expert` matches a free-text query against every field a visitor can actually
- *  see on the page — name, bio, role (the badge pill on every card), and expertise (the
- *  tag pills on every card). Deliberately excludes destination/travel style: those already
- *  have their own dedicated filters, and adding them here isn't something this fix was
- *  asked to claim. */
-export function matchesExpertQuery(expert: Pick<TravelExpert, 'name' | 'bio' | 'role' | 'expertise'>, query: string): boolean {
-  const needle = normalizeExpertSearchText(query);
-  if (!needle) return true;
-  const haystack = normalizeExpertSearchText(`${expert.name} ${expert.bio} ${expert.role} ${expert.expertise.join(' ')}`);
-  return haystack.includes(needle);
+async function loadExpertSearchContext(experts: TravelExpert[]): Promise<ExpertSearchContext> {
+  const regionIds = Array.from(new Set(experts.flatMap((expert) => expert.regionIds ?? [])));
+  const [destinations, regions] = await Promise.all([
+    getCuratedDestinations()
+      .then((list) => list.map(({ slug, title }) => ({ slug, title })))
+      .catch(() => []),
+    regionIds.length > 0
+      ? Region.find({ _id: { $in: regionIds } })
+          .select('name slug')
+          .lean<Array<{ _id: unknown; name: string; slug: string }>>()
+          .then((docs) => docs.map((doc) => ({ id: String(doc._id), name: doc.name, slug: doc.slug })))
+          .catch(() => [])
+      : Promise.resolve([])
+  ]);
+  return { destinations, regions };
 }
 
 export async function getExpertsByDestinationSlug(destinationSlug: string): Promise<TravelExpert[]> {
