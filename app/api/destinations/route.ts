@@ -92,8 +92,15 @@ export async function GET(request: Request) {
       // enrichHotelsWithPlaces, matching a curated Hotel's free-text `location`).
       const destinationSlugParam = searchParams.get('destinationSlug');
       const destinationSlug = destinationSlugParam || slugify(location);
-      const { stays, meta } = await getStaysForDestination(destinationSlug, location, stayTypes, state, stayMode);
-      return NextResponse.json({ stays, meta }, { status: 200, headers: CACHE_HEADERS });
+      const { stays, meta, unavailable } = await getStaysForDestination(destinationSlug, location, stayTypes, state, stayMode);
+      if (unavailable) {
+        // The exclusion list could not be read: Google-sourced stays are withheld, never served unfiltered,
+        // and this response must not be cached.
+        return NextResponse.json({ error: 'STAYS_TEMPORARILY_UNAVAILABLE' }, { status: 503, headers: { 'Cache-Control': 'no-store', 'Retry-After': '30' } });
+      }
+      // Never publicly cached: a property owner's exclusion must take effect on the next request, not
+      // after a CDN/browser cache (the generic CACHE_HEADERS above keep a day) has expired.
+      return NextResponse.json({ stays, meta }, { status: 200, headers: { 'Cache-Control': 'private, no-store' } });
     }
 
     if (isCuratedBrowseRequest) {

@@ -29,7 +29,7 @@ export function hotelToStay(hotel: HotelPackage, destinationSlug?: string): Stay
   };
 }
 
-function identityKey(name: string, address: string | undefined): string {
+export function identityKey(name: string, address: string | undefined): string {
   return `${name.trim().toLowerCase()}|${(address ?? '').trim().toLowerCase()}`;
 }
 
