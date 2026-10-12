@@ -156,9 +156,16 @@ export async function getDestinationsWithFallback(): Promise<Destination[]> {
 //
 // The curated directory — lives in MongoDB (see models/Destination.ts, seeded from
 // config/destinations.config.ts by scripts/seed.ts).
-export async function getCuratedDestinations(): Promise<Destination[]> {
+export async function getCuratedDestinations(options: { maxTimeMS?: number; projection?: Record<string, 1> } = {}): Promise<Destination[]> {
   await connectDB();
-  const docs = await DestinationModel.find({ status: 'published' }).sort({ priority: 1 }).lean<DestinationDocument[]>();
+  // Optional `projection` (global search): read only the fields search uses. The converters below copy fields one by
+  // one and tolerate missing ones, so a projected read is safe. Omitted = every field, as before.
+  // Optional server-side time bound (used by the global search API): with `maxTimeMS` set, MongoDB itself abandons
+  // a slow read, so it cannot keep consuming database resources after the caller gave up. Omitted = the query is
+  // built exactly as before.
+  const base = options.projection ? DestinationModel.find({ status: 'published' }, options.projection) : DestinationModel.find({ status: 'published' });
+  const query = base.sort({ priority: 1 });
+  const docs = await (options.maxTimeMS ? query.maxTimeMS(options.maxTimeMS) : query).lean<DestinationDocument[]>();
   return JSON.parse(JSON.stringify(docs.map(toDestination)));
 }
 

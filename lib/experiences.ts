@@ -64,9 +64,15 @@ export function toExperience(doc: ExperienceDocument): Experience {
  * request, nothing shared across requests) — not persistent/ISR caching, so a catalog
  * edit is visible on the very next request exactly as before.
  */
-export const getAllExperiences = cache(async (): Promise<Experience[]> => {
+export const getAllExperiences = cache(async (maxTimeMS?: number, projection?: Record<string, 1>): Promise<Experience[]> => {
   await connectDB();
-  const docs = await ExperienceModel.find().lean<ExperienceDocument[]>();
+  // Optional `projection` (global search): read only the fields search uses. The converters below copy fields one by
+  // one and tolerate missing ones, so a projected read is safe. Omitted = every field, as before.
+  // Optional server-side time bound (used by the global search API): with `maxTimeMS` set, MongoDB itself abandons
+  // a slow read, so it cannot keep consuming database resources after the caller gave up. Omitted = the query is
+  // built exactly as before.
+  const query = projection ? ExperienceModel.find({}, projection) : ExperienceModel.find();
+  const docs = await (maxTimeMS ? query.maxTimeMS(maxTimeMS) : query).lean<ExperienceDocument[]>();
   return JSON.parse(JSON.stringify(docs.map(toExperience)));
 });
 
