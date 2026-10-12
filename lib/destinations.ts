@@ -162,6 +162,14 @@ export async function getCuratedDestinations(): Promise<Destination[]> {
   return JSON.parse(JSON.stringify(docs.map(toDestination)));
 }
 
+/** Published destinations reduced to slug/title/state — a projection read for callers (stay search/eligibility)
+ *  that must not load every destination's full editorial document. */
+export async function getPublishedDestinationRefs(): Promise<Array<{ slug: string; title: string; state?: string }>> {
+  await connectDB();
+  const docs = await DestinationModel.find({ status: 'published' }, { slug: 1, title: 1, state: 1 }).sort({ priority: 1 }).lean<Array<Pick<DestinationDocument, 'slug' | 'title' | 'state'>>>();
+  return docs.map((doc) => ({ slug: doc.slug, title: doc.title, state: doc.state }));
+}
+
 // React's cache() request-memoizes this by `slug` — app/destinations/[slug]/page.tsx's
 // generateMetadata and the page component itself both call this independently for the
 // same request, and without memoization that would run the same lookup twice.

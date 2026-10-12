@@ -3,7 +3,9 @@ import { PlaceCache, type PlaceCacheDocument } from '@/models/PlaceCache';
 import { searchStays, placeName, placePhotoUrls, placeCoordinates, type RawGooglePlace } from '@/lib/googlePlaces';
 import { isLocalDevelopment } from '@/lib/env';
 import { classifyVerifiedStayType, verifiedStayTypeMongoExpr, hasTreehouseNameEvidence, treehouseNameMongoPattern } from '@/lib/stayClassification';
-import { filterOutExcludedPlaces, getActiveExclusionSet, isPropertyExcluded } from '@/services/properties/propertyExclusion.service';
+import { ExclusionLookupError, filterOutExcludedPlaces, getActiveExclusionSet } from '@/services/properties/propertyExclusion.service';
+import { getPublishedDestinationRefs } from '@/lib/destinations';
+import { eligibleLocationsMatch, eligibleStayLocations, isAuthoredStayLocation } from '@/lib/staysEligibility';
 import { STAY_TYPES, type Stay, type StayType } from '@/types/stay';
 import type { StayMode } from '@/config/stayLocations.config';
 import type { HotelPackage } from '@/types/hotel';
@@ -35,6 +37,8 @@ export interface StayCategoryMeta {
 export interface StaysForDestinationResult {
   stays: Stay[];
   meta: StayCategoryMeta[];
+  /** True when Google-sourced results were WITHHELD because the exclusion list could not be read (fails closed). */
+  unavailable?: boolean;
 }
 
 export interface CachedStaysPage {
@@ -43,6 +47,9 @@ export interface CachedStaysPage {
   pageSize: number;
   totalCount: number;
   totalPages: number;
+  /** True when results were WITHHELD (exclusion list or published-destination list could not be read). */
+  unavailable?: boolean;
+  unavailableReason?: 'exclusions' | 'catalog';
 }
 
 const CATALOG_PAGE_SIZE = 24;
@@ -76,7 +83,7 @@ interface PlaceCacheFacetResult {
   totalCount: Array<{ count: number }>;
 }
 
-function toStay(
+export function toStay(
   doc: Pick<
     PlaceCacheDocument,
     | 'placeId'
@@ -143,6 +150,21 @@ function toDevStay(place: RawGooglePlace, destinationSlug: string, stayType: Sta
   };
 }
 
+function emptyMeta(stayType: StayType, error: string): StayCategoryMeta {
+  return {
+    stayType,
+    fromCache: false,
+    queried: false,
+    pagesFetched: 0,
+    saturated: false,
+    rawCount: 0,
+    duplicatesRemoved: 0,
+    wrongLocationRejected: 0,
+    finalCount: 0,
+    error
+  };
+}
+
 // PUBLIC READ PATH — Mongo-only, by construction. This is the one function every real
 // visitor/crawler-facing route calls (app/stays/search/page.tsx, app/api/destinations's
 // `type=stays` handler, which components/modules/StaysGrid.tsx fetches client-side).
@@ -193,8 +215,16 @@ export async function getStaysForDestination(
     return { stays: perType.flatMap((r) => r.stays), meta: perType.map((r) => r.meta) };
   }
 
+  // Only an authored destination/location pairing is ever read: an orphan or test slug passed in by a
+  // caller (the public API accepts any destinationSlug) must not expose cache rows that were never
+  // reviewed for public display. Eligibility mirrors lib/staysEligibility.ts.
+  if (!isAuthoredStayLocation(destinationSlug, location)) {
+    return { stays: [], meta: stayTypes.map((stayType) => emptyMeta(stayType, 'NOT_ELIGIBLE')) };
+  }
+
   await connectDB();
 
+  let exclusionLookupFailed = false;
   const perType = await Promise.all(
     stayTypes.map(async (stayType): Promise<{ stays: Stay[]; meta: StayCategoryMeta }> => {
       // `searchLocation` is part of the read key — see models/PlaceCache.ts's field
@@ -206,7 +236,15 @@ export async function getStaysForDestination(
         // at refresh-write time (lib/staysRefresh.ts) would leave it visible here until
         // the next refresh cycle. Every read of an already-cached row is filtered too, so
         // an exclusion takes effect immediately, not just for future Google refreshes.
-        const visibleCached = await filterOutExcludedPlaces('google', cached);
+        let visibleCached: typeof cached;
+        try {
+          visibleCached = await filterOutExcludedPlaces('google', cached);
+        } catch (error) {
+          if (!(error instanceof ExclusionLookupError)) throw error;
+          // Fail CLOSED: without the exclusion list nothing from Google may be shown.
+          exclusionLookupFailed = true;
+          return { stays: [], meta: emptyMeta(stayType, 'EXCLUSIONS_UNAVAILABLE') };
+        }
         const stays = visibleCached.map(toStay);
         return {
           stays,
@@ -258,6 +296,10 @@ export async function getStaysForDestination(
   // (`stayTypes` — e.g. a combined /stays/<destination>/treehouses page must never show
   // a property whose real type turned out to be Hotel just because it was cached under
   // a treehouse-category search).
+  if (exclusionLookupFailed) {
+    return { stays: [], meta: perType.map((r) => r.meta), unavailable: true };
+  }
+
   const rawStays = perType.flatMap((r) => r.stays);
   const dedupedByPlaceId = new Map<string, Stay>();
   for (const stay of rawStays) {
@@ -348,10 +390,30 @@ export async function getCachedStaysCatalog(options: { stayType?: StayType; page
   // enforced here is a $match stage against the current active-exclusion set, run before
   // pagination/counting so both stay accurate. Placed first, before every other stage,
   // so an excluded row never survives into the (more expensive) dedupe sort at all.
-  const excludedPlaceIds = await getActiveExclusionSet('google');
+  // FAILS CLOSED: if the exclusion list (or the published-destination list that defines eligibility)
+  // cannot be read, nothing from Google is returned rather than an unfiltered page.
+  const withheld = (reason: 'exclusions' | 'catalog'): CachedStaysPage => ({ stays: [], page, pageSize, totalCount: 0, totalPages: 1, unavailable: true, unavailableReason: reason });
+  let excludedPlaceIds: Set<string>;
+  try {
+    excludedPlaceIds = await getActiveExclusionSet('google');
+  } catch (error) {
+    if (error instanceof ExclusionLookupError) return withheld('exclusions');
+    throw error;
+  }
+  let eligibleStage: Array<{ $match: Record<string, unknown> }>;
+  try {
+    const published = await getPublishedDestinationRefs();
+    eligibleStage = [{ $match: eligibleLocationsMatch(eligibleStayLocations(published.map((destination) => destination.slug))) }];
+  } catch (error) {
+    console.error('[stays] published destinations could not be loaded for catalog eligibility', error);
+    return withheld('catalog');
+  }
   const exclusionMatchStage = excludedPlaceIds.size > 0 ? [{ $match: { placeId: { $nin: Array.from(excludedPlaceIds) } } }] : [];
 
   const [facetResult] = await PlaceCache.aggregate<PlaceCacheFacetResult>([
+    // Public eligibility FIRST (published destination + its current stay location), then exclusions,
+    // before any dedupe/sort/pagination, so totals and pages only ever count public stays.
+    ...eligibleStage,
     ...exclusionMatchStage,
     {
       $addFields: {
@@ -438,24 +500,47 @@ export async function getCachedStaysCatalog(options: { stayType?: StayType; page
 // getCachedStaysCatalog's dedupe), then classifies it exactly like every other
 // customer-facing Stay (lib/stayClassification.ts) — never trusting whichever
 // category query happened to discover this particular cached row.
-export async function getStayByPlaceId(placeId: string): Promise<Stay | null> {
+export type StayLookupResult = { status: 'found'; stay: Stay } | { status: 'not-found' } | { status: 'unavailable' };
+
+export async function getStayByPlaceIdResult(placeId: string): Promise<StayLookupResult> {
   // A property owner's exclusion request must hold even for a direct URL that already
-  // exists and is already indexed/bookmarked — never just the listing surfaces. Returns
-  // the exact same `null` an unknown/mistyped placeId already returns, so the page's
-  // existing notFound() call (app/stays/[...segments]/page.tsx) fires unchanged; an
-  // excluded property gets a genuine 404, never a distinguishable "excluded" response
-  // that would confirm to a visitor that this specific ID once existed.
-  if (await isPropertyExcluded('google', placeId)) return null;
+  // exists and is already indexed/bookmarked — never just the listing surfaces. An excluded
+  // property gets the exact same 'not-found' an unknown/mistyped placeId gets (a genuine 404,
+  // never a distinguishable "excluded" response). If the exclusion list itself cannot be read the
+  // page is 'unavailable' - it is never rendered on the assumption that nothing is excluded.
+  let excluded: Set<string>;
+  try {
+    excluded = await getActiveExclusionSet('google');
+  } catch (error) {
+    if (error instanceof ExclusionLookupError) return { status: 'unavailable' };
+    throw error;
+  }
+  if (excluded.has(placeId)) return { status: 'not-found' };
 
   await connectDB();
-  const docs = await PlaceCache.find({ placeId }).lean();
-  if (docs.length === 0) return null;
+  // Only rows that are public-eligible (published destination + its current stay location) may back a
+  // detail page, so an orphan/test-slug-only place has no public page.
+  let eligibleMatch: Record<string, unknown>;
+  try {
+    eligibleMatch = eligibleLocationsMatch(eligibleStayLocations((await getPublishedDestinationRefs()).map((destination) => destination.slug)));
+  } catch (error) {
+    console.error('[stays] published destinations could not be loaded for detail eligibility', error);
+    return { status: 'unavailable' };
+  }
+  const docs = await PlaceCache.find({ placeId, ...eligibleMatch }).lean();
+  if (docs.length === 0) return { status: 'not-found' };
 
   const best =
     docs.find((doc) => (doc.types?.length ?? 0) > 0) ??
     docs.slice().sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0) || (b.userRatingCount ?? 0) - (a.userRatingCount ?? 0))[0];
 
-  return toStay({ ...best, stayType: classifyVerifiedStayType(best.types) });
+  return { status: 'found', stay: toStay({ ...best, stayType: classifyVerifiedStayType(best.types) }) };
+}
+
+/** Back-compatible wrapper: null for unknown, excluded OR unavailable (callers that must tell "unavailable" apart use getStayByPlaceIdResult). */
+export async function getStayByPlaceId(placeId: string): Promise<Stay | null> {
+  const result = await getStayByPlaceIdResult(placeId);
+  return result.status === 'found' ? result.stay : null;
 }
 
 function normalizeName(name: string): string {

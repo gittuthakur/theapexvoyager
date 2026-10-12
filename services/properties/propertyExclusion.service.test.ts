@@ -16,11 +16,11 @@ vi.mock('@/models/ExcludedPlace', async () => {
   };
 });
 
-const { getActiveExclusionSet, isPropertyExcluded, filterOutExcludedPlaces, addExclusion, getExclusions, deactivateExclusion } = await import(
+const { ExclusionLookupError, getActiveExclusionSet, isPropertyExcluded, filterOutExcludedPlaces, addExclusion, getExclusions, deactivateExclusion } = await import(
   './propertyExclusion.service'
 );
 
-describe('getActiveExclusionSet — fail-open on error', () => {
+describe('getActiveExclusionSet — fails CLOSED on error', () => {
   it('returns the set of active providerPlaceIds for the given provider', async () => {
     findMock.mockReturnValue({ lean: vi.fn().mockResolvedValue([{ providerPlaceId: 'A' }, { providerPlaceId: 'B' }]) });
     const result = await getActiveExclusionSet('google');
@@ -28,11 +28,27 @@ describe('getActiveExclusionSet — fail-open on error', () => {
     expect(findMock).toHaveBeenCalledWith({ provider: 'google', isActive: true }, { providerPlaceId: 1 });
   });
 
-  it('fails OPEN (returns an empty set, never throws) when the lookup itself fails', async () => {
+  it('fails CLOSED: a failed lookup throws and is never reported as "no exclusions"', async () => {
     findMock.mockReturnValue({ lean: vi.fn().mockRejectedValue(new Error('Mongo is down')) });
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const result = await getActiveExclusionSet('google');
-    expect(result).toEqual(new Set());
+    await expect(getActiveExclusionSet('google')).rejects.toBeInstanceOf(ExclusionLookupError);
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('a failed connection also fails closed (the lookup is never silently skipped)', async () => {
+    const { connectDB } = await import('@/lib/mongodb');
+    vi.mocked(connectDB).mockRejectedValueOnce(new Error('cannot connect'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    await expect(getActiveExclusionSet('google')).rejects.toBeInstanceOf(ExclusionLookupError);
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('does not reuse an earlier successful result after a later failure (no stale authorization data)', async () => {
+    findMock.mockReturnValueOnce({ lean: vi.fn().mockResolvedValue([{ providerPlaceId: 'A' }]) });
+    expect(await getActiveExclusionSet('google')).toEqual(new Set(['A']));
+    findMock.mockReturnValueOnce({ lean: vi.fn().mockRejectedValue(new Error('down')) });
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    await expect(getActiveExclusionSet('google')).rejects.toBeInstanceOf(ExclusionLookupError);
     consoleErrorSpy.mockRestore();
   });
 });
@@ -51,10 +67,10 @@ describe('isPropertyExcluded', () => {
     expect(await isPropertyExcluded('google', 'a-different-real-place-with-a-similar-name')).toBe(false);
   });
 
-  it('fails OPEN — a lookup failure never reports a property as excluded', async () => {
+  it('fails CLOSED — a lookup failure throws instead of answering "not excluded"', async () => {
     findMock.mockReturnValue({ lean: vi.fn().mockRejectedValue(new Error('down')) });
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    expect(await isPropertyExcluded('google', 'anything')).toBe(false);
+    await expect(isPropertyExcluded('google', 'anything')).rejects.toBeInstanceOf(ExclusionLookupError);
     consoleErrorSpy.mockRestore();
   });
 });
@@ -77,12 +93,10 @@ describe('filterOutExcludedPlaces', () => {
     expect(result).toEqual([{ placeId: 'unrelated-id', name: 'Mountain View Resort' }]);
   });
 
-  it('returns the input unchanged (fail-open) when the exclusion lookup fails', async () => {
+  it('never returns the unfiltered input when the exclusion lookup fails (fails closed)', async () => {
     findMock.mockReturnValue({ lean: vi.fn().mockRejectedValue(new Error('down')) });
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const items = [{ placeId: 'x' }];
-    const result = await filterOutExcludedPlaces('google', items);
-    expect(result).toEqual(items);
+    await expect(filterOutExcludedPlaces('google', [{ placeId: 'x' }])).rejects.toBeInstanceOf(ExclusionLookupError);
     consoleErrorSpy.mockRestore();
   });
 

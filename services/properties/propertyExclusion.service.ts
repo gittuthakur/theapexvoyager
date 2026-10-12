@@ -11,20 +11,27 @@ import { ExcludedPlace, type ExcludedPlaceDocument, type ExcludedPlaceProvider }
  * silently hide the wrong one.
  */
 
-/** Fails OPEN (returns an empty set / `false`) on any lookup failure — a transient
- *  exclusion-database hiccup must never accidentally hide a property that was never
- *  actually excluded (explicit product requirement). The accepted tradeoff is the
- *  reverse: a vanishingly rare window where a genuinely excluded property could still
- *  render if this collection/DB itself is down, which is judged safer than the
- *  alternative of a DB blip taking real, legitimate listings off the site. */
+/** Thrown when the active-exclusion list cannot be read. An exclusion is a property owner's
+ *  takedown request, so "I could not check" must never be treated as "nothing is excluded":
+ *  every lookup below FAILS CLOSED by throwing this, and each public caller turns it into a
+ *  safe "temporarily unavailable" state for Google-sourced results (never an unfiltered list).
+ *  No last-known-good copy is kept: a stale set cannot prove a newer exclusion is absent. */
+export class ExclusionLookupError extends Error {
+  constructor(cause?: unknown) {
+    super('Active property exclusions could not be loaded');
+    this.name = 'ExclusionLookupError';
+    if (cause !== undefined) (this as { cause?: unknown }).cause = cause;
+  }
+}
+
 export async function getActiveExclusionSet(provider: ExcludedPlaceProvider): Promise<Set<string>> {
   try {
     await connectDB();
     const rows = await ExcludedPlace.find({ provider, isActive: true }, { providerPlaceId: 1 }).lean();
     return new Set(rows.map((row) => row.providerPlaceId));
   } catch (error) {
-    console.error('[propertyExclusion] Failed to load active exclusions — failing OPEN (showing all properties)', error);
-    return new Set();
+    console.error('[propertyExclusion] Failed to load active exclusions — failing CLOSED (Google-sourced results withheld)', error);
+    throw new ExclusionLookupError(error);
   }
 }
 

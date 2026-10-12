@@ -9,7 +9,8 @@ const {
   classifyVerifiedStayTypeMock,
   isPropertyExcludedMock,
   filterOutExcludedPlacesMock,
-  getActiveExclusionSetMock
+  getActiveExclusionSetMock,
+  getPublishedRefsMock
 } = vi.hoisted(() => ({
   placeCacheFindMock: vi.fn(),
   placeCacheFindOneAndUpdateMock: vi.fn(),
@@ -19,7 +20,8 @@ const {
   classifyVerifiedStayTypeMock: vi.fn(),
   isPropertyExcludedMock: vi.fn(),
   filterOutExcludedPlacesMock: vi.fn(),
-  getActiveExclusionSetMock: vi.fn()
+  getActiveExclusionSetMock: vi.fn(),
+  getPublishedRefsMock: vi.fn()
 }));
 
 vi.mock('@/lib/mongodb', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }));
@@ -48,13 +50,16 @@ vi.mock('@/lib/stayClassification', () => ({
   hasTreehouseNameEvidence: () => false,
   treehouseNameMongoPattern: () => '.*'
 }));
+vi.mock('@/lib/destinations', () => ({ getPublishedDestinationRefs: getPublishedRefsMock }));
 vi.mock('@/services/properties/propertyExclusion.service', () => ({
+  ExclusionLookupError: class ExclusionLookupError extends Error {},
   isPropertyExcluded: isPropertyExcludedMock,
   filterOutExcludedPlaces: filterOutExcludedPlacesMock,
   getActiveExclusionSet: getActiveExclusionSetMock
 }));
 
-const { getStayByPlaceId, getStaysForDestination, getCachedStaysCatalog } = await import('./stays');
+const { getStayByPlaceId, getStayByPlaceIdResult, getStaysForDestination, getCachedStaysCatalog } = await import('./stays');
+const { ExclusionLookupError } = await import('@/services/properties/propertyExclusion.service');
 
 const NORMAL_PLACE = { placeId: 'normal-id', name: 'Mountain View Resort', types: ['lodging'], rating: 4.5, userRatingCount: 10 };
 const EXCLUDED_PLACE = { placeId: 'excluded-id', name: 'Similar Name Resort', types: ['lodging'], rating: 4.2, userRatingCount: 8 };
@@ -83,11 +88,11 @@ beforeEach(() => {
   isPropertyExcludedMock.mockReset().mockResolvedValue(false);
   filterOutExcludedPlacesMock.mockReset().mockImplementation(async (_provider, items) => items);
   getActiveExclusionSetMock.mockReset().mockResolvedValue(new Set());
+  getPublishedRefsMock.mockReset().mockResolvedValue([{ slug: 'manali', title: 'Manali', state: 'Himachal Pradesh' }]);
 });
 
 describe('getStayByPlaceId — direct URL exclusion', () => {
   it('a normal property remains visible', async () => {
-    isPropertyExcludedMock.mockResolvedValue(false);
     placeCacheFindMock.mockReturnValue({ lean: vi.fn().mockResolvedValue([cacheDoc(NORMAL_PLACE)]) });
 
     const result = await getStayByPlaceId('normal-id');
@@ -97,7 +102,7 @@ describe('getStayByPlaceId — direct URL exclusion', () => {
   });
 
   it('an excluded property\'s direct URL returns null (the page\'s existing notFound() then fires)', async () => {
-    isPropertyExcludedMock.mockResolvedValue(true);
+    getActiveExclusionSetMock.mockResolvedValue(new Set(['excluded-id']));
 
     const result = await getStayByPlaceId('excluded-id');
     expect(result).toBeNull();
@@ -106,17 +111,17 @@ describe('getStayByPlaceId — direct URL exclusion', () => {
   });
 
   it('deactivating the exclusion makes the property eligible again', async () => {
-    isPropertyExcludedMock.mockResolvedValue(true);
+    getActiveExclusionSetMock.mockResolvedValue(new Set(['excluded-id']));
     expect(await getStayByPlaceId('excluded-id')).toBeNull();
 
-    isPropertyExcludedMock.mockResolvedValue(false);
+    getActiveExclusionSetMock.mockResolvedValue(new Set());
     placeCacheFindMock.mockReturnValue({ lean: vi.fn().mockResolvedValue([cacheDoc(EXCLUDED_PLACE)]) });
     const result = await getStayByPlaceId('excluded-id');
     expect(result).not.toBeNull();
   });
 
   it('excluding one property does not hide a different, similarly-named property', async () => {
-    isPropertyExcludedMock.mockImplementation(async (_provider, placeId) => placeId === 'excluded-id');
+    getActiveExclusionSetMock.mockResolvedValue(new Set(['excluded-id']));
 
     expect(await getStayByPlaceId('excluded-id')).toBeNull();
 
@@ -158,7 +163,7 @@ describe('getStaysForDestination — Google Places cost control (Phase 1)', () =
   it('a cache MISS returns an honest empty result and never calls Google', async () => {
     placeCacheFindMock.mockReturnValue({ lean: vi.fn().mockResolvedValue([]) });
 
-    const result = await getStaysForDestination('a-brand-new-destination', 'Nowhere', ['hotel']);
+    const result = await getStaysForDestination('manali', 'Manali', ['hotel']);
 
     expect(result.stays).toEqual([]);
     expect(result.meta[0]).toMatchObject({ fromCache: false, queried: false, error: 'NOT_YET_REFRESHED' });
@@ -169,7 +174,7 @@ describe('getStaysForDestination — Google Places cost control (Phase 1)', () =
   it('a cache MISS across every requested stay type still never calls Google, for any of them', async () => {
     placeCacheFindMock.mockReturnValue({ lean: vi.fn().mockResolvedValue([]) });
 
-    const result = await getStaysForDestination('a-brand-new-destination', 'Nowhere');
+    const result = await getStaysForDestination('manali', 'Manali');
 
     expect(result.stays).toEqual([]);
     expect(searchStaysMock).not.toHaveBeenCalled();
@@ -190,7 +195,7 @@ describe('getStaysForDestination — Google Places cost control (Phase 1)', () =
     placeCacheFindMock.mockReturnValue({ lean: vi.fn().mockResolvedValue([]) });
     vi.stubEnv('GOOGLE_PLACES_API_KEY', '');
 
-    const result = await getStaysForDestination('a-brand-new-destination', 'Nowhere', ['hotel']);
+    const result = await getStaysForDestination('manali', 'Manali', ['hotel']);
 
     expect(result.stays).toEqual([]);
     expect(searchStaysMock).not.toHaveBeenCalled();
@@ -212,8 +217,9 @@ describe('getCachedStaysCatalog — cache-only browse exclusion', () => {
     });
     expect(exclusionStage).toBeDefined();
     expect(exclusionStage.$match.placeId.$nin).toEqual(['excluded-id']);
-    // Must be the very first stage — before dedupe/sort — so pagination counts stay accurate.
-    expect(pipeline[0]).toBe(exclusionStage);
+    // Public eligibility is stage 0, exclusions stage 1 - both before dedupe/sort so pagination counts stay accurate.
+    expect(pipeline[0].$match.$or).toEqual([{ destinationSlug: 'manali', searchLocation: 'Manali' }]);
+    expect(pipeline[1]).toBe(exclusionStage);
     expect(searchStaysMock).not.toHaveBeenCalled();
   });
 
@@ -229,5 +235,73 @@ describe('getCachedStaysCatalog — cache-only browse exclusion', () => {
       return match?.placeId?.$nin !== undefined;
     });
     expect(hasExclusionStage).toBe(false);
+  });
+});
+
+describe('P4 - exclusion lookup FAILS CLOSED on every public Google-sourced read path', () => {
+  it('listing: withholds every Google stay (unavailable) when the exclusion list cannot be read', async () => {
+    placeCacheFindMock.mockReturnValue({ lean: vi.fn().mockResolvedValue([cacheDoc(NORMAL_PLACE), cacheDoc(EXCLUDED_PLACE)]) });
+    filterOutExcludedPlacesMock.mockRejectedValue(new ExclusionLookupError('down'));
+
+    const result = await getStaysForDestination('manali', 'Manali', ['hotel']);
+
+    expect(result.unavailable).toBe(true);
+    expect(result.stays).toEqual([]);
+    expect(searchStaysMock).not.toHaveBeenCalled();
+  });
+
+  it('catalog: unavailable with no stays, and the aggregation never runs, when the exclusion list cannot be read', async () => {
+    getActiveExclusionSetMock.mockRejectedValue(new ExclusionLookupError('down'));
+
+    const page = await getCachedStaysCatalog({});
+
+    expect(page).toMatchObject({ unavailable: true, stays: [], totalCount: 0 });
+    expect(placeCacheAggregateMock).not.toHaveBeenCalled();
+  });
+
+  it('catalog: unavailable when the published-destination list (eligibility) cannot be read', async () => {
+    getPublishedRefsMock.mockRejectedValue(new Error('down'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const page = await getCachedStaysCatalog({});
+
+    expect(page.unavailable).toBe(true);
+    expect(placeCacheAggregateMock).not.toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('detail page: unavailable (never rendered) when the exclusion list cannot be read', async () => {
+    getActiveExclusionSetMock.mockRejectedValue(new ExclusionLookupError('down'));
+
+    expect(await getStayByPlaceIdResult('normal-id')).toEqual({ status: 'unavailable' });
+    expect(await getStayByPlaceId('normal-id')).toBeNull();
+    expect(placeCacheFindMock).not.toHaveBeenCalled();
+  });
+
+  it('an outage never serves a previously excluded property (no stale or empty exclusion set is assumed)', async () => {
+    getActiveExclusionSetMock.mockResolvedValueOnce(new Set(['excluded-id']));
+    expect(await getStayByPlaceIdResult('excluded-id')).toEqual({ status: 'not-found' });
+    getActiveExclusionSetMock.mockRejectedValueOnce(new ExclusionLookupError('down'));
+    expect(await getStayByPlaceIdResult('excluded-id')).toEqual({ status: 'unavailable' });
+  });
+});
+
+describe('P4 - public eligibility of cached rows', () => {
+  it('a detail page needs an eligible row: an orphan or test-slug-only place is not found', async () => {
+    placeCacheFindMock.mockReturnValue({ lean: vi.fn().mockResolvedValue([]) });
+
+    expect(await getStayByPlaceIdResult('orphan-only-id')).toEqual({ status: 'not-found' });
+    const filter = placeCacheFindMock.mock.calls[0][0];
+    expect(filter).toMatchObject({ placeId: 'orphan-only-id', $or: [{ destinationSlug: 'manali', searchLocation: 'Manali' }] });
+  });
+
+  it('getStaysForDestination refuses an unauthored destination/location pair without touching PlaceCache', async () => {
+    for (const [slug, location] of [['kaza', 'Kaza'], ['spiti-valley-verify2', 'Kaza'], ['manali', 'Old Location']] as const) {
+      const result = await getStaysForDestination(slug, location, ['hotel']);
+      expect(result.stays).toEqual([]);
+      expect(result.meta[0].error).toBe('NOT_ELIGIBLE');
+    }
+    expect(placeCacheFindMock).not.toHaveBeenCalled();
+    expect(searchStaysMock).not.toHaveBeenCalled();
   });
 });

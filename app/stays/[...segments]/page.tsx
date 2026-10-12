@@ -16,7 +16,7 @@ import { buildGoogleMapsUrl } from '@/lib/googleMapsLink';
 import { getHotels, getHotelBySlug } from '@/lib/hotels';
 import { getPackagesByDestinationSlug } from '@/lib/packages';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
-import { getCachedStaysCatalog, getStayByPlaceId } from '@/lib/stays';
+import { getCachedStaysCatalog, getStayByPlaceIdResult } from '@/lib/stays';
 import { getStayLocationContext, type StayMode } from '@/lib/stayLocation';
 import { primaryDestinationName } from '@/lib/experiences';
 import { destinations } from '@/config/destinations.config';
@@ -63,8 +63,10 @@ async function resolveSegments(segments: string[]) {
     // models/PlaceCache.ts's index comment — so only placeId is a safe, stable
     // identifier for a canonical URL). No `destinationSlug` is ever literally named
     // "property", so this never collides with the combined-listing case below.
-    const stay = await getStayByPlaceId(segments[1]);
-    if (stay) return { kind: 'google-property' as const, stay };
+    const lookup = await getStayByPlaceIdResult(segments[1]);
+    if (lookup.status === 'found') return { kind: 'google-property' as const, stay: lookup.stay };
+    // The exclusion list could not be read: never render a property page on the assumption nothing is excluded.
+    if (lookup.status === 'unavailable') return { kind: 'stay-unavailable' as const };
     return { kind: 'not-found' as const };
   }
 
@@ -138,6 +140,9 @@ export async function generateMetadata({ params }: StaysCatchAllPageProps): Prom
         twitter: { card: propertyImage ? 'summary_large_image' : 'summary', title: propertyTitle, description: resolved.hotel.description, images: propertyImage ? [propertyImage] : undefined }
       };
     }
+    case 'stay-unavailable':
+      // A transient state (the exclusion list could not be read): never indexed or cached as a page of its own.
+      return { title: 'Stay temporarily unavailable | Apex Stays', robots: { index: false, follow: false } };
     case 'google-property': {
       const googlePropertyTitle = `${resolved.stay.name} | Apex Stays`;
       const googlePropertyDescription = resolved.stay.formattedAddress
@@ -207,6 +212,7 @@ export default async function StaysCatchAllPage({ params, searchParams }: StaysC
           totalPages: catalogPage.totalPages,
           basePath: `/stays/${resolved.stayType.slug}`
         }}
+        emptyMessage={catalogPage.unavailable ? 'Stays are temporarily unavailable. Please try again shortly.' : undefined}
       />
     );
   }
@@ -263,6 +269,20 @@ export default async function StaysCatchAllPage({ params, searchParams }: StaysC
             : undefined
         }
       />
+    );
+  }
+
+  if (resolved.kind === 'stay-unavailable') {
+    return (
+      <main id="main-content" className="px-6 py-10 sm:px-10 lg:px-16">
+        <section className="mx-auto max-w-[1440px] space-y-5">
+          <BackButton fallbackHref="/stays" label="Back to Apex Stays" />
+          <div role="status" className="rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+            <h1 className="text-2xl font-bold text-slate-900">This stay is temporarily unavailable.</h1>
+            <p className="mt-3 text-slate-600">We couldn&apos;t load this listing just now. Please try again in a moment.</p>
+          </div>
+        </section>
+      </main>
     );
   }
 
