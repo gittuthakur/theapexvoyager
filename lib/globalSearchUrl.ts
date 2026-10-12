@@ -105,16 +105,22 @@ export function buildGlobalSearchTarget(tab: GlobalSearchTab, f: GlobalSearchFie
       };
     }
 
-    case 'Travel Experts':
+    case 'Travel Experts': {
+      const expertDestinationSlug = r.resolveDestinationSlug(f.destination);
       // destination (a real slug) and travelStyle filter /experts; the date and travelers are
       // PREFERENCES only.
       return {
         path: '/experts',
         params: {
-          destination: r.resolveDestinationSlug(f.destination),
+          destination: expertDestinationSlug,
+          // A typed place that is not one catalog destination is searched as text (name, role,
+          // expertise, linked destinations/regions) instead of being dropped, which would have
+          // silently shown every expert.
+          q: expertDestinationSlug ? undefined : f.destination.trim() || undefined,
           travelStyle: r.resolveExpertTravelStyle(f.travelStyle),
           ...singleDatePreferenceParams('travelers', f.date, f.travelers)
         }
       };
+    }
   }
 }

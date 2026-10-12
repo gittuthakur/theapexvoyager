@@ -4,10 +4,25 @@ import type { TravelExpert } from '@/types/expert';
 
 export interface ExpertGridProps {
   experts: TravelExpert[];
+  /** True when there are no publicly listed experts at all (not merely none matching the filters). */
+  catalogEmpty?: boolean;
 }
 
 // Empty state per spec §14/§26 — never a dead end, always a path to a human.
-export default function ExpertGrid({ experts }: ExpertGridProps) {
+export default function ExpertGrid({ experts, catalogEmpty = false }: ExpertGridProps) {
+  // No public profiles exist yet: say so honestly rather than blaming the visitor's filters.
+  if (catalogEmpty) {
+    return (
+      <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center text-slate-600 shadow-glow">
+        <p className="text-lg font-semibold text-slate-900">Our specialist profiles aren&apos;t available online yet.</p>
+        <p className="mt-3">Our travel team plans trips across the Himalayas and can help you directly.</p>
+        <div className="mt-6 flex justify-center">
+          <TalkToTravelTeamButton />
+        </div>
+      </div>
+    );
+  }
+
   if (experts.length === 0) {
     return (
       <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center text-slate-600 shadow-glow">

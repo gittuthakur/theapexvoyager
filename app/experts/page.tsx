@@ -10,7 +10,7 @@ import ExpertTravelSupport from '@/components/modules/ExpertTravelSupport';
 import TalkToTravelTeamButton from '@/components/modules/TalkToTravelTeamButton';
 import { PackageCard, FinalCta } from '@/components/modules';
 import { images } from '@/config/images.config';
-import { getAllExperts, matchesExpertQuery } from '@/lib/experts';
+import { getAllExperts, searchPublicExperts } from '@/lib/experts';
 import { getPackageBySlug } from '@/lib/packages';
 import type { ExpertFacets } from '@/types/expert';
 import TripPreferencesNote from '@/components/modules/TripPreferencesNote';
@@ -73,13 +73,15 @@ export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
     expertise: Array.from(new Set(allExperts.flatMap((expert) => expert.expertise))).sort()
   };
 
-  const experts = allExperts.filter((expert) => {
+  // Destination/style/expertise are exact facet filters; free text is relevance-ranked over the
+  // public experts only (lib/search/expertSearch.ts).
+  const facetFiltered = allExperts.filter((expert) => {
     const matchesDestination = !destination || expert.destinationSlugs.includes(destination);
     const matchesStyle = !travelStyle || expert.travelStyles.includes(travelStyle);
     const matchesExpertise = !expertise || expert.expertise.includes(expertise);
-    const matchesQuery = !q || matchesExpertQuery(expert, q);
-    return matchesDestination && matchesStyle && matchesExpertise && matchesQuery;
+    return matchesDestination && matchesStyle && matchesExpertise;
   });
+  const experts = await searchPublicExperts(facetFiltered, q);
 
   // Expert-recommended journeys: real Journey records referenced by featured
   // experts (expert.journeySlugs), deduplicated — no duplicated itinerary content.
@@ -120,7 +122,7 @@ export default async function ExpertsPage({ searchParams }: ExpertsPageProps) {
           </div>
         ) : null}
         <section className="mx-auto max-w-[1440px] px-6 pb-16">
-          <ExpertGrid experts={experts} />
+          <ExpertGrid experts={experts} catalogEmpty={allExperts.length === 0} />
         </section>
 
         <ExpertProcess />

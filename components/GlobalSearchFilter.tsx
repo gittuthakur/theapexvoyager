@@ -30,6 +30,7 @@ import { vehicleOptions } from '@/config/transport.config';
 import { resolveChauffeurVehicleParam, urlSlugFromServiceType } from '@/config/transportServiceTypes.config';
 import { destinations } from '@/config/destinations.config';
 import { buildGlobalSearchTarget, toSearchUrl } from '@/lib/globalSearchUrl';
+import { findDestinationByText } from '@/lib/search/destinationResolver';
 import { cn } from '@/lib/utils';
 import type { DateRange, OccupancyDetails } from '@/types';
 
@@ -43,9 +44,9 @@ const VEHICLE_NAMES = vehicleOptions.map((vehicle) => vehicle.name);
  *  curated catalog) is simply left off rather than sent as a filter that can never
  *  match a slug. */
 function resolveDestinationSlug(value: string): string | undefined {
-  const trimmed = value.trim().toLowerCase();
-  if (!trimmed) return undefined;
-  return destinations.find((destination) => destination.title.toLowerCase() === trimmed)?.slug;
+  // Deterministic and alias-aware ("Dharamsala" -> Dharamshala); ambiguous text resolves to nothing
+  // (it is then searched as text) instead of arbitrarily picking one destination.
+  return findDestinationByText(destinations, value)?.slug;
 }
 
 /** The Travel Experts tab's "Planning need" field (`planningNeeds`) is a different,
@@ -252,7 +253,8 @@ export default function GlobalSearchFilter({
   function handlePopularSearch(place: string) {
     setDestination(place);
     if (activeTab === 'Travel Experts') {
-      goTo('/experts', { destination: resolveDestinationSlug(place) });
+      const slug = resolveDestinationSlug(place);
+      goTo('/experts', slug ? { destination: slug } : { q: place });
       return;
     }
     if (activeTab === 'Transport') {

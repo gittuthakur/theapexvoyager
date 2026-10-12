@@ -127,8 +127,14 @@ describe('homepage search panel: field -> URL contract (all six tabs)', () => {
     it('maps a resolvable place to its slug and a mapped need to a travel style', () => {
       expect(url('Travel Experts', { destination: 'Manali', travelStyle: 'Honeymoon' })).toBe('/experts?destination=manali&travelStyle=Couple');
     });
-    it('drops a place or need that can never match (no dead filter)', () => {
-      expect(url('Travel Experts', { destination: 'Kullu', travelStyle: 'Custom trip' })).toBe('/experts');
+    it('a place that is not one catalog destination is searched as text, never dropped (which would show every expert)', () => {
+      expect(url('Travel Experts', { destination: 'Kullu', travelStyle: 'Honeymoon' })).toBe('/experts?q=Kullu&travelStyle=Couple');
+    });
+    it('drops a need that can never match a travel style (no dead filter)', () => {
+      expect(url('Travel Experts', { destination: 'Manali', travelStyle: 'Custom trip' })).toBe('/experts?destination=manali');
+    });
+    it('an empty place adds neither a destination nor a text query', () => {
+      expect(url('Travel Experts', { travelStyle: 'Custom trip' })).toBe('/experts');
     });
     it('carries the preferred date and travelers as preferences', () => {
       expect(url('Travel Experts', { date: '2027-03-01', travelers: 5 })).toBe('/experts?preferredDate=2027-03-01&travelers=5');

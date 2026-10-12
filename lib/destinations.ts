@@ -5,6 +5,7 @@ import { Destination as DestinationModel, type DestinationDocument } from '@/mod
 import { searchDestinations, placeName, placePhotoUrls, type RawGooglePlace } from '@/lib/googlePlaces';
 import { isRecentFailure, markFailure } from '@/lib/negativeCache';
 import { isLocalDevelopment } from '@/lib/env';
+import { findDestinationByText } from '@/lib/search/destinationResolver';
 import { destinations as mockDestinations } from '@/config/destinations.config';
 import type { Destination } from '@/types/destination';
 
@@ -183,6 +184,16 @@ export async function findDestinationByLocationText(text: string): Promise<Desti
   return curated.find(
     (destination) => needle.includes(destination.title.toLowerCase()) || destination.title.toLowerCase().includes(needle)
   );
+}
+
+/**
+ * Search-grade resolution of free text (a transport pickup/drop) to ONE published destination. Unlike
+ * findDestinationByLocationText it never picks the first of several candidates: ambiguous or unknown
+ * text resolves to undefined. Handles verified spelling aliases ("Dharamsala" -> Dharamshala).
+ */
+export async function resolveCuratedDestinationForSearch(text: string): Promise<Destination | undefined> {
+  if (!text.trim()) return undefined;
+  return findDestinationByText(await getCuratedDestinations(), text);
 }
 
 export async function getDestinationBySlug(slug: string): Promise<Destination | undefined> {

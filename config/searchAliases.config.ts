@@ -19,7 +19,9 @@ export const LOCATION_ALIASES: AliasMap = Object.freeze(
   Object.fromEntries(
     Object.entries({
       dharamsala: ['dharamshala'],
-      simla: ['shimla']
+      simla: ['shimla'],
+      // Same city, two names: routes are stored under "Delhi" while visitors often type "New Delhi".
+      'new delhi': ['delhi']
     }).map(([alias, canonical]) => [normalizeSearchText(alias), canonical])
   )
 );
