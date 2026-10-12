@@ -1,6 +1,7 @@
 import { getRegionById } from '@/lib/regions';
 import { matchesStyle } from '@/lib/travelStyles';
 import { getSeasonById } from '@/config/seasons.config';
+import { searchDestinations } from '@/lib/search/destinationSearch';
 import type { Destination, DestinationFilter, DestinationSortOption, DestinationStats } from '@/types';
 
 /** Real starting prices only (never fabricated) — the input a price-range slider/histogram should be built from. */
@@ -20,15 +21,16 @@ export function filterDestinations(
   filter: DestinationFilter,
   statsMap: Map<string, DestinationStats>
 ): Destination[] {
-  const query = filter.query?.trim().toLowerCase() ?? '';
+  // Keyword matching (title/slug/sub-places/region/styles, descriptions as a fallback) lives in
+  // lib/search/destinationSearch.ts. Hits are computed over the FULL list so the description
+  // fallback never depends on the other filters.
+  const queryHits = filter.query?.trim() ? new Set(searchDestinations(destinations, filter.query).map((hit) => hit.destination.slug)) : null;
   const region = filter.region ? getRegionById(filter.region) : undefined;
   const seasonLabels = filter.seasons?.map((id) => getSeasonById(id)?.label).filter((label): label is string => Boolean(label)) ?? [];
   const hasPriceFilter = filter.priceMin !== undefined && filter.priceMax !== undefined;
 
   return destinations.filter((destination) => {
-    if (query && !destination.title.toLowerCase().includes(query) && !destination.description.toLowerCase().includes(query)) {
-      return false;
-    }
+    if (queryHits && !queryHits.has(destination.slug)) return false;
     // Gated on the caller's raw request (filter.region), not on whether it resolved to a
     // real region — an unresolvable region id (a stale/hand-edited `?region=` value) must
     // still narrow results to zero, not silently behave as if no region filter were
