@@ -52,6 +52,8 @@ interface ExperienceSearchDoc {
   locations: string[];
   destinations: string[];
   category: string[];
+  /** Free-text refinement such as "Village Homestay" — a single word of it is a valid search term. */
+  subCategory: string[];
   regions: string[];
   mood: string[];
   structured: string;
@@ -68,13 +70,14 @@ export function buildExperienceSearchDoc(experience: Experience, destinations: r
     title: [...searchForms(experience.title), normalizeSearchText(experience.slug)],
     locations: listForms(experience.location),
     destinations: related.flatMap((destination) => [...searchForms(destination.title), normalizeSearchText(destination.slug)]),
-    category: [experience.category, experience.subCategory].flatMap((value) => searchForms(value)),
+    category: searchForms(experience.category),
+    subCategory: searchForms(experience.subCategory),
     regions: regionForms(experience.region),
     mood: searchForms(experience.mood),
     structured: '',
     low: normalizeSearchText([experience.shortDescription, ...(experience.highlights ?? []), experience.description].join(' '))
   };
-  doc.structured = [doc.title, doc.locations, doc.destinations, doc.category, doc.regions, doc.mood].flat().join(' ');
+  doc.structured = [doc.title, doc.locations, doc.destinations, doc.category, doc.subCategory, doc.regions, doc.mood].flat().join(' ');
   return doc;
 }
 
@@ -100,6 +103,11 @@ function scoreStructured(doc: ExperienceSearchDoc, terms: string[]): { score: nu
 
     const category = fieldMatch(doc.category, term, compact, null);
     if (category === 'exact' || category === 'prefix') consider(52, 'category');
+
+    // Sub-categories are multi-word ("Village Homestay"), so a whole WORD anywhere in one counts
+    // ("homestay"); fragments of words ("home") still do not (no partial matching here).
+    const subCategory = fieldMatch(doc.subCategory, term, compact, null);
+    if (subCategory) consider(subCategory === 'phrase' ? 50 : 52, 'category');
 
     const region = fieldMatch(doc.regions, term, compact, null);
     if (region === 'exact' || region === 'prefix') consider(46, 'region');
