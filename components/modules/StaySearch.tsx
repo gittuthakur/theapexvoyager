@@ -6,13 +6,15 @@ import { format, parseISO } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { DestinationField, DateRangeField, OccupancyField, SEARCH_PANEL_CLASS } from '@/components/modules/search';
+import { DestinationField, DateRangeField, OccupancyField, SEARCH_FIELD_CLASS, SEARCH_PANEL_CLASS } from '@/components/modules/search';
 import { trendingDestinations } from '@/config/search.config';
 import { cn } from '@/lib/utils';
 import type { DateRange, OccupancyDetails } from '@/types';
 
 export interface StaySearchProps {
   defaultDestination?: string;
+  /** Property-name / locality text (the `q` param). */
+  defaultQuery?: string;
   defaultCheckIn?: string;
   defaultCheckOut?: string;
   defaultGuests?: string;
@@ -24,9 +26,10 @@ function parseDate(value?: string): Date | null {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
-export default function StaySearch({ defaultDestination, defaultCheckIn, defaultCheckOut, defaultGuests }: StaySearchProps) {
+export default function StaySearch({ defaultDestination, defaultQuery, defaultCheckIn, defaultCheckOut, defaultGuests }: StaySearchProps) {
   const router = useRouter();
   const [destination, setDestination] = useState(defaultDestination ?? '');
+  const [propertyQuery, setPropertyQuery] = useState(defaultQuery ?? '');
   const [dateRange, setDateRange] = useState<DateRange>({
     checkIn: parseDate(defaultCheckIn),
     checkOut: parseDate(defaultCheckOut)
@@ -42,6 +45,7 @@ export default function StaySearch({ defaultDestination, defaultCheckIn, default
     event.preventDefault();
     const params = new URLSearchParams();
     if (destination.trim()) params.set('destination', destination.trim());
+    if (propertyQuery.trim()) params.set('q', propertyQuery.trim());
     if (dateRange.checkIn) params.set('checkIn', format(dateRange.checkIn, 'yyyy-MM-dd'));
     if (dateRange.checkOut) params.set('checkOut', format(dateRange.checkOut, 'yyyy-MM-dd'));
     params.set('guests', String(occupancy.adults + occupancy.children));
@@ -53,7 +57,7 @@ export default function StaySearch({ defaultDestination, defaultCheckIn, default
       onSubmit={handleSubmit}
       className={cn(SEARCH_PANEL_CLASS, 'mx-auto mt-8 flex w-full max-w-[1440px] flex-col gap-2 lg:flex-row lg:items-center lg:gap-3')}
     >
-      <div className="grid flex-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 lg:items-center lg:gap-3">
+      <div className="grid flex-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 lg:items-center lg:gap-3">
         <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
           <DestinationField
             value={destination}
@@ -63,6 +67,20 @@ export default function StaySearch({ defaultDestination, defaultCheckIn, default
             placeholder="Manali, Shimla, Kasol..."
             destinations={trendingDestinations}
           />
+        </motion.div>
+        <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
+          <label className={SEARCH_FIELD_CLASS}>
+            <Search size={18} className="shrink-0 text-apex-500" />
+            <span className="min-w-0 flex-1">
+              <span className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500">Property name</span>
+              <input
+                value={propertyQuery}
+                onChange={(event) => setPropertyQuery(event.target.value)}
+                placeholder="Hotel or homestay name"
+                className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-500"
+              />
+            </span>
+          </label>
         </motion.div>
         <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
           <DateRangeField value={dateRange} onChange={setDateRange} label="Dates" placeholder="Select dates" />

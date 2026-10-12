@@ -5,15 +5,14 @@ import StaySearch from '@/components/modules/StaySearch';
 import StayFilters from '@/components/modules/StayFilters';
 import PropertyCard from '@/components/modules/PropertyCard';
 import { StayCard } from '@/components/modules/StaysGrid';
-import { hotelToStay, dedupeAgainstCurated } from '@/lib/stayMerge';
+import { hotelToStay } from '@/lib/stayMerge';
 import { FILTER_EMPTY_STATE_CLASS } from '@/components/modules/filters/filterStyles';
 import { SkeletonGrid } from '@/components/ui/Skeleton';
 import BackButton from '@/components/ui/BackButton';
 import { cn } from '@/lib/utils';
 import { getHotels } from '@/lib/hotels';
-import { getStaysForDestination, getCachedStaysCatalog, slugify } from '@/lib/stays';
-import { getCuratedDestinationBySlug } from '@/lib/destinations';
-import { getStayLocationContext } from '@/lib/stayLocation';
+import { searchEligibleStays, STAYS_PAGE_SIZE, type EligibleStaysOutcome } from '@/lib/staysSearch';
+import { paginate, parsePageParam, scoreStayText, type StayCandidate } from '@/lib/search/staySearch';
 import { findStayTypeBySlug } from '@/config/stayTypes.config';
 import { findStayMoodBySlug } from '@/config/stayMoods.config';
 import { parseValidPriceMax } from '@/components/modules/filters/priceMax';
@@ -49,6 +48,9 @@ export const metadata: Metadata = {
 interface StaySearchPageProps {
   searchParams: Promise<{
     destination?: string;
+    /** Free-text property name / locality search over the publicly eligible cached stays. */
+    q?: string;
+    page?: string;
     checkIn?: string;
     checkOut?: string;
     guests?: string;
@@ -66,11 +68,12 @@ interface StaySearchPageProps {
 }
 
 export default async function StaySearchPage({ searchParams }: StaySearchPageProps) {
-  const { destination, checkIn: rawCheckIn, checkOut: rawCheckOut, guests: rawGuests, type, priceMax, amenity, mood, category } = await searchParams;
+  const { destination, q, page, checkIn: rawCheckIn, checkOut: rawCheckOut, guests: rawGuests, type, priceMax, amenity, mood, category } = await searchParams;
   // Dates and guests are PREFERENCES carried to a stay's detail page — nothing here checks
   // availability. Validated so a malformed or past value is never shown or passed on.
   const { checkIn, checkOut, guests } = readStayPreferences({ checkIn: rawCheckIn, checkOut: rawCheckOut, guests: rawGuests });
   const preferenceParts = describeStayPreferences({ checkIn, checkOut, guests });
+  const query = q?.trim();
 
   return (
     <main id="main-content" className="px-6 py-10 sm:px-10 lg:px-16">
@@ -80,7 +83,7 @@ export default async function StaySearchPage({ searchParams }: StaySearchPagePro
         <div className="">
           <p className="text-md font-semibold uppercase tracking-[0.16em] text-apex-600">Apex Stays</p>
           <h1 className="mt-3 text-2xl font-bold text-slate-900 sm:text-3xl">
-            {destination ? `Stays in ${destination}` : 'All Himalayan Stays'}
+            {query ? `Stays matching “${query}”${destination ? ` in ${destination}` : ''}` : destination ? `Stays in ${destination}` : 'All Himalayan Stays'}
           </h1>
           <p className="mt-2 text-sm text-slate-500">
             {preferenceParts.length > 0 ? `Your preferences: ${preferenceParts.join(' · ')}` : 'No dates or guest count set'}
@@ -88,6 +91,7 @@ export default async function StaySearchPage({ searchParams }: StaySearchPagePro
           {preferenceParts.length > 0 ? <p className="mt-1 text-xs text-slate-500">{STAY_PREFERENCES_DISCLAIMER}</p> : null}
           <StaySearch
             defaultDestination={destination}
+            defaultQuery={query}
             defaultCheckIn={checkIn}
             defaultCheckOut={checkOut}
             defaultGuests={guests}
@@ -100,11 +104,13 @@ export default async function StaySearchPage({ searchParams }: StaySearchPagePro
         <h2 className="sr-only">Browse Stays</h2>
 
         <Suspense
-          key={`${destination ?? ''}:${type ?? ''}:${priceMax ?? ''}:${amenity ?? ''}:${mood ?? ''}:${category ?? ''}`}
+          key={`${destination ?? ''}:${query ?? ''}:${page ?? ''}:${type ?? ''}:${priceMax ?? ''}:${amenity ?? ''}:${mood ?? ''}:${category ?? ''}`}
           fallback={<SkeletonGrid count={4} className="md:grid-cols-2 lg:grid-cols-3" />}
         >
           <StaySearchResults
             destination={destination}
+            query={query}
+            page={page}
             checkIn={checkIn}
             checkOut={checkOut}
             guests={guests}
@@ -122,6 +128,8 @@ export default async function StaySearchPage({ searchParams }: StaySearchPagePro
 
 interface StaySearchResultsProps {
   destination?: string;
+  query?: string;
+  page?: string;
   checkIn?: string;
   checkOut?: string;
   guests?: string;
@@ -132,12 +140,25 @@ interface StaySearchResultsProps {
   category?: string;
 }
 
-// Bounds a destination-less global browse — see the "no destination" branch below.
-// This page has no pagination UI (unlike /stays/<type>'s catalog pages), so this is
-// simply "show a generous first page" rather than "load the whole cache."
-const GLOBAL_SEARCH_RESULT_LIMIT = 60;
+/** A curated (publicly listed) hotel as a search candidate, so q is matched with the same rules as cached stays. */
+function curatedCandidate(hotel: HotelPackage): StayCandidate {
+  return { placeId: `curated:${hotel.slug}`, name: hotel.title, formattedAddress: hotel.location, tags: [{ destinationSlug: '', searchLocation: hotel.location }] };
+}
 
-async function StaySearchResults({ destination, checkIn, checkOut, guests, type, priceMax, amenity, mood, category: categoryParam }: StaySearchResultsProps) {
+function pageHref(params: Record<string, string | undefined>, page: number): string {
+  const search = new URLSearchParams();
+  Object.entries({ ...params, page: page > 1 ? String(page) : undefined }).forEach(([key, value]) => {
+    if (value) search.set(key, value);
+  });
+  const qs = search.toString();
+  return qs ? `/stays/search?${qs}` : '/stays/search';
+}
+
+function formatCacheDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+}
+
+async function StaySearchResults({ destination, query, page: pageParam, checkIn, checkOut, guests, type, priceMax, amenity, mood, category: categoryParam }: StaySearchResultsProps) {
   const stayType = type ? findStayTypeBySlug(type) : undefined;
   const stayMood = !stayType && mood ? findStayMoodBySlug(mood) : undefined;
   const category: HotelCategory | undefined = stayType?.category ?? stayMood?.category ?? (isHotelCategory(categoryParam) ? categoryParam : undefined);
@@ -178,62 +199,61 @@ async function StaySearchResults({ destination, checkIn, checkOut, guests, type,
       ? { min: Math.min(...scopedPrices), max: Math.max(...scopedPrices) }
       : null;
 
+  const noTitles = new Map<string, string>();
   const hotels: HotelPackage[] = scoped.filter((hotel) => {
     const price = hotel.places?.customPrice ?? hotel.pricePerNight;
     if (priceMaxValue !== undefined && price > priceMaxValue) return false;
     if (amenity && !hotel.amenities?.includes(amenity)) return false;
+    if (query && scoreStayText(curatedCandidate(hotel), query, noTitles) === 0) return false;
     return true;
   });
 
   // Google-sourced stays carry no price/amenity/description data, so a price ceiling,
   // amenity, mood-keyword or boutique(`featured`)-only filter can never be honestly
   // verified against them — rather than silently dropping them (invisible) or silently
-  // including them (implying they satisfy a filter that was never checked), Google
-  // augmentation is simply not attempted while any such filter is active. "Heritage" is
+  // including them (implying they satisfy a filter that was never checked), cached Google
+  // stays are simply not included while any such filter is active. "Heritage" is
   // also excluded — Google's cache has no heritage-specific category (see
   // app/stays/[...segments]/page.tsx's identical exclusion for the same reason).
   // A forced-empty search (an unresolved type/mood/category or an invalid priceMax) must
-  // also skip the Google augmentation — otherwise the cached Google stays would still
-  // render for a filter that matched nothing, which is the same silent full-catalog
-  // fall-through shouldForceEmpty exists to prevent for the curated hotels.
+  // also skip the cached Google stays — otherwise they would still render for a filter
+  // that matched nothing, the same silent full-catalog fall-through shouldForceEmpty
+  // exists to prevent for the curated hotels.
   const includeGoogleData = !shouldForceEmpty && !isBoutiqueOnly && !moodKeyword && priceMaxValue === undefined && !amenity && category !== 'Heritage';
   const googleStayType = includeGoogleData && category ? CATEGORY_TO_STAY_TYPE[category] : undefined;
 
-  let googleStays: Stay[] = [];
+  const requestedPage = parsePageParam(pageParam);
+  const start = (requestedPage - 1) * STAYS_PAGE_SIZE;
+  // Curated (publicly listed) stays lead the list, ranked by the same text rules when q is set.
+  const rankedHotels = query
+    ? hotels
+        .map((hotel, index) => ({ hotel, index, score: scoreStayText(curatedCandidate(hotel), query, noTitles) }))
+        .sort((a, b) => b.score - a.score || a.index - b.index)
+        .map((entry) => entry.hotel)
+    : hotels;
+  const curatedAsStays = rankedHotels.map((hotel) => hotelToStay(hotel));
+
+  // Cache-only (never Google). Eligibility, exclusions AND the curated-duplicate removal all happen inside
+  // searchEligibleStays BEFORE counting and paging, so totals and pages are exact. The destination text and
+  // q are both honoured: a destination that is not a published destination must name a stay-base locality
+  // that is really stored, otherwise nothing matches.
+  let google: EligibleStaysOutcome = { status: 'ok', stays: [], totalCount: 0 };
   if (includeGoogleData) {
-    if (destination) {
-      // A free-text `destination` only triggers real Google discovery when it resolves
-      // to one of our actual, known destinations (canonical slug, state, stay-base
-      // rules) — never an arbitrary user-typed string sent straight into a Places
-      // query. An unresolved destination falls back to curated-only matching for that
-      // text (getHotels' existing free-text `location` regex, unchanged above).
-      const matchedDestination = await getCuratedDestinationBySlug(slugify(destination));
-      if (matchedDestination) {
-        const stayContext = getStayLocationContext(matchedDestination);
-        const result = await getStaysForDestination(
-          matchedDestination.slug,
-          stayContext.primaryStayLocation,
-          googleStayType ? [googleStayType] : undefined,
-          matchedDestination.state,
-          stayContext.stayMode === 'unavailable' ? undefined : stayContext.stayMode
-        );
-        googleStays = result.stays;
-      }
-    } else {
-      // No destination at all — a genuinely global browse. Aggregates ONLY the
-      // existing PlaceCache (never Google — see lib/stays.ts's getCachedStaysCatalog),
-      // deduped by placeId across every cached destination, bounded to one page so an
-      // unfiltered global search can never dump the full cache into one response.
-      const catalogPage = await getCachedStaysCatalog({ stayType: googleStayType, pageSize: GLOBAL_SEARCH_RESULT_LIMIT });
-      googleStays = catalogPage.stays;
-    }
+    google = await searchEligibleStays({ q: query, destination, stayType: googleStayType, curated: curatedAsStays, offset: start, limit: STAYS_PAGE_SIZE });
   }
 
-  const curatedAsStays = hotels.map((hotel) => hotelToStay(hotel));
-  const finalStays: Stay[] | null = includeGoogleData ? [...curatedAsStays, ...dedupeAgainstCurated(curatedAsStays, googleStays)] : null;
-  const resultCount = finalStays ? finalStays.length : hotels.length;
+  const unavailable = google.status === 'unavailable';
+  // Curated-only listing (a filter that cached Google stays cannot satisfy, or the cached list is unavailable).
+  const curatedStaysPage = paginate(curatedAsStays, requestedPage, STAYS_PAGE_SIZE);
+  const googleOk = includeGoogleData && google.status === 'ok' ? google : null;
+  const finalStays: Stay[] | null = includeGoogleData ? (googleOk ? googleOk.stays : curatedStaysPage.items) : null;
+  const resultCount = googleOk ? googleOk.totalCount : includeGoogleData ? curatedAsStays.length : hotels.length;
+  const totalPages = Math.max(1, Math.ceil(resultCount / STAYS_PAGE_SIZE));
+  const outOfRange = resultCount > 0 && requestedPage > totalPages;
+  const pagedHotels = includeGoogleData ? [] : paginate(rankedHotels, requestedPage, STAYS_PAGE_SIZE).items;
 
-  const currentParams: Record<string, string | undefined> = { destination, checkIn, checkOut, guests, type, priceMax, amenity, mood };
+  const currentParams: Record<string, string | undefined> = { destination, q: query, checkIn, checkOut, guests, type, priceMax, amenity, mood };
+  const pagerParams: Record<string, string | undefined> = { ...currentParams, category: categoryParam };
 
   const filters = (
     <StayFilters
@@ -247,13 +267,55 @@ async function StaySearchResults({ destination, checkIn, checkOut, guests, type,
     />
   );
 
+  if (google.status === 'ambiguous' && curatedAsStays.length === 0) {
+    return (
+      <div className="flex flex-col gap-5 xl:flex-row xl:items-start">
+        {filters}
+        <div className={cn(FILTER_EMPTY_STATE_CLASS, 'flex-1')}>
+          <p className="text-lg font-semibold text-slate-900">Which place did you mean?</p>
+          <p className="mt-3 text-slate-600">“{destination}” matches places in more than one region. Pick one to see its stays.</p>
+          <ul className="mt-4 flex flex-wrap justify-center gap-2">
+            {google.destinations.map((option) => (
+              <li key={option.slug}>
+                <Link href={pageHref({ ...pagerParams, destination: option.title }, 1)} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50">
+                  {option.title}
+                  {option.state ? `, ${option.state}` : ''}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
+  if (unavailable && curatedAsStays.length === 0) {
+    // The exclusion list (or the published-destination list) could not be read: Google-sourced
+    // stays are withheld entirely instead of being shown unfiltered.
+    return (
+      <div className="flex flex-col gap-5 xl:flex-row xl:items-start">
+        {filters}
+        <div className={cn(FILTER_EMPTY_STATE_CLASS, 'flex-1')} role="status">
+          <p className="text-lg font-semibold text-slate-900">Stays are temporarily unavailable.</p>
+          <p className="mt-3 text-slate-600">We couldn&apos;t load stay listings just now. Please try again in a moment, or explore our curated Journeys.</p>
+          <Link
+            href="/journeys"
+            className="cursor-hover mt-6 inline-flex items-center gap-2 rounded-full bg-apex-500 px-6 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-apex-400"
+          >
+            Explore Journeys
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   if (resultCount === 0) {
     // Whether *anything* the visitor chose narrowed the result set — if not, an empty
     // result means the catalog itself has nothing right now, not that their destination/
     // type/price/amenity/mood choice was too narrow. Blaming a search that was never
     // made would be dishonest, so this needs its own message rather than reusing the
     // filtered-empty copy below.
-    const hasActiveFilters = Boolean(destination || type || priceMax || amenity || mood || categoryParam);
+    const hasActiveFilters = Boolean(destination || query || type || priceMax || amenity || mood || categoryParam);
     return (
       <div className="flex flex-col gap-5 xl:flex-row xl:items-start">
         {filters}
@@ -261,7 +323,7 @@ async function StaySearchResults({ destination, checkIn, checkOut, guests, type,
           {hasActiveFilters ? (
             <>
               <p className="text-lg font-semibold text-slate-900">No stays match your search.</p>
-              <p className="mt-3 text-slate-600">Try a different destination, stay type, or price range.</p>
+              <p className="mt-3 text-slate-600">Try a different property name, destination, stay type, or price range.</p>
             </>
           ) : (
             <>
@@ -280,22 +342,66 @@ async function StaySearchResults({ destination, checkIn, checkOut, guests, type,
     );
   }
 
+  const cacheAge = google.status === 'ok' ? google.cacheAge : undefined;
+
   return (
     <div className="flex flex-col gap-5 xl:flex-row xl:items-start">
       {filters}
-      {finalStays ? (
-        <div className="grid flex-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {finalStays.map((stay, index) => (
-            <StayCard key={`${stay.placeId}-${index}`} stay={stay} priority={index < 4} />
-          ))}
-        </div>
-      ) : (
-        <div className="grid flex-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {hotels.map((hotel, index) => (
-            <PropertyCard key={hotel.slug} hotel={hotel} checkIn={checkIn} checkOut={checkOut} guests={guests} priority={index < 4} />
-          ))}
-        </div>
-      )}
+      <div className="min-w-0 flex-1 space-y-4">
+        {unavailable ? (
+          <p role="status" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            Some stay listings are temporarily unavailable right now, so only part of the results are shown.
+          </p>
+        ) : null}
+        {outOfRange ? (
+          <div className={cn(FILTER_EMPTY_STATE_CLASS)}>
+            <p className="text-lg font-semibold text-slate-900">That page doesn&apos;t exist.</p>
+            <p className="mt-3 text-slate-600">
+              This search has {resultCount} {resultCount === 1 ? 'stay' : 'stays'} across {totalPages} {totalPages === 1 ? 'page' : 'pages'}.
+            </p>
+            <Link href={pageHref(pagerParams, 1)} className="mt-4 inline-block text-sm font-semibold text-apex-600 hover:text-apex-700">
+              Go to the first page
+            </Link>
+          </div>
+        ) : finalStays ? (
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {finalStays.map((stay, index) => (
+              <StayCard key={`${stay.placeId}-${index}`} stay={stay} priority={index < 4} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {pagedHotels.map((hotel, index) => (
+              <PropertyCard key={hotel.slug} hotel={hotel} checkIn={checkIn} checkOut={checkOut} guests={guests} priority={index < 4} />
+            ))}
+          </div>
+        )}
+
+        {totalPages > 1 && !outOfRange ? (
+          <nav aria-label="Stay results pages" className="flex items-center justify-center gap-4 pt-2 text-sm">
+            {requestedPage > 1 ? (
+              <Link href={pageHref(pagerParams, requestedPage - 1)} rel="prev" className="rounded-full border border-slate-200 bg-white px-4 py-2 font-semibold text-slate-800 hover:bg-slate-50">
+                Previous
+              </Link>
+            ) : null}
+            <span className="text-slate-600">
+              Page {requestedPage} of {totalPages}
+            </span>
+            {requestedPage < totalPages ? (
+              <Link href={pageHref(pagerParams, requestedPage + 1)} rel="next" className="rounded-full border border-slate-200 bg-white px-4 py-2 font-semibold text-slate-800 hover:bg-slate-50">
+                Next
+              </Link>
+            ) : null}
+          </nav>
+        ) : null}
+
+        {cacheAge && !outOfRange ? (
+          <p className="text-center text-xs text-slate-500">
+            Listing details come from cached provider data (last updated {formatCacheDate(cacheAge.oldest)}
+            {cacheAge.newest.slice(0, 10) !== cacheAge.oldest.slice(0, 10) ? ` – ${formatCacheDate(cacheAge.newest)}` : ''}). Live availability and prices are not shown.
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 }
