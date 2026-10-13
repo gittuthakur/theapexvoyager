@@ -4,6 +4,8 @@ import { getAllExperiences } from '@/lib/experiences';
 import { getAllExperts } from '@/lib/experts';
 import { getAllPackages } from '@/lib/packages';
 import { getPublishedRegionRefs } from '@/lib/publishedRegions';
+import { searchStaySuggestions, type StaySuggestionsOutcome } from '@/lib/staysSearch';
+import type { StaySearchDestination } from '@/lib/search/staySearch';
 import {
   GLOBAL_SEARCH_LIMITS,
   GLOBAL_SEARCH_SECTION_ORDER,
@@ -12,6 +14,7 @@ import {
   expertSection,
   journeySection,
   regionSection,
+  staySection,
   type GlobalSearchItem,
   type GlobalSearchSectionKey,
   type ParsedGlobalQuery,
@@ -30,8 +33,11 @@ import type { TravelExpert } from '@/types/expert';
  * really stopped, not just ignored), and each section additionally races a deadline slightly later than
  * that, which also covers a hung connection. A section that fails or times out is reported as such with no
  * items; the others are unaffected. Nothing is cached here: publication changes apply on the next request.
- * One projection-free read per catalog (no per-keystroke scan of large collections); stays and transport
- * are not part of Stage 1.
+ * One projection-free read per catalog (no per-keystroke scan of large collections).
+ *
+ * Stage 3B adds the Stays section from searchStaySuggestions (lib/staysSearch.ts), which owns its eligibility,
+ * fail-closed exclusion check, row memo and single-flight read. It has its OWN, longer response deadline (below)
+ * and is the only section that may make the response wait past SECTION_DEADLINE_MS. Transport is not part of this.
  */
 
 /** Server-side database time limit for each read. */
@@ -44,6 +50,17 @@ export const SECTION_DEADLINE_MS = SECTION_DB_TIME_LIMIT_MS + 250;
  * SECTION_DB_TIME_LIMIT_MS. If the connection cannot be opened in time every section reports a timeout.
  */
 export const CONNECT_DEADLINE_MS = 6000;
+/**
+ * The Stays section's response deadline, counted from the same moment as SECTION_DEADLINE_MS (after the connection is
+ * open). Evidence: a warm request is 0.15-0.3 s, but the first request on a cold instance reads about 4.5k eligible
+ * rows (1.9 MB), measured 1.5-3.5 s (outliers to 9.7 s). A deadline equal to the other sections' would make almost
+ * every cold Stays answer a timeout; waiting for the read to finish would make the whole response wait for it.
+ * 2.5 s covers most cold reads while bounding the extra wait for everyone else to 0.75 s, and only when Stays is the
+ * straggler. A read that misses it is NOT cancelled by the deadline (its own lifecycle in lib/staysSearch.ts bounds
+ * it: one shared read, 20 s wait, abort, at most four unsettled), so it still fills the 60 s row memo and the next
+ * request is warm. Stays then reports status "timeout" and the response is partial - never an empty "ok".
+ */
+export const STAYS_SECTION_DEADLINE_MS = 2500;
 
 export interface GlobalSearchLoaders {
   /** Opens (or reuses) the shared database connection before any read. Defaults to a no-op when omitted. */
@@ -53,6 +70,12 @@ export interface GlobalSearchLoaders {
   journeys(options: { maxTimeMS: number }): Promise<TravelPackage[]>;
   experiences(options: { maxTimeMS: number }): Promise<Experience[]>;
   experts(options: { maxTimeMS: number }): Promise<TravelExpert[]>;
+  /**
+   * Public stay suggestions for the text. Optional so a loader set without it simply has no Stays section data.
+   * `shared.destinations()` is the Destinations section's own published-only read, so Stays does not read it twice; if
+   * that read fails, so does Stays (it is never answered from unverified destinations).
+   */
+  stays?(query: string, shared: { destinations(): Promise<StaySearchDestination[]> }): Promise<StaySuggestionsOutcome>;
 }
 
 /**
@@ -92,7 +115,9 @@ export const defaultLoaders: GlobalSearchLoaders = {
   regions: (options) => singleFlight('regions', () => getPublishedRegionRefs(options)),
   journeys: (options) => singleFlight('journeys', () => getAllPackages({ ...options, projection: { ...JOURNEY_SEARCH_PROJECTION } })),
   experiences: (options) => singleFlight('experiences', () => getAllExperiences(options.maxTimeMS, { ...EXPERIENCE_SEARCH_PROJECTION })),
-  experts: (options) => singleFlight('experts', () => getAllExperts(options))
+  experts: (options) => singleFlight('experts', () => getAllExperts(options)),
+  // Not wrapped in singleFlight here: searchStaySuggestions has its own single-flight over the shared row read.
+  stays: (query, shared) => searchStaySuggestions(query, { destinations: shared.destinations })
 };
 
 export type SectionStatus = 'ok' | 'timeout' | 'error';
@@ -115,7 +140,7 @@ class DeadlineError extends Error {
   }
 }
 
-function withDeadline<T>(promise: Promise<T>, ms: number): Promise<T> {
+export function withDeadline<T>(promise: Promise<T>, ms: number): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const deadline = new Promise<never>((_, reject) => {
     timer = setTimeout(() => reject(new DeadlineError()), ms);
@@ -136,7 +161,7 @@ const emptySection = (status: SectionStatus = 'ok'): GlobalSearchSection => ({ s
 export function emptyGlobalSearchResponse(query: string): GlobalSearchResponse {
   return {
     query,
-    sections: { destinations: emptySection(), regions: emptySection(), journeys: emptySection(), experiences: emptySection(), experts: emptySection() },
+    sections: { destinations: emptySection(), regions: emptySection(), journeys: emptySection(), experiences: emptySection(), stays: emptySection(), experts: emptySection() },
     total: 0,
     partial: false
   };
@@ -170,7 +195,11 @@ export async function runGlobalSearch(parsed: Extract<ParsedGlobalQuery, { ok: t
   const journeysRead = load(() => loaders.journeys(options));
   const experiencesRead = load(() => loaders.experiences(options));
   const expertsRead = load(() => loaders.experts(options));
-  for (const read of [destinationsRead, regionsRead, journeysRead, experiencesRead, expertsRead]) read.catch(() => undefined);
+  // Stays: its own deadline; the abandoned promise is always handled so a late rejection can never be unhandled.
+  // It reuses the Destinations section's published-only read (never a second read); its own deadline still applies.
+  const sharedDestinations = () => destinationsRead.then((list) => list.map((destination) => ({ slug: destination.slug, title: destination.title, state: destination.state })));
+  const staysRead = loaders.stays ? withDeadline(Promise.resolve().then(() => loaders.stays!(query, { destinations: sharedDestinations })), STAYS_SECTION_DEADLINE_MS) : null;
+  for (const read of [destinationsRead, regionsRead, journeysRead, experiencesRead, expertsRead, ...(staysRead ? [staysRead] : [])]) read.catch(() => undefined);
 
   async function section<T>(key: GlobalSearchSectionKey, primary: Promise<T>, build: (data: T, destinations: Destination[], regions: RegionRef[]) => GlobalSearchItem[], needs: { destinations?: boolean; regions?: boolean } = {}): Promise<[GlobalSearchSectionKey, GlobalSearchSection]> {
     try {
@@ -185,11 +214,26 @@ export async function runGlobalSearch(parsed: Extract<ParsedGlobalQuery, { ok: t
     }
   }
 
+  async function staysSection(): Promise<[GlobalSearchSectionKey, GlobalSearchSection]> {
+    if (!staysRead) return ['stays', emptySection()];
+    try {
+      const outcome = await staysRead;
+      if (outcome.status === 'ok') return ['stays', { status: 'ok', items: staySection(outcome.suggestions) }];
+      // Exclusions/catalog could not be checked, or the cached read hit its limit: withheld entirely, never "no stays".
+      console.error('[globalSearch] section "stays" unavailable', outcome.reason);
+      return ['stays', emptySection(outcome.reason === 'timeout' ? 'timeout' : 'error')];
+    } catch (error) {
+      console.error('[globalSearch] section "stays" unavailable', isTimeout(error) ? 'timeout' : error);
+      return ['stays', emptySection(isTimeout(error) ? 'timeout' : 'error')];
+    }
+  }
+
   const entries = await Promise.all([
     section('destinations', destinationsRead, (destinations) => destinationSection(destinations, query)),
     section('regions', regionsRead, (regions) => regionSection(regions, query)),
     section('journeys', journeysRead, (packages, destinations) => journeySection(packages, destinations, query), { destinations: true }),
     section('experiences', experiencesRead, (experiences, destinations) => experienceSection(experiences, destinations, query), { destinations: true }),
+    staysSection(),
     section('experts', expertsRead, (experts, destinations, regions) => expertSection(experts, destinations, regions, query), { destinations: true, regions: true })
   ]);
 

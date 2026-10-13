@@ -35,12 +35,13 @@ export function buildNavItems(view: GlobalSearchView): NavItem[] {
 
 export const optionId = (listboxId: string, key: string) => `${listboxId}-opt-${key.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
 
-const TYPE_ICON: Record<GlobalSearchItem['type'], string> = { destination: '📍', region: '🗺️', journey: '🏔️', experience: '✨', expert: '🧭' };
+const TYPE_ICON: Record<GlobalSearchItem['type'], string> = { destination: '📍', region: '🗺️', journey: '🏔️', experience: '✨', stay: '🏨', expert: '🧭' };
 const TYPE_BADGE: Record<GlobalSearchItem['type'], string> = {
   destination: 'bg-blue-50 text-blue-600',
   region: 'bg-emerald-50 text-emerald-600',
   journey: 'bg-purple-50 text-purple-600',
   experience: 'bg-amber-50 text-amber-600',
+  stay: 'bg-teal-50 text-teal-600',
   expert: 'bg-indigo-50 text-indigo-600'
 };
 
@@ -119,7 +120,7 @@ export function GlobalSearchResults({ view, listboxId, activeKey, onHover, onNav
         </div>
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
           <p className="text-xs text-slate-500">
-            <span className="font-semibold text-slate-700">Tip:</span> Type at least 2 letters to search destinations, regions, journeys, experiences and travel experts.
+            <span className="font-semibold text-slate-700">Tip:</span> Type at least 2 letters to search destinations, regions, journeys, experiences, stays and travel experts.
           </p>
         </div>
       </div>

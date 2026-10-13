@@ -74,9 +74,29 @@ interface LightRow {
   rating?: number;
   userRatingCount?: number;
   types?: string[];
+  /** Present only on rows read with SUGGESTION_PROJECTION: whether `types` is non-empty (all the representative rule needs of it). */
+  hasTypes?: boolean;
   updatedAt?: Date | string;
 }
 
+/**
+ * What the suggestion search reads: the listing's fields MINUS the ones only the listing uses. `updatedAt` feeds the
+ * listing's cache-age line; `types` feeds the listing's stay-type filter and its representative-row rule. Suggestions
+ * have no stay-type filter and no cache-age line, and the representative rule only asks whether `types` is non-empty,
+ * so the database computes that one boolean instead of sending the array (verified identical for every eligible row).
+ * `_id` is never used. The listing keeps LIGHT_PROJECTION unchanged.
+ */
+const SUGGESTION_PROJECTION = {
+  _id: 0,
+  placeId: 1,
+  name: 1,
+  destinationSlug: 1,
+  searchLocation: 1,
+  formattedAddress: 1,
+  rating: 1,
+  userRatingCount: 1,
+  hasTypes: { $gt: [{ $size: { $ifNull: ['$types', []] } }, 0] }
+};
 const LIGHT_PROJECTION = { placeId: 1, name: 1, destinationSlug: 1, searchLocation: 1, formattedAddress: 1, rating: 1, userRatingCount: 1, types: 1, updatedAt: 1 };
 
 /**
@@ -85,7 +105,7 @@ const LIGHT_PROJECTION = { placeId: 1, name: 1, destinationSlug: 1, searchLocati
  * and describes a duplicated place identically.
  */
 function betterRepresentative(candidate: LightRow, current: LightRow): boolean {
-  const typed = (row: LightRow) => ((row.types?.length ?? 0) > 0 ? 1 : 0);
+  const typed = (row: LightRow) => ((row.hasTypes ?? (row.types?.length ?? 0) > 0) ? 1 : 0);
   return (
     typed(candidate) - typed(current) ||
     (candidate.rating ?? 0) - (current.rating ?? 0) ||
@@ -119,7 +139,13 @@ export function groupRowsIntoCandidates(rows: readonly LightRow[]): StayCandidat
 }
 
 // ---- eligible-row memo (rows only; never exclusions, never eligibility) --------------------------------
-let rowMemo: { key: string; at: number; rows: LightRow[] } | null = null;
+/**
+ * Fresh row sets, one per (row shape, exact eligible-pair set). The two shapes (the listing's full light rows and the
+ * suggestions' leaner rows) are different data, so they never serve each other. The table is tiny and bounded: expired
+ * entries are dropped on every write and at most MAX_MEMO_ENTRIES are kept (oldest first out).
+ */
+const rowMemo = new Map<string, { at: number; rows: LightRow[] }>();
+const MAX_MEMO_ENTRIES = 4;
 /** Bumped by resetStaysSearchMemo: a read that started before a reset never writes the memo afterwards. */
 let memoGeneration = 0;
 
@@ -164,12 +190,15 @@ function rowMemoMs(): number {
 export interface EligibleRowReadOptions {
   /** Server-side database time limit for the read (MongoDB abandons the query itself). Omitted = no limit, exactly as before. */
   maxTimeMS?: number;
+  /** 'listing' (default, exactly as before) or 'suggestions' (the leaner SUGGESTION_PROJECTION rows). */
+  shape?: 'listing' | 'suggestions';
 }
 
 async function loadEligibleRows(pairs: readonly EligibleStayLocation[], options: EligibleRowReadOptions, signal?: AbortSignal): Promise<LightRow[]> {
   await connectDB();
   // The driver cancels the operation (and its transfer) when the signal aborts.
-  const query = signal ? PlaceCache.find(eligibleLocationsMatch(pairs), LIGHT_PROJECTION, { signal } as never) : PlaceCache.find(eligibleLocationsMatch(pairs), LIGHT_PROJECTION);
+  const projection = options.shape === 'suggestions' ? SUGGESTION_PROJECTION : LIGHT_PROJECTION;
+  const query = signal ? PlaceCache.find(eligibleLocationsMatch(pairs), projection, { signal } as never) : PlaceCache.find(eligibleLocationsMatch(pairs), projection);
   return (await (options.maxTimeMS ? query.maxTimeMS(options.maxTimeMS) : query).lean()) as unknown as LightRow[];
 }
 
@@ -200,9 +229,11 @@ async function readEligibleRows(pairs: readonly EligibleStayLocation[], memoizab
   // The key is the exact eligible-pair set, so unpublishing a destination (or an edited stay rule) is a memo miss at once.
   const key = memoizable && ttl > 0 ? pairs.map((pair) => `${pair.destinationSlug}|${pair.searchLocation}`).sort().join('~') : '';
   if (!key) return loadEligibleRows(pairs, options);
-  if (rowMemo && rowMemo.key === key && Date.now() - rowMemo.at < ttl) return rowMemo.rows;
+  const memoKey = `${options.shape ?? 'listing'}|${key}`;
+  const memoized = rowMemo.get(memoKey);
+  if (memoized && Date.now() - memoized.at < ttl) return memoized.rows;
 
-  const flightKey = `${key}#${options.maxTimeMS ?? 0}`;
+  const flightKey = `${memoKey}#${options.maxTimeMS ?? 0}`;
   const running = inFlightRows.get(flightKey);
   if (running) return awaitFlight(running);
   if (inFlightRows.size >= MAX_UNSETTLED_ROW_READS) throw new RowReadUnavailableError('busy');
@@ -212,7 +243,12 @@ async function readEligibleRows(pairs: readonly EligibleStayLocation[], memoizab
   const flight: RowFlight = {
     startedAt: Date.now(),
     promise: loadEligibleRows(pairs, options, controller.signal).then((rows) => {
-      if (generation === memoGeneration) rowMemo = { key, at: Date.now(), rows };
+      if (generation === memoGeneration) {
+        const now = Date.now();
+        for (const [entryKey, entry] of rowMemo) if (now - entry.at >= ttl) rowMemo.delete(entryKey);
+        rowMemo.set(memoKey, { at: now, rows });
+        while (rowMemo.size > MAX_MEMO_ENTRIES) rowMemo.delete(rowMemo.keys().next().value as string);
+      }
       return rows;
     })
   };
@@ -232,7 +268,7 @@ async function readEligibleRows(pairs: readonly EligibleStayLocation[], memoizab
 /** For tests and operations: drop the memo. */
 // Reads already running stay registered until they settle (so a reset can never cause overlapping reads); the generation bump only stops them from refilling the memo.
 export function resetStaysSearchMemo(): void {
-  rowMemo = null;
+  rowMemo.clear();
   memoGeneration += 1;
 }
 
@@ -371,6 +407,13 @@ export type StaySuggestionsOutcome =
 export interface StaySuggestionsOptions {
   /** Database time limit for the row read. Defaults to STAY_SUGGESTION_ROW_TIME_LIMIT_MS. */
   maxTimeMS?: number;
+  /**
+   * The published destinations, when the caller already has them (the Global Search destinations section read the same
+   * published-only set). Supplied as a function so nothing is awaited - and no rejection left unhandled - for a search that
+   * reads nothing. If it fails, the whole Stays section is unavailable; it never falls back to unverified data. Omitted =
+   * this function reads the published destinations itself, exactly as before.
+   */
+  destinations?: () => Promise<readonly StaySearchDestination[]>;
   /** Maximum suggestions, 1..STAY_SUGGESTION_LIMIT (default and ceiling 5). */
   limit?: number;
   /** Publicly listed curated stays already known to the caller; a cached stay that is an exact duplicate of one is dropped BEFORE the limit. */
@@ -380,6 +423,8 @@ export interface StaySuggestionsOptions {
 function isTimeoutError(error: unknown): boolean {
   if (error instanceof RowReadUnavailableError) return true;
   const candidate = error as { code?: number; codeName?: string; name?: string } | null;
+  // The Global Search section deadline (lib/globalSearchServer.ts) names its error DeadlineError.
+  if (candidate?.name === 'DeadlineError') return true;
   return candidate?.code === 50 || candidate?.codeName === 'MaxTimeMSExpired' || /MaxTimeMSExpired/.test(String(candidate?.name ?? ''));
 }
 
@@ -405,7 +450,7 @@ export async function searchStaySuggestions(query: string, options: StaySuggesti
 
   let destinations: StaySearchDestination[];
   try {
-    destinations = await getPublishedDestinationRefs();
+    destinations = options.destinations ? [...(await options.destinations())] : await getPublishedDestinationRefs();
   } catch (error) {
     console.error('[staysSearch] published destinations could not be loaded', error);
     await exclusionsRead;
@@ -416,7 +461,7 @@ export async function searchStaySuggestions(query: string, options: StaySuggesti
   let rows: LightRow[] = [];
   let rowsError: unknown = null;
   try {
-    rows = eligible.length > 0 ? await readEligibleRows(eligible, true, { maxTimeMS: options.maxTimeMS ?? STAY_SUGGESTION_ROW_TIME_LIMIT_MS }) : [];
+    rows = eligible.length > 0 ? await readEligibleRows(eligible, true, { maxTimeMS: options.maxTimeMS ?? STAY_SUGGESTION_ROW_TIME_LIMIT_MS, shape: 'suggestions' }) : [];
   } catch (error) {
     rowsError = error;
   }

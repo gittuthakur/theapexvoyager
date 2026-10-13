@@ -23,16 +23,16 @@ import type { TravelExpert } from '@/types/expert';
 
 export const GLOBAL_SEARCH_LIMITS = { minQueryLength: 2, maxQueryLength: 80, perSection: 5 } as const;
 
-export type GlobalSearchSectionKey = 'destinations' | 'regions' | 'journeys' | 'experiences' | 'experts';
-export const GLOBAL_SEARCH_SECTION_ORDER: readonly GlobalSearchSectionKey[] = ['destinations', 'regions', 'journeys', 'experiences', 'experts'];
+export type GlobalSearchSectionKey = 'destinations' | 'regions' | 'journeys' | 'experiences' | 'stays' | 'experts';
+export const GLOBAL_SEARCH_SECTION_ORDER: readonly GlobalSearchSectionKey[] = ['destinations', 'regions', 'journeys', 'experiences', 'stays', 'experts'];
 
 export interface GlobalSearchItem {
   /** Stable, type-prefixed id, e.g. "journey:kinnaur-spiti-circuit". */
   id: string;
-  type: 'destination' | 'region' | 'journey' | 'experience' | 'expert';
+  type: 'destination' | 'region' | 'journey' | 'experience' | 'stay' | 'expert';
   title: string;
   subtitle?: string;
-  /** The record's own page - never a generic listing. */
+  /** The record's own page - never a generic listing (a stay's is its public property page). */
   href: string;
   image?: string;
   /** Why it matched (the owning module's reason), strongest first: exact / prefix / word / location / ... / description. */
@@ -182,4 +182,46 @@ export function expertSection(
     image: expert.profileImage,
     reason: 'expert'
   }));
+}
+
+/**
+ * What a stay suggestion must provide to become a row. Structural on purpose: this pure layer never imports the
+ * server-only stays module, and a suggestion already carries ONLY public fields (name, verified locality,
+ * destination title, public property URL) - never a rating, price, availability, photograph or provider URL.
+ */
+export interface StaySuggestionRow {
+  placeId: string;
+  name: string;
+  locality: string;
+  destinationTitle: string;
+  href: string;
+}
+
+/**
+ * Stays: the suggestions arrive already eligible (published destination + authored stay location, fresh exclusions),
+ * ranked with the listing's own relevance rules and de-duplicated by place. Here they are only shaped into rows,
+ * de-duplicated once more by identity and capped. No image is attached: a stay's photograph would come from the paid
+ * photo proxy, so the row shows the neutral stay icon instead.
+ */
+export function staySection(suggestions: readonly StaySuggestionRow[]): GlobalSearchItem[] {
+  const seen = new Set<string>();
+  const unique = suggestions.filter((suggestion) => {
+    if (seen.has(suggestion.placeId)) return false;
+    seen.add(suggestion.placeId);
+    return true;
+  });
+  return cap(unique).map((suggestion) => {
+    const places: string[] = [];
+    for (const place of [suggestion.locality, suggestion.destinationTitle]) {
+      if (place && !places.some((existing) => existing.toLowerCase() === place.toLowerCase())) places.push(place);
+    }
+    return {
+      id: `stay:${suggestion.placeId}`,
+      type: 'stay' as const,
+      title: suggestion.name,
+      subtitle: places.join(', ') || undefined,
+      href: suggestion.href,
+      reason: 'stay'
+    };
+  });
 }

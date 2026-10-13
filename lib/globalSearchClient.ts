@@ -37,6 +37,7 @@ export const GLOBAL_SEARCH_SECTIONS: ReadonlyArray<{ key: GlobalSearchSectionKey
   { key: 'regions', label: 'Regions' },
   { key: 'journeys', label: 'Journeys' },
   { key: 'experiences', label: 'Experiences' },
+  { key: 'stays', label: 'Stays' },
   { key: 'experts', label: 'Travel Experts' }
 ];
 
@@ -95,6 +96,7 @@ export function failedSections(response: GlobalSearchResponse): GlobalSearchSect
  * section that returned its full cap (so more may exist). Regions have no listing, and no counts are claimed.
  *   /destinations?destination=  (P2 destination search)   /journeys?destination=  (P1 journey search)
  *   /experiences?q=             (P2 experience search)    /experts?q=               (P3 expert search)
+ *   /stays/search?q=            (P4 stay search: the same eligibility and relevance rules the suggestions use)
  */
 export function seeAllHref(section: GlobalSearchSectionKey, query: string, itemCount: number, cap: number): string | null {
   if (itemCount < cap) return null;
@@ -108,6 +110,8 @@ export function seeAllHref(section: GlobalSearchSectionKey, query: string, itemC
       return `/experiences?q=${q}`;
     case 'experts':
       return `/experts?q=${q}`;
+    case 'stays':
+      return `/stays/search?q=${q}`;
     default:
       return null;
   }
