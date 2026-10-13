@@ -6,6 +6,7 @@ import { getAllPackages } from '@/lib/packages';
 import { getPublishedRegionRefs } from '@/lib/publishedRegions';
 import { searchStaySuggestions, type StaySuggestionsOutcome } from '@/lib/staysSearch';
 import type { StaySearchDestination } from '@/lib/search/staySearch';
+import type { GlobalSearchTimings, TimedOutcome } from '@/lib/globalSearchTiming';
 import {
   GLOBAL_SEARCH_LIMITS,
   GLOBAL_SEARCH_SECTION_ORDER,
@@ -217,17 +218,31 @@ export function emptyGlobalSearchResponse(query: string): GlobalSearchResponse {
   };
 }
 
-export async function runGlobalSearch(parsed: Extract<ParsedGlobalQuery, { ok: true }>, loaders: GlobalSearchLoaders = defaultLoaders): Promise<GlobalSearchResponse> {
+/**
+ * `timings` is an optional out-parameter (see lib/globalSearchTiming.ts): it records how long the connection took and how each
+ * section ended. It is never read back, adds no database call and cannot change the response.
+ */
+export async function runGlobalSearch(parsed: Extract<ParsedGlobalQuery, { ok: true }>, loaders: GlobalSearchLoaders = defaultLoaders, timings?: GlobalSearchTimings): Promise<GlobalSearchResponse> {
   const { query } = parsed;
+  const skipAll = () => {
+    if (timings) for (const key of GLOBAL_SEARCH_SECTION_ORDER) timings.sections[key] = { ms: 0, outcome: 'skipped' };
+  };
   // Meaningless text ("[[", "()") reads nothing at all.
-  if (parsed.meaningless) return emptyGlobalSearchResponse(query);
+  if (parsed.meaningless) {
+    skipAll();
+    return emptyGlobalSearchResponse(query);
+  }
 
   // Connect first, with its own budget (see CONNECT_DEADLINE_MS); a failure here fails every section safely.
   if (loaders.connect) {
+    const connectStartedAt = Date.now();
     try {
       await withDeadline(loaders.connect(), CONNECT_DEADLINE_MS);
+      if (timings) timings.connect = { ms: Date.now() - connectStartedAt, outcome: 'ok' };
     } catch (error) {
       const status: SectionStatus = isTimeout(error) ? 'timeout' : 'error';
+      if (timings) timings.connect = { ms: Date.now() - connectStartedAt, outcome: status };
+      skipAll();
       console.error('[globalSearch] database connection unavailable', status);
       const failed = emptyGlobalSearchResponse(query);
       for (const key of GLOBAL_SEARCH_SECTION_ORDER) failed.sections[key] = emptySection(status);
@@ -236,6 +251,10 @@ export async function runGlobalSearch(parsed: Extract<ParsedGlobalQuery, { ok: t
   }
 
   const options = { maxTimeMS: SECTION_DB_TIME_LIMIT_MS };
+  const readsStartedAt = Date.now();
+  const note = (key: GlobalSearchSectionKey, outcome: TimedOutcome) => {
+    if (timings) timings.sections[key] = { ms: Date.now() - readsStartedAt, outcome };
+  };
   const load = <T,>(read: () => Promise<T>) => withDeadline(read(), SECTION_DEADLINE_MS);
 
   // Destinations and regions are read once and shared: journeys, experiences and experts use them to resolve
@@ -257,23 +276,35 @@ export async function runGlobalSearch(parsed: Extract<ParsedGlobalQuery, { ok: t
       // A link source that failed only lowers recall for this section (empty links); it never widens results.
       const destinations = needs.destinations ? await destinationsRead.catch(() => [] as Destination[]) : [];
       const regions = needs.regions ? await regionsRead.catch(() => [] as RegionRef[]) : [];
-      return [key, { status: 'ok', items: build(data, destinations, regions) }];
+      const built = build(data, destinations, regions);
+      note(key, 'ok');
+      return [key, { status: 'ok', items: built }];
     } catch (error) {
       console.error(`[globalSearch] section "${key}" unavailable`, isTimeout(error) ? 'timeout' : error);
+      note(key, isTimeout(error) ? 'timeout' : 'error');
       return [key, emptySection(isTimeout(error) ? 'timeout' : 'error')];
     }
   }
 
   async function staysSection(): Promise<[GlobalSearchSectionKey, GlobalSearchSection]> {
-    if (!staysRead) return ['stays', emptySection()];
+    if (!staysRead) {
+      note('stays', 'skipped');
+      return ['stays', emptySection()];
+    }
     try {
       const outcome = await staysRead;
-      if (outcome.status === 'ok') return ['stays', { status: 'ok', items: staySection(outcome.suggestions) }];
+      if (outcome.status === 'ok') {
+        const items = staySection(outcome.suggestions);
+        note('stays', 'ok');
+        return ['stays', { status: 'ok', items }];
+      }
       // Exclusions/catalog could not be checked, or the cached read hit its limit: withheld entirely, never "no stays".
       console.error('[globalSearch] section "stays" unavailable', outcome.reason);
+      note('stays', outcome.reason === 'timeout' ? 'timeout' : 'error');
       return ['stays', emptySection(outcome.reason === 'timeout' ? 'timeout' : 'error')];
     } catch (error) {
       console.error('[globalSearch] section "stays" unavailable', isTimeout(error) ? 'timeout' : error);
+      note('stays', isTimeout(error) ? 'timeout' : 'error');
       return ['stays', emptySection(isTimeout(error) ? 'timeout' : 'error')];
     }
   }
