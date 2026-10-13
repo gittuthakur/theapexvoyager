@@ -15,6 +15,14 @@ const { rows, findCalls, read, getPublishedRefsMock, getActiveExclusionSetMock, 
   ExclusionLookupErrorRef: { current: null as unknown as new (cause?: unknown) => Error }
 }));
 
+
+/** What the real database does with SUGGESTION_PROJECTION: keep only the listed fields and compute hasTypes. */
+function project(rows: Row[], projection?: Record<string, unknown>): Row[] {
+  if (!projection || !('hasTypes' in projection)) return rows;
+  const keep = ['placeId', 'name', 'destinationSlug', 'searchLocation', 'formattedAddress', 'rating', 'userRatingCount'];
+  return rows.map((row) => ({ ...Object.fromEntries(keep.filter((key) => key in row).map((key) => [key, row[key]])), hasTypes: ((row.types as string[] | undefined)?.length ?? 0) > 0 }) as unknown as Row);
+}
+
 vi.mock('@/lib/mongodb', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }));
 // In-memory PlaceCache that honours the eligible $or pairs lib/staysSearch.ts sends, records the database time limit and can be made slow/failing.
 vi.mock('@/models/PlaceCache', () => ({
@@ -30,7 +38,7 @@ vi.mock('@/models/PlaceCache', () => ({
         lean: async () => {
           if (read.mode === 'hang' || read.mode === 'deaf') {
             return new Promise((resolve, reject) => {
-              read.hung.push(() => resolve(rows.current.filter((row) => !filter.$or || filter.$or.some((pair: any) => row.destinationSlug === pair.destinationSlug && row.searchLocation === pair.searchLocation))));
+              read.hung.push(() => resolve(project(rows.current.filter((row) => !filter.$or || filter.$or.some((pair: any) => row.destinationSlug === pair.destinationSlug && row.searchLocation === pair.searchLocation)), projection as Record<string, unknown>)));
               if (read.mode === 'hang') options?.signal?.addEventListener('abort', () => reject(options.signal?.reason));
             });
           }
@@ -42,12 +50,13 @@ vi.mock('@/models/PlaceCache', () => ({
           }
           if (read.mode === 'fail') throw new Error('read failed');
           if (read.mode === 'timeout') throw Object.assign(new Error('operation exceeded time limit'), { code: 50, codeName: 'MaxTimeMSExpired' });
-          return rows.current.filter((row) => {
+          const matched = rows.current.filter((row) => {
             if (filter.$or && !filter.$or.some((pair: any) => row.destinationSlug === pair.destinationSlug && row.searchLocation === pair.searchLocation)) return false;
             if (filter._id?.$exists === false) return false;
             if (filter.placeId?.$in && !filter.placeId.$in.includes(row.placeId)) return false;
             return true;
           });
+          return project(matched, projection as Record<string, unknown>);
         }
       };
       return query;
@@ -617,5 +626,124 @@ describe('no provider, photo or write path', () => {
     for (const q of QUERIES) await searchStaySuggestions(q);
     expect(googleCalls).not.toHaveBeenCalled();
     expect(hotelCalls).not.toHaveBeenCalled();
+  });
+});
+
+describe('lean suggestion rows (Stage 3B optimization)', () => {
+  it('the suggestion read asks for exactly the fields suggestions use (no types array, no updatedAt, no _id); the listing read is unchanged', async () => {
+    await searchStaySuggestions('Kaza');
+    const lean = findCalls.find((c) => c.filter.$or)!.projection as Record<string, unknown>;
+    expect(Object.keys(lean).sort()).toEqual(['_id', 'destinationSlug', 'formattedAddress', 'hasTypes', 'name', 'placeId', 'rating', 'searchLocation', 'userRatingCount']);
+    expect(lean._id).toBe(0);
+    for (const dropped of ['types', 'updatedAt', 'photos']) expect(dropped in lean).toBe(false);
+    findCalls.length = 0;
+    resetStaysSearchMemo();
+    await searchEligibleStays({ q: 'Kaza', limit: 5, strategy: 'scan' });
+    const listing = findCalls.find((c) => c.filter.$or)!.projection as Record<string, unknown>;
+    expect(Object.keys(listing)).toEqual(expect.arrayContaining(['types', 'updatedAt', 'placeId', 'formattedAddress']));
+  });
+
+  it('the representative row is chosen exactly as the listing chooses it (typed first, then rating, review count) even though the types array is not sent', async () => {
+    rows.current = [
+      row('p-two', 'Pine Lodge Kaza', 'spiti-valley', 'Kaza', { types: [], rating: 4.9, userRatingCount: 90 }),
+      row('p-two', 'Pine Lodge Manali Branch', 'manali', 'Manali', { types: ['hotel'], rating: 3.1, userRatingCount: 5 }),
+      row('p-tie', 'Cedar Home Kaza', 'spiti-valley', 'Kaza', { types: [], rating: 4.0, userRatingCount: 10 }),
+      row('p-tie', 'Cedar Home Manali', 'manali', 'Manali', { types: [], rating: 4.5, userRatingCount: 10 }),
+      row('p-both', 'Alder Inn Kaza', 'spiti-valley', 'Kaza', { types: ['hotel'], rating: 4.2, userRatingCount: 10 }),
+      row('p-both', 'Alder Inn Manali', 'manali', 'Manali', { types: ['hotel'], rating: 4.2, userRatingCount: 30 })
+    ];
+    for (const q of ['Pine Lodge', 'Manali Branch', 'Cedar Home', 'Alder Inn', 'Kaza', 'Manali']) {
+      resetStaysSearchMemo();
+      const suggestions = await searchStaySuggestions(q);
+      resetStaysSearchMemo();
+      const p4 = await searchEligibleStays({ q, offset: 0, limit: 5, strategy: 'scan' });
+      expect(suggestionIds(suggestions)).toEqual(p4.status === 'ok' ? p4.stays.map((s) => s.placeId) : 'unavailable');
+    }
+    // The shown name is the representative's: typed row wins over the better-rated untyped one.
+    const pine = await searchStaySuggestions('Pine Lodge');
+    expect(pine.status === 'ok' && pine.suggestions[0].name).toBe('Pine Lodge Manali Branch');
+  });
+
+  const fullReads = () => findCalls.filter((c) => c.filter.$or && !c.filter.placeId).length;
+  it('listing rows and suggestion rows are separate memo entries: neither serves the other, each is read once, and a reset clears both', async () => {
+    await searchStaySuggestions('Kaza');
+    await searchEligibleStays({ q: 'Kaza', limit: 5, strategy: 'scan' });
+    expect(fullReads()).toBe(2);
+    await searchStaySuggestions('vajra');
+    await searchEligibleStays({ q: 'vajra', limit: 5, strategy: 'scan' });
+    expect(fullReads()).toBe(2);
+    resetStaysSearchMemo();
+    await searchStaySuggestions('Kaza');
+    await searchEligibleStays({ q: 'Kaza', limit: 5, strategy: 'scan' });
+    expect(fullReads()).toBe(4);
+  });
+
+  it('the memo table is bounded: more distinct row sets than it holds evict the oldest, never grow without limit', async () => {
+    const sets = [['manali'], ['spiti-valley'], ['bir-billing'], ['dharamshala'], ['mcleod-ganj'], ['manali', 'spiti-valley']];
+    for (const slugs of sets) {
+      getPublishedRefsMock.mockResolvedValue(DESTS.filter((d) => slugs.includes(d.slug)));
+      await searchStaySuggestions('Kaza');
+    }
+    expect(rowReads()).toBe(6);
+    getPublishedRefsMock.mockResolvedValue(DESTS.filter((d) => sets[5].includes(d.slug)));
+    await searchStaySuggestions('Kaza');
+    expect(rowReads()).toBe(6); // newest still held
+    getPublishedRefsMock.mockResolvedValue(DESTS.filter((d) => sets[0].includes(d.slug)));
+    await searchStaySuggestions('Kaza');
+    expect(rowReads()).toBe(7); // oldest was evicted
+  });
+
+  it('a duplicate property across two eligible locations is one suggestion with no leaked identity', async () => {
+    rows.current.push(row('p-vajra', 'The Vajra', 'manali', 'Manali', { types: ['hotel'] }));
+    const out = await searchStaySuggestions('vajra');
+    expect(suggestionIds(out)).toEqual(['p-vajra']);
+  });
+});
+
+describe('published destinations supplied by the caller (Stage 3B option C)', () => {
+  const published = () => DESTS.map((d) => ({ slug: d.slug, title: d.title, state: d.state }));
+
+  it('uses the supplied destinations and never reads the published destinations itself; the answer is the same', async () => {
+    const supplied = vi.fn(async () => published());
+    const withShared = await searchStaySuggestions('Kaza', { destinations: supplied });
+    expect(supplied).toHaveBeenCalledTimes(1);
+    expect(getPublishedRefsMock).not.toHaveBeenCalled();
+    resetStaysSearchMemo();
+    const own = await searchStaySuggestions('Kaza');
+    expect(withShared).toEqual(own);
+  });
+
+  it('a supplied destination list is what decides eligibility: removing a destination removes its stays at once, even with rows memoized', async () => {
+    expect(suggestionIds(await searchStaySuggestions('Bir Camp', { destinations: async () => published() }))).toEqual(['p-bir']);
+    expect(suggestionIds(await searchStaySuggestions('Bir Camp', { destinations: async () => published().filter((d) => d.slug !== 'bir-billing') }))).toEqual([]);
+    expect(await searchStaySuggestions('Kaza', { destinations: async () => [] })).toEqual({ status: 'ok', suggestions: [], totalCount: 0 });
+  });
+
+  it('a failed supplied read withholds the whole section (catalog, or timeout for a section deadline) and exposes nothing', async () => {
+    expect(await searchStaySuggestions('Kaza', { destinations: async () => { throw new Error('destinations down'); } })).toEqual({ status: 'unavailable', reason: 'catalog' });
+    const deadline = Object.assign(new Error('section deadline exceeded'), { name: 'DeadlineError' });
+    expect(await searchStaySuggestions('Kaza', { destinations: async () => { throw deadline; } })).toEqual({ status: 'unavailable', reason: 'timeout' });
+    expect(rowReads()).toBe(0);
+  });
+
+  it('exclusions are still read fresh and still fail closed when destinations are supplied (no unhandled rejection either way)', async () => {
+    const unhandled = vi.fn();
+    process.on('unhandledRejection', unhandled);
+    try {
+      getActiveExclusionSetMock.mockRejectedValue(new ExclusionLookupErrorRef.current());
+      expect(await searchStaySuggestions('Kaza', { destinations: async () => published() })).toEqual({ status: 'unavailable', reason: 'exclusions' });
+      expect(await searchStaySuggestions('Kaza', { destinations: async () => { throw new Error('down'); } })).toEqual({ status: 'unavailable', reason: 'catalog' });
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      expect(unhandled).not.toHaveBeenCalled();
+    } finally {
+      process.off('unhandledRejection', unhandled);
+    }
+  });
+
+  it('is not called at all for empty or meaningless text', async () => {
+    const supplied = vi.fn(async () => published());
+    await searchStaySuggestions('', { destinations: supplied });
+    await searchStaySuggestions('[[', { destinations: supplied });
+    expect(supplied).not.toHaveBeenCalled();
   });
 });
