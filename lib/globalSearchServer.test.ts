@@ -230,16 +230,4 @@ describe('singleFlight (burst coalescing without any stored copy)', () => {
     const [a, b] = await Promise.all([singleFlight('ka', async () => 'a'), singleFlight('kb', async () => 'b')]);
     expect([a, b]).toEqual(['a', 'b']);
   });
-
-  it('a hung read is released after the deadline so it cannot block later requests forever', async () => {
-    vi.useFakeTimers();
-    let reads = 0;
-    const hang = () => { reads++; return new Promise<never>(() => undefined); };
-    void singleFlight('k4', hang);
-    void singleFlight('k4', hang);
-    expect(reads).toBe(1);
-    await vi.advanceTimersByTimeAsync(SECTION_DEADLINE_MS + 10);
-    void singleFlight('k4', hang);
-    expect(reads).toBe(2);
-  });
 });

@@ -20,12 +20,12 @@ describe('GET /api/search', () => {
     expect(response.status).toBe(200);
     expect(response.headers.get('cache-control')).toBe('private, no-store');
     expect(await response.json()).toEqual(OK);
-    expect(runGlobalSearchMock).toHaveBeenCalledWith(expect.objectContaining({ ok: true, query: 'Spiti', normalized: 'spiti' }));
+    expect(runGlobalSearchMock).toHaveBeenCalledWith(expect.objectContaining({ ok: true, query: 'Spiti', normalized: 'spiti' }), undefined, expect.objectContaining({ sections: {} }));
   });
 
   it('normalizes the query before it reaches the search', async () => {
     await call('?q=%20%20Spiti%20%20%20Valley%20');
-    expect(runGlobalSearchMock).toHaveBeenCalledWith(expect.objectContaining({ query: 'Spiti Valley' }));
+    expect(runGlobalSearchMock).toHaveBeenCalledWith(expect.objectContaining({ query: 'Spiti Valley' }), undefined, expect.any(Object));
   });
 
   const bad: Array<[string, string, string]> = [
@@ -52,7 +52,7 @@ describe('GET /api/search', () => {
 
   it('answers a meaningless but well-formed query through the search (which reads nothing)', async () => {
     await call('?q=%5B%5B');
-    expect(runGlobalSearchMock).toHaveBeenCalledWith(expect.objectContaining({ meaningless: true }));
+    expect(runGlobalSearchMock).toHaveBeenCalledWith(expect.objectContaining({ meaningless: true }), undefined, expect.any(Object));
   });
 
   it('rate-limits by source address and tells the client when to retry', async () => {
@@ -94,5 +94,40 @@ describe('GET /api/search', () => {
     expect(JSON.stringify(body)).not.toMatch(/password|mongodb/);
     expect(response.headers.get('cache-control')).toBe('private, no-store');
     spy.mockRestore();
+  });
+});
+
+describe('Server-Timing diagnostics', () => {
+  it('adds one Server-Timing header built from the timings the search recorded, without changing the body, status or no-store header', async () => {
+    runGlobalSearchMock.mockImplementation(async (_parsed: unknown, _loaders: unknown, timings: { connect?: unknown; sections: Record<string, unknown> }) => {
+      timings.connect = { ms: 2401, outcome: 'ok' };
+      timings.sections.stays = { ms: 2500, outcome: 'timeout' };
+      return OK;
+    });
+    const response = await call('?q=Spiti');
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('private, no-store');
+    expect(await response.json()).toEqual(OK);
+    expect(response.headers.get('server-timing')).toMatch(/^connect;dur=2401;desc="ok", stays;dur=2500;desc="timeout", total;dur=\d+$/);
+  });
+
+  it('never puts the query, the address or an error in the header', async () => {
+    runGlobalSearchMock.mockImplementation(async () => OK);
+    const response = await call('?q=Secret%20Place', { 'x-forwarded-for': '203.0.113.7' });
+    const header = response.headers.get('server-timing') ?? '';
+    expect(header).toMatch(/^total;dur=\d+$/);
+    expect(header).not.toMatch(/secret|203|place/i);
+  });
+
+  it('is absent from validation failures, rate limiting and server errors (no search ran)', async () => {
+    expect((await call('?q=a')).headers.get('server-timing')).toBeNull();
+    isRateLimitedMock.mockReturnValue(true);
+    expect((await call('?q=Spiti')).headers.get('server-timing')).toBeNull();
+    isRateLimitedMock.mockReturnValue(false);
+    runGlobalSearchMock.mockRejectedValue(new Error('mongodb://user:pw@host failed'));
+    const failed = await call('?q=Spiti');
+    expect(failed.status).toBe(500);
+    expect(failed.headers.get('server-timing')).toBeNull();
+    expect(JSON.stringify(await failed.json())).not.toMatch(/mongodb|user|pw|host/);
   });
 });

@@ -6,6 +6,7 @@ import { getAllPackages } from '@/lib/packages';
 import { getPublishedRegionRefs } from '@/lib/publishedRegions';
 import { searchStaySuggestions, type StaySuggestionsOutcome } from '@/lib/staysSearch';
 import type { StaySearchDestination } from '@/lib/search/staySearch';
+import type { GlobalSearchTimings, TimedOutcome } from '@/lib/globalSearchTiming';
 import {
   GLOBAL_SEARCH_LIMITS,
   GLOBAL_SEARCH_SECTION_ORDER,
@@ -87,35 +88,85 @@ export const DESTINATION_SEARCH_PROJECTION = { slug: 1, title: 1, state: 1, regi
 export const JOURNEY_SEARCH_PROJECTION = { slug: 1, name: 1, destination: 1, destinationSlugs: 1, image: 1, duration: 1, category: 1, shortDescription: 1, highlights: 1, 'itinerary.title': 1, 'itinerary.description': 1, startingCity: 1, endingCity: 1, status: 1 } as const;
 export const EXPERIENCE_SEARCH_PROJECTION = { slug: 1, title: 1, location: 1, region: 1, category: 1, subCategory: 1, mood: 1, shortDescription: 1, description: 1, highlights: 1, image: 1 } as const;
 
+/**
+ * The most reads of the five older catalogs that may be unsettled at once in one server instance. Each catalog has ONE
+ * flight at a time (the key is the catalog plus its database limit), so the real ceiling is five by construction; the cap
+ * states that invariant and refuses to start a sixth rather than let a future key silently multiply database work.
+ */
+export const MAX_UNSETTLED_SECTION_READS = 5;
+/**
+ * How long a section read may stay unsettled before it is CANCELLED through its AbortSignal. Far above what a healthy
+ * read needs (the database limit is 1.5 s, the response deadline 1.75 s) and below the driver's 30 s connection-selection
+ * default, so only a genuinely stuck read - for example one waiting on a connection that never arrives - ever reaches it.
+ */
+export const SECTION_READ_ABORT_AFTER_MS = 10_000;
+
+/** The reason a stuck read is cancelled with: it ran past its maximum lifetime, so it counts as a timeout (never as data). */
+export class SectionReadAbortedError extends Error {
+  constructor() {
+    super('A global search read exceeded its maximum lifetime and was cancelled');
+    this.name = 'SectionReadAbortedError';
+  }
+}
+
+/** A section read was refused because the unsettled-read cap is reached: the section answers "timeout", never data. */
+export class SectionReadBusyError extends Error {
+  constructor() {
+    super('Too many global search reads are already running');
+    this.name = 'SectionReadBusyError';
+  }
+}
+
 const inFlight = new Map<string, Promise<unknown>>();
+
+/** For tests only: forgets every registered read. It never cancels or settles them. */
+export function resetSectionReadsForTests(): void {
+  inFlight.clear();
+}
 
 /**
  * Single-flight: requests that arrive while a read of the same catalog is ALREADY running share it instead of
  * each opening their own, which is what turns a burst of keystrokes from many visitors into one read. Nothing is
- * kept once the read finishes (no TTL, no stored copy), so the next request always reads fresh: the only
- * staleness possible is the duration of a read that was already in progress (bounded by the read limits).
- * A failed or hung read is never kept either: the entry is dropped when it settles or after the read deadline.
+ * kept once the read finishes (no TTL, no stored copy), so the next request always reads fresh.
+ *
+ * Lifetime: a read stays registered until the underlying operation actually SETTLES - never because a timer ran out.
+ * A caller that gave up (the section deadline in runGlobalSearch bounds every caller's wait independently) leaves the
+ * read running and registered, so a later request joins it instead of starting a duplicate. A read still unsettled after
+ * SECTION_READ_ABORT_AFTER_MS is cancelled through the AbortSignal handed to `read`; cancelling does not unregister it
+ * either - it is forgotten only when the (now aborted) operation rejects. A read that ignores its signal therefore stays
+ * registered, and its catalog answers "timeout" until it ends: honest, and never a second concurrent read. Cleanup is
+ * identity-checked (an older settled read can never remove a newer one) and failures are never kept.
  */
-export function singleFlight<T>(key: string, read: () => Promise<T>): Promise<T> {
+export function singleFlight<T>(key: string, read: (signal: AbortSignal) => Promise<T>): Promise<T> {
   const running = inFlight.get(key);
   if (running) return running as Promise<T>;
-  const started = read();
+  if (inFlight.size >= MAX_UNSETTLED_SECTION_READS) return Promise.reject(new SectionReadBusyError());
+  const controller = new AbortController();
+  let started: Promise<T>;
+  try {
+    started = Promise.resolve(read(controller.signal));
+  } catch (error) {
+    started = Promise.reject(error);
+  }
   inFlight.set(key, started);
-  const release = () => {
+  const cancelTimer = setTimeout(() => controller.abort(new SectionReadAbortedError()), SECTION_READ_ABORT_AFTER_MS);
+  cancelTimer.unref?.();
+  const settle = () => {
+    clearTimeout(cancelTimer);
     if (inFlight.get(key) === started) inFlight.delete(key);
   };
-  started.then(release, release);
-  setTimeout(release, SECTION_DEADLINE_MS).unref?.();
+  started.then(settle, settle);
   return started;
 }
 
 export const defaultLoaders: GlobalSearchLoaders = {
   connect: () => connectDB(),
-  destinations: (options) => singleFlight('destinations', () => getCuratedDestinations({ ...options, projection: { ...DESTINATION_SEARCH_PROJECTION } })),
-  regions: (options) => singleFlight('regions', () => getPublishedRegionRefs(options)),
-  journeys: (options) => singleFlight('journeys', () => getAllPackages({ ...options, projection: { ...JOURNEY_SEARCH_PROJECTION } })),
-  experiences: (options) => singleFlight('experiences', () => getAllExperiences(options.maxTimeMS, { ...EXPERIENCE_SEARCH_PROJECTION })),
-  experts: (options) => singleFlight('experts', () => getAllExperts(options)),
+  // The flight key includes the database limit, so reads with different limits never share one.
+  destinations: (options) => singleFlight(`destinations#${options.maxTimeMS}`, (signal) => getCuratedDestinations({ ...options, projection: { ...DESTINATION_SEARCH_PROJECTION }, signal })),
+  regions: (options) => singleFlight(`regions#${options.maxTimeMS}`, (signal) => getPublishedRegionRefs({ ...options, signal })),
+  journeys: (options) => singleFlight(`journeys#${options.maxTimeMS}`, (signal) => getAllPackages({ ...options, projection: { ...JOURNEY_SEARCH_PROJECTION }, signal })),
+  experiences: (options) => singleFlight(`experiences#${options.maxTimeMS}`, (signal) => getAllExperiences(options.maxTimeMS, { ...EXPERIENCE_SEARCH_PROJECTION }, signal)),
+  experts: (options) => singleFlight(`experts#${options.maxTimeMS}`, (signal) => getAllExperts({ ...options, signal })),
   // Not wrapped in singleFlight here: searchStaySuggestions has its own single-flight over the shared row read.
   stays: (query, shared) => searchStaySuggestions(query, { destinations: shared.destinations })
 };
@@ -151,7 +202,7 @@ export function withDeadline<T>(promise: Promise<T>, ms: number): Promise<T> {
 }
 
 function isTimeout(error: unknown): boolean {
-  if (error instanceof DeadlineError) return true;
+  if (error instanceof DeadlineError || error instanceof SectionReadBusyError || error instanceof SectionReadAbortedError) return true;
   const candidate = error as { code?: number; codeName?: string; name?: string } | null;
   return candidate?.code === 50 || candidate?.codeName === 'MaxTimeMSExpired' || /MaxTimeMSExpired/.test(String(candidate?.name ?? ''));
 }
@@ -167,17 +218,31 @@ export function emptyGlobalSearchResponse(query: string): GlobalSearchResponse {
   };
 }
 
-export async function runGlobalSearch(parsed: Extract<ParsedGlobalQuery, { ok: true }>, loaders: GlobalSearchLoaders = defaultLoaders): Promise<GlobalSearchResponse> {
+/**
+ * `timings` is an optional out-parameter (see lib/globalSearchTiming.ts): it records how long the connection took and how each
+ * section ended. It is never read back, adds no database call and cannot change the response.
+ */
+export async function runGlobalSearch(parsed: Extract<ParsedGlobalQuery, { ok: true }>, loaders: GlobalSearchLoaders = defaultLoaders, timings?: GlobalSearchTimings): Promise<GlobalSearchResponse> {
   const { query } = parsed;
+  const skipAll = () => {
+    if (timings) for (const key of GLOBAL_SEARCH_SECTION_ORDER) timings.sections[key] = { ms: 0, outcome: 'skipped' };
+  };
   // Meaningless text ("[[", "()") reads nothing at all.
-  if (parsed.meaningless) return emptyGlobalSearchResponse(query);
+  if (parsed.meaningless) {
+    skipAll();
+    return emptyGlobalSearchResponse(query);
+  }
 
   // Connect first, with its own budget (see CONNECT_DEADLINE_MS); a failure here fails every section safely.
   if (loaders.connect) {
+    const connectStartedAt = Date.now();
     try {
       await withDeadline(loaders.connect(), CONNECT_DEADLINE_MS);
+      if (timings) timings.connect = { ms: Date.now() - connectStartedAt, outcome: 'ok' };
     } catch (error) {
       const status: SectionStatus = isTimeout(error) ? 'timeout' : 'error';
+      if (timings) timings.connect = { ms: Date.now() - connectStartedAt, outcome: status };
+      skipAll();
       console.error('[globalSearch] database connection unavailable', status);
       const failed = emptyGlobalSearchResponse(query);
       for (const key of GLOBAL_SEARCH_SECTION_ORDER) failed.sections[key] = emptySection(status);
@@ -186,6 +251,10 @@ export async function runGlobalSearch(parsed: Extract<ParsedGlobalQuery, { ok: t
   }
 
   const options = { maxTimeMS: SECTION_DB_TIME_LIMIT_MS };
+  const readsStartedAt = Date.now();
+  const note = (key: GlobalSearchSectionKey, outcome: TimedOutcome) => {
+    if (timings) timings.sections[key] = { ms: Date.now() - readsStartedAt, outcome };
+  };
   const load = <T,>(read: () => Promise<T>) => withDeadline(read(), SECTION_DEADLINE_MS);
 
   // Destinations and regions are read once and shared: journeys, experiences and experts use them to resolve
@@ -207,23 +276,35 @@ export async function runGlobalSearch(parsed: Extract<ParsedGlobalQuery, { ok: t
       // A link source that failed only lowers recall for this section (empty links); it never widens results.
       const destinations = needs.destinations ? await destinationsRead.catch(() => [] as Destination[]) : [];
       const regions = needs.regions ? await regionsRead.catch(() => [] as RegionRef[]) : [];
-      return [key, { status: 'ok', items: build(data, destinations, regions) }];
+      const built = build(data, destinations, regions);
+      note(key, 'ok');
+      return [key, { status: 'ok', items: built }];
     } catch (error) {
       console.error(`[globalSearch] section "${key}" unavailable`, isTimeout(error) ? 'timeout' : error);
+      note(key, isTimeout(error) ? 'timeout' : 'error');
       return [key, emptySection(isTimeout(error) ? 'timeout' : 'error')];
     }
   }
 
   async function staysSection(): Promise<[GlobalSearchSectionKey, GlobalSearchSection]> {
-    if (!staysRead) return ['stays', emptySection()];
+    if (!staysRead) {
+      note('stays', 'skipped');
+      return ['stays', emptySection()];
+    }
     try {
       const outcome = await staysRead;
-      if (outcome.status === 'ok') return ['stays', { status: 'ok', items: staySection(outcome.suggestions) }];
+      if (outcome.status === 'ok') {
+        const items = staySection(outcome.suggestions);
+        note('stays', 'ok');
+        return ['stays', { status: 'ok', items }];
+      }
       // Exclusions/catalog could not be checked, or the cached read hit its limit: withheld entirely, never "no stays".
       console.error('[globalSearch] section "stays" unavailable', outcome.reason);
+      note('stays', outcome.reason === 'timeout' ? 'timeout' : 'error');
       return ['stays', emptySection(outcome.reason === 'timeout' ? 'timeout' : 'error')];
     } catch (error) {
       console.error('[globalSearch] section "stays" unavailable', isTimeout(error) ? 'timeout' : error);
+      note('stays', isTimeout(error) ? 'timeout' : 'error');
       return ['stays', emptySection(isTimeout(error) ? 'timeout' : 'error')];
     }
   }

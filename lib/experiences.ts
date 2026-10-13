@@ -64,7 +64,7 @@ export function toExperience(doc: ExperienceDocument): Experience {
  * request, nothing shared across requests) — not persistent/ISR caching, so a catalog
  * edit is visible on the very next request exactly as before.
  */
-export const getAllExperiences = cache(async (maxTimeMS?: number, projection?: Record<string, 1>): Promise<Experience[]> => {
+export const getAllExperiences = cache(async (maxTimeMS?: number, projection?: Record<string, 1>, signal?: AbortSignal): Promise<Experience[]> => {
   await connectDB();
   // Optional `projection` (global search): read only the fields search uses. The converters below copy fields one by
   // one and tolerate missing ones, so a projected read is safe. Omitted = every field, as before.
@@ -72,7 +72,9 @@ export const getAllExperiences = cache(async (maxTimeMS?: number, projection?: R
   // a slow read, so it cannot keep consuming database resources after the caller gave up. Omitted = the query is
   // built exactly as before.
   const query = projection ? ExperienceModel.find({}, projection) : ExperienceModel.find();
-  const docs = await (maxTimeMS ? query.maxTimeMS(maxTimeMS) : query).lean<ExperienceDocument[]>();
+  const bounded = maxTimeMS ? query.maxTimeMS(maxTimeMS) : query;
+  // Optional AbortSignal (global search): the driver cancels the operation when it aborts. Omitted = exactly as before.
+  const docs = await (signal ? bounded.setOptions({ signal } as never) : bounded).lean<ExperienceDocument[]>();
   return JSON.parse(JSON.stringify(docs.map(toExperience)));
 });
 

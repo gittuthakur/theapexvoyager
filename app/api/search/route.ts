@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { runGlobalSearch } from '@/lib/globalSearchServer';
 import { parseGlobalSearchQuery } from '@/lib/search/globalSearch';
 import { isRateLimited } from '@/lib/rateLimit';
+import { createTimings, formatServerTiming } from '@/lib/globalSearchTiming';
 
 // Read-only, per-request, never cached: a publication change must apply on the very next request, so no
 // browser, proxy or CDN may keep a copy. Reads only the catalogs' own public loaders; no provider is called.
@@ -49,7 +50,11 @@ export async function GET(request: Request) {
   }
 
   try {
-    return NextResponse.json(await runGlobalSearch(parsed), { status: 200, headers: HEADERS });
+    // Server-side timing only (connection, per-section time and outcome): see lib/globalSearchTiming.ts for what it is and is not.
+    const startedAt = Date.now();
+    const timings = createTimings();
+    const body = await runGlobalSearch(parsed, undefined, timings);
+    return NextResponse.json(body, { status: 200, headers: { ...HEADERS, 'Server-Timing': formatServerTiming(timings, Date.now() - startedAt) } });
   } catch (error) {
     console.error('[api/search] unexpected failure', error);
     return fail(500, 'SEARCH_FAILED', 'Search is temporarily unavailable.');
