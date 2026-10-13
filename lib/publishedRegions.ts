@@ -8,10 +8,12 @@ import type { RegionRef } from '@/lib/search/globalSearch';
  * (services/regions/regionHub.service.ts): a draft Region (e.g. Ladakh today) is never returned.
  * `maxTimeMS` makes MongoDB itself abandon a slow read; omitted, the query is unbounded.
  */
-export async function getPublishedRegionRefs(options: { maxTimeMS?: number } = {}): Promise<RegionRef[]> {
+export async function getPublishedRegionRefs(options: { maxTimeMS?: number; signal?: AbortSignal } = {}): Promise<RegionRef[]> {
   await connectDB();
   const query = Region.find({ status: 'published' }, { name: 1, slug: 1, shortDescription: 1, cardImage: 1 }).sort({ sortOrder: 1 });
-  const docs = await (options.maxTimeMS ? query.maxTimeMS(options.maxTimeMS) : query).lean<
+  const bounded = options.maxTimeMS ? query.maxTimeMS(options.maxTimeMS) : query;
+  // Optional AbortSignal (global search): the driver cancels the operation when it aborts. Omitted = exactly as before.
+  const docs = await (options.signal ? bounded.setOptions({ signal: options.signal } as never) : bounded).lean<
     Array<{ _id: unknown; name: string; slug: string; shortDescription?: string; cardImage?: string }>
   >();
   return docs.map((doc) => ({ id: String(doc._id), slug: doc.slug, name: doc.name, shortDescription: doc.shortDescription, image: doc.cardImage }));

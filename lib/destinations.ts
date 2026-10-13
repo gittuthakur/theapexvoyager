@@ -156,7 +156,7 @@ export async function getDestinationsWithFallback(): Promise<Destination[]> {
 //
 // The curated directory — lives in MongoDB (see models/Destination.ts, seeded from
 // config/destinations.config.ts by scripts/seed.ts).
-export async function getCuratedDestinations(options: { maxTimeMS?: number; projection?: Record<string, 1> } = {}): Promise<Destination[]> {
+export async function getCuratedDestinations(options: { maxTimeMS?: number; projection?: Record<string, 1>; signal?: AbortSignal } = {}): Promise<Destination[]> {
   await connectDB();
   // Optional `projection` (global search): read only the fields search uses. The converters below copy fields one by
   // one and tolerate missing ones, so a projected read is safe. Omitted = every field, as before.
@@ -165,7 +165,9 @@ export async function getCuratedDestinations(options: { maxTimeMS?: number; proj
   // built exactly as before.
   const base = options.projection ? DestinationModel.find({ status: 'published' }, options.projection) : DestinationModel.find({ status: 'published' });
   const query = base.sort({ priority: 1 });
-  const docs = await (options.maxTimeMS ? query.maxTimeMS(options.maxTimeMS) : query).lean<DestinationDocument[]>();
+  const bounded = options.maxTimeMS ? query.maxTimeMS(options.maxTimeMS) : query;
+  // Optional AbortSignal (global search): the driver cancels the operation when it aborts. Omitted = exactly as before.
+  const docs = await (options.signal ? bounded.setOptions({ signal: options.signal } as never) : bounded).lean<DestinationDocument[]>();
   return JSON.parse(JSON.stringify(docs.map(toDestination)));
 }
 

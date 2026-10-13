@@ -28,13 +28,15 @@ export function toTravelExpert(doc: ExpertDocument): TravelExpert {
  *  scripts/seed.ts). `publiclyListed: true` is required in addition to `active` — see
  *  models/Expert.ts's field comment for why this is the honest public-visibility gate rather
  *  than `active` alone. */
-export async function getAllExperts(options: { maxTimeMS?: number } = {}): Promise<TravelExpert[]> {
+export async function getAllExperts(options: { maxTimeMS?: number; signal?: AbortSignal } = {}): Promise<TravelExpert[]> {
   await connectDB();
   // Optional server-side time bound (used by the global search API): with `maxTimeMS` set, MongoDB itself abandons
   // a slow read, so it cannot keep consuming database resources after the caller gave up. Omitted = the query is
   // built exactly as before.
   const query = Expert.find({ active: true, publiclyListed: true }).sort({ featured: -1, createdAt: 1 });
-  const docs = await (options.maxTimeMS ? query.maxTimeMS(options.maxTimeMS) : query).lean<ExpertDocument[]>();
+  const bounded = options.maxTimeMS ? query.maxTimeMS(options.maxTimeMS) : query;
+  // Optional AbortSignal (global search): the driver cancels the operation when it aborts. Omitted = exactly as before.
+  const docs = await (options.signal ? bounded.setOptions({ signal: options.signal } as never) : bounded).lean<ExpertDocument[]>();
   const experts = docs.map(toTravelExpert);
   // Ensure all Mongoose/MongoDB specific objects are converted to plain JSON-safe objects
   return JSON.parse(JSON.stringify(experts));
