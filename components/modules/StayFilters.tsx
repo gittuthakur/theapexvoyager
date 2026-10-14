@@ -37,6 +37,8 @@ export interface StayFiltersProps {
   /** Real, already-filtered result count — shown next to the panel header, matching
    *  the Destinations filter's "N destinations found" feedback. */
   resultCount: number;
+  /** The listing could not be read, so resultCount is not a real count: say so instead of "0 stays found". */
+  countUnavailable?: boolean;
   /** Real min/max nightly price across the current result set, for the desktop price
    *  slider — null when there's nothing meaningful to slide between (mirrors
    *  PriceRangeSlider's own honest-empty-state rule). Not used by the mobile drawer,
@@ -87,6 +89,7 @@ export default function StayFilters({
   activeType,
   activeAmenity,
   resultCount,
+  countUnavailable,
   priceBounds
 }: StayFiltersProps) {
   const activeStayType = activeType ? findStayTypeBySlug(activeType) : undefined;
@@ -98,7 +101,7 @@ export default function StayFilters({
   const activeMood = activeMoodSlug ? findStayMoodBySlug(activeMoodSlug) : undefined;
   const activeFilterCount = [activeType, activePriceMax, activeAmenity, activeMoodSlug].filter(Boolean).length;
   const clearHref = buildHref(currentParams, { type: undefined, priceMax: undefined, amenity: undefined, mood: undefined });
-  const resultCountLabel = `${resultCount} stay${resultCount === 1 ? '' : 's'} found`;
+  const resultCountLabel = countUnavailable ? 'Stay count unavailable right now' : `${resultCount} stay${resultCount === 1 ? '' : 's'} found`;
   const activePriceMaxNumber = parseValidPriceMax(activePriceMax);
   // A priceMax that's present but doesn't parse to a real, non-negative number (a
   // hand-edited `?priceMax=-100` or `?priceMax=abc`) is never displayed as a price —

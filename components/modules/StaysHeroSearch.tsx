@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
 import { DestinationField, DateRangeField, OccupancyField, SEARCH_PANEL_CLASS } from '@/components/modules/search';
+import StayPropertyNameField from '@/components/modules/StayPropertyNameField';
 import { trendingDestinations } from '@/config/search.config';
 import { cn } from '@/lib/utils';
 import type { DateRange, OccupancyDetails } from '@/types';
@@ -22,6 +23,7 @@ export interface StaysHeroSearchProps {
 export default function StaysHeroSearch({ className }: StaysHeroSearchProps) {
   const router = useRouter();
   const [destination, setDestination] = useState('');
+  const [propertyQuery, setPropertyQuery] = useState('');
   const [dateRange, setDateRange] = useState<DateRange>({ checkIn: null, checkOut: null });
   const [occupancy, setOccupancy] = useState<OccupancyDetails>({ adults: 2, children: 0, rooms: 1, pets: false });
 
@@ -29,6 +31,7 @@ export default function StaysHeroSearch({ className }: StaysHeroSearchProps) {
     event.preventDefault();
     const params = new URLSearchParams();
     if (destination.trim()) params.set('destination', destination.trim());
+    if (propertyQuery.trim()) params.set('q', propertyQuery.trim());
     if (dateRange.checkIn) params.set('checkIn', format(dateRange.checkIn, 'yyyy-MM-dd'));
     if (dateRange.checkOut) params.set('checkOut', format(dateRange.checkOut, 'yyyy-MM-dd'));
     params.set('guests', String(occupancy.adults + occupancy.children));
@@ -37,16 +40,19 @@ export default function StaysHeroSearch({ className }: StaysHeroSearchProps) {
 
   return (
     <form onSubmit={handleSubmit} className={cn(SEARCH_PANEL_CLASS, 'flex w-full flex-col gap-2 lg:flex-row lg:items-center lg:gap-3', className)}>
-      <div className="grid flex-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 lg:items-center lg:gap-3">
+      <div className="grid flex-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 lg:items-center lg:gap-3">
         <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
           <DestinationField
             value={destination}
             onChange={setDestination}
-            label="Where do you want to stay?"
+            label="Destination"
             icon={Search}
-            placeholder="Manali, Shimla, Kasol..."
+            placeholder="Place, e.g. Manali, Kaza, Sangla"
             destinations={trendingDestinations}
           />
+        </motion.div>
+        <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
+          <StayPropertyNameField value={propertyQuery} onChange={setPropertyQuery} />
         </motion.div>
         <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
           <DateRangeField value={dateRange} onChange={setDateRange} label="Dates" placeholder="Select dates" />
