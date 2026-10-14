@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { dest, regions, packages, experiences, experts } = vi.hoisted(() => ({ dest: vi.fn(), regions: vi.fn(), packages: vi.fn(), experiences: vi.fn(), experts: vi.fn() }));
+const { dest, refs, regions, packages, experiences, experts } = vi.hoisted(() => ({ dest: vi.fn(), refs: vi.fn(), regions: vi.fn(), packages: vi.fn(), experiences: vi.fn(), experts: vi.fn() }));
 vi.mock('@/lib/mongodb', () => ({ connectDB: vi.fn() }));
-vi.mock('@/lib/destinations', () => ({ getCuratedDestinations: dest }));
+vi.mock('@/lib/destinations', () => ({ getCuratedDestinations: dest, getPublishedDestinationRefs: refs }));
 vi.mock('@/lib/publishedRegions', () => ({ getPublishedRegionRefs: regions }));
 vi.mock('@/lib/packages', () => ({ getAllPackages: packages }));
 vi.mock('@/lib/experiences', () => ({ getAllExperiences: experiences }));
@@ -15,7 +15,7 @@ const options = { maxTimeMS: SECTION_DB_TIME_LIMIT_MS };
 beforeEach(() => {
   vi.useFakeTimers();
   resetSectionReadsForTests();
-  for (const mock of [dest, regions, packages, experiences, experts]) mock.mockReset().mockImplementation(() => new Promise(() => undefined));
+  for (const mock of [dest, refs, regions, packages, experiences, experts]) mock.mockReset().mockImplementation(() => new Promise(() => undefined));
 });
 afterEach(() => {
   resetSectionReadsForTests();
@@ -25,11 +25,13 @@ afterEach(() => {
 describe('each older catalog read gets an AbortSignal and keeps its database limit', () => {
   it('passes the signal and the 1.5 s database limit to every read, with the same projections as before', () => {
     void defaultLoaders.destinations(options);
+    void defaultLoaders.destinationRefs!(options);
     void defaultLoaders.regions(options);
     void defaultLoaders.journeys(options);
     void defaultLoaders.experiences(options);
     void defaultLoaders.experts(options);
     expect(dest).toHaveBeenCalledWith(expect.objectContaining({ maxTimeMS: 1500, signal: expect.any(AbortSignal), projection: expect.objectContaining({ slug: 1, title: 1 }) }));
+    expect(refs).toHaveBeenCalledWith({ maxTimeMS: 1500, signal: expect.any(AbortSignal) });
     expect(regions).toHaveBeenCalledWith(expect.objectContaining({ maxTimeMS: 1500, signal: expect.any(AbortSignal) }));
     expect(packages).toHaveBeenCalledWith(expect.objectContaining({ maxTimeMS: 1500, signal: expect.any(AbortSignal), projection: expect.objectContaining({ slug: 1, name: 1 }) }));
     expect(experiences).toHaveBeenCalledWith(1500, expect.objectContaining({ slug: 1, title: 1 }), expect.any(AbortSignal));

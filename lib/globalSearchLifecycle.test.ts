@@ -66,6 +66,7 @@ function base(overrides: Partial<GlobalSearchLoaders> = {}): GlobalSearchLoaders
     regions: async () => [],
     journeys: async () => journeys,
     experiences: async () => experiences,
+    destinationRefs: async () => destinations.map((d) => ({ slug: d.slug, title: d.title, state: d.state })),
     experts: async () => [],
     stays: async (_q, shared) => {
       await shared.destinations();
@@ -404,11 +405,21 @@ describe('the unsettled-read cap holds across every key', () => {
 });
 
 describe('shared dependency and fail-closed behaviour are unchanged', () => {
-  it('a failed shared Destinations read withholds Stays (error) while the other sections answer', async () => {
+  it('a failed heavy Destinations read leaves Stays and the dependent sections verified by the light refs', async () => {
     const out = await timed(base({ destinations: async () => { throw new Error('boom'); } }));
     expect(out.response.sections.destinations.status).toBe('error');
-    expect(out.response.sections.stays).toEqual({ status: 'error', items: [] });
+    expect(out.response.sections.stays.status).toBe('ok');
     expect(out.response.sections.journeys.status).toBe('ok');
+    expect(out.response.partial).toBe(true);
+  });
+
+  it('a failed light refs read withholds Stays and the dependent sections (fail closed) while Destinations and Regions answer', async () => {
+    const out = await timed(base({ destinationRefs: async () => { throw new Error('boom'); } }), 'Dharamsala');
+    expect(out.response.sections.stays).toEqual({ status: 'error', items: [] });
+    for (const key of ['journeys', 'experiences', 'experts'] as const) expect(out.response.sections[key]).toEqual({ status: 'error', items: [] });
+    expect(out.response.sections.destinations.status).toBe('ok');
+    expect(out.response.sections.destinations.items.length).toBeGreaterThan(0);
+    expect(out.response.sections.regions.status).toBe('ok');
     expect(out.response.partial).toBe(true);
   });
 

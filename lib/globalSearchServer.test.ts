@@ -122,9 +122,10 @@ describe('runGlobalSearch', () => {
   });
 
   it('if destinations cannot be read, journeys and experiences still answer from their own fields (never widening results)', async () => {
-    const response = await runGlobalSearch(parse('Kasol Kheerganga Tosh'), loaders({ destinations: vi.fn(async () => { throw new Error('down'); }) }));
+    const response = await runGlobalSearch(parse('Kasol Kheerganga Tosh'), loaders({ destinations: vi.fn(async () => { throw new Error('down'); }), destinationRefs: vi.fn(async () => destinations.map((d) => ({ slug: d.slug, title: d.title, state: d.state }))) }));
     expect(response.sections.destinations.status).toBe('error');
     expect(ids(response, 'journeys')[0]).toBe('journey:kasol-kheerganga-tosh');
+    expect(response.partial).toBe(true);
   });
 
   it('if every source fails, the response is all-empty and partial, not an exception', async () => {
