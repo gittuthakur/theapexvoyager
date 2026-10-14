@@ -36,7 +36,7 @@ const MAX_BODY_BYTES = 10_000;
 // with no payment ever completed against them, not fraud or financial exposure. This
 // must NOT be treated as payment-grade abuse protection, and a future payment route
 // must use a shared store (e.g. Redis) instead, never this limiter as-is.
-export const BOOKING_RATE_LIMIT_PER_MINUTE = 10;
+const BOOKING_RATE_LIMIT_PER_MINUTE = 10;
 
 const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' };
 
