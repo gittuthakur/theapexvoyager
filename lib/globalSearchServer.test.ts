@@ -209,7 +209,7 @@ describe('singleFlight (burst coalescing without any stored copy)', () => {
   it('concurrent requests share one running read', async () => {
     let reads = 0;
     const read = () => { reads++; return new Promise<number>((resolve) => setTimeout(() => resolve(reads), 20)); };
-    const results = await Promise.all(Array.from({ length: 20 }, () => singleFlight('k1', read)));
+    const results = await Promise.all(Array.from({ length: 20 }, () => singleFlight('destinations#1500', read)));
     expect(reads).toBe(1);
     expect(new Set(results).size).toBe(1);
   });
@@ -217,17 +217,17 @@ describe('singleFlight (burst coalescing without any stored copy)', () => {
   it('keeps nothing after the read finishes: the next request reads fresh', async () => {
     let value = 1;
     const read = async () => value;
-    expect(await singleFlight('k2', read)).toBe(1);
+    expect(await singleFlight('journeys#1500', read)).toBe(1);
     value = 2;
-    expect(await singleFlight('k2', read)).toBe(2);
+    expect(await singleFlight('journeys#1500', read)).toBe(2);
   });
 
   it('never keeps a failed read, and different catalogs never share', async () => {
     let attempts = 0;
-    await expect(singleFlight('k3', async () => { attempts++; throw new Error('down'); })).rejects.toThrow('down');
-    expect(await singleFlight('k3', async () => { attempts++; return 'ok'; })).toBe('ok');
+    await expect(singleFlight('experts#1500', async () => { attempts++; throw new Error('down'); })).rejects.toThrow('down');
+    expect(await singleFlight('experts#1500', async () => { attempts++; return 'ok'; })).toBe('ok');
     expect(attempts).toBe(2);
-    const [a, b] = await Promise.all([singleFlight('ka', async () => 'a'), singleFlight('kb', async () => 'b')]);
+    const [a, b] = await Promise.all([singleFlight('regions#1500', async () => 'a'), singleFlight('experiences#1500', async () => 'b')]);
     expect([a, b]).toEqual(['a', 'b']);
   });
 });

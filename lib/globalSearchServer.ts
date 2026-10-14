@@ -89,11 +89,28 @@ export const JOURNEY_SEARCH_PROJECTION = { slug: 1, name: 1, destination: 1, des
 export const EXPERIENCE_SEARCH_PROJECTION = { slug: 1, title: 1, location: 1, region: 1, category: 1, subCategory: 1, mood: 1, shortDescription: 1, description: 1, highlights: 1, image: 1 } as const;
 
 /**
- * The most reads of the five older catalogs that may be unsettled at once in one server instance. Each catalog has ONE
- * flight at a time (the key is the catalog plus its database limit), so the real ceiling is five by construction; the cap
- * states that invariant and refuses to start a sixth rather than let a future key silently multiply database work.
+ * The most reads of the older catalogs that may be unsettled at once in one server instance: one per authorized catalog
+ * (SECTION_READ_CATALOGS). Every flight counts, whatever its database limit, so the ceiling holds even if two limits are
+ * ever used for one catalog; a read beyond it is refused rather than let a key silently multiply database work.
  */
-export const MAX_UNSETTLED_SECTION_READS = 5;
+export const MAX_UNSETTLED_SECTION_READS = 6;
+/**
+ * The ONLY catalogs a shared read may be registered for. `destinations` is the heavy Destinations-search read;
+ * `destinationRefs` is the light, fresh, published-only (slug, title, state) read the dependent sections and Stays are
+ * verified against. Any other key is refused, so the registry can never grow by accident.
+ */
+export const SECTION_READ_CATALOGS = ['destinations', 'destinationRefs', 'regions', 'journeys', 'experiences', 'experts'] as const;
+export type SectionReadCatalog = (typeof SECTION_READ_CATALOGS)[number];
+/** `catalog#limit`, exactly: the limit is a canonical integer (no leading zeros), so one logical read has one spelling. */
+const SECTION_READ_KEY = new RegExp(`^(${SECTION_READ_CATALOGS.join('|')})#(0|[1-9][0-9]{0,5})$`);
+
+/** A shared read was requested for something that is not an authorized catalog (or a malformed key). It never starts a read. */
+export class UnknownSectionReadError extends Error {
+  constructor() {
+    super('Not an authorized global search catalog read');
+    this.name = 'UnknownSectionReadError';
+  }
+}
 /**
  * How long a section read may stay unsettled before it is CANCELLED through its AbortSignal. Far above what a healthy
  * read needs (the database limit is 1.5 s, the response deadline 1.75 s) and below the driver's 30 s connection-selection
@@ -138,6 +155,7 @@ export function resetSectionReadsForTests(): void {
  * identity-checked (an older settled read can never remove a newer one) and failures are never kept.
  */
 export function singleFlight<T>(key: string, read: (signal: AbortSignal) => Promise<T>): Promise<T> {
+  if (!SECTION_READ_KEY.test(key)) return Promise.reject(new UnknownSectionReadError());
   const running = inFlight.get(key);
   if (running) return running as Promise<T>;
   if (inFlight.size >= MAX_UNSETTLED_SECTION_READS) return Promise.reject(new SectionReadBusyError());

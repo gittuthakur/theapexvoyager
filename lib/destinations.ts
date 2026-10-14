@@ -173,9 +173,12 @@ export async function getCuratedDestinations(options: { maxTimeMS?: number; proj
 
 /** Published destinations reduced to slug/title/state — a projection read for callers (stay search/eligibility)
  *  that must not load every destination's full editorial document. */
-export async function getPublishedDestinationRefs(): Promise<Array<{ slug: string; title: string; state?: string }>> {
+export async function getPublishedDestinationRefs(options: { maxTimeMS?: number; signal?: AbortSignal } = {}): Promise<Array<{ slug: string; title: string; state?: string }>> {
   await connectDB();
-  const docs = await DestinationModel.find({ status: 'published' }, { slug: 1, title: 1, state: 1 }).sort({ priority: 1 }).lean<Array<Pick<DestinationDocument, 'slug' | 'title' | 'state'>>>();
+  const query = DestinationModel.find({ status: 'published' }, { slug: 1, title: 1, state: 1 }).sort({ priority: 1 });
+  // Optional database time limit and AbortSignal (global search): omitted = exactly as before. Always the published-only filter, never cached.
+  const bounded = options.maxTimeMS ? query.maxTimeMS(options.maxTimeMS) : query;
+  const docs = await (options.signal ? bounded.setOptions({ signal: options.signal } as never) : bounded).lean<Array<Pick<DestinationDocument, 'slug' | 'title' | 'state'>>>();
   return docs.map((doc) => ({ slug: doc.slug, title: doc.title, state: doc.state }));
 }
 

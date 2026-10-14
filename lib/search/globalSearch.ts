@@ -87,7 +87,7 @@ export function destinationSection(destinations: Destination[], query: string, a
   }));
 }
 
-export function journeySection(packages: TravelPackage[], destinations: readonly Destination[], query: string, aliases: AliasMap = LOCATION_ALIASES): GlobalSearchItem[] {
+export function journeySection(packages: TravelPackage[], destinations: readonly Pick<Destination, 'slug' | 'title' | 'state'>[], query: string, aliases: AliasMap = LOCATION_ALIASES): GlobalSearchItem[] {
   const bySlug = new Map(destinations.map((destination) => [destination.slug, destination]));
   return cap(searchPackages(packages, query, bySlug, aliases)).map(({ pkg, reason }) => ({
     id: `journey:${pkg.slug}`,
