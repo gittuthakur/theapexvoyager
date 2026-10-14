@@ -286,7 +286,14 @@ export async function searchEligibleStays(request: EligibleStaysRequest = {}): P
   // database-side aggregation already applies eligibility, exclusions (fail closed), dedupe, ordering and
   // pagination, and moves one page of documents instead of the whole eligible set.
   if (strategy === 'auto' && !hasText && !hasDestination && curated.length === 0 && limit > 0 && Math.max(0, offset) % limit === 0) {
-    const page = await getCachedStaysCatalog({ stayType: query.stayType, page: Math.max(0, offset) / limit + 1, pageSize: limit });
+    let page: Awaited<ReturnType<typeof getCachedStaysCatalog>>;
+    try {
+      page = await getCachedStaysCatalog({ stayType: query.stayType, page: Math.max(0, offset) / limit + 1, pageSize: limit });
+    } catch (error) {
+      // A connection/aggregation failure is "unavailable" (fail closed), never an empty catalog and never an unhandled throw.
+      console.error('[staysSearch] cached stays catalog could not be read', error);
+      return { status: 'unavailable', reason: 'catalog' };
+    }
     if (page.unavailable) return { status: 'unavailable', reason: page.unavailableReason ?? 'exclusions' };
     return { status: 'ok', stays: page.stays, totalCount: page.totalCount, cacheAge: ageOf(page.stays) };
   }
