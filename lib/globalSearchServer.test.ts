@@ -130,7 +130,7 @@ describe('runGlobalSearch', () => {
 
   it('if every source fails, the response is all-empty and partial, not an exception', async () => {
     const down = vi.fn(async () => { throw new Error('down'); });
-    const response = await runGlobalSearch(parse('Spiti'), { destinations: down, regions: down, journeys: down, experiences: down, experts: down, stays: down });
+    const response = await runGlobalSearch(parse('Spiti'), { destinations: down, regions: down, journeys: down, experiences: down, experts: down, stays: down, transport: down });
     expect(response.total).toBe(0);
     expect(Object.values(response.sections).every((s) => s.status === 'error')).toBe(true);
     expect(response.partial).toBe(true);

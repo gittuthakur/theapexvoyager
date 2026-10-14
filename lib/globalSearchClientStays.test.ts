@@ -18,7 +18,7 @@ function response(stays: GlobalSearchItem[], staysStatus: 'ok' | 'timeout' | 'er
   const empty = { status: 'ok' as const, items: [] as GlobalSearchItem[] };
   return {
     query: 'Kaza',
-    sections: { destinations: empty, regions: empty, journeys: empty, experiences: { status: 'ok', items: [experience] }, stays: { status: staysStatus, items: stays }, experts: empty },
+    sections: { destinations: empty, regions: empty, journeys: empty, experiences: { status: 'ok', items: [experience] }, stays: { status: staysStatus, items: stays }, experts: empty, transport: empty },
     total: stays.length + 1,
     partial: staysStatus !== 'ok'
   };
@@ -26,7 +26,7 @@ function response(stays: GlobalSearchItem[], staysStatus: 'ok' | 'timeout' | 'er
 
 describe('client: the Stays section', () => {
   it('is displayed between Experiences and Travel Experts', () => {
-    expect(GLOBAL_SEARCH_SECTIONS.map((s) => s.key)).toEqual(['destinations', 'regions', 'journeys', 'experiences', 'stays', 'experts']);
+    expect(GLOBAL_SEARCH_SECTIONS.map((s) => s.key)).toEqual(['destinations', 'regions', 'journeys', 'experiences', 'stays', 'experts', 'transport']);
     expect(GLOBAL_SEARCH_SECTIONS.find((s) => s.key === 'stays')?.label).toBe('Stays');
   });
 

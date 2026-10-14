@@ -10,7 +10,7 @@ const destination: GlobalSearchItem = { id: 'destination:spiti-valley', type: 'd
 
 function response(stays: GlobalSearchItem[], staysStatus: 'ok' | 'timeout' | 'error' = 'ok'): GlobalSearchResponse {
   const empty = { status: 'ok' as const, items: [] as GlobalSearchItem[] };
-  const sections = { destinations: { status: 'ok' as const, items: [destination] }, regions: empty, journeys: empty, experiences: empty, stays: { status: staysStatus, items: stays }, experts: empty };
+  const sections = { destinations: { status: 'ok' as const, items: [destination] }, regions: empty, journeys: empty, experiences: empty, stays: { status: staysStatus, items: stays }, experts: empty, transport: empty };
   return { query: 'q', sections, total: 1 + stays.length, partial: staysStatus !== 'ok' };
 }
 const noop = () => undefined;

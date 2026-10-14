@@ -155,7 +155,7 @@ describe('healthy parity', () => {
     void _unused;
     const without = (await timed(previous, q)).response;
     expect(withRefs).toEqual(without);
-    expect(Object.keys(withRefs.sections)).toEqual(['destinations', 'regions', 'journeys', 'experiences', 'stays', 'experts']);
+    expect(Object.keys(withRefs.sections)).toEqual(['destinations', 'regions', 'journeys', 'experiences', 'stays', 'experts', 'transport']);
   });
 });
 

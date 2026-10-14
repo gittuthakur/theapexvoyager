@@ -69,10 +69,10 @@ describe('staySection (pure row shaping)', () => {
 });
 
 describe('runGlobalSearch with the Stays section', () => {
-  it('has six sections in order and reads Stays once for the query', async () => {
+  it('has seven sections in order and reads Stays once for the query', async () => {
     const stays = vi.fn(async () => ok([suggestion(1)]));
     const response = await runGlobalSearch(parse('Kaza'), loaders(stays));
-    expect(GLOBAL_SEARCH_SECTION_ORDER).toEqual(['destinations', 'regions', 'journeys', 'experiences', 'stays', 'experts']);
+    expect(GLOBAL_SEARCH_SECTION_ORDER).toEqual(['destinations', 'regions', 'journeys', 'experiences', 'stays', 'experts', 'transport']);
     expect(Object.keys(response.sections).sort()).toEqual([...GLOBAL_SEARCH_SECTION_ORDER].sort());
     expect(stays).toHaveBeenCalledTimes(1);
     expect(stays).toHaveBeenCalledWith('Kaza', { destinations: expect.any(Function) });
@@ -80,10 +80,10 @@ describe('runGlobalSearch with the Stays section', () => {
     expect(response.partial).toBe(false);
   });
 
-  it('the five existing sections are identical with and without Stays', async () => {
+  it('the six other sections are identical with and without Stays', async () => {
     const without = await runGlobalSearch(parse('Spiti'), loaders());
     const withStays = await runGlobalSearch(parse('Spiti'), loaders(async () => ok([suggestion(1)])));
-    for (const key of ['destinations', 'regions', 'journeys', 'experiences', 'experts'] as const) expect(withStays.sections[key]).toEqual(without.sections[key]);
+    for (const key of ['destinations', 'regions', 'journeys', 'experiences', 'experts', 'transport'] as const) expect(withStays.sections[key]).toEqual(without.sections[key]);
   });
 
   it('returns at most five stays even if the loader returns more, and counts them in the total', async () => {
