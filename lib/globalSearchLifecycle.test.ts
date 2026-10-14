@@ -202,16 +202,16 @@ describe('single-flight lifetime (the five older catalogs)', () => {
     expect(reads).toBe(2);
   });
 
-  it('exactly six catalogs are authorized, the cap equals that number, and every one is admitted', async () => {
-    expect([...SECTION_READ_CATALOGS]).toEqual(['destinations', 'destinationRefs', 'regions', 'journeys', 'experiences', 'experts']);
-    expect(MAX_UNSETTLED_SECTION_READS).toBe(6);
+  it('exactly seven catalogs are authorized, the cap equals that number, and every one is admitted', async () => {
+    expect([...SECTION_READ_CATALOGS]).toEqual(['destinations', 'destinationRefs', 'regions', 'journeys', 'experiences', 'experts', 'transport']);
+    expect(MAX_UNSETTLED_SECTION_READS).toBe(7);
     expect(MAX_UNSETTLED_SECTION_READS).toBe(SECTION_READ_CATALOGS.length);
     let reads = 0;
     for (const catalog of SECTION_READ_CATALOGS) void singleFlight(`${catalog}#1500`, () => { reads++; return never<string>(); });
-    expect(reads).toBe(6);
+    expect(reads).toBe(7);
   });
 
-  it('a seventh unsettled read is refused immediately, and fits again once one settles', async () => {
+  it('an eighth unsettled read is refused immediately, and fits again once one settles', async () => {
     let reads = 0;
     const read = (signal: AbortSignal) => {
       reads++;
@@ -221,7 +221,7 @@ describe('single-flight lifetime (the five older catalogs)', () => {
     flights.forEach((f) => f.catch(() => undefined));
     await expect(singleFlight('regions#3000', read)).rejects.toBeInstanceOf(SectionReadBusyError);
     expect(reads).toBe(MAX_UNSETTLED_SECTION_READS);
-    await vi.advanceTimersByTimeAsync(SECTION_READ_ABORT_AFTER_MS + 10); // all six are aborted and settle
+    await vi.advanceTimersByTimeAsync(SECTION_READ_ABORT_AFTER_MS + 10); // all seven are aborted and settle
     expect(await singleFlight('regions#3000', async () => 'fits')).toBe('fits');
   });
 
@@ -234,9 +234,9 @@ describe('single-flight lifetime (the five older catalogs)', () => {
     const bad = ['k#1500', 'regions', 'regions#', '#1500', 'regions#01500', 'regions#1500#x', 'regions#1500 ', ' regions#1500', 'Regions#1500', 'REGIONS#1500', 'regions#-1', 'regions#1.5', 'regions#1e3', 'regions#1500\n', 'regions#1500\nexperts#1500', '__proto__#1500', 'constructor#1500', 'toString#1500', 'regions#9999999', 'destinationrefs#1500', 'destination#1500', 'regions\u0000#1500', 'regions#१५००', ''];
     for (const key of bad) await expect(singleFlight(key, read), JSON.stringify(key)).rejects.toBeInstanceOf(UnknownSectionReadError);
     expect(reads).toBe(0);
-    // none of them occupied a slot: all six authorized catalogs still fit
+    // none of them occupied a slot: all seven authorized catalogs still fit
     for (const catalog of SECTION_READ_CATALOGS) void singleFlight(`${catalog}#1500`, read);
-    expect(reads).toBe(6);
+    expect(reads).toBe(7);
   });
 
   it('the cap counts every flight across catalogs AND database limits: two limits for one catalog use two slots', async () => {
@@ -245,12 +245,14 @@ describe('single-flight lifetime (the five older catalogs)', () => {
       reads++;
       return never<string>();
     };
-    for (const key of ['destinations#1500', 'destinations#3000', 'destinationRefs#1500', 'regions#1500', 'journeys#1500', 'experts#1500']) void singleFlight(key, read);
-    expect(reads).toBe(6);
+    for (const key of ['destinations#1500', 'destinations#3000', 'destinationRefs#1500', 'regions#1500', 'journeys#1500', 'experts#1500', 'transport#1500']) void singleFlight(key, read);
+    expect(reads).toBe(7);
     await expect(singleFlight('experiences#1500', read)).rejects.toBeInstanceOf(SectionReadBusyError);
     await expect(singleFlight('regions#3000', read)).rejects.toBeInstanceOf(SectionReadBusyError);
+    await expect(singleFlight('transport#3000', read)).rejects.toBeInstanceOf(SectionReadBusyError);
     void singleFlight('destinations#3000', read); // a registered key still joins its own read at the cap
-    expect(reads).toBe(6);
+    void singleFlight('transport#1500', read);
+    expect(reads).toBe(7);
   });
 });
 
@@ -284,7 +286,7 @@ describe('the API answers honestly when a section read hangs', () => {
   });
 
   it('a refused (capped) read is reported as "timeout", never as data or as "no results"', async () => {
-    for (const key of ['destinations#1500', 'destinationRefs#1500', 'journeys#1500', 'experiences#1500', 'experts#1500', 'destinations#3000']) void singleFlight(key, () => never<string>());
+    for (const key of ['destinations#1500', 'destinationRefs#1500', 'journeys#1500', 'experiences#1500', 'experts#1500', 'destinations#3000', 'transport#1500']) void singleFlight(key, () => never<string>());
     const out = await timed(base({ regions: () => singleFlight('regions#1500', async () => []) as never }));
     expect(out.response.sections.regions).toEqual({ status: 'timeout', items: [] });
     expect(out.response.partial).toBe(true);

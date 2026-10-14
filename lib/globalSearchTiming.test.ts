@@ -94,7 +94,7 @@ describe('connection acquisition: outside the section deadlines, and now visible
     const out = await timed(base({ connect: () => delay(2400, undefined), stays: () => delay(3000, okStays()) }));
     expect(out.ms).toBe(2400 + STAYS_SECTION_DEADLINE_MS);
     expect(out.header).toBe(
-      'connect;dur=2400;desc="ok", destinations;dur=0;desc="ok", regions;dur=0;desc="ok", journeys;dur=0;desc="ok", experiences;dur=0;desc="ok", stays;dur=2500;desc="timeout", experts;dur=0;desc="ok", total;dur=4900'
+      'connect;dur=2400;desc="ok", destinations;dur=0;desc="ok", regions;dur=0;desc="ok", journeys;dur=0;desc="ok", experiences;dur=0;desc="ok", stays;dur=2500;desc="timeout", experts;dur=0;desc="ok", transport;dur=0;desc="ok", total;dur=4900'
     );
   });
 
@@ -167,7 +167,7 @@ describe('diagnostics', () => {
       'secret-query-text'
     );
     const names = out.header.split(', ').map((part) => part.split(';')[0]);
-    expect(names).toEqual(['destinations', 'regions', 'journeys', 'experiences', 'stays', 'experts', 'total']);
+    expect(names).toEqual(['destinations', 'regions', 'journeys', 'experiences', 'stays', 'experts', 'transport', 'total']);
     expect(out.header).toMatch(/^[a-z]+;dur=\d+(;desc="(ok|timeout|error|skipped)")?(, [a-z]+;dur=\d+(;desc="(ok|timeout|error|skipped)")?)*$/);
     expect(out.header).not.toMatch(/secret|mongo|cluster|shard|admin|27017/i);
   });
@@ -180,7 +180,7 @@ describe('diagnostics', () => {
 
   it('answers keep their order, URLs and shape with diagnostics on', async () => {
     const out = await timed(base(), 'Dharamsala');
-    expect(Object.keys(out.response.sections)).toEqual(['destinations', 'regions', 'journeys', 'experiences', 'stays', 'experts']);
+    expect(Object.keys(out.response.sections)).toEqual(['destinations', 'regions', 'journeys', 'experiences', 'stays', 'experts', 'transport']);
     expect(out.response.sections.destinations.items[0].href).toBe('/destinations/dharamshala');
     expect(out.response.sections.journeys.items[0].href).toBe('/journeys/dharamshala-dalhousie-escape');
   });

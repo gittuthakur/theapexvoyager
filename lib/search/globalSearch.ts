@@ -3,10 +3,12 @@ import { searchDestinations } from '@/lib/search/destinationSearch';
 import { searchExperiences, type RelatedDestinationRef } from '@/lib/search/experienceSearch';
 import { searchExperts } from '@/lib/search/expertSearch';
 import { searchPackages } from '@/lib/search/journeySearch';
-import { locationQueryVariants, matchFormsToTerm } from '@/lib/search/locationMatching';
+import { locationQueryVariants, matchFormsToTerm, matchLocation } from '@/lib/search/locationMatching';
 import { regionForms } from '@/lib/search/matching';
 import { hasPhrase, normalizeSearchText, searchForms, type AliasMap } from '@/lib/search/normalize';
+import { filterTransportRoutes } from '@/lib/search/transportSearch';
 import type { Destination, TravelPackage } from '@/types';
+import type { TransportRoute } from '@/types/transport';
 import type { Experience } from '@/types/experience';
 import type { TravelExpert } from '@/types/expert';
 
@@ -23,13 +25,13 @@ import type { TravelExpert } from '@/types/expert';
 
 export const GLOBAL_SEARCH_LIMITS = { minQueryLength: 2, maxQueryLength: 80, perSection: 5 } as const;
 
-export type GlobalSearchSectionKey = 'destinations' | 'regions' | 'journeys' | 'experiences' | 'stays' | 'experts';
-export const GLOBAL_SEARCH_SECTION_ORDER: readonly GlobalSearchSectionKey[] = ['destinations', 'regions', 'journeys', 'experiences', 'stays', 'experts'];
+export type GlobalSearchSectionKey = 'destinations' | 'regions' | 'journeys' | 'experiences' | 'stays' | 'experts' | 'transport';
+export const GLOBAL_SEARCH_SECTION_ORDER: readonly GlobalSearchSectionKey[] = ['destinations', 'regions', 'journeys', 'experiences', 'stays', 'experts', 'transport'];
 
 export interface GlobalSearchItem {
   /** Stable, type-prefixed id, e.g. "journey:kinnaur-spiti-circuit". */
   id: string;
-  type: 'destination' | 'region' | 'journey' | 'experience' | 'stay' | 'expert';
+  type: 'destination' | 'region' | 'journey' | 'experience' | 'stay' | 'expert' | 'transport';
   title: string;
   subtitle?: string;
   /** The record's own page - never a generic listing (a stay's is its public property page). */
@@ -224,4 +226,61 @@ export function staySection(suggestions: readonly StaySuggestionRow[]): GlobalSe
       reason: 'stay'
     };
   });
+}
+
+// ---- transport -------------------------------------------------------------------------------------------
+
+/** "Delhi to Manali", "Delhi -> Manali", "Delhi → Manali", "Delhi > Manali": pickup first, drop second. */
+const ROUTE_DIRECTION = /^(?:(.+?)\s*(?:→|->|=>|>)\s*(.+)|(.+?)\s+to\s+(.+))$/i;
+const MATCH_RANK = { exact: 3, phrase: 2, prefix: 1 } as const;
+
+/**
+ * Transport routes. Records arrive already read as ACTIVE routes only (filterTransportRoutes refuses anything not
+ * explicitly active again). Place matching is delegated to lib/search/transportSearch.ts, the same strict-direction,
+ * exact-before-loose, airport-is-not-the-city rules the /transport page applies:
+ *  - "A to B" (or "A -> B") returns only routes that run FROM A TO B; the reverse is never implied.
+ *  - Any other text returns routes whose pickup OR drop names that place; the stronger place match ranks first
+ *    (exact > whole phrase > word-start), then the catalog's own order (featured first). The reason names the end matched.
+ * A row carries only stored facts (route name, route type, duration) - never a fare, vehicle, availability or booking
+ * state: fares stay on the /transport page under that page's own rules. The link is that page's own route lookup.
+ */
+export function transportSection(routes: readonly TransportRoute[], query: string, aliases: AliasMap = LOCATION_ALIASES): GlobalSearchItem[] {
+  if (!normalizeSearchText(query)) return [];
+  const directional = ROUTE_DIRECTION.exec(query.trim());
+  const pickup = directional ? (directional[1] ?? directional[3]) : undefined;
+  const drop = directional ? (directional[2] ?? directional[4]) : undefined;
+
+  const hits: Array<{ route: TransportRoute; score: number; reason: string }> = [];
+  if (pickup && drop) {
+    for (const route of filterTransportRoutes(routes, { origin: pickup, destination: drop }, aliases)) hits.push({ route, score: 0, reason: 'route' });
+  } else {
+    const seen = new Set<TransportRoute>();
+    const add = (route: TransportRoute, end: 'origin' | 'destination') => {
+      if (seen.has(route)) return;
+      seen.add(route);
+      const match = matchLocation(route[end], query, aliases);
+      hits.push({ route, score: match ? MATCH_RANK[match] : 0, reason: end === 'origin' ? 'route-pickup' : 'route-drop' });
+    };
+    for (const route of filterTransportRoutes(routes, { origin: query }, aliases)) add(route, 'origin');
+    for (const route of filterTransportRoutes(routes, { destination: query }, aliases)) add(route, 'destination');
+  }
+  const order = new Map(routes.map((route, index) => [route, index]));
+  hits.sort((a, b) => b.score - a.score || (order.get(a.route) ?? 0) - (order.get(b.route) ?? 0));
+
+  const ids = new Set<string>();
+  const rows: GlobalSearchItem[] = [];
+  for (const { route, reason } of hits) {
+    const id = `transport:${route.id ?? `${route.origin}>${route.destination}`}`;
+    if (ids.has(id)) continue;
+    ids.add(id);
+    rows.push({
+      id,
+      type: 'transport',
+      title: `${route.origin} → ${route.destination}`,
+      subtitle: [route.routeType, route.estimatedDuration].filter(Boolean).join(' · ') || undefined,
+      href: `/transport?${new URLSearchParams({ pickup: route.origin, destination: route.destination }).toString()}`,
+      reason
+    });
+  }
+  return cap(rows);
 }

@@ -4,6 +4,7 @@ import { getAllExperiences } from '@/lib/experiences';
 import { getAllExperts } from '@/lib/experts';
 import { getAllPackages } from '@/lib/packages';
 import { getPublishedRegionRefs } from '@/lib/publishedRegions';
+import { getActiveTransportRouteRefs } from '@/lib/publishedTransportRoutes';
 import { searchStaySuggestions, type StaySuggestionsOutcome } from '@/lib/staysSearch';
 import type { StaySearchDestination } from '@/lib/search/staySearch';
 import type { GlobalSearchTimings, TimedOutcome } from '@/lib/globalSearchTiming';
@@ -16,6 +17,7 @@ import {
   journeySection,
   regionSection,
   staySection,
+  transportSection,
   type GlobalSearchItem,
   type GlobalSearchSectionKey,
   type ParsedGlobalQuery,
@@ -24,6 +26,7 @@ import {
 import type { Destination, TravelPackage } from '@/types';
 import type { Experience } from '@/types/experience';
 import type { TravelExpert } from '@/types/expert';
+import type { TransportRoute } from '@/types/transport';
 
 /**
  * Global Search, Stage 1: reads each catalog through the loader that already enforces its public
@@ -38,7 +41,11 @@ import type { TravelExpert } from '@/types/expert';
  *
  * Stage 3B adds the Stays section from searchStaySuggestions (lib/staysSearch.ts), which owns its eligibility,
  * fail-closed exclusion check, row memo and single-flight read. It has its OWN, longer response deadline (below)
- * and is the only section that may make the response wait past SECTION_DEADLINE_MS. Transport is not part of this.
+ * and is the only section that may make the response wait past SECTION_DEADLINE_MS.
+ *
+ * Stage 4 adds the Transport section: one projected read of the active routes (lib/publishedTransportRoutes.ts), matched
+ * by the pure layer with the /transport page's own route rules. It is the seventh authorized catalog read, runs
+ * concurrently with the others under the same deadline, and needs neither destinations nor regions.
  */
 
 /** Server-side database time limit for each read. */
@@ -79,6 +86,8 @@ export interface GlobalSearchLoaders {
   journeys(options: { maxTimeMS: number }): Promise<TravelPackage[]>;
   experiences(options: { maxTimeMS: number }): Promise<Experience[]>;
   experts(options: { maxTimeMS: number }): Promise<TravelExpert[]>;
+  /** Active Transport routes only. Optional so a loader set without it simply has no Transport data (an empty, complete section). */
+  transport?(options: { maxTimeMS: number }): Promise<TransportRoute[]>;
   /**
    * Public stay suggestions for the text. Optional so a loader set without it simply has no Stays section data.
    * `shared.destinations()` is the Destinations section's own published-only read, so Stays does not read it twice; if
@@ -100,14 +109,15 @@ export const EXPERIENCE_SEARCH_PROJECTION = { slug: 1, title: 1, location: 1, re
  * The most reads of the older catalogs that may be unsettled at once in one server instance: one per authorized catalog
  * (SECTION_READ_CATALOGS). Every flight counts, whatever its database limit, so the ceiling holds even if two limits are
  * ever used for one catalog; a read beyond it is refused rather than let a key silently multiply database work.
+ * The independent Stays read (lib/staysSearch.ts) keeps its own cap of four and is not counted here; the two never share a slot.
  */
-export const MAX_UNSETTLED_SECTION_READS = 6;
+export const MAX_UNSETTLED_SECTION_READS = 7;
 /**
  * The ONLY catalogs a shared read may be registered for. `destinations` is the heavy Destinations-search read;
  * `destinationRefs` is the light, fresh, published-only (slug, title, state) read the dependent sections and Stays are
- * verified against. Any other key is refused, so the registry can never grow by accident.
+ * verified against; `transport` is the active-routes read. Any other key is refused, so the registry can never grow by accident.
  */
-export const SECTION_READ_CATALOGS = ['destinations', 'destinationRefs', 'regions', 'journeys', 'experiences', 'experts'] as const;
+export const SECTION_READ_CATALOGS = ['destinations', 'destinationRefs', 'regions', 'journeys', 'experiences', 'experts', 'transport'] as const;
 export type SectionReadCatalog = (typeof SECTION_READ_CATALOGS)[number];
 /** `catalog#limit`, exactly: the limit is a canonical integer (no leading zeros), so one logical read has one spelling. */
 const SECTION_READ_KEY = new RegExp(`^(${SECTION_READ_CATALOGS.join('|')})#(0|[1-9][0-9]{0,5})$`);
@@ -194,6 +204,7 @@ export const defaultLoaders: GlobalSearchLoaders = {
   journeys: (options) => singleFlight(`journeys#${options.maxTimeMS}`, (signal) => getAllPackages({ ...options, projection: { ...JOURNEY_SEARCH_PROJECTION }, signal })),
   experiences: (options) => singleFlight(`experiences#${options.maxTimeMS}`, (signal) => getAllExperiences(options.maxTimeMS, { ...EXPERIENCE_SEARCH_PROJECTION }, signal)),
   experts: (options) => singleFlight(`experts#${options.maxTimeMS}`, (signal) => getAllExperts({ ...options, signal })),
+  transport: (options) => singleFlight(`transport#${options.maxTimeMS}`, (signal) => getActiveTransportRouteRefs({ ...options, signal })),
   // Not wrapped in singleFlight here: searchStaySuggestions has its own single-flight over the shared row read.
   stays: (query, shared) => searchStaySuggestions(query, { destinations: shared.destinations })
 };
@@ -239,7 +250,7 @@ const emptySection = (status: SectionStatus = 'ok'): GlobalSearchSection => ({ s
 export function emptyGlobalSearchResponse(query: string): GlobalSearchResponse {
   return {
     query,
-    sections: { destinations: emptySection(), regions: emptySection(), journeys: emptySection(), experiences: emptySection(), stays: emptySection(), experts: emptySection() },
+    sections: { destinations: emptySection(), regions: emptySection(), journeys: emptySection(), experiences: emptySection(), stays: emptySection(), experts: emptySection(), transport: emptySection() },
     total: 0,
     partial: false
   };
@@ -293,11 +304,13 @@ export async function runGlobalSearch(parsed: Extract<ParsedGlobalQuery, { ok: t
   const journeysRead = load(() => loaders.journeys(options));
   const experiencesRead = load(() => loaders.experiences(options));
   const expertsRead = load(() => loaders.experts(options));
+  // Transport: concurrent with the rest, same deadline, independent of destinations and regions.
+  const transportRead = load(() => (loaders.transport ? loaders.transport(options) : Promise.resolve([] as TransportRoute[])));
   // Stays: its own deadline; the abandoned promise is always handled so a late rejection can never be unhandled.
   // It is verified against the light published refs (never the heavy Destinations read); its own deadline still applies.
   const sharedDestinations = () => refsRead;
   const staysRead = loaders.stays ? withDeadline(Promise.resolve().then(() => loaders.stays!(query, { destinations: sharedDestinations })), STAYS_SECTION_DEADLINE_MS) : null;
-  for (const read of [destinationsRead, refsRead, regionsRead, journeysRead, experiencesRead, expertsRead, ...(staysRead ? [staysRead] : [])]) read.catch(() => undefined);
+  for (const read of [destinationsRead, refsRead, regionsRead, journeysRead, experiencesRead, expertsRead, transportRead, ...(staysRead ? [staysRead] : [])]) read.catch(() => undefined);
 
   async function section<T>(key: GlobalSearchSectionKey, primary: Promise<T>, build: (data: T, destinations: StaySearchDestination[], regions: RegionRef[]) => GlobalSearchItem[], needs: { destinations?: boolean; regions?: boolean } = {}): Promise<[GlobalSearchSectionKey, GlobalSearchSection]> {
     try {
@@ -345,7 +358,8 @@ export async function runGlobalSearch(parsed: Extract<ParsedGlobalQuery, { ok: t
     section('journeys', journeysRead, (packages, destinations) => journeySection(packages, destinations, query), { destinations: true }),
     section('experiences', experiencesRead, (experiences, destinations) => experienceSection(experiences, destinations, query), { destinations: true }),
     staysSection(),
-    section('experts', expertsRead, (experts, destinations, regions) => expertSection(experts, destinations, regions, query), { destinations: true, regions: true })
+    section('experts', expertsRead, (experts, destinations, regions) => expertSection(experts, destinations, regions, query), { destinations: true, regions: true }),
+    section('transport', transportRead, (routes) => transportSection(routes, query))
   ]);
 
   const sections = Object.fromEntries(entries) as Record<GlobalSearchSectionKey, GlobalSearchSection>;

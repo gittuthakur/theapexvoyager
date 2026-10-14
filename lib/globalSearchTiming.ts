@@ -28,7 +28,7 @@ export interface GlobalSearchTimings {
 
 export const createTimings = (): GlobalSearchTimings => ({ sections: {} });
 
-const SECTION_ORDER: readonly GlobalSearchSectionKey[] = ['destinations', 'regions', 'journeys', 'experiences', 'stays', 'experts'];
+const SECTION_ORDER: readonly GlobalSearchSectionKey[] = ['destinations', 'regions', 'journeys', 'experiences', 'stays', 'experts', 'transport'];
 const OUTCOMES: readonly TimedOutcome[] = ['ok', 'timeout', 'error', 'skipped'];
 /** No real request lasts longer; anything bigger is a clock fault and is clamped rather than reported. */
 const MAX_REPORTED_MS = 600_000;

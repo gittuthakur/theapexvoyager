@@ -38,7 +38,8 @@ export const GLOBAL_SEARCH_SECTIONS: ReadonlyArray<{ key: GlobalSearchSectionKey
   { key: 'journeys', label: 'Journeys' },
   { key: 'experiences', label: 'Experiences' },
   { key: 'stays', label: 'Stays' },
-  { key: 'experts', label: 'Travel Experts' }
+  { key: 'experts', label: 'Travel Experts' },
+  { key: 'transport', label: 'Transport' }
 ];
 
 /**
@@ -97,6 +98,8 @@ export function failedSections(response: GlobalSearchResponse): GlobalSearchSect
  *   /destinations?destination=  (P2 destination search)   /journeys?destination=  (P1 journey search)
  *   /experiences?q=             (P2 experience search)    /experts?q=               (P3 expert search)
  *   /stays/search?q=            (P4 stay search: the same eligibility and relevance rules the suggestions use)
+ * Transport has none: /transport looks up one pickup -> drop pair, so no listing runs the same free-text search. Its rows
+ * link to that page's own route lookup and the section never shows "See all".
  */
 export function seeAllHref(section: GlobalSearchSectionKey, query: string, itemCount: number, cap: number): string | null {
   if (itemCount < cap) return null;
