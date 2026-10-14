@@ -212,7 +212,7 @@ describe('Stays has its own deadline and never makes the response wait for it to
 });
 
 describe('Stays reuses the Destinations section read', () => {
-  it('hands the Stays loader the Destinations read as published refs (slug, title, state) - the same read, not a second one', async () => {
+  it('hands the Stays loader the published refs (slug, title, state); without a refs loader they come from the Destinations read, never a second read', async () => {
     const l = loaders();
     let received: Array<{ slug: string; title: string; state?: string }> = [];
     const stays = vi.fn(async (_q: string, shared: { destinations(): Promise<Array<{ slug: string; title: string; state?: string }>> }) => {
@@ -224,16 +224,32 @@ describe('Stays reuses the Destinations section read', () => {
     expect(received).toEqual(destinations.map((d) => ({ slug: d.slug, title: d.title, state: d.state })));
   });
 
-  it('if the Destinations read fails, the shared read fails for Stays: the Stays section is withheld (timeout/error), never answered from unverified data, and other sections are unaffected', async () => {
-    const l = { ...loaders(), destinations: vi.fn(async () => { throw new Error('destinations down'); }) };
+  it('if only the heavy Destinations read fails, Stays is still verified by the light refs and answers; the response is partial', async () => {
+    const l = { ...loaders(), destinations: vi.fn(async () => { throw new Error('destinations down'); }), destinationRefs: vi.fn(async () => destinations.map((d) => ({ slug: d.slug, title: d.title, state: d.state }))) };
     const stays = vi.fn(async (_q: string, shared: { destinations(): Promise<unknown> }) => {
       await shared.destinations();
       return ok([suggestion(1)]);
     });
     const response = await runGlobalSearch(parse('Kaza'), { ...l, stays });
     expect(response.sections.destinations.status).toBe('error');
-    expect(response.sections.stays).toEqual({ status: 'error', items: [] });
+    expect(response.sections.stays.status).toBe('ok');
+    expect(response.sections.stays.items).toHaveLength(1);
     expect(response.sections.journeys.status).toBe('ok');
+    expect(response.partial).toBe(true);
+  });
+
+  it('if the light refs read fails, Stays and the destination-dependent sections are withheld (error), while Destinations and Regions still answer', async () => {
+    const l = { ...loaders(), destinationRefs: vi.fn(async () => { throw new Error('refs down'); }) };
+    const stays = vi.fn(async (_q: string, shared: { destinations(): Promise<unknown> }) => {
+      await shared.destinations();
+      return ok([suggestion(1)]);
+    });
+    const response = await runGlobalSearch(parse('Dharamsala'), { ...l, stays });
+    expect(response.sections.stays).toEqual({ status: 'error', items: [] });
+    for (const key of ['journeys', 'experiences', 'experts'] as const) expect(response.sections[key]).toEqual({ status: 'error', items: [] });
+    expect(response.sections.destinations.status).toBe('ok');
+    expect(response.sections.destinations.items.length).toBeGreaterThan(0);
+    expect(response.sections.regions.status).toBe('ok');
     expect(response.partial).toBe(true);
   });
 

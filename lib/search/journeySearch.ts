@@ -12,6 +12,9 @@ import {
 } from '@/lib/search/normalize';
 import type { Destination, TravelPackage } from '@/types';
 
+/** The only destination fields journey search reads (links by slug, text by title, region by state). */
+export type JourneyDestinationRef = Pick<Destination, 'slug' | 'title' | 'state'>;
+
 /**
  * Journey keyword search.
  *
@@ -78,10 +81,10 @@ function regionForms(name: string): string[] {
  * Built fresh on every search on purpose (no cache): the catalog is small, and a cache keyed on a
  * record could serve stale text after an edit, which would defeat "updates are reflected automatically".
  */
-export function buildJourneySearchDoc(pkg: TravelPackage, destinationsBySlug: Map<string, Destination>): JourneySearchDoc {
+export function buildJourneySearchDoc(pkg: TravelPackage, destinationsBySlug: Map<string, JourneyDestinationRef>): JourneySearchDoc {
   const linkedDestinations = (pkg.destinationSlugs ?? [])
     .map((slug) => destinationsBySlug.get(slug))
-    .filter((destination): destination is Destination => Boolean(destination));
+    .filter((destination): destination is JourneyDestinationRef => Boolean(destination));
 
   const linked = linkedDestinations.flatMap((destination) => [...searchForms(destination.title), normalizeSearchText(destination.slug)]);
 
@@ -175,7 +178,7 @@ function scoreStructured(doc: JourneySearchDoc, terms: string[]): { score: numbe
 export function searchPackages(
   packages: TravelPackage[],
   query: string | undefined,
-  destinationsBySlug: Map<string, Destination>,
+  destinationsBySlug: Map<string, JourneyDestinationRef>,
   aliases: AliasMap = LOCATION_ALIASES
 ): JourneySearchHit[] {
   const normalized = normalizeSearchText(query ?? '');
@@ -206,7 +209,7 @@ function stableByScore(hits: JourneySearchHit[]): JourneySearchHit[] {
 export function relevanceScores(
   packages: TravelPackage[],
   query: string | undefined,
-  destinationsBySlug: Map<string, Destination>,
+  destinationsBySlug: Map<string, JourneyDestinationRef>,
   aliases: AliasMap = LOCATION_ALIASES
 ): Map<string, number> {
   return new Map(searchPackages(packages, query, destinationsBySlug, aliases).map((hit) => [hit.pkg.slug, hit.score]));

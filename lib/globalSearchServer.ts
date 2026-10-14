@@ -1,5 +1,5 @@
 import { connectDB } from '@/lib/mongodb';
-import { getCuratedDestinations } from '@/lib/destinations';
+import { getCuratedDestinations, getPublishedDestinationRefs } from '@/lib/destinations';
 import { getAllExperiences } from '@/lib/experiences';
 import { getAllExperts } from '@/lib/experts';
 import { getAllPackages } from '@/lib/packages';
@@ -66,7 +66,15 @@ export const STAYS_SECTION_DEADLINE_MS = 2500;
 export interface GlobalSearchLoaders {
   /** Opens (or reuses) the shared database connection before any read. Defaults to a no-op when omitted. */
   connect?(): Promise<unknown>;
+  /** The heavy read for the Destinations search section ONLY. */
   destinations(options: { maxTimeMS: number }): Promise<Destination[]>;
+  /**
+   * Fresh, published-only (slug, title, state) references: the verification journeys, experiences, experts and Stays depend
+   * on, read concurrently with `destinations` and never derived from it when provided. If it fails those sections are
+   * withheld (never answered from unverified destinations). A loader set without it falls back to deriving the same fields
+   * from `destinations` (the behaviour before this read existed).
+   */
+  destinationRefs?(options: { maxTimeMS: number }): Promise<StaySearchDestination[]>;
   regions(options: { maxTimeMS: number }): Promise<RegionRef[]>;
   journeys(options: { maxTimeMS: number }): Promise<TravelPackage[]>;
   experiences(options: { maxTimeMS: number }): Promise<Experience[]>;
@@ -89,11 +97,28 @@ export const JOURNEY_SEARCH_PROJECTION = { slug: 1, name: 1, destination: 1, des
 export const EXPERIENCE_SEARCH_PROJECTION = { slug: 1, title: 1, location: 1, region: 1, category: 1, subCategory: 1, mood: 1, shortDescription: 1, description: 1, highlights: 1, image: 1 } as const;
 
 /**
- * The most reads of the five older catalogs that may be unsettled at once in one server instance. Each catalog has ONE
- * flight at a time (the key is the catalog plus its database limit), so the real ceiling is five by construction; the cap
- * states that invariant and refuses to start a sixth rather than let a future key silently multiply database work.
+ * The most reads of the older catalogs that may be unsettled at once in one server instance: one per authorized catalog
+ * (SECTION_READ_CATALOGS). Every flight counts, whatever its database limit, so the ceiling holds even if two limits are
+ * ever used for one catalog; a read beyond it is refused rather than let a key silently multiply database work.
  */
-export const MAX_UNSETTLED_SECTION_READS = 5;
+export const MAX_UNSETTLED_SECTION_READS = 6;
+/**
+ * The ONLY catalogs a shared read may be registered for. `destinations` is the heavy Destinations-search read;
+ * `destinationRefs` is the light, fresh, published-only (slug, title, state) read the dependent sections and Stays are
+ * verified against. Any other key is refused, so the registry can never grow by accident.
+ */
+export const SECTION_READ_CATALOGS = ['destinations', 'destinationRefs', 'regions', 'journeys', 'experiences', 'experts'] as const;
+export type SectionReadCatalog = (typeof SECTION_READ_CATALOGS)[number];
+/** `catalog#limit`, exactly: the limit is a canonical integer (no leading zeros), so one logical read has one spelling. */
+const SECTION_READ_KEY = new RegExp(`^(${SECTION_READ_CATALOGS.join('|')})#(0|[1-9][0-9]{0,5})$`);
+
+/** A shared read was requested for something that is not an authorized catalog (or a malformed key). It never starts a read. */
+export class UnknownSectionReadError extends Error {
+  constructor() {
+    super('Not an authorized global search catalog read');
+    this.name = 'UnknownSectionReadError';
+  }
+}
 /**
  * How long a section read may stay unsettled before it is CANCELLED through its AbortSignal. Far above what a healthy
  * read needs (the database limit is 1.5 s, the response deadline 1.75 s) and below the driver's 30 s connection-selection
@@ -138,6 +163,7 @@ export function resetSectionReadsForTests(): void {
  * identity-checked (an older settled read can never remove a newer one) and failures are never kept.
  */
 export function singleFlight<T>(key: string, read: (signal: AbortSignal) => Promise<T>): Promise<T> {
+  if (!SECTION_READ_KEY.test(key)) return Promise.reject(new UnknownSectionReadError());
   const running = inFlight.get(key);
   if (running) return running as Promise<T>;
   if (inFlight.size >= MAX_UNSETTLED_SECTION_READS) return Promise.reject(new SectionReadBusyError());
@@ -163,6 +189,7 @@ export const defaultLoaders: GlobalSearchLoaders = {
   connect: () => connectDB(),
   // The flight key includes the database limit, so reads with different limits never share one.
   destinations: (options) => singleFlight(`destinations#${options.maxTimeMS}`, (signal) => getCuratedDestinations({ ...options, projection: { ...DESTINATION_SEARCH_PROJECTION }, signal })),
+  destinationRefs: (options) => singleFlight(`destinationRefs#${options.maxTimeMS}`, (signal) => getPublishedDestinationRefs({ ...options, signal })),
   regions: (options) => singleFlight(`regions#${options.maxTimeMS}`, (signal) => getPublishedRegionRefs({ ...options, signal })),
   journeys: (options) => singleFlight(`journeys#${options.maxTimeMS}`, (signal) => getAllPackages({ ...options, projection: { ...JOURNEY_SEARCH_PROJECTION }, signal })),
   experiences: (options) => singleFlight(`experiences#${options.maxTimeMS}`, (signal) => getAllExperiences(options.maxTimeMS, { ...EXPERIENCE_SEARCH_PROJECTION }, signal)),
@@ -257,24 +284,27 @@ export async function runGlobalSearch(parsed: Extract<ParsedGlobalQuery, { ok: t
   };
   const load = <T,>(read: () => Promise<T>) => withDeadline(read(), SECTION_DEADLINE_MS);
 
-  // Destinations and regions are read once and shared: journeys, experiences and experts use them to resolve
-  // their own links (never to widen eligibility).
+  // Two destination reads start together: the heavy one serves ONLY the Destinations section; the light, fresh,
+  // published-only refs verify every destination-dependent section. Neither waits for the other.
   const destinationsRead = load(() => loaders.destinations(options));
+  const refsRead: Promise<StaySearchDestination[]> = loaders.destinationRefs ? load(() => loaders.destinationRefs!(options)) : destinationsRead.then((list) => list.map((destination) => ({ slug: destination.slug, title: destination.title, state: destination.state })));
+  // Regions are read once and shared with experts (never to widen eligibility).
   const regionsRead = load(() => loaders.regions(options));
   const journeysRead = load(() => loaders.journeys(options));
   const experiencesRead = load(() => loaders.experiences(options));
   const expertsRead = load(() => loaders.experts(options));
   // Stays: its own deadline; the abandoned promise is always handled so a late rejection can never be unhandled.
-  // It reuses the Destinations section's published-only read (never a second read); its own deadline still applies.
-  const sharedDestinations = () => destinationsRead.then((list) => list.map((destination) => ({ slug: destination.slug, title: destination.title, state: destination.state })));
+  // It is verified against the light published refs (never the heavy Destinations read); its own deadline still applies.
+  const sharedDestinations = () => refsRead;
   const staysRead = loaders.stays ? withDeadline(Promise.resolve().then(() => loaders.stays!(query, { destinations: sharedDestinations })), STAYS_SECTION_DEADLINE_MS) : null;
-  for (const read of [destinationsRead, regionsRead, journeysRead, experiencesRead, expertsRead, ...(staysRead ? [staysRead] : [])]) read.catch(() => undefined);
+  for (const read of [destinationsRead, refsRead, regionsRead, journeysRead, experiencesRead, expertsRead, ...(staysRead ? [staysRead] : [])]) read.catch(() => undefined);
 
-  async function section<T>(key: GlobalSearchSectionKey, primary: Promise<T>, build: (data: T, destinations: Destination[], regions: RegionRef[]) => GlobalSearchItem[], needs: { destinations?: boolean; regions?: boolean } = {}): Promise<[GlobalSearchSectionKey, GlobalSearchSection]> {
+  async function section<T>(key: GlobalSearchSectionKey, primary: Promise<T>, build: (data: T, destinations: StaySearchDestination[], regions: RegionRef[]) => GlobalSearchItem[], needs: { destinations?: boolean; regions?: boolean } = {}): Promise<[GlobalSearchSectionKey, GlobalSearchSection]> {
     try {
       const data = await primary;
-      // A link source that failed only lowers recall for this section (empty links); it never widens results.
-      const destinations = needs.destinations ? await destinationsRead.catch(() => [] as Destination[]) : [];
+      // Destination verification is REQUIRED: if the fresh published refs failed, this section is withheld (its catch below
+      // reports timeout/error) - never answered from unverified destinations. Regions only lower recall when they fail.
+      const destinations = needs.destinations ? await refsRead : [];
       const regions = needs.regions ? await regionsRead.catch(() => [] as RegionRef[]) : [];
       const built = build(data, destinations, regions);
       note(key, 'ok');

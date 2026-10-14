@@ -101,12 +101,18 @@ function baseRows(): Row[] {
 /** The published destinations the Destinations section (and, shared, Stays) sees. Tests change it to unpublish a destination. */
 let published: Destination[] = destinations;
 const destinationReads = vi.fn();
+const refReads = vi.fn();
 
 /** The five existing sections come from the fixtures; Stays comes from the REAL searchStaySuggestions over mocked cached rows. */
 const realLoaders = () => ({
   destinations: async () => {
     destinationReads();
     return published;
+  },
+  // The light, fresh, published-only refs every dependent section and Stays are verified against.
+  destinationRefs: async () => {
+    refReads();
+    return published.map((d) => ({ slug: d.slug, title: d.title, state: d.state }));
   },
   regions: async () => [],
   journeys: async () => journeys,
@@ -136,6 +142,7 @@ beforeEach(() => {
   getPublishedRefsMock.mockReset().mockResolvedValue(DESTS);
   published = destinations;
   destinationReads.mockReset();
+  refReads.mockReset();
   getActiveExclusionSetMock.mockReset().mockResolvedValue(new Set());
   rows.current = baseRows();
 });
@@ -234,13 +241,15 @@ describe('cost: database commands and single-flight under the Global API', () =>
   it('a cold request does ONE eligible-row read, a warm one none; each request checks destinations and exclusions once', async () => {
     await runGlobalSearch(parse('Kaza'), realLoaders());
     expect(rowReads()).toBe(1);
-    // The Destinations read is shared: one read per request in total, and Stays never reads the published destinations itself.
+    // One heavy Destinations read and one light refs read per request; Stays never reads the published destinations itself.
     expect(destinationReads).toHaveBeenCalledTimes(1);
+    expect(refReads).toHaveBeenCalledTimes(1);
     expect(getPublishedRefsMock).not.toHaveBeenCalled();
     expect(getActiveExclusionSetMock).toHaveBeenCalledTimes(1);
     await runGlobalSearch(parse('vajra'), realLoaders());
     expect(rowReads()).toBe(1);
     expect(destinationReads).toHaveBeenCalledTimes(2);
+    expect(refReads).toHaveBeenCalledTimes(2);
     expect(getPublishedRefsMock).not.toHaveBeenCalled();
     expect(getActiveExclusionSetMock).toHaveBeenCalledTimes(2);
   });
