@@ -343,6 +343,13 @@ describe('searchEligibleStays - performance strategies stay equivalent and safe'
     expect(googleCalls).not.toHaveBeenCalled();
   });
 
+  it('a database failure on the fast path is unavailable, never a throw and never an empty ok result', async () => {
+    const quiet = vi.spyOn(console, 'error').mockImplementation(() => {});
+    getCatalogMock.mockRejectedValue(new Error('MongoNetworkError'));
+    expect(await searchAuto({ offset: 0, limit: 24 })).toEqual({ status: 'unavailable', reason: 'catalog' });
+    quiet.mockRestore();
+  });
+
   it('the fast path never bypasses fail-closed: an unavailable catalog is unavailable', async () => {
     getCatalogMock.mockResolvedValue({ stays: [], page: 1, pageSize: 24, totalCount: 0, totalPages: 1, unavailable: true, unavailableReason: 'exclusions' });
     expect(await searchAuto({ offset: 0, limit: 24 })).toEqual({ status: 'unavailable', reason: 'exclusions' });

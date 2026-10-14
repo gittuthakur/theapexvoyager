@@ -6,7 +6,8 @@ import StayFilters from '@/components/modules/StayFilters';
 import PropertyCard from '@/components/modules/PropertyCard';
 import { StayCard } from '@/components/modules/StaysGrid';
 import { hotelToStay } from '@/lib/stayMerge';
-import { FILTER_EMPTY_STATE_CLASS } from '@/components/modules/filters/filterStyles';
+import { X } from 'lucide-react';
+import { FILTER_CHIP_CLASS, FILTER_CHIP_REMOVE_CLASS, FILTER_EMPTY_STATE_CLASS } from '@/components/modules/filters/filterStyles';
 import { SkeletonGrid } from '@/components/ui/Skeleton';
 import BackButton from '@/components/ui/BackButton';
 import { cn } from '@/lib/utils';
@@ -74,6 +75,8 @@ export default async function StaySearchPage({ searchParams }: StaySearchPagePro
   const { checkIn, checkOut, guests } = readStayPreferences({ checkIn: rawCheckIn, checkOut: rawCheckOut, guests: rawGuests });
   const preferenceParts = describeStayPreferences({ checkIn, checkOut, guests });
   const query = q?.trim();
+  // Every param that shapes the page, so removing one search chip keeps all the others (page is always dropped).
+  const allParams: Record<string, string | undefined> = { destination, q: query, checkIn, checkOut, guests, type, priceMax, amenity, mood, category };
 
   return (
     <main id="main-content" className="px-6 py-10 sm:px-10 lg:px-16">
@@ -89,7 +92,9 @@ export default async function StaySearchPage({ searchParams }: StaySearchPagePro
             {preferenceParts.length > 0 ? `Your preferences: ${preferenceParts.join(' · ')}` : 'No dates or guest count set'}
           </p>
           {preferenceParts.length > 0 ? <p className="mt-1 text-xs text-slate-500">{STAY_PREFERENCES_DISCLAIMER}</p> : null}
+          {/* Keyed on the URL-derived values so Back/Forward and chip removal re-sync the fields. */}
           <StaySearch
+            key={`${destination ?? ''}|${query ?? ''}|${checkIn ?? ''}|${checkOut ?? ''}|${guests ?? ''}`}
             defaultDestination={destination}
             defaultQuery={query}
             defaultCheckIn={checkIn}
@@ -97,6 +102,27 @@ export default async function StaySearchPage({ searchParams }: StaySearchPagePro
             defaultGuests={guests}
           />
         </div>
+
+        {destination || query ? (
+          <div className="flex flex-wrap items-center gap-2" aria-label="Active search">
+            {destination ? (
+              <span className={FILTER_CHIP_CLASS}>
+                Destination: {destination}
+                <Link href={pageHref({ ...allParams, destination: undefined }, 1)} aria-label={`Remove destination ${destination}`} className={FILTER_CHIP_REMOVE_CLASS}>
+                  <X size={13} />
+                </Link>
+              </span>
+            ) : null}
+            {query ? (
+              <span className={FILTER_CHIP_CLASS}>
+                Property: {query}
+                <Link href={pageHref({ ...allParams, q: undefined }, 1)} aria-label={`Remove property name ${query}`} className={FILTER_CHIP_REMOVE_CLASS}>
+                  <X size={13} />
+                </Link>
+              </span>
+            ) : null}
+          </div>
+        ) : null}
 
         {/* Visually hidden — the visible heading is the h1 above; this just gives the
             filters/results region its own place in the h1→h2→h3 (card title) outline
@@ -177,7 +203,17 @@ async function StaySearchResults({ destination, query, page: pageParam, checkIn,
   const categoryRequestedButUnresolved = isCategoryRequestedButUnresolved(categoryParam, Boolean(stayType || stayMood));
   const shouldForceEmpty = typeRequestedButUnresolved || moodRequestedButUnresolved || priceRequestedButInvalid || categoryRequestedButUnresolved;
 
-  const allHotels = shouldForceEmpty ? [] : await getHotels({ category, destination });
+  // A failed curated read is NOT "no curated stays": it is reported as unavailable below, never as zero results.
+  let curatedFailed = false;
+  let allHotels: HotelPackage[] = [];
+  if (!shouldForceEmpty) {
+    try {
+      allHotels = await getHotels({ category, destination });
+    } catch (error) {
+      console.error('[stays/search] curated stays could not be loaded', error);
+      curatedFailed = true;
+    }
+  }
 
   const scoped = allHotels.filter((hotel) => {
     if (isBoutiqueOnly && !hotel.featured) return false;
@@ -242,7 +278,7 @@ async function StaySearchResults({ destination, query, page: pageParam, checkIn,
     google = await searchEligibleStays({ q: query, destination, stayType: googleStayType, curated: curatedAsStays, offset: start, limit: STAYS_PAGE_SIZE });
   }
 
-  const unavailable = google.status === 'unavailable';
+  const unavailable = google.status === 'unavailable' || curatedFailed;
   // Curated-only listing (a filter that cached Google stays cannot satisfy, or the cached list is unavailable).
   const curatedStaysPage = paginate(curatedAsStays, requestedPage, STAYS_PAGE_SIZE);
   const googleOk = includeGoogleData && google.status === 'ok' ? google : null;
@@ -263,6 +299,7 @@ async function StaySearchResults({ destination, query, page: pageParam, checkIn,
       activeType={type}
       activeAmenity={amenity}
       resultCount={resultCount}
+      countUnavailable={unavailable}
       priceBounds={priceBounds}
     />
   );
@@ -289,7 +326,7 @@ async function StaySearchResults({ destination, query, page: pageParam, checkIn,
     );
   }
 
-  if (unavailable && curatedAsStays.length === 0) {
+  if (unavailable && resultCount === 0) {
     // The exclusion list (or the published-destination list) could not be read: Google-sourced
     // stays are withheld entirely instead of being shown unfiltered.
     return (
@@ -323,7 +360,13 @@ async function StaySearchResults({ destination, query, page: pageParam, checkIn,
           {hasActiveFilters ? (
             <>
               <p className="text-lg font-semibold text-slate-900">No stays match your search.</p>
-              <p className="mt-3 text-slate-600">Try a different property name, destination, stay type, or price range.</p>
+              <p className="mt-3 text-slate-600">
+                {destination && query
+                  ? `No property matching “${query}” was found in ${destination}. Try removing one of the two, or check the spelling.`
+                  : destination
+                    ? `“${destination}” isn’t a destination we list. If it’s a hotel or homestay name, enter it in Property name instead.`
+                    : 'Try a different property name, destination, stay type, or price range.'}
+              </p>
             </>
           ) : (
             <>

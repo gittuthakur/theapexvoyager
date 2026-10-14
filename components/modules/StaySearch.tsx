@@ -6,7 +6,8 @@ import { format, parseISO } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { DestinationField, DateRangeField, OccupancyField, SEARCH_FIELD_CLASS, SEARCH_PANEL_CLASS } from '@/components/modules/search';
+import { DestinationField, DateRangeField, OccupancyField, SEARCH_PANEL_CLASS } from '@/components/modules/search';
+import StayPropertyNameField from '@/components/modules/StayPropertyNameField';
 import { trendingDestinations } from '@/config/search.config';
 import { cn } from '@/lib/utils';
 import type { DateRange, OccupancyDetails } from '@/types';
@@ -62,25 +63,14 @@ export default function StaySearch({ defaultDestination, defaultQuery, defaultCh
           <DestinationField
             value={destination}
             onChange={setDestination}
-            label="Where do you want to stay?"
+            label="Destination"
             icon={Search}
-            placeholder="Manali, Shimla, Kasol..."
+            placeholder="Place, e.g. Manali, Kaza, Sangla"
             destinations={trendingDestinations}
           />
         </motion.div>
         <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
-          <label className={SEARCH_FIELD_CLASS}>
-            <Search size={18} className="shrink-0 text-apex-500" />
-            <span className="min-w-0 flex-1">
-              <span className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500">Property name</span>
-              <input
-                value={propertyQuery}
-                onChange={(event) => setPropertyQuery(event.target.value)}
-                placeholder="Hotel or homestay name"
-                className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-500"
-              />
-            </span>
-          </label>
+          <StayPropertyNameField value={propertyQuery} onChange={setPropertyQuery} />
         </motion.div>
         <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2, ease: 'easeOut' }}>
           <DateRangeField value={dateRange} onChange={setDateRange} label="Dates" placeholder="Select dates" />
