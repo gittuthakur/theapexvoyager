@@ -7,6 +7,8 @@ import { isRecentFailure, markFailure } from '@/lib/negativeCache';
 import { isLocalDevelopment } from '@/lib/env';
 import { findDestinationByText } from '@/lib/search/destinationResolver';
 import { destinations as mockDestinations } from '@/config/destinations.config';
+import { STAY_LOCATION_RULES } from '@/config/stayLocations.config';
+import { ExclusionLookupError, getActiveExclusionSet } from '@/services/properties/propertyExclusion.service';
 import type { Destination } from '@/types/destination';
 
 export function toDestination(doc: DestinationDocument): Destination {
@@ -65,7 +67,37 @@ export function toDestination(doc: DestinationDocument): Destination {
 export const DEFAULT_HIMACHAL_LOCATIONS = ['Spiti', 'Manali', 'Shimla', 'Kasol', 'Jibhi', 'Dharamshala'];
 
 function normalizeLocation(location: string): string {
-  return location.trim().toLowerCase();
+  return location.trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+// Fix A (public Google cost protection): the live Google Text Search below is only ever run for a location
+// the site itself already authors — the default Himachal locations, every destination title, and every stay
+// location (primary and nearby) in config/stayLocations.config.ts. Any other string is NOT a place this site
+// serves, so it can neither spend a Google request nor create a DestinationSearchCache document. That bounds
+// both the Google spend and the cache collection to this finite, reviewed set, whatever a caller sends.
+let approvedLocationsMemo: Set<string> | undefined;
+
+function approvedLiveSearchLocations(): Set<string> {
+  if (!approvedLocationsMemo) {
+    const names = [
+      ...DEFAULT_HIMACHAL_LOCATIONS,
+      ...mockDestinations.map((destination) => destination.title),
+      ...STAY_LOCATION_RULES.flatMap((rule) => [rule.primaryStayLocation, ...(rule.nearbyStayLocations ?? [])])
+    ];
+    approvedLocationsMemo = new Set(names.map(normalizeLocation));
+  }
+  return approvedLocationsMemo;
+}
+
+export function isApprovedLiveSearchLocation(location: string): boolean {
+  return approvedLiveSearchLocations().has(normalizeLocation(location));
+}
+
+/** Server-side kill switch: GOOGLE_DESTINATION_LIVE_SEARCH=disabled stops every live Google destination search
+ *  (an already-cached result is still served, after exclusion filtering). Unset or any other value = enabled, so
+ *  it changes nothing in an environment that does not set it. */
+export function isLiveDestinationSearchDisabled(env: Record<string, string | undefined> = process.env): boolean {
+  return env.GOOGLE_DESTINATION_LIVE_SEARCH?.trim().toLowerCase() === 'disabled';
 }
 
 function mapPlaceToDestination(place: RawGooglePlace, location: string): Destination {
@@ -88,37 +120,62 @@ function mapPlaceToDestination(place: RawGooglePlace, location: string): Destina
   };
 }
 
-export async function getDestinationsForLocation(location: string): Promise<Destination[]> {
+/** `unavailable` is true only when the owner-exclusion list could not be read: Google-sourced results are then
+ *  withheld entirely (fail closed) — never returned, never written to the cache — and callers must not cache it. */
+export interface DestinationsLookup {
+  destinations: Destination[];
+  unavailable?: boolean;
+}
+
+export async function getDestinationsForLocationResult(location: string, options: { liveSearch?: boolean } = {}): Promise<DestinationsLookup> {
+  const liveSearch = options.liveSearch ?? true;
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
-  const mockFallback = () =>
-    mockDestinations.filter(
-      (destination) =>
-        destination.title.toLowerCase().includes(normalizeLocation(location)) || destination.slug.includes(normalizeLocation(location))
-    );
+  const needle = normalizeLocation(location);
+  // A blank needle would match every title (`''` is a substring of everything), so it matches nothing instead.
+  const mockFallback = (): DestinationsLookup => ({
+    destinations: needle
+      ? mockDestinations.filter((destination) => destination.title.toLowerCase().includes(needle) || destination.slug.includes(needle))
+      : []
+  });
+
+  // Not a location this site authors: no Google call, no cache read or write (a legacy cache document for an
+  // arbitrary string must not be served either) — the same safe curated-only answer a failed lookup gives.
+  if (!isApprovedLiveSearchLocation(location)) return mockFallback();
 
   if (!apiKey) {
     console.warn(`GOOGLE_PLACES_API_KEY is not set — using mock destination data for "${location}"`);
     return mockFallback();
   }
 
+  // The owner-exclusion list is read BEFORE any Google spend or cache access. If it cannot be read, nothing from
+  // Google is shown or stored.
+  let excluded: Set<string>;
+  try {
+    excluded = await getActiveExclusionSet('google');
+  } catch (error) {
+    if (error instanceof ExclusionLookupError) return { destinations: [], unavailable: true };
+    throw error;
+  }
+  const visible = (items: Destination[]): Destination[] => items.filter((item) => !item.placeId || !excluded.has(item.placeId));
+
   await connectDB();
 
-  const failureKey = `destination:${normalizeLocation(location)}`;
+  const key = normalizeLocation(location);
+  const failureKey = `destination:${key}`;
 
   try {
-    const cached = await DestinationSearchCache.findOne({ location: normalizeLocation(location) }).lean();
-    if (cached) return cached.results as Destination[];
+    const cached = await DestinationSearchCache.findOne({ location: key }).lean();
+    // A document cached before a property was excluded is filtered on every read too.
+    if (cached) return { destinations: Array.isArray(cached.results) ? visible(cached.results as Destination[]) : [] };
 
+    if (!liveSearch || isLiveDestinationSearchDisabled()) return mockFallback();
     if (isRecentFailure(failureKey)) return mockFallback();
 
     const rawPlaces = await searchDestinations(location, apiKey);
-    const mapped = rawPlaces.map((place) => mapPlaceToDestination(place, location));
-    await DestinationSearchCache.findOneAndUpdate(
-      { location: normalizeLocation(location) },
-      { location: normalizeLocation(location), results: mapped },
-      { upsert: true }
-    );
-    return mapped;
+    // Only the filtered list is ever written, so an excluded place is never persisted by this path.
+    const mapped = visible(rawPlaces.map((place) => mapPlaceToDestination(place, location)));
+    await DestinationSearchCache.findOneAndUpdate({ location: key }, { location: key, results: mapped }, { upsert: true });
+    return { destinations: mapped };
   } catch (error) {
     console.error(`Failed to fetch destinations for "${location}" from Google Places — falling back to mock data`, error);
     markFailure(failureKey);
@@ -126,20 +183,29 @@ export async function getDestinationsForLocation(location: string): Promise<Dest
   }
 }
 
-export async function getDestinationsWithFallback(): Promise<Destination[]> {
+export async function getDestinationsForLocation(location: string): Promise<Destination[]> {
+  return (await getDestinationsForLocationResult(location)).destinations;
+}
+
+export async function getDestinationsWithFallbackResult(): Promise<DestinationsLookup> {
   if (!process.env.GOOGLE_PLACES_API_KEY) {
     console.warn('GOOGLE_PLACES_API_KEY is not set — using static mock destinations');
-    return mockDestinations;
+    return { destinations: mockDestinations };
   }
 
   try {
-    const results = await Promise.all(DEFAULT_HIMACHAL_LOCATIONS.map((location) => getDestinationsForLocation(location)));
-    const flattened = results.flat();
-    return flattened.length > 0 ? flattened : mockDestinations;
+    const results = await Promise.all(DEFAULT_HIMACHAL_LOCATIONS.map((location) => getDestinationsForLocationResult(location)));
+    if (results.some((result) => result.unavailable)) return { destinations: [], unavailable: true };
+    const flattened = results.flatMap((result) => result.destinations);
+    return { destinations: flattened.length > 0 ? flattened : mockDestinations };
   } catch (error) {
     console.error('Failed to build the Himachal destinations list from Google Places — falling back to mock data', error);
-    return mockDestinations;
+    return { destinations: mockDestinations };
   }
+}
+
+export async function getDestinationsWithFallback(): Promise<Destination[]> {
+  return (await getDestinationsWithFallbackResult()).destinations;
 }
 
 // PUBLIC READ PATH — both functions below filter `status: 'published'` at the database
@@ -220,8 +286,12 @@ export async function getDestinationBySlug(slug: string): Promise<Destination | 
   const curated = await getCuratedDestinationBySlug(slug);
   if (curated) return curated;
 
-  // Not one of our curated destinations — try the slug as a location name for a live lookup.
+  // Not one of our curated destinations. The slug is caller-controlled (it arrives from a public query string via
+  // lib/bookingContext.ts), so it may only ever be matched against an already-cached result for an approved
+  // location — it can never start a live Google search, and an unknown slug resolves to undefined.
   const guessLocation = slug.replace(/-/g, ' ');
-  const results = await getDestinationsForLocation(guessLocation);
-  return results[0];
+  const { destinations } = await getDestinationsForLocationResult(guessLocation, { liveSearch: false });
+  // Only a cached Google-sourced entry (it carries a placeId) counts: the curated-config fallback list is not a
+  // match for this slug, and it would otherwise surface an unpublished destination's config title.
+  return destinations.find((destination) => destination.placeId);
 }
