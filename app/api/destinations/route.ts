@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
-import { getDestinationsForLocation, getDestinationsWithFallback, getCuratedDestinations, DEFAULT_HIMACHAL_LOCATIONS } from '@/lib/destinations';
+import {
+  getDestinationsForLocationResult,
+  getDestinationsWithFallbackResult,
+  getCuratedDestinations,
+  DEFAULT_HIMACHAL_LOCATIONS
+} from '@/lib/destinations';
 import { getStaysForDestination, slugify } from '@/lib/stays';
 import { isRateLimited } from '@/lib/rateLimit';
+import { getClientIp } from '@/lib/clientIp';
 import { STAY_TYPES, type StayType } from '@/types/stay';
 import type { StayMode } from '@/config/stayLocations.config';
 
@@ -25,11 +31,9 @@ function isValidPlaceName(value: string): boolean {
 // locations from one source is still worth rate-limiting on general principle.
 const STAYS_RATE_LIMIT_PER_MINUTE = 20;
 
-function getClientIp(request: Request): string {
-  const forwardedFor = request.headers.get('x-forwarded-for');
-  if (forwardedFor) return forwardedFor.split(',')[0].trim();
-  return request.headers.get('x-real-ip') ?? 'unknown';
-}
+// The Google-backed destination branch (no `type`, optionally `location`). It is already confined to authored
+// locations in lib/destinations.ts; this limit is the second layer, so a script cannot hammer it from one source.
+const DESTINATION_LOOKUP_RATE_LIMIT_PER_MINUTE = 30;
 
 // Underlying results already come from a Mongo-only cache (lib/destinations.ts,
 // lib/stays.ts) that no longer expires on its own — see models/PlaceCache.ts — so this
@@ -74,7 +78,7 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: 'Invalid "location" or "state" query parameter' }, { status: 400 });
       }
 
-      const clientIp = getClientIp(request);
+      const clientIp = getClientIp(request.headers);
       if (isRateLimited(`stays:${clientIp}`, STAYS_RATE_LIMIT_PER_MINUTE)) {
         return NextResponse.json(
           { error: 'Too many requests — please slow down.' },
@@ -113,8 +117,23 @@ export async function GET(request: Request) {
       return NextResponse.json({ destinations: curated }, { status: 200, headers: CACHE_HEADERS });
     }
 
-    const destinations = location ? await getDestinationsForLocation(location) : await getDestinationsWithFallback();
-    return NextResponse.json({ destinations, locations: DEFAULT_HIMACHAL_LOCATIONS }, { status: 200, headers: CACHE_HEADERS });
+    // Google-sourced destination lookup. `location` is caller-controlled text, so it is validated the same way the
+    // stays branch validates it, and the branch is rate limited, before anything is looked up.
+    if (location && !isValidPlaceName(location)) {
+      return NextResponse.json({ error: 'Invalid "location" query parameter' }, { status: 400 });
+    }
+    if (isRateLimited(`destinations-lookup:${getClientIp(request.headers)}`, DESTINATION_LOOKUP_RATE_LIMIT_PER_MINUTE)) {
+      return NextResponse.json({ error: 'Too many requests — please slow down.' }, { status: 429, headers: { 'Retry-After': '60', 'Cache-Control': 'no-store' } });
+    }
+
+    const { destinations, unavailable } = location ? await getDestinationsForLocationResult(location) : await getDestinationsWithFallbackResult();
+    if (unavailable) {
+      // The owner-exclusion list could not be read: Google-sourced destinations are withheld and never cached.
+      return NextResponse.json({ error: 'DESTINATIONS_TEMPORARILY_UNAVAILABLE' }, { status: 503, headers: { 'Cache-Control': 'no-store', 'Retry-After': '30' } });
+    }
+    // Contains Google-sourced results that an owner exclusion must be able to remove on the very next request, so
+    // (like the stays branch above) it is never publicly cached.
+    return NextResponse.json({ destinations, locations: DEFAULT_HIMACHAL_LOCATIONS }, { status: 200, headers: { 'Cache-Control': 'private, no-store' } });
   } catch (error) {
     console.error('Failed to fetch destinations', error);
     return NextResponse.json({ error: 'Failed to fetch destinations' }, { status: 500 });
