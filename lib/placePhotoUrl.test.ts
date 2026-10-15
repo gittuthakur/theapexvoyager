@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { clampPhotoWidth, DEFAULT_PHOTO_WIDTH_PX, MAX_PHOTO_WIDTH_PX, MIN_PHOTO_WIDTH_PX, withPhotoWidth } from './placePhotoUrl';
+import { clampPhotoWidth, DEFAULT_PHOTO_WIDTH_PX, MAX_PHOTO_WIDTH_PX, MIN_PHOTO_WIDTH_PX, PHOTO_WIDTH_BUCKETS, snapPhotoWidth, withPhotoWidth } from './placePhotoUrl';
 
 describe('clampPhotoWidth', () => {
   it('accepts a valid width unchanged', () => {
@@ -46,7 +46,7 @@ describe('withPhotoWidth', () => {
 
   it('clamps an out-of-range requested width rather than passing it through raw', () => {
     expect(new URL(withPhotoWidth(PHOTO_URL, 99999), 'http://localhost').searchParams.get('w')).toBe(String(MAX_PHOTO_WIDTH_PX));
-    expect(new URL(withPhotoWidth(PHOTO_URL, -10), 'http://localhost').searchParams.get('w')).toBe(String(MIN_PHOTO_WIDTH_PX));
+    expect(new URL(withPhotoWidth(PHOTO_URL, -10), 'http://localhost').searchParams.get('w')).toBe('192');
   });
 
   it('works whether or not the original URL already had a w parameter', () => {
@@ -61,5 +61,27 @@ describe('withPhotoWidth', () => {
 
   it('handles a malformed URL gracefully rather than throwing', () => {
     expect(() => withPhotoWidth('/api/places/photo?name=%', 100)).not.toThrow();
+  });
+});
+
+describe('snapPhotoWidth / canonical buckets', () => {
+  it('snaps up to the smallest bucket that is at least the requested width', () => {
+    expect(snapPhotoWidth(192)).toBe(192);
+    expect(snapPhotoWidth(193)).toBe(320);
+    expect(snapPhotoWidth(600)).toBe(640);
+    expect(snapPhotoWidth(1201)).toBe(1600);
+    expect(snapPhotoWidth(99999)).toBe(1600);
+    expect(snapPhotoWidth(1)).toBe(192);
+  });
+
+  it('every width this app requests itself (card 640, thumbnail 192, default 800, stored 1200) is already a bucket', () => {
+    for (const width of [640, 192, DEFAULT_PHOTO_WIDTH_PX, 1200]) expect(PHOTO_WIDTH_BUCKETS).toContain(width);
+  });
+
+  it('withPhotoWidth only ever emits bucket widths', () => {
+    for (const width of [1, 100, 193, 639, 641, 5000]) {
+      const w = Number(new URL(withPhotoWidth('/api/places/photo?name=places%2Fa%2Fphotos%2Fb&w=1200', width), 'http://localhost').searchParams.get('w'));
+      expect(PHOTO_WIDTH_BUCKETS).toContain(w);
+    }
   });
 });

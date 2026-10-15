@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { isLocalDevelopment } from '@/lib/env';
 import { images } from '@/config/images.config';
-import { clampPhotoWidth } from '@/lib/placePhotoUrl';
+import { clampPhotoWidth, snapPhotoWidth } from '@/lib/placePhotoUrl';
+import { InMemoryRateStore, clientKey, isPhotoProxyDisabled, photoRateLimits } from '@/lib/photoProxyGuard';
 
 const PLACES_API_BASE = 'https://places.googleapis.com/v1';
 
@@ -25,30 +26,84 @@ function pickLocalPlaceholder(name: string): string {
   return LOCAL_PLACEHOLDER_IMAGES[hash % LOCAL_PLACEHOLDER_IMAGES.length];
 }
 
+// Photo-cost protection P1. Every check below that can reject a request runs BEFORE any call to
+// Google, so a malformed, scripted or over-limit request never becomes a billable upstream request.
+//  - Only `name` and `w` are accepted, each at most once. A different query string would otherwise
+//    be ignored by this handler but still be a distinct CDN cache key, i.e. a fresh upstream call.
+//  - `name` must match a strict Places photo resource-name shape with length limits.
+//  - `w` must be an integer. A width that is not one of PHOTO_WIDTH_BUCKETS is redirected to the
+//    canonical bucket (no upstream call), so each photo has a small, bounded set of URLs.
+//  - Upstream failures are answered once, with a short-lived error response, and never retried here.
+const ALLOWED_PARAMS = new Set(['name', 'w']);
+const PHOTO_NAME_PATTERN = /^places\/[A-Za-z0-9_.=-]{1,255}\/photos\/[A-Za-z0-9_.=-]{1,2048}$/;
+
+// Per serverless instance only: best-effort burst damping, not a spending cap (see lib/photoProxyGuard.ts).
+const rateStore = new InMemoryRateStore();
+const MINUTE_MS = 60_000;
+
+const ERROR_CACHE_NOT_FOUND = 'public, max-age=60, s-maxage=300';
+const ERROR_CACHE_TRANSIENT = 'public, max-age=15, s-maxage=30';
+const ERROR_CACHE_CONFIGURATION = 'public, max-age=0, s-maxage=10';
+
+function badRequest(message: string) {
+  return NextResponse.json({ error: message }, { status: 400, headers: { 'Cache-Control': 'public, max-age=60, s-maxage=300' } });
+}
+
 // Proxies the Google Places (New) Photo Media endpoint so the API key never has to
 // appear in a URL sent to the browser — the client only ever sees /api/places/photo?name=...
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const name = searchParams.get('name');
-  // Phase P2A hardening: previously an unvalidated `Number(...)` — a caller could
-  // request an arbitrarily large (or negative/NaN, silently coerced by Google's own API
-  // in some unspecified way) width. `clampPhotoWidth` bounds this to a safe, sane range
-  // regardless of what the query string contains; existing callers that already send a
-  // reasonable `w` (or omit it entirely) see no behavior change.
-  const maxWidthPx = clampPhotoWidth(searchParams.get('w'));
 
-  if (!name || !/^places\/[^/]+\/photos\/[^/]+$/.test(name)) {
-    return NextResponse.json({ error: 'Invalid or missing photo name' }, { status: 400 });
+  for (const key of new Set(searchParams.keys())) {
+    if (!ALLOWED_PARAMS.has(key) || searchParams.getAll(key).length > 1) return badRequest('Unsupported query parameter');
+  }
+
+  const name = searchParams.get('name');
+  if (!name || !PHOTO_NAME_PATTERN.test(name) || name.includes('..')) {
+    return badRequest('Invalid or missing photo name');
+  }
+
+  // `w` omitted keeps today's behaviour (800). A present `w` must be a plain integer.
+  const rawWidth = searchParams.get('w');
+  if (rawWidth !== null && !/^-?\d{1,6}$/.test(rawWidth)) {
+    return badRequest('Invalid width');
+  }
+  const maxWidthPx = clampPhotoWidth(rawWidth);
+  if (rawWidth !== null) {
+    const canonical = snapPhotoWidth(rawWidth);
+    if (String(canonical) !== rawWidth) {
+      const target = new URL(request.url);
+      target.search = '';
+      target.searchParams.set('name', name);
+      target.searchParams.set('w', String(canonical));
+      return NextResponse.redirect(target, { status: 307, headers: { 'Cache-Control': 'public, max-age=3600, s-maxage=3600' } });
+    }
   }
 
   if (isLocalDevelopment()) {
     return NextResponse.redirect(new URL(pickLocalPlaceholder(name), request.url));
   }
 
+  // Server-side kill switch: GOOGLE_PHOTO_PROXY_MODE=disabled stops every upstream call. Callers
+  // already fall back to a placeholder on any non-image response, and the message reveals nothing.
+  if (isPhotoProxyDisabled(process.env)) {
+    return NextResponse.json({ error: 'Photo service unavailable' }, { status: 503, headers: { 'Cache-Control': 'public, max-age=30, s-maxage=60' } });
+  }
+
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: 'Photo service unavailable' }, { status: 503 });
   }
+
+  const limits = photoRateLimits(process.env);
+  // The per-client allowance is checked and counted FIRST. Only a request that passes it may consume the shared
+  // per-instance allowance, so one over-limit client cannot exhaust the instance budget and starve other visitors.
+  // (Limits: per serverless instance only, and clients behind one shared address, e.g. carrier-grade NAT, share a
+  // per-client allowance. See lib/photoProxyGuard.ts.)
+  const tooManyRequests = () =>
+    NextResponse.json({ error: 'Too many photo requests' }, { status: 429, headers: { 'Retry-After': '30', 'Cache-Control': 'no-store' } });
+  if (!rateStore.hit(`client:${clientKey(request.headers)}`, limits.perClient, MINUTE_MS)) return tooManyRequests();
+  if (!rateStore.hit('instance', limits.perInstance, MINUTE_MS)) return tooManyRequests();
 
   try {
     // The key travels only in the X-Goog-Api-Key request header (same convention as
@@ -69,7 +124,23 @@ export async function GET(request: Request) {
     });
 
     if (!res.ok) {
-      return NextResponse.json({ error: 'Failed to fetch photo' }, { status: res.status });
+      // One attempt only, never retried here. Error bodies below are not photo content.
+      //  - Google 404 (the photo reference is missing or expired): a genuine "not found", short-cached so
+      //    repeated requests for the same dead reference do not each reach Google.
+      //  - Google 400/401/403 (a bad request, key, quota, billing or API-enablement problem on OUR side): NOT a
+      //    missing photo. Reported as a temporary failure and cached for only seconds, so a fix takes effect
+      //    almost at once instead of being masked as "not found".
+      //  - Google 429 and 5xx, and anything else: temporary failure, briefly cached.
+      // Only the status code is logged (never the URL, headers, key or response body).
+      if (res.status === 404) {
+        return NextResponse.json({ error: 'Photo not found' }, { status: 404, headers: { 'Cache-Control': ERROR_CACHE_NOT_FOUND } });
+      }
+      const configurationProblem = res.status === 400 || res.status === 401 || res.status === 403;
+      console.error(`[photo-proxy] upstream responded with status ${res.status}`);
+      return NextResponse.json(
+        { error: 'Photo temporarily unavailable' },
+        { status: 502, headers: { 'Cache-Control': configurationProblem ? ERROR_CACHE_CONFIGURATION : ERROR_CACHE_TRANSIENT } }
+      );
     }
 
     const contentType = res.headers.get('content-type') ?? 'image/jpeg';
@@ -79,13 +150,14 @@ export async function GET(request: Request) {
       status: 200,
       headers: {
         'Content-Type': contentType,
-        // 30 days, not the more typical 24h — photo bytes for a given reference are
-        // truly immutable (never re-encoded), so there's nothing to revalidate sooner.
+        // UNCHANGED by P1 (existing behaviour; whether long-lived caching of Google photo bytes is
+        // permitted is an unresolved compliance question — see the P1 report). Not extended here.
         'Cache-Control': 'public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=604800, immutable'
       }
     });
   } catch (error) {
-    console.error('Failed to proxy Google Places photo', error);
-    return NextResponse.json({ error: 'Failed to fetch photo' }, { status: 500 });
+    // Only the error class is logged: fetch errors can carry request details, and none may reach the logs.
+    console.error(`[photo-proxy] upstream request failed (${error instanceof Error ? error.name : 'unknown error'})`);
+    return NextResponse.json({ error: 'Photo temporarily unavailable' }, { status: 502, headers: { 'Cache-Control': ERROR_CACHE_TRANSIENT } });
   }
 }

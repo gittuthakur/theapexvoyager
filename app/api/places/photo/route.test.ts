@@ -46,32 +46,27 @@ describe('GET /api/places/photo — width validation (Phase P2A)', () => {
     expect(calledUrl).toContain('maxWidthPx=192');
   });
 
-  it('clamps an oversized width to the maximum bound rather than forwarding it raw', async () => {
-    const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(
-      new Response(new Uint8Array([1]), { status: 200, headers: { 'content-type': 'image/jpeg' } })
-    );
-    await GET(req(`name=${encodeURIComponent(VALID_NAME)}&w=999999`));
-    const calledUrl = fetchSpy.mock.calls[0][0] as string;
-    expect(calledUrl).not.toContain('maxWidthPx=999999');
-    expect(calledUrl).toMatch(/maxWidthPx=1600/);
+  it('redirects an oversized width to the maximum canonical bucket without calling Google', async () => {
+    const fetchSpy = vi.spyOn(global, 'fetch');
+    const res = await GET(req(`name=${encodeURIComponent(VALID_NAME)}&w=999999`));
+    expect(res.status).toBe(307);
+    expect(new URL(res.headers.get('location') as string).searchParams.get('w')).toBe('1600');
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it('clamps a negative width to the minimum bound', async () => {
-    const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(
-      new Response(new Uint8Array([1]), { status: 200, headers: { 'content-type': 'image/jpeg' } })
-    );
-    await GET(req(`name=${encodeURIComponent(VALID_NAME)}&w=-50`));
-    const calledUrl = fetchSpy.mock.calls[0][0] as string;
-    expect(calledUrl).toMatch(/maxWidthPx=32/);
+  it('redirects a negative width to the smallest canonical bucket without calling Google', async () => {
+    const fetchSpy = vi.spyOn(global, 'fetch');
+    const res = await GET(req(`name=${encodeURIComponent(VALID_NAME)}&w=-50`));
+    expect(res.status).toBe(307);
+    expect(new URL(res.headers.get('location') as string).searchParams.get('w')).toBe('192');
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it('defaults safely when w is non-numeric garbage', async () => {
-    const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(
-      new Response(new Uint8Array([1]), { status: 200, headers: { 'content-type': 'image/jpeg' } })
-    );
-    await GET(req(`name=${encodeURIComponent(VALID_NAME)}&w=not-a-number`));
-    const calledUrl = fetchSpy.mock.calls[0][0] as string;
-    expect(calledUrl).toMatch(/maxWidthPx=800/);
+  it('rejects a non-numeric width with 400 and no upstream call', async () => {
+    const fetchSpy = vi.spyOn(global, 'fetch');
+    const res = await GET(req(`name=${encodeURIComponent(VALID_NAME)}&w=not-a-number`));
+    expect(res.status).toBe(400);
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 
   it('existing callers that omit w entirely still work exactly as before (defaults to 800)', async () => {
@@ -89,7 +84,7 @@ describe('GET /api/places/photo — photo identity preserved', () => {
     const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(
       new Response(new Uint8Array([1]), { status: 200, headers: { 'content-type': 'image/jpeg' } })
     );
-    await GET(req(`name=${encodeURIComponent(VALID_NAME)}&w=300`));
+    await GET(req(`name=${encodeURIComponent(VALID_NAME)}&w=320`));
     const calledUrl = fetchSpy.mock.calls[0][0] as string;
     expect(calledUrl).toContain(encodeURIComponent(VALID_NAME).replace(/%2F/g, '/') === VALID_NAME ? VALID_NAME : VALID_NAME);
     expect(calledUrl).toContain('ChIJabc123');
@@ -112,7 +107,7 @@ describe('GET /api/places/photo — no arbitrary upstream URL injection', () => 
 describe('GET /api/places/photo — caching headers unchanged', () => {
   it('still sets the existing 30-day immutable cache header on a successful response', async () => {
     vi.spyOn(global, 'fetch').mockResolvedValue(new Response(new Uint8Array([1, 2, 3]), { status: 200, headers: { 'content-type': 'image/jpeg' } }));
-    const res = await GET(req(`name=${encodeURIComponent(VALID_NAME)}&w=200`));
+    const res = await GET(req(`name=${encodeURIComponent(VALID_NAME)}&w=192`));
     expect(res.headers.get('Cache-Control')).toBe('public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=604800, immutable');
   });
 });
@@ -125,7 +120,7 @@ describe('GET /api/places/photo — no Google discovery triggered', () => {
 
   it('never calls fetch more than once per photo request (no duplicate/discovery side calls)', async () => {
     const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(new Response(new Uint8Array([1]), { status: 200 }));
-    await GET(req(`name=${encodeURIComponent(VALID_NAME)}&w=200`));
+    await GET(req(`name=${encodeURIComponent(VALID_NAME)}&w=192`));
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 });
@@ -134,7 +129,7 @@ describe('GET /api/places/photo — local dev unaffected', () => {
   it('still redirects to a local placeholder in dev, without calling Google or reading the width', async () => {
     vi.mocked(isLocalDevelopment).mockReturnValue(true);
     const fetchSpy = vi.spyOn(global, 'fetch');
-    const res = await GET(req(`name=${encodeURIComponent(VALID_NAME)}&w=99999999`));
+    const res = await GET(req(`name=${encodeURIComponent(VALID_NAME)}&w=640`));
     expect(res.status).toBe(307);
     expect(fetchSpy).not.toHaveBeenCalled();
   });
