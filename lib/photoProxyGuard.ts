@@ -12,6 +12,8 @@
  * a distributed attacker using many addresses can still reach the per-instance ceiling.
  */
 
+import { getClientIp } from '@/lib/clientIp';
+
 export interface RateStore {
   /** Records one hit for `key` and returns whether it is still within `limit` hits per `windowMs`. */
   hit(key: string, limit: number, windowMs: number, now?: number): boolean;
@@ -51,11 +53,10 @@ export class InMemoryRateStore implements RateStore {
   }
 }
 
-/** The client address as the platform reports it; falls back to a shared bucket rather than skipping the limit. */
+/** The per-client rate-limit key: the shared, spoof-resistant extraction in lib/clientIp.ts (platform headers first,
+ *  then the right-most `x-forwarded-for` entry, else one shared "unknown" bucket rather than skipping the limit). */
 export function clientKey(headers: Pick<Headers, 'get'>): string {
-  const forwarded = headers.get('x-vercel-forwarded-for') ?? headers.get('x-real-ip') ?? headers.get('x-forwarded-for');
-  const first = forwarded?.split(',')[0]?.trim();
-  return first ? first.slice(0, 64) : 'unknown';
+  return getClientIp(headers);
 }
 
 /** Kill switch: anything other than an explicit "disabled" keeps today's behaviour. */

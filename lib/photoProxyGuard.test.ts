@@ -7,6 +7,7 @@ import {
   isPhotoProxyDisabled,
   photoRateLimits
 } from './photoProxyGuard';
+import { getClientIp } from './clientIp';
 
 describe('InMemoryRateStore', () => {
   it('allows up to the limit within a window, then refuses, then resets', () => {
@@ -31,12 +32,27 @@ describe('InMemoryRateStore', () => {
 });
 
 describe('clientKey', () => {
-  it('prefers the platform-reported address and takes the first hop', () => {
+  it('prefers the platform-reported address over any x-forwarded-for value', () => {
     expect(clientKey(new Headers({ 'x-vercel-forwarded-for': '1.1.1.1', 'x-forwarded-for': '2.2.2.2' }))).toBe('1.1.1.1');
-    expect(clientKey(new Headers({ 'x-forwarded-for': '3.3.3.3, 4.4.4.4' }))).toBe('3.3.3.3');
+    expect(clientKey(new Headers({ 'x-real-ip': '1.1.1.2', 'x-forwarded-for': '2.2.2.2' }))).toBe('1.1.1.2');
   });
-  it('uses one shared bucket when no address is available rather than skipping the limit', () => {
+  it('without platform headers uses the RIGHT-most x-forwarded-for entry, never a caller-prepended one', () => {
+    expect(clientKey(new Headers({ 'x-forwarded-for': '3.3.3.3, 4.4.4.4' }))).toBe('4.4.4.4');
+    expect(clientKey(new Headers({ 'x-forwarded-for': '9.9.9.9, 8.8.8.8, 203.0.113.7' }))).toBe('203.0.113.7');
+  });
+  it('is exactly the shared helper used by the destinations limiter', () => {
+    const cases: Array<Record<string, string>> = [{ 'x-vercel-forwarded-for': '1.1.1.1' }, { 'x-forwarded-for': 'a, b' }, {}, { 'x-forwarded-for': ' , ' }];
+    for (const headers of cases) {
+      expect(clientKey(new Headers(headers))).toBe(getClientIp(new Headers(headers)));
+    }
+  });
+  it('uses one shared bucket when no usable address is available rather than skipping the limit', () => {
     expect(clientKey(new Headers())).toBe('unknown');
+    expect(clientKey(new Headers({ 'x-forwarded-for': ' , , ' }))).toBe('unknown');
+    expect(clientKey(new Headers({ 'x-real-ip': '   ' }))).toBe('unknown');
+  });
+  it('bounds the key length', () => {
+    expect(clientKey(new Headers({ 'x-forwarded-for': 'a'.repeat(5000) })).length).toBeLessThanOrEqual(64);
   });
 });
 

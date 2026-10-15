@@ -257,6 +257,46 @@ describe('abuse damping (per serverless instance, best effort)', () => {
     expect(limited.headers.get('Cache-Control')).toBe('no-store');
   });
 
+  it('rotating a spoofed x-forwarded-for does not evade the per-client limit while the platform address is fixed', async () => {
+    process.env.GOOGLE_PHOTO_PROXY_MAX_PER_CLIENT_PER_MINUTE = '3';
+    vi.resetModules();
+    ({ GET } = await import('./route'));
+    const fetchSpy = vi.spyOn(global, 'fetch').mockImplementation(async () => okImage());
+    const statuses: number[] = [];
+    for (let i = 0; i < 6; i += 1) {
+      statuses.push((await GET(req(q(`places/ChIJabc/photos/s${i}`, '&w=640'), { 'x-vercel-forwarded-for': '198.51.100.7', 'x-forwarded-for': `6.6.${i}.1` }))).status);
+    }
+    expect(statuses).toEqual([200, 200, 200, 429, 429, 429]);
+    expect(fetchSpy).toHaveBeenCalledTimes(3);
+  });
+
+  it('prepending spoofed entries to x-forwarded-for does not create a fresh bucket when there is no platform header', async () => {
+    process.env.GOOGLE_PHOTO_PROXY_MAX_PER_CLIENT_PER_MINUTE = '3';
+    vi.resetModules();
+    ({ GET } = await import('./route'));
+    const fetchSpy = vi.spyOn(global, 'fetch').mockImplementation(async () => okImage());
+    const statuses: number[] = [];
+    for (let i = 0; i < 6; i += 1) {
+      statuses.push((await GET(req(q(`places/ChIJabc/photos/t${i}`, '&w=640'), { 'x-forwarded-for': `9.9.${i}.1, 192.0.2.44` }))).status);
+    }
+    expect(statuses).toEqual([200, 200, 200, 429, 429, 429]);
+    expect(fetchSpy).toHaveBeenCalledTimes(3);
+  });
+
+  it('requests with no usable address header share one bucket, so omitting headers does not escape the limit', async () => {
+    process.env.GOOGLE_PHOTO_PROXY_MAX_PER_CLIENT_PER_MINUTE = '2';
+    vi.resetModules();
+    ({ GET } = await import('./route'));
+    const fetchSpy = vi.spyOn(global, 'fetch').mockImplementation(async () => okImage());
+    const statuses: number[] = [];
+    for (let i = 0; i < 4; i += 1) {
+      const headers: Record<string, string> = i % 2 === 0 ? {} : { 'x-forwarded-for': ' , ' };
+      statuses.push((await GET(req(q(`places/ChIJabc/photos/u${i}`, '&w=640'), headers))).status);
+    }
+    expect(statuses).toEqual([200, 200, 429, 429]);
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+  });
+
   it('also caps total upstream calls per instance', async () => {
     process.env.GOOGLE_PHOTO_PROXY_MAX_PER_INSTANCE_PER_MINUTE = '2';
     vi.resetModules();
