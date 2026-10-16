@@ -148,13 +148,19 @@ export async function generateMetadata({ params }: StaysCatchAllPageProps): Prom
       const googlePropertyDescription = resolved.stay.formattedAddress
         ? `${STAY_TYPE_LABELS[resolved.stay.stayType]} in ${resolved.stay.formattedAddress}.`
         : `${STAY_TYPE_LABELS[resolved.stay.stayType]} on Apex Stays.`;
-      const googlePropertyImage = resolved.stay.photos[0];
+      // D2 — social-preview safety. This page's photos come from Google Places through /api/places/photo. They must
+      // never be republished as a social preview image (a social network fetches and caches the bytes, shows them
+      // outside this page and credits no one), so NO image is declared here: text-only Open Graph plus a Twitter
+      // `summary` card. No first-party image is substituted either: the only candidates (the generic hero, the logo)
+      // have no recorded commercial-redistribution rights. `openGraph` is declared explicitly (without `images`) on
+      // purpose: Next.js replaces, not merges, a parent's `openGraph`, so this also stops the root layout's default
+      // hero image from being inherited by this page.
       return {
         title: googlePropertyTitle,
         description: googlePropertyDescription,
         alternates: { canonical: `/stays/property/${resolved.stay.placeId}` },
-        openGraph: googlePropertyImage ? { title: googlePropertyTitle, description: googlePropertyDescription, images: [{ url: googlePropertyImage, alt: resolved.stay.name }] } : undefined,
-        twitter: { card: googlePropertyImage ? 'summary_large_image' : 'summary', title: googlePropertyTitle, description: googlePropertyDescription, images: googlePropertyImage ? [googlePropertyImage] : undefined },
+        openGraph: { title: googlePropertyTitle, description: googlePropertyDescription, url: `/stays/property/${resolved.stay.placeId}` },
+        twitter: { card: 'summary', title: googlePropertyTitle, description: googlePropertyDescription },
         // Not indexed — ephemeral Google-Places-backed data with no live pricing/
         // availability (see resolveSegments's 'google-property' case), never stable
         // curated content. `follow`ed so it stays fully linked/functional for visitors.

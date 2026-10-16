@@ -79,7 +79,8 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
   // publiclyListed curated stays render immediately without waiting on the Google
   // Places round trip — they're already-verified data, not something that should be
   // hidden behind a loading skeleton just because a supplementary source is slow or
-  // unavailable (e.g. production has no GOOGLE_PLACES_API_KEY configured today).
+  // unavailable (e.g. the stays API is rate limited or temporarily unavailable because the
+  // owner-exclusion list could not be read, or no Google-sourced stays are cached yet).
   const stays = status === 'ready' ? [...curatedAsStays, ...dedupeAgainstCurated(curatedAsStays, googleStays)] : curatedAsStays;
 
   const visibleStays = activeType === 'all' ? stays : stays.filter((stay) => stay.stayType === activeType);

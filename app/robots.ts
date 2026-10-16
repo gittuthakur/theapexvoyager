@@ -6,7 +6,12 @@ import { siteConfig } from '@/config/site.config';
 // — /internal/ is admin-only tooling and /bookings/ holds only private, per-reference
 // booking vouchers; neither is ever a page a search/AI engine should crawl or link to.
 // Everything else on the site remains a real, public page and stays fully crawlable.
-const DISALLOWED_PATHS = ['/internal/', '/bookings/'];
+//
+// /api/places/ is the Google Places photo proxy. Keeping well-behaved crawlers off it stops search and AI-search
+// crawlers from fetching Google photo bytes through it. This is ONLY a crawling request: robots.txt does not block
+// direct access to the URL (any client can still request it), it does not stop a social network that already has a
+// link preview, and it does not remove or invalidate images already held in the CDN, a browser or a third party's cache.
+const DISALLOWED_PATHS = ['/internal/', '/bookings/', '/api/places/'];
 
 // Search/AI-search crawl visibility ("may you crawl this site to find, cite, or answer
 // with its pages") is a deliberately separate question from model-training permission
