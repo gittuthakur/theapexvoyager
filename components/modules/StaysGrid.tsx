@@ -8,6 +8,7 @@ import { SafeImage } from '@/components/ui/SafeImage';
 import { SkeletonGrid } from '@/components/ui/Skeleton';
 import { withPhotoWidth } from '@/lib/placePhotoUrl';
 import { GoogleMapsButton } from '@/components/ui/GoogleMapsButton';
+import { GoogleMapsAttribution } from '@/components/ui/GoogleMapsAttribution';
 import { buildGoogleMapsUrl } from '@/lib/googleMapsLink';
 import { cn } from '@/lib/utils';
 import { fadeInUp } from '@/lib/motion';
@@ -184,9 +185,9 @@ export function StayCard({ stay, priority = false }: { stay: Stay; priority?: bo
               <Star size={12} className="fill-amber-400 text-amber-400" />
               {stay.rating.toFixed(1)}
               {stay.userRatingCount ? <span className="text-slate-300"> ({stay.userRatingCount})</span> : null}
-              {/* Provenance disclosure — see AGENTS.md Phase C section 22: never imply The
-                  Apex Voyager verified a rating that actually came from Google. */}
-              {stay.source === 'google' ? <span className="text-slate-300"> · Google</span> : null}
+              {/* Provenance (AGENTS.md Phase C section 22: never imply The Apex Voyager verified a rating that actually
+                  came from Google) is carried by this card's single GoogleMapsAttribution below, so the old
+                  " · Google" suffix here would be a second, duplicate Google label on the same card. */}
             </span>
           ) : null}
           {stay.photos[0] ? (
@@ -232,7 +233,7 @@ export function StayCard({ stay, priority = false }: { stay: Stay; priority?: bo
             content is The Apex Voyager India's own catalog data even when it also has a
             real Google Maps link, so this only ever shows for a genuinely
             Google-sourced record (source === 'google'). */}
-        {mapsUrl && stay.source === 'google' ? <p className="text-[11px] text-slate-400">Property information sourced from Google</p> : null}
+        {mapsUrl && stay.source === 'google' ? <GoogleMapsAttribution variant="card" prefix="Property information sourced from" /> : null}
       </div>
     </article>
   );
