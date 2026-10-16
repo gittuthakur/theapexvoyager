@@ -50,14 +50,28 @@ export function clampPhotoWidth(value: unknown): number {
  * is a targeted rewrite for a known, trusted internal URL shape, never an open rewriter.
  */
 export function withPhotoWidth(photoUrl: string, widthPx: number): string {
+  // The emitted width is always one of PHOTO_WIDTH_BUCKETS (see snapPhotoWidth below).
   if (typeof photoUrl !== 'string' || !photoUrl.startsWith('/api/places/photo?')) return photoUrl;
   try {
     // Second arg is a required-but-unused base for relative-URL parsing only — never
     // sent anywhere, never part of the returned string.
     const url = new URL(photoUrl, 'http://localhost');
-    url.searchParams.set('w', String(clampPhotoWidth(widthPx)));
+    url.searchParams.set('w', String(snapPhotoWidth(widthPx)));
     return `${url.pathname}${url.search}`;
   } catch {
     return photoUrl;
   }
+}
+
+/**
+ * The only widths the photo proxy serves. Every card/gallery slot maps onto one of these, so each photo has a
+ * small, bounded set of distinct URLs (and so of distinct upstream requests) instead of one per arbitrary pixel
+ * width. This is request canonicalization only: it does not cache or store any Google content.
+ */
+export const PHOTO_WIDTH_BUCKETS: readonly number[] = [192, 320, 480, 640, 800, 1200, 1600];
+
+/** The smallest bucket that is at least `value` (clamped first), so a request is never served smaller than asked. */
+export function snapPhotoWidth(value: unknown): number {
+  const clamped = clampPhotoWidth(value);
+  return PHOTO_WIDTH_BUCKETS.find((bucket) => bucket >= clamped) ?? PHOTO_WIDTH_BUCKETS[PHOTO_WIDTH_BUCKETS.length - 1];
 }
