@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/lib/env', () => ({ isLocalDevelopment: vi.fn(() => false) }));
+// Fix B: the route now reads the owner-exclusion list. These tests are about request shape, widths and headers, so the
+// service is mocked with "nothing excluded" (plain functions, so vi.restoreAllMocks cannot unset them) - no database.
+vi.mock('@/services/properties/propertyExclusion.service', () => ({
+  ExclusionLookupError: class ExclusionLookupError extends Error {},
+  getActiveExclusionSet: async () => new Set<string>()
+}));
 
 const { isLocalDevelopment } = await import('@/lib/env');
 const { GET } = await import('./route');
