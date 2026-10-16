@@ -4,6 +4,7 @@ import type { StayType } from '@/types/stay';
 import { isLocalDevelopment } from '@/lib/env';
 import { getMockPlaces } from '@/lib/mockPlacesData';
 import { clampPhotoWidth } from '@/lib/placePhotoUrl';
+import { normalizeGooglePhotos, type GooglePhotoMetadata } from '@/lib/googlePhotoAttribution';
 
 const PLACES_API_BASE = 'https://places.googleapis.com/v1';
 
@@ -21,6 +22,19 @@ const SEARCH_FIELD_MASK = [
   'nextPageToken'
 ].join(',');
 
+/** One photo as Google's Places API (New) returns it inside `places.photos`. Only `name` is relied on by today's
+ *  persisted data; the other fields are what Google already sends in the same response (the field mask below is
+ *  unchanged). They are UNTRUSTED network input: read them only through lib/googlePhotoAttribution.ts, which
+ *  validates them. See that module for why none of it may be stored. */
+export interface RawGooglePhoto {
+  name: string;
+  widthPx?: number;
+  heightPx?: number;
+  authorAttributions?: Array<{ displayName?: string; uri?: string; photoUri?: string }>;
+  flagContentUri?: string;
+  googleMapsUri?: string;
+}
+
 export interface RawGooglePlace {
   id: string;
   displayName?: { text: string };
@@ -29,7 +43,7 @@ export interface RawGooglePlace {
   location?: { latitude: number; longitude: number };
   rating?: number;
   userRatingCount?: number;
-  photos?: Array<{ name: string }>;
+  photos?: RawGooglePhoto[];
   types?: string[];
   googleMapsUri?: string;
   websiteUri?: string;
@@ -217,4 +231,11 @@ export function placeCoordinates(place: RawGooglePlace): { latitude?: number; lo
 
 export function placePhotoUrls(place: RawGooglePlace, maxWidthPx?: number): string[] {
   return (place.photos ?? []).map((photo) => toProxiedPhotoUrl(photo.name, maxWidthPx));
+}
+
+/** D1-2 — attribution-aware, IN-MEMORY view of a place's photos (author credits, per-photo Google Maps link, report
+ *  link), validated and normalized. Deliberately NOT used by any persistence path: PlaceCache, DestinationSearchCache
+ *  and the refresh cron keep using `placePhotoUrls` only, so stored data is unchanged. Not wired to any UI yet. */
+export function placePhotoMetadata(place: RawGooglePlace): GooglePhotoMetadata[] {
+  return normalizeGooglePhotos(place.photos);
 }
