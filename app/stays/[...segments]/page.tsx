@@ -12,6 +12,7 @@ import BackButton from '@/components/ui/BackButton';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { GoogleMapsButton } from '@/components/ui/GoogleMapsButton';
+import { GoogleMapsAttribution } from '@/components/ui/GoogleMapsAttribution';
 import { buildGoogleMapsUrl } from '@/lib/googleMapsLink';
 import { getHotels, getHotelBySlug } from '@/lib/hotels';
 import { getPackagesByDestinationSlug } from '@/lib/packages';
@@ -694,11 +695,14 @@ async function GooglePropertyDetail({ stay }: { stay: Stay }) {
             {/* Independent-listing notice — see this component's top comment: no
                 booking/pricing agreement exists with this property, so this is never
                 framed as something Apex can confirm on enquiry. */}
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <div className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-5">
               <p className="text-sm text-slate-600">
                 This is an independent informational listing. Property information is sourced from Google. The Apex Voyager India is not
                 the property owner or booking provider.
               </p>
+              {/* The ONE Google Maps attribution for this property's content (the sidebar below no longer repeats the
+                  disclosure). Renders Google's official, unmodified logo - see components/ui/GoogleMapsAttribution.tsx. */}
+              <GoogleMapsAttribution variant="detail" />
             </div>
 
             <div className="flex flex-wrap gap-3">
@@ -733,10 +737,8 @@ async function GooglePropertyDetail({ stay }: { stay: Stay }) {
           </div>
 
           <aside className="h-fit space-y-4 rounded-[2rem] border border-slate-200 bg-slate-50 p-8 text-center xl:sticky xl:top-24">
-            <p className="text-sm text-slate-600">
-              This is an independent informational listing. Property information is sourced from Google. The Apex Voyager India is not the
-              property owner or booking provider.
-            </p>
+            {/* The disclosure and the Google Maps attribution live once, in the main column above; repeating them here
+                was a duplicate. */}
             <GoogleMapsButton url={mapsUrl} fullWidth />
           </aside>
         </div>

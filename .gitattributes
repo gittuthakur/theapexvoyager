@@ -1,0 +1,5 @@
+# Google's official Google Maps logo files must stay byte-for-byte as Google supplied them (policy: never modify the
+# logo). Do not normalise their line endings (core.autocrlf would otherwise rewrite them on commit and checkout) and do
+# not apply whitespace checks to them (the supplied SVGs contain trailing whitespace). The SHA-256 of each SVG is pinned in
+# components/ui/GoogleMapsAttribution.test.tsx.
+public/brand/google-maps/** -text -whitespace
