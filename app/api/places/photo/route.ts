@@ -3,6 +3,7 @@ import { isLocalDevelopment } from '@/lib/env';
 import { images } from '@/config/images.config';
 import { clampPhotoWidth, snapPhotoWidth } from '@/lib/placePhotoUrl';
 import { InMemoryRateStore, clientKey, isPhotoProxyDisabled, photoRateLimits } from '@/lib/photoProxyGuard';
+import { ExclusionLookupError, getActiveExclusionSet } from '@/services/properties/propertyExclusion.service';
 
 const PLACES_API_BASE = 'https://places.googleapis.com/v1';
 
@@ -47,6 +48,18 @@ const ERROR_CACHE_CONFIGURATION = 'public, max-age=0, s-maxage=10';
 
 function badRequest(message: string) {
   return NextResponse.json({ error: message }, { status: 400, headers: { 'Cache-Control': 'public, max-age=60, s-maxage=300' } });
+}
+
+// ONE response for "this photo does not exist for you": used for a genuine Google 404 AND for a photo that belongs
+// to an owner-excluded property, so the two are byte-for-byte indistinguishable to a caller.
+function photoNotFound() {
+  return NextResponse.json({ error: 'Photo not found' }, { status: 404, headers: { 'Cache-Control': ERROR_CACHE_NOT_FOUND } });
+}
+
+// Fix B: the Place ID of a validated resource name `places/<PLACE_ID>/photos/<TOKEN>` (PHOTO_NAME_PATTERN above
+// guarantees exactly this shape, so the second segment is always the Place ID).
+function placeIdOf(photoName: string): string {
+  return photoName.split('/')[1];
 }
 
 // Proxies the Google Places (New) Photo Media endpoint so the API key never has to
@@ -103,6 +116,28 @@ export async function GET(request: Request) {
   const tooManyRequests = () =>
     NextResponse.json({ error: 'Too many photo requests' }, { status: 429, headers: { 'Retry-After': '30', 'Cache-Control': 'no-store' } });
   if (!rateStore.hit(`client:${clientKey(request.headers)}`, limits.perClient, MINUTE_MS)) return tooManyRequests();
+
+  // Fix B — owner exclusions. A property owner's takedown must hold for a direct photo request too, not only for the
+  // pages that link to it. Runs AFTER the per-client check (so an abusive client cannot drive unlimited database
+  // reads) and BEFORE the shared per-instance check and any Google call: an excluded or unverifiable request
+  // never consumes the instance allowance and never becomes an upstream request. The exclusion list is read fresh
+  // each time (no in-memory copy, so no stale answer), through the same service every Stays surface uses.
+  // FAILS CLOSED: if the list cannot be read, nothing is fetched from Google. (The service logs the failure itself;
+  // this route logs neither the photo name nor the Place ID.)
+  // KNOWN LIMIT: this only governs requests that reach this function. A photo already stored in the Vercel CDN, or in a
+  // visitor's browser, under the 30-day success `Cache-Control` below is served from that cache without running this
+  // code, so an exclusion does not remove already-cached bytes. Purging them is a separate, owner-approved operation.
+  let excluded: Set<string>;
+  try {
+    excluded = await getActiveExclusionSet('google');
+  } catch (error) {
+    if (error instanceof ExclusionLookupError) {
+      return NextResponse.json({ error: 'Photo temporarily unavailable' }, { status: 503, headers: { 'Cache-Control': 'no-store' } });
+    }
+    throw error;
+  }
+  if (excluded.has(placeIdOf(name))) return photoNotFound();
+
   if (!rateStore.hit('instance', limits.perInstance, MINUTE_MS)) return tooManyRequests();
 
   try {
@@ -133,7 +168,7 @@ export async function GET(request: Request) {
       //  - Google 429 and 5xx, and anything else: temporary failure, briefly cached.
       // Only the status code is logged (never the URL, headers, key or response body).
       if (res.status === 404) {
-        return NextResponse.json({ error: 'Photo not found' }, { status: 404, headers: { 'Cache-Control': ERROR_CACHE_NOT_FOUND } });
+        return photoNotFound();
       }
       const configurationProblem = res.status === 400 || res.status === 401 || res.status === 403;
       console.error(`[photo-proxy] upstream responded with status ${res.status}`);

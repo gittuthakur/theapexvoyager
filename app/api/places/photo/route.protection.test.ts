@@ -3,6 +3,12 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/lib/env', () => ({ isLocalDevelopment: vi.fn(() => false) }));
+// Fix B: owner exclusions are covered in route.exclusion.test.ts. Here the service is mocked with "nothing excluded"
+// (plain functions) so these P1 protection tests stay hermetic and never reach a database.
+vi.mock('@/services/properties/propertyExclusion.service', () => ({
+  ExclusionLookupError: class ExclusionLookupError extends Error {},
+  getActiveExclusionSet: async () => new Set<string>()
+}));
 
 const NAME = 'places/ChIJabc123/photos/AVxyz789_-=.';
 const TEST_KEY = 'test-key-not-real-1234567890';
@@ -331,10 +337,13 @@ describe('consumers and scope', () => {
     }
   });
 
-  it('the protection touches no exclusion, stays, pricing, availability or booking code', () => {
+  it('the protection touches no stays, pricing, availability or booking code, and its only exclusion dependency is the existing P4 service', () => {
     const files = [readFileSync(join(root, 'app/api/places/photo/route.ts'), 'utf8'), readFileSync(join(root, 'lib/photoProxyGuard.ts'), 'utf8')].join('\n');
     const imports = files.split('\n').filter((line) => /^\s*import /.test(line)).join('\n');
-    expect(imports).not.toMatch(/stays|propertyExclusion|mongodb|models\/|pricing|hbx|booking/i);
+    // Fix B permits exactly one data dependency: the shared exclusion service (never a model, the database or Stays code).
+    const withoutExclusionService = imports.replace("import { ExclusionLookupError, getActiveExclusionSet } from '@/services/properties/propertyExclusion.service';", '');
+    expect(imports).toContain("'@/services/properties/propertyExclusion.service'");
+    expect(withoutExclusionService).not.toMatch(/stays|propertyExclusion|mongodb|models\/|pricing|hbx|booking/i);
     expect(files).not.toMatch(/book now|check availability|starting from|pricePerNight/i);
   });
 });
