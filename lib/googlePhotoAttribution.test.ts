@@ -236,7 +236,7 @@ describe('no persistence of new Google data and existing photo URL mapping uncha
     for (const file of files) expect(read(file), file).not.toMatch(forbidden);
   });
 
-  it('only lib/googlePlaces.ts and the unwired lib/googlePhotoFetch.ts import the module (and tests)', () => {
+  it('only lib/googlePlaces.ts, lib/googlePhotoFetch.ts and (a type) lib/stayPhotoGallery.ts import the module (and tests)', () => {
     const importers: string[] = [];
     const walk = (dir: string) => {
       for (const entry of readdirSync(join(ROOT, dir))) {
@@ -250,7 +250,9 @@ describe('no persistence of new Google data and existing photo URL mapping uncha
     for (const dir of ['app', 'components', 'lib', 'models', 'services', 'types', 'config', 'scripts']) walk(dir);
     // D1-3a: lib/googlePhotoFetch.ts reuses the normalizer by design. It is itself not imported by any page, route or
     // persistence path (asserted in lib/googlePhotoFetch.test.ts), so the metadata still cannot reach storage or the UI.
-    expect(importers.sort()).toEqual(['lib/googlePhotoFetch.ts', 'lib/googlePlaces.ts']);
+    // D1-3b: lib/stayPhotoGallery.ts imports only the author TYPE, to describe a credited gallery photo. Still no page,
+    // component, route, model or persistence path imports the module itself.
+    expect(importers.sort()).toEqual(['lib/googlePhotoFetch.ts', 'lib/googlePlaces.ts', 'lib/stayPhotoGallery.ts']);
   });
 });
 
