@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type Ref } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { MapPin, Star } from 'lucide-react';
@@ -13,6 +13,16 @@ import { buildGoogleMapsUrl } from '@/lib/googleMapsLink';
 import { cn } from '@/lib/utils';
 import { fadeInUp } from '@/lib/motion';
 import { hotelToStay, dedupeAgainstCurated } from '@/lib/stayMerge';
+import {
+  STAYS_BATCH_SIZE,
+  dedupeByPlaceId,
+  effectiveVisibleCount,
+  hasMore,
+  nextVisibleCount,
+  resolveGridPhase,
+  showingLabel,
+  type PagingState
+} from '@/lib/stayListPaging';
 import { STAY_TYPES, STAY_TYPE_LABELS, type Stay, type StayType } from '@/types/stay';
 import type { HotelPackage } from '@/types/hotel';
 
@@ -46,6 +56,15 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
   const [googleStays, setGoogleStays] = useState<Stay[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [activeType, setActiveType] = useState<StayType | 'all'>(stayTypeFilter ?? 'all');
+  // Bumped on every successful load so a replaced dataset can never inherit a count earned on the previous one.
+  const [dataVersion, setDataVersion] = useState(0);
+  // Bumped on every filter change, so returning to a filter the visitor already expanded still starts from one batch.
+  const [filterEpoch, setFilterEpoch] = useState(0);
+  const [paging, setPaging] = useState<PagingState>({ key: '', count: STAYS_BATCH_SIZE });
+  // Tagged with the destination/dataset it was made for, so it is dropped (not re-read) once that context changes.
+  const [announcement, setAnnouncement] = useState<{ context: string; text: string }>({ context: '', text: '' });
+  const statusLineRef = useRef<HTMLParagraphElement>(null);
+  const focusStatusLine = useRef(false);
 
   const curatedAsStays = useMemo(() => curatedStays.map((hotel) => hotelToStay(hotel, destinationSlug)), [curatedStays, destinationSlug]);
 
@@ -65,6 +84,7 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
       .then((data: { stays: Stay[] }) => {
         if (cancelled) return;
         setGoogleStays(data.stays ?? []);
+        setDataVersion((version) => version + 1);
         setStatus('ready');
       })
       .catch((error) => {
@@ -82,22 +102,94 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
   // hidden behind a loading skeleton just because a supplementary source is slow or
   // unavailable (e.g. the stays API is rate limited or temporarily unavailable because the
   // owner-exclusion list could not be read, or no Google-sourced stays are cached yet).
-  const stays = status === 'ready' ? [...curatedAsStays, ...dedupeAgainstCurated(curatedAsStays, googleStays)] : curatedAsStays;
+  const stays = useMemo(
+    () => dedupeByPlaceId(status === 'ready' ? [...curatedAsStays, ...dedupeAgainstCurated(curatedAsStays, googleStays)] : curatedAsStays),
+    [status, curatedAsStays, googleStays]
+  );
 
-  const visibleStays = activeType === 'all' ? stays : stays.filter((stay) => stay.stayType === activeType);
+  // The full eligible set is filtered FIRST; only then is the result sliced for display.
+  const matchingStays = useMemo(() => (activeType === 'all' ? stays : stays.filter((stay) => stay.stayType === activeType)), [stays, activeType]);
   const availableTypes = STAY_TYPES.filter((stayType) => stays.some((stay) => stay.stayType === stayType));
 
-  if (status === 'loading' && curatedAsStays.length === 0) {
+  // Anything that changes what the grid shows (destination, filters, a replaced dataset, the status flip that adds the
+  // live results behind the curated ones) invalidates the revealed count, which then falls back to one batch.
+  const pagingKey = [location, state ?? '', destinationSlug ?? '', stayMode ?? '', stayTypeFilter ?? '', activeType, filterEpoch, dataVersion, status].join('|');
+  const visibleCount = effectiveVisibleCount(paging, pagingKey, matchingStays.length);
+  const announcementContext = [location, state ?? '', destinationSlug ?? '', stayMode ?? '', stayTypeFilter ?? '', dataVersion].join('|');
+
+  // When the last batch is revealed the button unmounts; hand focus to the count line so keyboard focus is not dropped.
+  const allShown = !hasMore(visibleCount, matchingStays.length);
+  useEffect(() => {
+    if (allShown && focusStatusLine.current) {
+      focusStatusLine.current = false;
+      statusLineRef.current?.focus();
+    }
+  }, [allShown, visibleCount]);
+
+  const phase = resolveGridPhase(status, curatedAsStays.length, stays.length);
+
+  if (phase === 'skeleton') {
     return <SkeletonGrid count={6} className="sm:grid-cols-2 xl:grid-cols-3" />;
   }
 
-  if (status === 'error' && curatedAsStays.length === 0) {
+  if (phase === 'error') {
     return <p className="text-sm text-slate-500">We couldn&apos;t load live stays right now — please check back shortly.</p>;
   }
 
-  if (stays.length === 0) {
+  if (phase === 'empty') {
     return <p className="text-sm text-slate-500">{emptyStateMessage ?? `No stays found near ${location} yet.`}</p>;
   }
+
+  function selectType(next: StayType | 'all') {
+    if (next === activeType) return;
+    const total = next === 'all' ? stays.length : stays.filter((stay) => stay.stayType === next).length;
+    focusStatusLine.current = false;
+    setActiveType(next);
+    setFilterEpoch((epoch) => epoch + 1);
+    setAnnouncement({ context: announcementContext, text: total > STAYS_BATCH_SIZE ? showingLabel(Math.min(STAYS_BATCH_SIZE, total), total) : '' });
+  }
+
+  function loadMore() {
+    const next = nextVisibleCount(visibleCount, matchingStays.length);
+    focusStatusLine.current = next >= matchingStays.length;
+    setPaging({ key: pagingKey, count: next });
+    setAnnouncement({ context: announcementContext, text: showingLabel(next, matchingStays.length) });
+  }
+
+  return (
+    <StaysGridView
+      stays={matchingStays}
+      visibleCount={visibleCount}
+      activeType={activeType}
+      availableTypes={availableTypes}
+      showTypeChips={!stayTypeFilter}
+      announcement={announcement.context === announcementContext ? announcement.text : ''}
+      statusLineRef={statusLineRef}
+      onSelectType={selectType}
+      onLoadMore={loadMore}
+    />
+  );
+}
+
+export interface StaysGridViewProps {
+  /** Every stay matching the active filter, in display order. Only the first `visibleCount` are rendered. */
+  stays: Stay[];
+  visibleCount: number;
+  activeType: StayType | 'all';
+  availableTypes: StayType[];
+  showTypeChips: boolean;
+  /** Text for the polite live region. Empty until the visitor acts, so nothing is announced on first render. */
+  announcement: string;
+  statusLineRef?: Ref<HTMLParagraphElement>;
+  onSelectType: (type: StayType | 'all') => void;
+  onLoadMore: () => void;
+}
+
+// Presentational half of StaysGrid, exported so the rendering rules can be tested against the real markup.
+export function StaysGridView({ stays, visibleCount, activeType, availableTypes, showTypeChips, announcement, statusLineRef, onSelectType, onLoadMore }: StaysGridViewProps) {
+  const total = stays.length;
+  const shown = Math.min(visibleCount, total);
+  const paged = total > STAYS_BATCH_SIZE;
 
   return (
     // This section runs much taller than a typical fade-in block (a full hotel grid,
@@ -108,11 +200,11 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
     // otherwise. Scoped to this component only — lib/motion.ts's viewportOnce (used
     // elsewhere) is untouched.
     <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0 }} variants={fadeInUp}>
-      {stayTypeFilter ? null : (
+      {showTypeChips ? (
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() => setActiveType('all')}
+            onClick={() => onSelectType('all')}
             className={cn(
               'cursor-hover rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-300 ease-in-out',
               activeType === 'all' ? 'bg-apex-500 text-white shadow-lg shadow-apex-500/30' : 'bg-slate-100 text-slate-600 hover:text-slate-900'
@@ -124,7 +216,7 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
             <button
               key={stayType}
               type="button"
-              onClick={() => setActiveType(stayType)}
+              onClick={() => onSelectType(stayType)}
               className={cn(
                 'cursor-hover rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-300 ease-in-out',
                 activeType === stayType ? 'bg-apex-500 text-white shadow-lg shadow-apex-500/30' : 'bg-slate-100 text-slate-600 hover:text-slate-900'
@@ -134,12 +226,33 @@ export default function StaysGrid({ location, state, curatedStays = [], destinat
             </button>
           ))}
         </div>
-      )}
+      ) : null}
 
       <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-        {visibleStays.map((stay, index) => (
+        {stays.slice(0, shown).map((stay, index) => (
           <StayCard key={`${stay.placeId}-${index}`} stay={stay} priority={index < 4} />
         ))}
+      </div>
+
+      {paged ? (
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <p ref={statusLineRef} tabIndex={-1} data-stays-count className="text-sm text-slate-600 outline-none">
+            {showingLabel(shown, total)}
+          </p>
+          {shown < total ? (
+            <button
+              type="button"
+              onClick={onLoadMore}
+              className="cursor-hover min-h-11 rounded-full border border-slate-300 bg-white px-6 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:border-apex-500 hover:text-apex-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-apex-500"
+            >
+              Load more stays
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+      {/* Polite, and only ever filled by an explicit visitor action, so it is never announced on load or re-announced by re-renders. */}
+      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only" data-stays-live>
+        {announcement}
       </div>
     </motion.div>
   );
