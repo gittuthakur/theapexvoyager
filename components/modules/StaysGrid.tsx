@@ -288,7 +288,8 @@ export function StayCard({ stay, priority = false }: { stay: Stay; priority?: bo
 
   return (
     <article className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-lg transition hover:-translate-y-1">
-      <Link href={href} className="cursor-hover block">
+      {/* Property pages are dynamic with no loading boundary, so a prefetch only fetched an uncached layout shell per card while it scrolled into view. */}
+      <Link href={href} prefetch={false} className="cursor-hover block">
         <div className="relative h-48 w-full overflow-hidden bg-slate-100">
           <span className="absolute left-3 top-3 z-10 rounded-full bg-apex-500 px-3 py-1 text-xs font-semibold text-white">
             {STAY_TYPE_LABELS[stay.stayType]}
