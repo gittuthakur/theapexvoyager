@@ -4,7 +4,8 @@ import { notFound } from 'next/navigation';
 import { ArrowRight, Car, ExternalLink, Globe, MapPin, Sparkles, Users } from 'lucide-react';
 import PropertyCard from '@/components/modules/PropertyCard';
 import StaysGrid, { StayCard } from '@/components/modules/StaysGrid';
-import { PropertyPhotoGallery } from '@/components/modules/stays/PropertyPhotoGallery';
+import { StayPhotoSection } from '@/components/modules/stays/StayPhotoSection';
+import { eligiblePlaceIdFrom, type EligiblePlaceId } from '@/lib/googlePhotoFetch';
 import { hotelToStay, dedupeAgainstCurated } from '@/lib/stayMerge';
 import StayHero from '@/components/modules/stays/StayHero';
 import DetailPageContainer from '@/components/modules/detail/DetailPageContainer';
@@ -65,7 +66,10 @@ async function resolveSegments(segments: string[]) {
     // identifier for a canonical URL). No `destinationSlug` is ever literally named
     // "property", so this never collides with the combined-listing case below.
     const lookup = await getStayByPlaceIdResult(segments[1]);
-    if (lookup.status === 'found') return { kind: 'google-property' as const, stay: lookup.stay };
+    // The Place ID that may later reach Google (fresh photo metadata) comes ONLY from this `found` lookup, i.e. after the
+    // owner-exclusion list was read (fail closed) and the stored, published, eligible record was found. It is never taken
+    // from the URL segment; a lookup that is not `found` has no such id and the page never reaches Google.
+    if (lookup.status === 'found') return { kind: 'google-property' as const, stay: lookup.stay, eligiblePlaceId: eligiblePlaceIdFrom(lookup) };
     // The exclusion list could not be read: never render a property page on the assumption nothing is excluded.
     if (lookup.status === 'unavailable') return { kind: 'stay-unavailable' as const };
     return { kind: 'not-found' as const };
@@ -294,7 +298,7 @@ export default async function StaysCatchAllPage({ params, searchParams }: StaysC
   }
 
   if (resolved.kind === 'google-property') {
-    return <GooglePropertyDetail stay={resolved.stay} />;
+    return <GooglePropertyDetail stay={resolved.stay} eligiblePlaceId={resolved.eligiblePlaceId} />;
   }
 
   return <PropertyDetail hotel={resolved.hotel} checkIn={checkIn} checkOut={checkOut} guests={guests} />;
@@ -655,7 +659,7 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
 // price, an enquiry/WhatsApp CTA, or any wording implying Apex can confirm, negotiate,
 // reserve or book this property — the only action offered is a genuine outbound link to
 // Google Maps for the exact same place.
-async function GooglePropertyDetail({ stay }: { stay: Stay }) {
+async function GooglePropertyDetail({ stay, eligiblePlaceId }: { stay: Stay; eligiblePlaceId: EligiblePlaceId | null }) {
   const matchedDestination = await getCuratedDestinationBySlug(stay.destinationSlug);
   const locationLabel = matchedDestination?.title ?? stay.formattedAddress ?? stay.destinationSlug;
   // Always constructible — `stay.placeId` is this record's own real Google Place ID —
@@ -667,7 +671,7 @@ async function GooglePropertyDetail({ stay }: { stay: Stay }) {
     <DetailPageContainer>
       <BackButton fallbackHref={matchedDestination ? `/destinations/${matchedDestination.slug}` : '/stays'} label="Back to Apex Stays" />
 
-      <PropertyPhotoGallery photos={stay.photos} propertyName={stay.name} />
+      <StayPhotoSection stay={stay} eligiblePlaceId={eligiblePlaceId} />
 
       <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-glow sm:p-10">
         <div className="grid gap-8 xl:grid-cols-[1.4fr_0.9fr]">

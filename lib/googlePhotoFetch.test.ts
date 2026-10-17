@@ -508,7 +508,7 @@ describe('the EligiblePlaceId precondition', () => {
 });
 
 describe('scope: not wired anywhere, and existing behaviour unchanged', () => {
-  it('no other source file imports the new library or the mode parser yet', () => {
+  it('only the three intended callers import the library or the mode parser (all on the Google property detail path)', () => {
     const importers: string[] = [];
     const walk = (dir: string) => {
       for (const entry of readdirSync(join(ROOT, dir))) {
@@ -519,10 +519,12 @@ describe('scope: not wired anywhere, and existing behaviour unchanged', () => {
       }
     };
     for (const dir of ['app', 'components', 'lib', 'models', 'services', 'types', 'config', 'scripts']) walk(dir);
-    expect(importers.sort()).toEqual([]);
+    // D1-3b wires the library in, on purpose and in exactly three places, all on the Google-sourced property detail
+    // path and all gated by GOOGLE_PHOTO_METADATA_MODE (default legacy = never called). Anything else is a regression.
+    expect(importers.sort()).toEqual(['app/stays/[...segments]/page.tsx', 'components/modules/stays/StayPhotoSection.tsx', 'lib/stayPhotoGallery.ts']);
   });
 
-  it('the shared instance exists but is unused', () => {
+  it('the shared instance exists (its only caller is StayPhotoSection, behind the mode switch)', () => {
     expect(typeof fetchFreshPlacePhotos).toBe('function');
   });
 
@@ -543,8 +545,8 @@ describe('scope: not wired anywhere, and existing behaviour unchanged', () => {
     );
   });
 
-  it('no persistence file, model, page, gallery or component mentions the new library', () => {
-    for (const file of ['lib/staysRefresh.ts', 'lib/stays.ts', 'lib/destinations.ts', 'models/PlaceCache.ts', 'models/DestinationSearchCache.ts', 'app/stays/[...segments]/page.tsx', 'components/modules/StaysGrid.tsx', 'components/modules/stays/PropertyPhotoGallery.tsx', 'app/api/cron/refresh-stays/route.ts']) {
+  it('no persistence file, model, refresh job, listing card or legacy gallery mentions the new library', () => {
+    for (const file of ['lib/staysRefresh.ts', 'lib/stays.ts', 'lib/destinations.ts', 'models/PlaceCache.ts', 'models/DestinationSearchCache.ts', 'components/modules/StaysGrid.tsx', 'components/modules/stays/PropertyPhotoGallery.tsx', 'app/api/cron/refresh-stays/route.ts']) {
       expect(read(file), file).not.toMatch(/googlePhotoFetch|photoMetadataMode|fetchFreshPlacePhotos/);
     }
   });
