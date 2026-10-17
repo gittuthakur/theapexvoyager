@@ -3,6 +3,8 @@ import { connectDB } from '@/lib/mongodb';
 import { DestinationSearchCache } from '@/models/DestinationSearchCache';
 import { Destination as DestinationModel, type DestinationDocument } from '@/models/Destination';
 import { searchDestinations, placeName, placePhotoUrls, type RawGooglePlace } from '@/lib/googlePlaces';
+import { photoPersistenceMode } from '@/lib/photoPersistenceMode';
+import { logPhotoShadowSummary, summarizePhotoShadow } from '@/lib/photoProvenanceShadow';
 import { isRecentFailure, markFailure } from '@/lib/negativeCache';
 import { isLocalDevelopment } from '@/lib/env';
 import { findDestinationByText } from '@/lib/search/destinationResolver';
@@ -174,6 +176,13 @@ export async function getDestinationsForLocationResult(location: string, options
     const rawPlaces = await searchDestinations(location, apiKey);
     // Only the filtered list is ever written, so an excluded place is never persisted by this path.
     const mapped = visible(rawPlaces.map((place) => mapPlaceToDestination(place, location)));
+    // Shadow monitoring (opt-in, default off): ONE numbers-only log line about the photo values about to be cached. Nothing about the
+    // cache write, the returned destinations or any response changes, and this public path exposes no statistics.
+    try {
+      if (photoPersistenceMode(process.env) === 'shadow') logPhotoShadowSummary('destination-search', summarizePhotoShadow(mapped.map((destination) => destination.photos)));
+    } catch {
+      // Monitoring must never turn a good search into the mock-data fallback: ignore any failure and continue exactly as in legacy mode.
+    }
     await DestinationSearchCache.findOneAndUpdate({ location: key }, { location: key, results: mapped }, { upsert: true });
     return { destinations: mapped };
   } catch (error) {
