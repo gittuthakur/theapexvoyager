@@ -83,6 +83,15 @@ interface PlaceCacheFacetResult {
   totalCount: Array<{ count: number }>;
 }
 
+// Stored `photos` is a string[] (PlaceCache defaults it to []), but the public reads use .lean() (no schema defaults) and the catalog
+// aggregation rehydrates fields, so a document can arrive without the field or with something else in it, and every consumer
+// indexes into the array. A valid array is returned untouched (same array, same order, same URLs); anything else becomes [].
+// This only reads: it never writes, never drops a valid photo, and never calls Google.
+function storedPhotoUrls(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.every((item) => typeof item === 'string') ? (value as string[]) : value.filter((item): item is string => typeof item === 'string');
+}
+
 export function toStay(
   doc: Pick<
     PlaceCacheDocument,
@@ -115,7 +124,7 @@ export function toStay(
     longitude: doc.longitude,
     rating: doc.rating,
     userRatingCount: doc.userRatingCount,
-    photos: doc.photos,
+    photos: storedPhotoUrls(doc.photos),
     customPrice: doc.customPrice,
     destinationSlug: doc.destinationSlug,
     updatedAt: new Date(doc.updatedAt).toISOString(),
