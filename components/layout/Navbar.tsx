@@ -589,7 +589,8 @@ export default function Navbar() {
           />
         </Link>
 
-        <nav className="hidden items-center justify-center gap-6 xl:flex">
+        {/* Tighter item spacing from the xl breakpoint (1280px) up to 1365px: at the normal gap the nav (about 665px) plus the logo and the right-hand actions need ~1313px (~1336px on hero routes, whose logo is larger), so the logo track was squeezed into the nav. The original 24px spacing returns at 1366px, where there is room. */}
+        <nav className="hidden items-center justify-center xl:flex xl:gap-3 min-[1366px]:gap-6">
           {primaryRoutes.map((route) => {
             const active = isActiveRoute(route.href);
 
