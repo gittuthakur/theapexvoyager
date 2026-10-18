@@ -16,6 +16,7 @@ import RegionExperts from '@/components/modules/regions/RegionExperts';
 import RegionFinalCTA from '@/components/modules/regions/RegionFinalCTA';
 import { getRegionHubData, getRegionProfileBySlug } from '@/services/regions/regionHub.service';
 import { siteConfig } from '@/config/site.config';
+import { googleRegionAttractionsMode, travelGuideSectionHasData } from '@/lib/googleRegionAttractionsMode';
 import { buildBreadcrumbListSchema } from '@/lib/schema';
 import JsonLd from '@/components/seo/JsonLd';
 
@@ -89,7 +90,12 @@ export default async function RegionHubPage({ params }: RegionHubPageProps) {
     { id: 'journeys', label: 'Journeys & Tours', hasData: journeys.length > 0 || tours.length > 0 },
     { id: 'stays', label: 'Stays', hasData: hasStays },
     { id: 'experiences', label: 'Experiences', hasData: experiences.length > 0 },
-    { id: 'travel-guide', label: 'Travel Guide', hasData: googleContext.attractions.length > 0 }
+    {
+      id: 'travel-guide',
+      label: 'Travel Guide',
+      // Unchanged unless the Google attractions search is switched off, in which case the region's own guide text still shows.
+      hasData: travelGuideSectionHasData({ attractionCount: googleContext.attractions.length, mode: googleRegionAttractionsMode(process.env), guide: region.travelGuide })
+    }
   ].filter((section) => section.hasData);
 
   return (
