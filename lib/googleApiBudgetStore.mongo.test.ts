@@ -668,15 +668,20 @@ describe('isolation: dark, no import-time effects, no runtime caller', () => {
       .map(([file]) => file);
 
   it('no production file imports the Mongo budget store or the budget model (the import graph is a closed island)', () => {
-    expect(importers('googleApiBudgetStore\\.mongo', ['lib/googleApiBudgetStore.mongo.ts'])).toEqual([]);
-    expect(importers('models/GoogleApiBudget', ['lib/googleApiBudgetStore.mongo.ts'])).toEqual([]);
-    expect(importers('GoogleApiBudget', ['lib/googleApiBudgetStore.mongo.ts'])).toEqual([]);
+    // Stage B1: the contract-test harness (test support, itself imported only by its own tests) is the one other importer.
+    const ignore = ['lib/googleApiBudgetStore.mongo.ts', 'lib/googleApiBudgetContract.harness.ts'];
+    expect(importers('googleApiBudgetStore\\.mongo', ignore)).toEqual([]);
+    expect(importers('models/GoogleApiBudget', ignore)).toEqual([]);
+    expect(importers('GoogleApiBudget', ignore)).toEqual([]);
   });
 
-  it('only the store imports the model, and only the store and the model import the budget core', () => {
-    expect(Object.keys(files).filter((file) => !isTest(file) && /@\/models\/GoogleApiBudget|\.\.\/models\/GoogleApiBudget/.test(files[file]))).toEqual(['lib/googleApiBudgetStore.mongo.ts']);
+  it('only the store (and the contract-test harness) import the model, and only they, the fake store and the model import the budget core', () => {
+    expect(Object.keys(files).filter((file) => !isTest(file) && /@\/models\/GoogleApiBudget|\.\.\/models\/GoogleApiBudget/.test(files[file])).sort()).toEqual([
+      'lib/googleApiBudgetContract.harness.ts',
+      'lib/googleApiBudgetStore.mongo.ts'
+    ]);
     const coreImporters = Object.keys(files).filter((file) => !isTest(file) && new RegExp(`from\\s*['"]@/lib/googleApiBudget['"]`).test(files[file])).sort();
-    expect(coreImporters).toEqual(['lib/googleApiBudget.fakeStore.ts', 'lib/googleApiBudgetStore.mongo.ts', 'models/GoogleApiBudget.ts']);
+    expect(coreImporters).toEqual(['lib/googleApiBudget.fakeStore.ts', 'lib/googleApiBudgetContract.harness.ts', 'lib/googleApiBudgetStore.mongo.ts', 'models/GoogleApiBudget.ts']);
   });
 
   it('the store and model import only what they should', () => {
