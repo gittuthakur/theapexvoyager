@@ -596,9 +596,12 @@ describe('isolation: dark, no database, no environment, no runtime wiring', () =
 
   const isTest = (file: string) => /\.(test|spec)\.[a-z]+$/.test(file);
   const BUDGET_FILES = ['lib/googleApiBudget.ts', 'lib/googleApiBudgetMode.ts', 'lib/googleApiBudget.fakeStore.ts'];
+  // C4-B2-2 Stage A: the two approved DARK database files. They import the core, but nothing imports THEM (asserted in
+  // lib/googleApiBudgetStore.mongo.test.ts), so there is still no runtime path to the budget.
+  const APPROVED_DARK_DB_FILES = ['lib/googleApiBudgetStore.mongo.ts', 'models/GoogleApiBudget.ts'];
   const importersOf = (moduleName: string) =>
     Object.entries(files)
-      .filter(([file]) => !BUDGET_FILES.includes(file) && !isTest(file))
+      .filter(([file]) => !BUDGET_FILES.includes(file) && !APPROVED_DARK_DB_FILES.includes(file) && !isTest(file))
       .filter(([, source]) => new RegExp(`(?:\\bfrom\\s*|\\bimport\\s*\\(?\\s*|\\brequire\\s*\\(\\s*)['"][^'"]*${moduleName}['"]`).test(source))
       .map(([file]) => file);
 
@@ -622,10 +625,10 @@ describe('isolation: dark, no database, no environment, no runtime wiring', () =
     }
   });
 
-  it('creates no MongoDB model or collection for the budget', () => {
-    const modelFiles = Object.keys(files).filter((file) => file.startsWith('models/'));
-    expect(modelFiles.filter((file) => /budget/i.test(file))).toEqual([]);
-    expect(modelFiles.filter((file) => /googleApiBudget|GoogleApiBudget|GOOGLE_API_BUDGET/.test(files[file]))).toEqual([]);
+  it('has exactly one budget model (the approved dark Stage A model), and no other model mentions the budget', () => {
+    const modelFiles = Object.keys(files).filter((file) => file.startsWith('models/') && !isTest(file));
+    expect(modelFiles.filter((file) => /budget/i.test(file))).toEqual(['models/GoogleApiBudget.ts']);
+    expect(modelFiles.filter((file) => file !== 'models/GoogleApiBudget.ts' && /googleApiBudget|GoogleApiBudget|GOOGLE_API_BUDGET/.test(files[file]))).toEqual([]);
   });
 
   it('no existing Google caller, route or cron mentions the budget', () => {
