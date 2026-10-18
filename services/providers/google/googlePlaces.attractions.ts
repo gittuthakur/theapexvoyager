@@ -1,5 +1,6 @@
 import { searchPlaces, placeName, placePhotoUrls, type RawGooglePlace } from '@/lib/googlePlaces';
 import { isLocalDevelopment } from '@/lib/env';
+import { googleRegionAttractionsMode } from '@/lib/googleRegionAttractionsMode';
 import { getMockPlaces } from '@/lib/mockPlacesData';
 import { withGoogleFallback } from './google.errors';
 import type { GoogleAttraction, GoogleAttractionsResult } from './google.types';
@@ -25,6 +26,11 @@ function toAttraction(place: RawGooglePlace): GoogleAttraction {
  * surfaced to a visitor.
  */
 export async function getRegionAttractions(region: { name: string }): Promise<GoogleAttractionsResult> {
+  // Kill switch (GOOGLE_REGION_ATTRACTIONS_MODE=disabled). Both public entry points, the region page and /api/regions/[slug]/hub,
+  // reach Google only through this function, so this one early return covers both. It runs before anything else: no Google
+  // request, no mock data, no log line. The same empty result a Google outage already produces, so every consumer already handles it.
+  if (googleRegionAttractionsMode(process.env) === 'disabled') return EMPTY_RESULT;
+
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
 
   if (isLocalDevelopment()) {
