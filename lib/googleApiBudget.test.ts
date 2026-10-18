@@ -598,7 +598,8 @@ describe('isolation: dark, no database, no environment, no runtime wiring', () =
   const BUDGET_FILES = ['lib/googleApiBudget.ts', 'lib/googleApiBudgetMode.ts', 'lib/googleApiBudget.fakeStore.ts'];
   // C4-B2-2 Stage A: the two approved DARK database files. They import the core, but nothing imports THEM (asserted in
   // lib/googleApiBudgetStore.mongo.test.ts), so there is still no runtime path to the budget.
-  const APPROVED_DARK_DB_FILES = ['lib/googleApiBudgetStore.mongo.ts', 'models/GoogleApiBudget.ts'];
+  // C4-B2-2 Stage B1 adds the contract-test harness (test support, never imported by the app) to the same dark island.
+  const APPROVED_DARK_DB_FILES = ['lib/googleApiBudgetStore.mongo.ts', 'models/GoogleApiBudget.ts', 'lib/googleApiBudgetContract.harness.ts'];
   const importersOf = (moduleName: string) =>
     Object.entries(files)
       .filter(([file]) => !BUDGET_FILES.includes(file) && !APPROVED_DARK_DB_FILES.includes(file) && !isTest(file))
