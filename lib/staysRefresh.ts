@@ -18,6 +18,8 @@ import { connectDB } from '@/lib/mongodb';
 import { PlaceCache } from '@/models/PlaceCache';
 import { StaysRefreshComboState, type StaysRefreshComboStateDocument } from '@/models/StaysRefreshComboState';
 import { searchStays, placeName, placePhotoUrls, placeCoordinates, type RawGooglePlace } from '@/lib/googlePlaces';
+import { photoPersistenceMode } from '@/lib/photoPersistenceMode';
+import { emptyPhotoShadowSummary, mergePhotoShadowSummaries, summarizePhotoShadow, type PhotoShadowSummary } from '@/lib/photoProvenanceShadow';
 import { classifyPlaceLocation } from '@/lib/placeLocationSafety';
 import { filterOutExcludedPlaces } from '@/services/properties/propertyExclusion.service';
 import { getCuratedDestinations } from '@/lib/destinations';
@@ -61,6 +63,10 @@ export interface StaysRefreshSummary {
   /** True the moment budget ran out while due groups still remained. */
   budgetLimited: boolean;
   errors: StaysRefreshErrorEntry[];
+  /** ONLY present when GOOGLE_PHOTO_PERSISTENCE_MODE=shadow: aggregate counts (numbers only, no URL, name, token or Place ID) of the
+   *  photo values this run wrote. Not saved to the database (the cron route stores explicit fields only) and only ever returned
+   *  by the CRON_SECRET-protected route. Absent in the default legacy mode, so the summary is unchanged there. */
+  photoProvenanceShadow?: PhotoShadowSummary;
 }
 
 const RULES_BY_SLUG = new Map(STAY_LOCATION_RULES.map((rule) => [rule.slug, rule]));
@@ -183,8 +189,9 @@ function selectGroupsWithinBudget(dueGroups: SearchGroup[], statesByKey: Map<str
 async function refreshSearchGroup(
   group: SearchGroup,
   apiKey: string,
-  maxPages: number
-): Promise<{ pagesFetched: number; recordsUpserted: number; rawCount: number }> {
+  maxPages: number,
+  shadow = false
+): Promise<{ pagesFetched: number; recordsUpserted: number; rawCount: number; photoShadow?: PhotoShadowSummary }> {
   const { places: rawPlaces, pagesFetched } = await searchStays(group.location, group.stayType, apiKey, group.state, maxPages);
 
   const seenPlaceIds = new Set<string>();
@@ -206,6 +213,7 @@ async function refreshSearchGroup(
 
   await connectDB();
   let recordsUpserted = 0;
+  let photoShadow: PhotoShadowSummary | undefined;
   for (const destinationSlug of group.destinationSlugs) {
     const docs = survivors.map(({ place, classification }) => {
       const { latitude, longitude } = placeCoordinates(place);
@@ -228,6 +236,14 @@ async function refreshSearchGroup(
         locationClassification: classification as 'exact' | 'nearby' | 'access-base'
       };
     });
+    // Shadow monitoring only READS the photo values already built above; the documents written below are exactly the same.
+    if (shadow) {
+      try {
+        photoShadow = mergePhotoShadowSummaries(photoShadow, summarizePhotoShadow(docs.map((doc) => doc.photos)));
+      } catch {
+        // Monitoring must never be able to affect a refresh: on any failure the write below proceeds exactly as in legacy mode.
+      }
+    }
     await Promise.all(
       docs.map((doc) =>
         PlaceCache.findOneAndUpdate({ placeId: doc.placeId, destinationSlug: doc.destinationSlug, stayType: doc.stayType }, doc, { upsert: true })
@@ -236,7 +252,7 @@ async function refreshSearchGroup(
     recordsUpserted += docs.length;
   }
 
-  return { pagesFetched, recordsUpserted, rawCount: rawPlaces.length };
+  return { pagesFetched, recordsUpserted, rawCount: rawPlaces.length, ...(photoShadow ? { photoShadow } : {}) };
 }
 
 async function runWithConcurrency<T>(items: T[], concurrency: number, worker: (item: T) => Promise<void>): Promise<void> {
@@ -292,6 +308,8 @@ export async function refreshAllConfiguredStays(): Promise<StaysRefreshSummary> 
   const maxPages = getRefreshMaxPages();
   const selected = selectGroupsWithinBudget(dueGroups, statesByKey, budget, maxPages);
 
+  const shadowMode = photoPersistenceMode(process.env) === 'shadow';
+  let photoShadowTotal: PhotoShadowSummary | undefined;
   let googleRequestCount = 0;
   let recordsUpserted = 0;
   const errors: StaysRefreshErrorEntry[] = [];
@@ -300,7 +318,8 @@ export async function refreshAllConfiguredStays(): Promise<StaysRefreshSummary> 
   await runWithConcurrency(selected, REFRESH_CONCURRENCY, async (group) => {
     const priorState = statesByKey.get(group.key);
     try {
-      const { pagesFetched, recordsUpserted: upserted, rawCount } = await refreshSearchGroup(group, apiKey, maxPages);
+      const { pagesFetched, recordsUpserted: upserted, rawCount, photoShadow } = await refreshSearchGroup(group, apiKey, maxPages, shadowMode);
+      if (photoShadow) photoShadowTotal = mergePhotoShadowSummaries(photoShadowTotal, photoShadow);
       googleRequestCount += pagesFetched;
       recordsUpserted += upserted;
       for (const slug of group.destinationSlugs) processedDestinations.add(slug);
@@ -364,6 +383,7 @@ export async function refreshAllConfiguredStays(): Promise<StaysRefreshSummary> 
     googleRequestCount,
     recordsUpserted,
     budgetLimited: selected.length < dueGroups.length,
-    errors
+    errors,
+    ...(shadowMode ? { photoProvenanceShadow: photoShadowTotal ?? emptyPhotoShadowSummary() } : {})
   };
 }

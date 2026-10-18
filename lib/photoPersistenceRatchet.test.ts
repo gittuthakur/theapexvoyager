@@ -181,11 +181,21 @@ const ACKNOWLEDGED_MODEL_FIELDS: readonly { entry: string; note: string }[] = [
 ];
 
 /**
- * Production files allowed to import lib/photoProvenance.ts. EMPTY on purpose while the module is dark (C3-B1). An approved
- * future integration (C3-B2) adds the specific files here in the same change that wires them, so the dependency is always a
- * deliberate, reviewed edit and never an accident.
+ * Production files allowed to import lib/photoProvenance.ts. Exactly ONE, reviewed in C3-B2-1: the aggregate-only shadow summarizer,
+ * which uses two read-only helpers to classify values already in memory. Everything else reaches the provenance code only through
+ * that summarizer. Add a file here only in the same reviewed change that wires it, so the dependency is never an accident.
  */
-const APPROVED_PROVENANCE_IMPORTERS: readonly string[] = [];
+const APPROVED_PROVENANCE_IMPORTERS: readonly string[] = ['lib/photoProvenanceShadow.ts'];
+
+/**
+ * Production files allowed to import the shadow summarizer (lib/photoProvenanceShadow.ts), i.e. the only two integration points
+ * of C3-B2-1. They already contain the acknowledged legacy persistence paths below; the shadow code only READS the photo values
+ * those paths write, and runs only when GOOGLE_PHOTO_PERSISTENCE_MODE is the explicit value 'shadow'.
+ */
+const APPROVED_SHADOW_IMPORTERS: readonly string[] = ['lib/destinations.ts', 'lib/staysRefresh.ts'];
+
+/** Production files allowed to read the persistence mode switch. Same two integration points; nothing else may branch on it. */
+const APPROVED_MODE_IMPORTERS: readonly string[] = ['lib/destinations.ts', 'lib/staysRefresh.ts'];
 
 // ---- the repository-level ratchet --------------------------------------------------------------------------------------------
 
@@ -237,7 +247,38 @@ describe('Google photo persistence ratchet (repository)', () => {
     expect(ACKNOWLEDGED_WRITE_PATHS.filter((entry) => entry.status === 'legacy-unsafe').map((entry) => entry.file).sort()).toEqual(['lib/destinations.ts', 'lib/staysRefresh.ts']);
   });
 
-  it('the provenance module is imported only by files explicitly approved for it (empty while the module is dark)', () => {
+  const importersOf = (moduleName: string) =>
+    Object.entries(files)
+      .filter(([file]) => file !== `lib/${moduleName}.ts`)
+      .filter(([, source]) => new RegExp(`(?:\\bfrom\\s*|\\bimport\\s*\\(?\\s*|\\brequire\\s*\\(\\s*)['"][^'"]*${moduleName}['"]`).test(source))
+      .map(([file]) => file)
+      .sort();
+
+  it('the shadow summarizer is imported by exactly the two approved integration files, and nowhere else', () => {
+    expect(importersOf('photoProvenanceShadow')).toEqual([...APPROVED_SHADOW_IMPORTERS].sort());
+  });
+
+  it('the persistence mode switch is read by exactly the two approved integration files, and nowhere else', () => {
+    expect(importersOf('photoPersistenceMode')).toEqual([...APPROVED_MODE_IMPORTERS].sort());
+  });
+
+  it('the provenance module itself is imported by exactly the approved summarizer, and nowhere else', () => {
+    expect(importersOf('photoProvenance')).toEqual([...APPROVED_PROVENANCE_IMPORTERS].sort());
+  });
+
+  it('the shadow summarizer and mode parser are not persistence sinks and not sources of Google photo values', () => {
+    const found = scanWritePaths({ 'lib/photoProvenanceShadow.ts': files['lib/photoProvenanceShadow.ts'], 'lib/photoPersistenceMode.ts': files['lib/photoPersistenceMode.ts'] });
+    expect(found).toEqual([]);
+  });
+
+  it('the cron route still spreads the summary into the response only, and stores explicit fields only', () => {
+    const route = files['app/api/cron/refresh-stays/route.ts'];
+    expect(route).toContain('...summary');
+    expect(route).not.toContain('photoProvenanceShadow');
+    expect(route).toContain('const secret = process.env.CRON_SECRET;');
+  });
+
+  it('the provenance module is imported only by files explicitly approved for it', () => {
     const importers = Object.entries(files)
       .filter(([file]) => file !== 'lib/photoProvenance.ts')
       .filter(([, source]) => /(?:\bfrom\s*|\bimport\s*\(?\s*|\brequire\s*\(\s*)['"][^'"]*photoProvenance['"]/.test(source))
