@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { withGoogleBudgetShadow } from '@/lib/googleApiBudgetShadow';
 import { isLocalDevelopment } from '@/lib/env';
 import { images } from '@/config/images.config';
 import { clampPhotoWidth, snapPhotoWidth } from '@/lib/placePhotoUrl';
@@ -152,11 +153,11 @@ export async function GET(request: Request) {
     // Cache-Control header below is what actually makes repeat requests from the
     // *browser* (and any CDN in front of this route) skip the network entirely, so no
     // real caching behavior is lost.
-    const res = await fetch(googleUrl, {
+    const res = await withGoogleBudgetShadow('photo-media', () => fetch(googleUrl, {
       signal: AbortSignal.timeout(8000),
       cache: 'no-store',
       headers: { 'X-Goog-Api-Key': apiKey }
-    });
+    }));
 
     if (!res.ok) {
       // One attempt only, never retried here. Error bodies below are not photo content.

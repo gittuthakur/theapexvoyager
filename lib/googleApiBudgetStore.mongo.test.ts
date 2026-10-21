@@ -647,7 +647,7 @@ describe('what is stored: counts only', () => {
   });
 });
 
-describe('isolation: dark, no import-time effects, no runtime caller', () => {
+describe('isolation: no import-time effects and one approved shadow adapter', () => {
   const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
   const SCAN_DIRS = ['app', 'components', 'config', 'lib', 'models', 'scripts', 'services', 'types'];
   const files: Record<string, string> = {};
@@ -667,21 +667,21 @@ describe('isolation: dark, no import-time effects, no runtime caller', () => {
       .filter(([, source]) => new RegExp(`(?:\\bfrom\\s*|\\bimport\\s*\\(?\\s*|\\brequire\\s*\\(\\s*)['"][^'"]*${moduleName}['"]`).test(source))
       .map(([file]) => file);
 
-  it('no production file imports the Mongo budget store or the budget model (the import graph is a closed island)', () => {
-    // Stage B1: the contract-test harness (test support, itself imported only by its own tests) is the one other importer.
+  it('only the approved adapter loads the store; model access remains restricted', () => {
+    // The contract harness is test support; the shadow adapter is the only approved runtime store importer.
     const ignore = ['lib/googleApiBudgetStore.mongo.ts', 'lib/googleApiBudgetContract.harness.ts'];
-    expect(importers('googleApiBudgetStore\\.mongo', ignore)).toEqual([]);
+    expect(importers('googleApiBudgetStore\\.mongo', ignore)).toEqual(['lib/googleApiBudgetShadow.ts']);
     expect(importers('models/GoogleApiBudget', ignore)).toEqual([]);
     expect(importers('GoogleApiBudget', ignore)).toEqual([]);
   });
 
-  it('only the store (and the contract-test harness) import the model, and only they, the fake store and the model import the budget core', () => {
+  it('model and core importers match the explicit Stage A allowlist', () => {
     expect(Object.keys(files).filter((file) => !isTest(file) && /@\/models\/GoogleApiBudget|\.\.\/models\/GoogleApiBudget/.test(files[file])).sort()).toEqual([
       'lib/googleApiBudgetContract.harness.ts',
       'lib/googleApiBudgetStore.mongo.ts'
     ]);
     const coreImporters = Object.keys(files).filter((file) => !isTest(file) && new RegExp(`from\\s*['"]@/lib/googleApiBudget['"]`).test(files[file])).sort();
-    expect(coreImporters).toEqual(['lib/googleApiBudget.fakeStore.ts', 'lib/googleApiBudgetContract.harness.ts', 'lib/googleApiBudgetStore.mongo.ts', 'models/GoogleApiBudget.ts']);
+    expect(coreImporters).toEqual(['lib/googleApiBudget.fakeStore.ts', 'lib/googleApiBudgetContract.harness.ts', 'lib/googleApiBudgetShadow.ts', 'lib/googleApiBudgetStore.mongo.ts', 'models/GoogleApiBudget.ts']);
   });
 
   it('the store and model import only what they should', () => {
@@ -705,8 +705,8 @@ describe('isolation: dark, no import-time effects, no runtime caller', () => {
     expect(code).toContain('export function createMongoBudgetStore');
   });
 
-  it('no existing Google caller, route, cron or switch mentions the budget store or model', () => {
-    for (const file of ['lib/googlePlaces.ts', 'lib/googlePhotoFetch.ts', 'app/api/places/photo/route.ts', 'lib/staysRefresh.ts', 'lib/destinations.ts', 'app/api/cron/refresh-stays/route.ts', 'services/providers/google/googlePlaces.attractions.ts', 'lib/googleRegionAttractionsMode.ts', 'lib/mongodb.ts']) {
+  it('deferred callers, cron and switches do not mention the budget', () => {
+    for (const file of ['lib/googlePlaces.ts', 'lib/googlePhotoFetch.ts', 'lib/staysRefresh.ts', 'lib/destinations.ts', 'app/api/cron/refresh-stays/route.ts', 'services/providers/google/googlePlaces.attractions.ts', 'lib/googleRegionAttractionsMode.ts', 'lib/mongodb.ts']) {
       expect(files[file], file).toBeDefined();
       expect(files[file], file).not.toMatch(/GoogleApiBudget|googleApiBudget|GOOGLE_API_BUDGET/);
     }
