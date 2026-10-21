@@ -602,7 +602,7 @@ describe('configuration parsing', () => {
   });
 });
 
-describe('isolation: dark, no database, no environment, no runtime wiring', () => {
+describe('isolation: pure core and one approved shadow adapter', () => {
   const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
   const SCAN_DIRS = ['app', 'components', 'config', 'lib', 'models', 'scripts', 'services', 'types'];
   const files: Record<string, string> = {};
@@ -618,9 +618,7 @@ describe('isolation: dark, no database, no environment, no runtime wiring', () =
 
   const isTest = (file: string) => /\.(test|spec)\.[a-z]+$/.test(file);
   const BUDGET_FILES = ['lib/googleApiBudget.ts', 'lib/googleApiBudgetMode.ts', 'lib/googleApiBudget.fakeStore.ts'];
-  // C4-B2-2 Stage A: the two approved DARK database files. They import the core, but nothing imports THEM (asserted in
-  // lib/googleApiBudgetStore.mongo.test.ts), so there is still no runtime path to the budget.
-  // C4-B2-2 Stage B1 adds the contract-test harness (test support, never imported by the app) to the same dark island.
+  // Database support and the contract harness remain restricted; Stage C4-B2-3 allows only the shadow adapter.
   const APPROVED_DARK_DB_FILES = ['lib/googleApiBudgetStore.mongo.ts', 'models/GoogleApiBudget.ts', 'lib/googleApiBudgetContract.harness.ts'];
   const importersOf = (moduleName: string) =>
     Object.entries(files)
@@ -628,9 +626,9 @@ describe('isolation: dark, no database, no environment, no runtime wiring', () =
       .filter(([, source]) => new RegExp(`(?:\\bfrom\\s*|\\bimport\\s*\\(?\\s*|\\brequire\\s*\\(\\s*)['"][^'"]*${moduleName}['"]`).test(source))
       .map(([file]) => file);
 
-  it('no production file imports the budget core, the mode parser or the fake store (zero runtime wiring)', () => {
-    expect(importersOf('googleApiBudget')).toEqual([]);
-    expect(importersOf('googleApiBudgetMode')).toEqual([]);
+  it('only the approved shadow adapter imports the core and mode; fake store remains test-only', () => {
+    expect(importersOf('googleApiBudget')).toEqual(['lib/googleApiBudgetShadow.ts']);
+    expect(importersOf('googleApiBudgetMode')).toEqual(['lib/googleApiBudgetShadow.ts']);
     expect(importersOf('googleApiBudget\\.fakeStore')).toEqual([]);
   });
 
@@ -654,8 +652,8 @@ describe('isolation: dark, no database, no environment, no runtime wiring', () =
     expect(modelFiles.filter((file) => file !== 'models/GoogleApiBudget.ts' && /googleApiBudget|GoogleApiBudget|GOOGLE_API_BUDGET/.test(files[file]))).toEqual([]);
   });
 
-  it('no existing Google caller, route or cron mentions the budget', () => {
-    for (const file of ['lib/googlePlaces.ts', 'lib/googlePhotoFetch.ts', 'app/api/places/photo/route.ts', 'lib/staysRefresh.ts', 'lib/destinations.ts', 'app/api/cron/refresh-stays/route.ts', 'services/providers/google/googlePlaces.attractions.ts', 'lib/googleRegionAttractionsMode.ts']) {
+  it('deferred Google callers and kill switches remain unwired', () => {
+    for (const file of ['lib/googlePlaces.ts', 'lib/googlePhotoFetch.ts', 'lib/staysRefresh.ts', 'lib/destinations.ts', 'app/api/cron/refresh-stays/route.ts', 'services/providers/google/googlePlaces.attractions.ts', 'lib/googleRegionAttractionsMode.ts']) {
       expect(files[file], file).toBeDefined();
       expect(files[file], file).not.toMatch(/googleApiBudget|GOOGLE_API_BUDGET/);
     }
