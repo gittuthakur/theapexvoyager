@@ -307,6 +307,28 @@ describe('store failure handling (ENFORCE fails closed)', () => {
       expect(await pending).toEqual({ status: 'store-error', allowed: false, bucket: 'photo-media', mode: 'enforce', reason: 'store-timeout' });
     });
 
+    it('distinguishes a 300 ms exhausted reservation from the default timeout with a test-only override', async () => {
+      expect(DEFAULT_STORE_TIMEOUT_MS).toBe(250);
+      const store: BudgetStore = {
+        async tryReserve() {
+          await new Promise<void>((resolve) => setTimeout(resolve, 300));
+          return { kind: 'exhausted', scope: 'daily' };
+        }
+      };
+      const defaultPending = make('enforce', store).reserve('photo-media');
+      const extendedPending = make('enforce', store, LIMITS, clock(DAY1), { storeTimeoutMs: 2000 }).reserve('photo-media');
+      let extendedSettled = false;
+      void extendedPending.then(() => (extendedSettled = true));
+
+      await vi.advanceTimersByTimeAsync(250);
+      expect(await defaultPending).toEqual({ status: 'store-error', allowed: false, bucket: 'photo-media', mode: 'enforce', reason: 'store-timeout' });
+      await vi.advanceTimersByTimeAsync(49);
+      expect(extendedSettled).toBe(false);
+      await vi.advanceTimersByTimeAsync(1);
+      expect(await extendedPending).toEqual({ status: 'blocked', allowed: false, bucket: 'photo-media', mode: 'enforce', reason: 'daily-limit' });
+      expect(vi.getTimerCount()).toBe(0);
+    });
+
     it('in shadow a hanging store times out and still allows', async () => {
       const store = new InMemoryBudgetStore();
       store.failAlways({ type: 'hang' });
