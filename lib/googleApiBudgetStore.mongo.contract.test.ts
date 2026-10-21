@@ -183,6 +183,7 @@ describe.skipIf(!live)('budget store contract: real MongoDB', () => {
       mode: 'enforce',
       limits: { [BUCKET]: { daily: 5, monthly: 50 } },
       store: h.createStore(),
+      storeTimeoutMs: 2000, // Test-only allowance for Atlas round trips.
       now: () => new Date('2026-10-19T03:30:00+05:30') // 22:00 UTC on the 18th
     });
     expect(await budget.reserve(BUCKET)).toMatchObject({ status: 'allowed', usage: { day: 1, month: 1 } });
@@ -339,13 +340,13 @@ describe.skipIf(!live)('budget store contract: real MongoDB', () => {
   it('works end to end through the core in enforce and shadow modes', async () => {
     const now = () => new Date('2026-10-18T10:00:00Z');
     const limits = { [BUCKET]: { daily: 2, monthly: 50 } };
-    const enforce = createGoogleApiBudget({ mode: 'enforce', limits, store: h.createStore(), now });
+    const enforce = createGoogleApiBudget({ mode: 'enforce', limits, store: h.createStore(), now, storeTimeoutMs: 2000 });
     expect(await enforce.reserve(BUCKET)).toMatchObject({ status: 'allowed', counted: true, usage: { day: 1, month: 1 } });
     expect(await enforce.reserve(BUCKET)).toMatchObject({ status: 'allowed', usage: { day: 2, month: 2 } });
     expect(await enforce.reserve(BUCKET)).toEqual({ status: 'blocked', allowed: false, bucket: BUCKET, mode: 'enforce', reason: 'daily-limit' });
 
     await h.reset();
-    const shadow = createGoogleApiBudget({ mode: 'shadow', limits, store: h.createStore(), now });
+    const shadow = createGoogleApiBudget({ mode: 'shadow', limits, store: h.createStore(), now, storeTimeoutMs: 2000 });
     await shadow.reserve(BUCKET);
     await shadow.reserve(BUCKET);
     const third = await shadow.reserve(BUCKET);
