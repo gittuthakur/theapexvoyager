@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { withGoogleBudgetShadow } from '@/lib/googleApiBudgetShadow';
 import { isLocalDevelopment } from '@/lib/env';
+import { PREVIEW_MOCK_JPEG, googlePhotoPreviewMockMode } from '@/lib/googlePhotoPreviewMock';
 import { images } from '@/config/images.config';
 import { clampPhotoWidth, snapPhotoWidth } from '@/lib/placePhotoUrl';
 import { InMemoryRateStore, clientKey, isPhotoProxyDisabled, photoRateLimits } from '@/lib/photoProxyGuard';
@@ -141,6 +142,17 @@ export async function GET(request: Request) {
 
   if (!rateStore.hit('instance', limits.perInstance, MINUTE_MS)) return tooManyRequests();
 
+  // No public request input can select this path. An explicit setting is valid only in
+  // Vercel Preview; a mistaken setting elsewhere fails closed before the budget boundary
+  // and before any Google request.
+  const previewMockMode = googlePhotoPreviewMockMode(process.env);
+  if (previewMockMode === 'refused') {
+    return NextResponse.json(
+      { error: 'Photo service unavailable' },
+      { status: 503, headers: { 'Cache-Control': ERROR_CACHE_CONFIGURATION } }
+    );
+  }
+
   try {
     // The key travels only in the X-Goog-Api-Key request header (same convention as
     // lib/googlePlaces.ts's Text Search calls) — never in the URL itself, so it can't
@@ -153,11 +165,15 @@ export async function GET(request: Request) {
     // Cache-Control header below is what actually makes repeat requests from the
     // *browser* (and any CDN in front of this route) skip the network entirely, so no
     // real caching behavior is lost.
-    const res = await withGoogleBudgetShadow('photo-media', () => fetch(googleUrl, {
-      signal: AbortSignal.timeout(8000),
-      cache: 'no-store',
-      headers: { 'X-Goog-Api-Key': apiKey }
-    }));
+    const res = await withGoogleBudgetShadow('photo-media', () =>
+      previewMockMode === 'enabled'
+        ? Promise.resolve(new Response(PREVIEW_MOCK_JPEG, { headers: { 'content-type': 'image/jpeg' } }))
+        : fetch(googleUrl, {
+            signal: AbortSignal.timeout(8000),
+            cache: 'no-store',
+            headers: { 'X-Goog-Api-Key': apiKey }
+          })
+    );
 
     if (!res.ok) {
       // One attempt only, never retried here. Error bodies below are not photo content.
