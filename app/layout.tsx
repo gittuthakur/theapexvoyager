@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { GOOGLE_ADS_ID } from '@/lib/googleAds';
-import { META_PIXEL_ID } from '@/lib/metaPixel';
+import { GOOGLE_ADS_ID, isGoogleTrackingEnabled } from '@/lib/googleAds';
+import { META_PIXEL_ID, isMetaPixelEnabled } from '@/lib/metaPixel';
 import './globals.css';
 import { Poppins } from 'next/font/google';
 import { MotionConfig } from 'framer-motion';
@@ -91,13 +91,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <JsonLd data={travelAgencySchema} />
         <JsonLd data={webSiteSchema} />
-        <Script id="google-ads-init" strategy="afterInteractive">
-          {`window.dataLayer = window.dataLayer || [];
+        {isGoogleTrackingEnabled() ? (
+          <>
+            <Script id="google-ads-init" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
 window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};
 gtag('js', new Date());
 gtag('config', '${GOOGLE_ADS_ID}');`}
-        </Script>
-        <Script id="google-ads-base" src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`} strategy="afterInteractive" />
+            </Script>
+            <Script id="google-ads-base" src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`} strategy="afterInteractive" />
+          </>
+        ) : null}
+        {isMetaPixelEnabled() ? (
+          <>
         <Script id="meta-pixel-init" strategy="afterInteractive">
           {`!function(f,b,e,v,n,t,s)
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -119,6 +125,8 @@ fbq('track', 'PageView');`}
             src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
           />
         </noscript>
+          </>
+        ) : null}
         <NavigationTracker />
         <AttributionCapture />
         {/* `reducedMotion="user"` makes every framer-motion `motion.*` component sitewide
