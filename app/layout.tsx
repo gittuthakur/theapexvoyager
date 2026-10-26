@@ -9,6 +9,7 @@ import BackToTopButton from '@/components/ui/BackToTopButton';
 import { Navbar, Footer } from '@/components/layout';
 import NavigationTracker from '@/components/NavigationTracker';
 import AttributionCapture from '@/components/ui/AttributionCapture';
+import AssistantWidget from '@/components/modules/assistant/AssistantWidget';
 import { WhatsAppInquiryProvider } from '@/components/modules/WhatsAppInquiryModal';
 import { BookingRequestProvider } from '@/components/modules/BookingRequestModal';
 import { siteConfig } from '@/config/site.config';
@@ -132,6 +133,7 @@ fbq('track', 'PageView');`}
               {children}
               <Footer />
               <BackToTopButton />
+              <AssistantWidget />
             </BookingRequestProvider>
           </WhatsAppInquiryProvider>
         </MotionConfig>
