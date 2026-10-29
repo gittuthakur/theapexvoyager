@@ -26,6 +26,34 @@ describe('assistant config', () => {
     expect(isAssistantReady(readAssistantConfig(full))).toBe(true);
   });
 
+  it('accepts a printable-ASCII key and trims surrounding whitespace', () => {
+    expect(readAssistantConfig(full).apiKey).toBe('test-key-not-real');
+    expect(readAssistantConfig({ ...full, OPENAI_API_KEY: '  test-key-not-real\r\n' }).apiKey).toBe('test-key-not-real');
+    expect(readAssistantConfig({ ...full, OPENAI_API_KEY: '!~AZaz09_-.' }).apiKey).toBe('!~AZaz09_-.');
+  });
+
+  it('treats a key with spaces, control characters or non-ASCII characters as not configured', () => {
+    const invalid = [
+      'test key not real',
+      `test${String.fromCharCode(0x16)}key`,
+      `test${String.fromCharCode(0x1b)}key`,
+      `test${String.fromCharCode(0x7f)}key`,
+      `test${String.fromCharCode(0)}key`,
+      'test\tkey',
+      'test\nkey',
+      'test-kéy',
+      'test-k’y',
+      'test​key',
+      '  '
+    ];
+    for (const key of invalid) {
+      const config = readAssistantConfig({ ...full, OPENAI_API_KEY: key });
+      expect(config.apiKey).toBeUndefined();
+      expect(isAssistantReady(config)).toBe(false);
+    }
+    expect(readAssistantConfig({ ...full, OPENAI_API_KEY: undefined }).apiKey).toBeUndefined();
+  });
+
   it('has no built-in spending limit', () => {
     expect(readAssistantConfig({ ...full, AI_ASSISTANT_DAILY_REQUEST_LIMIT: undefined }).requestLimit).toBeUndefined();
     expect(readAssistantConfig(full).tokenLimit).toBeUndefined();

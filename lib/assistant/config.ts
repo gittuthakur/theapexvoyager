@@ -39,11 +39,17 @@ function positiveInt(value: string | undefined): number | undefined {
   return parsed > 0 ? parsed : undefined;
 }
 
+// A key is only usable as an HTTP header value if it is printable ASCII with no spaces. Anything else (a stray control
+// character from a paste, a space, Unicode) makes fetch throw before any request is sent, so the key is treated as not
+// configured: the widget stays hidden, /api/assistant answers 503, and no daily request slot is spent on a call that
+// cannot succeed.
+const VALID_API_KEY = /^[\x21-\x7E]+$/;
+
 export function readAssistantConfig(env: Readonly<Record<string, string | undefined>> = process.env): AssistantConfig {
   const apiKey = env.OPENAI_API_KEY?.trim();
   return {
     mode: env.AI_ASSISTANT_MODE?.trim() === 'on' ? 'on' : 'off',
-    apiKey: apiKey ? apiKey : undefined,
+    apiKey: apiKey && VALID_API_KEY.test(apiKey) ? apiKey : undefined,
     model: env.OPENAI_ASSISTANT_MODEL?.trim() || DEFAULT_ASSISTANT_MODEL,
     reasoningEffort: (REASONING_EFFORTS as readonly string[]).includes(env.OPENAI_ASSISTANT_REASONING_EFFORT?.trim() ?? '')
       ? (env.OPENAI_ASSISTANT_REASONING_EFFORT!.trim() as ReasoningEffort)

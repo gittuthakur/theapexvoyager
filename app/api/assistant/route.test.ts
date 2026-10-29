@@ -54,6 +54,19 @@ describe('GET /api/assistant (status)', () => {
   });
 });
 
+describe('a malformed OPENAI_API_KEY', () => {
+  it('keeps the widget hidden and spends no budget, model call or database read', async () => {
+    turnOn();
+    vi.stubEnv('OPENAI_API_KEY', `test${String.fromCharCode(0x16)}key-not-real`);
+    expect(await (await GET()).json()).toEqual({ enabled: false });
+    const response = await post(chat());
+    expect(response.status).toBe(503);
+    expect(reserveRequest).not.toHaveBeenCalled();
+    expect(callAssistantModel).not.toHaveBeenCalled();
+    expect(getAllPackages).not.toHaveBeenCalled();
+  });
+});
+
 describe('POST /api/assistant', () => {
   it('is disabled by default: 503 and no budget use, model call or database read', async () => {
     const response = await post(chat());
