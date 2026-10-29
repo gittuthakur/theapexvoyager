@@ -1,6 +1,17 @@
 export const GOOGLE_ADS_ID = 'AW-18419258781';
 export const WHATSAPP_CONVERSION_TARGET = 'AW-18419258781/1oM0COWpnvUcEJ2r_s5E';
 
+/**
+ * The Google tag (gtag.js + config) may load only in the real production deployment, so localhost, `next dev`, CI and
+ * Vercel preview builds never send page views or remarketing hits to the production Google Ads account. Hosts that
+ * do not set VERCEL_ENV (a self-hosted production build) are treated as production when NODE_ENV is 'production'.
+ * Without gtag.js, queued conversion events in `trackWhatsAppConversion` are never sent anywhere.
+ */
+export function isGoogleTrackingEnabled(env: Record<string, string | undefined> = process.env): boolean {
+  if (env.NODE_ENV !== 'production') return false;
+  return env.VERCEL_ENV === undefined || env.VERCEL_ENV === 'production';
+}
+
 type GoogleTag = (...args: unknown[]) => void;
 type TrackingWindow = Window & { dataLayer?: unknown[]; gtag?: GoogleTag };
 const trackedEvents = new WeakSet<object>();
