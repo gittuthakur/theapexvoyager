@@ -31,10 +31,25 @@ function paxLabel(pax: { type: 'AD' | 'CH'; age?: number; name?: string; surname
  * requirement for showing price on the voucher has been established.
  */
 export function HbxVoucherDocument({ booking }: HbxVoucherDocumentProps) {
-  const isCancelled = booking.status !== 'CONFIRMED';
+  // Strict, case-sensitive match on purpose: only the exact provider values CANCELLED and
+  // CONFIRMED are trusted. Anything else (PENDING, empty, unknown, odd casing) fails safe
+  // to a "not confirmed" warning rather than presenting a valid or a cancelled voucher.
+  const isCancelled = booking.status === 'CANCELLED';
+  const isConfirmed = booking.status === 'CONFIRMED';
+  const isUnconfirmed = !isCancelled && !isConfirmed;
 
   return (
     <div className="mx-auto max-w-3xl bg-white p-6 text-slate-900 sm:p-10 print:p-0">
+      {isUnconfirmed ? (
+        <div className="mb-6 rounded-2xl border-2 border-amber-500 bg-amber-50 px-6 py-4 text-center print:border print:bg-white">
+          <p className="text-lg font-bold uppercase tracking-wide text-amber-800">Booking confirmation required</p>
+          <p className="mt-1 text-sm text-amber-800">
+            {`Booking is not confirmed yet. This document should not be used for check-in until confirmation is received from ${siteConfig.name}.`}
+          </p>
+          {booking.status ? <p className="mt-1 text-xs text-amber-700">Status: {booking.status}</p> : null}
+        </div>
+      ) : null}
+
       {isCancelled ? (
         <div className="mb-6 rounded-2xl border-2 border-red-600 bg-red-50 px-6 py-4 text-center print:border print:bg-white">
           <p className="text-lg font-bold uppercase tracking-wide text-red-700">This booking has been cancelled</p>

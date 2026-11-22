@@ -41,6 +41,15 @@ describe('HbxVoucherPage — security (no arbitrary reference enumeration)', () 
     expect(result).toBeTruthy();
   });
 
+  it('renders without throwing for a PENDING booking', async () => {
+    getVoucherBookingMock.mockResolvedValue({ ...CONFIRMED_BOOKING, status: 'PENDING' });
+    const result = await HbxVoucherPage({
+      params: Promise.resolve({ reference: 'HBX-REF-9001' }),
+      searchParams: Promise.resolve({ token: 'the-real-token' })
+    });
+    expect(result).toBeTruthy();
+  });
+
   it('calls notFound() — never renders anything — when the token is wrong', async () => {
     getVoucherBookingMock.mockResolvedValue(null);
     await expect(

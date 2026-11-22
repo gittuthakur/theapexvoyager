@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { HbxVoucherDocument } from './HbxVoucherDocument';
+import { siteConfig } from '@/config/site.config';
 import type { HbxBookingDocument } from '@/models/HbxBooking';
 
 function baseBooking(overrides: Partial<HbxBookingDocument> = {}): HbxBookingDocument {
@@ -164,6 +165,62 @@ describe('HbxVoucherDocument — cancelled bookings', () => {
   it('shows no cancellation banner at all for a genuinely confirmed booking', () => {
     const html = renderVoucher({ status: 'CONFIRMED' });
     expect(html).not.toContain('This booking has been cancelled');
+  });
+});
+
+describe('HbxVoucherDocument — unconfirmed / unknown statuses', () => {
+  const PENDING_WARNING = `Booking is not confirmed yet. This document should not be used for check-in until confirmation is received from ${siteConfig.name}.`;
+
+  it('shows the amber pending warning for PENDING and never the cancelled banner', () => {
+    const html = renderVoucher({ status: 'PENDING' });
+    expect(html).toContain(PENDING_WARNING);
+    expect(html).toContain('Status: PENDING');
+    expect(html).toContain('border-amber-500');
+    expect(html).not.toContain('This booking has been cancelled');
+    expect(html).not.toContain('border-red-600');
+  });
+
+  it.each(['', 'UNKNOWN', 'confirmed', 'Cancelled', 'cancelled', ' CONFIRMED', 'CONFIRMED ', 'ON_REQUEST'])(
+    'treats %j as unconfirmed: amber warning, not cancelled, not confirmed',
+    status => {
+      const html = renderVoucher({ status });
+      expect(html).toContain(PENDING_WARNING);
+      expect(html).not.toContain('This booking has been cancelled');
+      expect(html).not.toContain('not valid for check-in');
+    }
+  );
+
+  it('omits the status line when status is empty', () => {
+    const html = renderVoucher({ status: '' });
+    expect(html).toContain(PENDING_WARNING);
+    expect(html).not.toContain('Status:');
+  });
+
+  it('omits the status line when status is missing entirely', () => {
+    const html = renderVoucher({ status: undefined as unknown as string });
+    expect(html).toContain(PENDING_WARNING);
+    expect(html).not.toContain('Status:');
+    expect(html).not.toContain('undefined');
+  });
+
+  it('shows no warning of any kind for exact CONFIRMED', () => {
+    const html = renderVoucher({ status: 'CONFIRMED' });
+    expect(html).not.toContain(PENDING_WARNING);
+    expect(html).not.toContain('Booking confirmation required');
+    expect(html).not.toContain('This booking has been cancelled');
+  });
+
+  it('keeps the red cancellation banner, with cancellation reference, for exact CANCELLED and no amber warning', () => {
+    const html = renderVoucher({ status: 'CANCELLED', cancellationReference: 'CANCEL-REF-2' });
+    expect(html).toContain('This booking has been cancelled');
+    expect(html).toContain('CANCEL-REF-2');
+    expect(html).not.toContain(PENDING_WARNING);
+  });
+
+  it('never leaks the access token or any price in the pending warning state', () => {
+    const html = renderVoucher({ status: 'PENDING' });
+    expect(html).not.toContain('super-secret-token-should-never-render');
+    expect(html).not.toContain('99999.99');
   });
 });
 

@@ -57,6 +57,17 @@ const nextConfig = {
           { key: 'Cache-Control', value: 'private, no-store, max-age=0' },
           { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }
         ]
+      },
+      {
+        // Customer booking voucher: the URL carries a secret ?token= query param, so the
+        // page must never be cached, indexed, or leak its URL via the Referer header.
+        // Listed after the global block so its Referrer-Policy takes precedence.
+        source: '/bookings/hbx/:reference/voucher',
+        headers: [
+          { key: 'Cache-Control', value: 'private, no-store, max-age=0' },
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
+          { key: 'Referrer-Policy', value: 'no-referrer' }
+        ]
       }
     ];
   },
