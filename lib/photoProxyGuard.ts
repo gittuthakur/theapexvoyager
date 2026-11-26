@@ -78,3 +78,50 @@ export function photoRateLimits(env: Record<string, string | undefined>) {
     perInstance: positiveInt(env.GOOGLE_PHOTO_PROXY_MAX_PER_INSTANCE_PER_MINUTE, DEFAULT_PER_INSTANCE_PER_MINUTE)
   };
 }
+
+export type UpstreamBadRequestKind = 'bad-request' | 'ambiguous';
+
+// Words that, when they appear in the machine-readable parts of a Google error (status, reason, message), mean the
+// request was refused because of OUR credentials, quota, billing or API enablement rather than because of the photo
+// reference itself. Google reports an invalid key as HTTP 400 (reason API_KEY_INVALID) as well as 401/403.
+const CONFIGURATION_PROBLEM_PATTERN = /api[\s_-]?key|credential|permission|billing|quota|referer|ip address|not authorized|has not been used|disabled|forbidden|unauthenticated/i;
+
+/**
+ * Classifies an upstream Google HTTP 400 from the photo media endpoint. Pure: the caller passes the (already bounded)
+ * response body text and this returns only one of two fixed labels. The body is parsed in memory and never logged,
+ * returned or stored.
+ *
+ * It answers 'bad-request' ONLY on positive evidence that the 400 is an ordinary rejection of the request itself and
+ * not a configuration fault. Every one of these must hold:
+ *   - the body is a JSON object with an `error` object (Google's error envelope);
+ *   - `error.status` is exactly 'INVALID_ARGUMENT';
+ *   - `error.message` is a non-empty string;
+ *   - nothing in the status, message or any detail `reason` names a key, credential, permission, billing, quota,
+ *     referrer/IP restriction or API-enablement problem;
+ *   - no detail carries a `reason` at all. A machine-readable reason is how Google labels configuration faults, and an
+ *     unrecognised one is treated as unknown rather than assumed harmless.
+ *
+ * Everything else (empty or non-JSON bodies, other JSON shapes, a different status, a missing message, any reason,
+ * any configuration keyword) is 'ambiguous', which the route keeps on the seconds-long configuration cache.
+ */
+export function classifyUpstreamBadRequest(bodyText: string): UpstreamBadRequestKind {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(bodyText);
+  } catch {
+    return 'ambiguous';
+  }
+  const error = (parsed as { error?: unknown } | null)?.error;
+  if (typeof error !== 'object' || error === null || Array.isArray(error)) return 'ambiguous';
+  const { status, message, details } = error as { status?: unknown; message?: unknown; details?: unknown };
+  if (status !== 'INVALID_ARGUMENT') return 'ambiguous';
+  if (typeof message !== 'string' || message.trim() === '') return 'ambiguous';
+  if (CONFIGURATION_PROBLEM_PATTERN.test(status) || CONFIGURATION_PROBLEM_PATTERN.test(message)) return 'ambiguous';
+  if (details !== undefined && !Array.isArray(details)) return 'ambiguous';
+  for (const detail of details ?? []) {
+    if (typeof detail !== 'object' || detail === null) return 'ambiguous';
+    const reason = (detail as { reason?: unknown }).reason;
+    if (reason !== undefined) return 'ambiguous';
+  }
+  return 'bad-request';
+}

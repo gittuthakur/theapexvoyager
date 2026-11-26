@@ -5,6 +5,7 @@ import StaySearch from '@/components/modules/StaySearch';
 import StayFilters from '@/components/modules/StayFilters';
 import PropertyCard from '@/components/modules/PropertyCard';
 import { StayCard } from '@/components/modules/StaysGrid';
+import { toCardStay } from '@/lib/stayCardPayload';
 import { hotelToStay } from '@/lib/stayMerge';
 import { X } from 'lucide-react';
 import { FILTER_CHIP_CLASS, FILTER_CHIP_REMOVE_CLASS, FILTER_EMPTY_STATE_CLASS } from '@/components/modules/filters/filterStyles';
@@ -409,7 +410,7 @@ async function StaySearchResults({ destination, query, page: pageParam, checkIn,
         ) : finalStays ? (
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {finalStays.map((stay, index) => (
-              <StayCard key={`${stay.placeId}-${index}`} stay={stay} priority={index < 4} />
+              <StayCard key={`${stay.placeId}-${index}`} stay={toCardStay(stay)} priority={index < 4} />
             ))}
           </div>
         ) : (

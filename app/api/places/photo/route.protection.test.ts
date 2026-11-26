@@ -142,7 +142,7 @@ describe('upstream failures are answered once and never retried', () => {
     expect(JSON.stringify(await res.json())).not.toContain(TEST_KEY);
   });
 
-  it.each([400, 401, 403])('Google %i (key, quota, billing or request problem) is NOT reported as not-found, and is cached for seconds only', async (status) => {
+  it.each([401, 403])('Google %i (key, quota, billing or request problem) is NOT reported as not-found, and is cached for seconds only', async (status) => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(new Response(`{"error":"secret detail ${TEST_KEY}"}`, { status }));
     const res = await GET(req(q(NAME, '&w=640')));
@@ -154,6 +154,103 @@ describe('upstream failures are answered once and never retried', () => {
     expect(body).not.toContain(TEST_KEY);
     expect(body).not.toContain('secret detail');
     expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  describe('upstream 400 is classified, not lumped with 401/403', () => {
+    const SHORT = 'public, max-age=0, s-maxage=10';
+    const BAD_REFERENCE = 'public, max-age=60, s-maxage=300';
+    const googleError = (message: string, reason?: string) =>
+      JSON.stringify({ error: { code: 400, message, status: 'INVALID_ARGUMENT', ...(reason ? { details: [{ '@type': 'type.googleapis.com/google.rpc.ErrorInfo', reason }] } : {}) } });
+
+    it('a confidently classified bad-request 400 (well-formed INVALID_ARGUMENT, message, no configuration wording, no reason) is a 502 cached for 5 minutes at the CDN, after one attempt', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(new Response(googleError('Request contains an invalid argument.'), { status: 400 }));
+      const res = await GET(req(q(NAME, '&w=640')));
+      expect(res.status).toBe(502);
+      expect(res.headers.get('Cache-Control')).toBe(BAD_REFERENCE);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      const body = JSON.stringify(await res.json());
+      expect(body).not.toMatch(/not found|invalid argument/i);
+    });
+
+    it.each([
+      ['an invalid API key', googleError('API key not valid. Please pass a valid API key.', 'API_KEY_INVALID')],
+      ['a billing problem', googleError('This API method requires billing to be enabled.', 'BILLING_DISABLED')],
+      ['a quota problem', googleError('Quota exceeded for quota metric.', 'RATE_LIMIT_EXCEEDED')],
+      ['an API that is not enabled', googleError('Places API has not been used in project 1 before or it is disabled.', 'SERVICE_DISABLED')]
+    ])('a 400 reporting %s stays on the seconds-long configuration TTL', async (_label, body) => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      vi.spyOn(global, 'fetch').mockResolvedValue(new Response(body, { status: 400 }));
+      const res = await GET(req(q(NAME, '&w=640')));
+      expect(res.status).toBe(502);
+      expect(res.headers.get('Cache-Control')).toBe(SHORT);
+    });
+
+    const envelope = (error: unknown) => JSON.stringify({ error });
+    const invalid = (extra: Record<string, unknown> = {}) => ({ code: 400, message: 'Request contains an invalid argument.', status: 'INVALID_ARGUMENT', ...extra });
+
+    it.each([
+      ['an empty body', ''],
+      ['whitespace only', '   '],
+      ['plain text', 'Bad Request'],
+      ['an HTML body', '<html>Bad Request</html>'],
+      ['truncated JSON', '{"error":{"code":400,"status":"INVALID_ARG'],
+      ['a JSON array', '[]'],
+      ['JSON null', 'null'],
+      ['JSON that is not a Google error', '{"unexpected":true}'],
+      ['an error that is only a string', '{"error":"a string"}'],
+      ['an empty error object', '{"error":{}}'],
+      ['an INVALID_ARGUMENT with no message', envelope({ code: 400, status: 'INVALID_ARGUMENT' })],
+      ['a different Google status', envelope(invalid({ status: 'OUT_OF_RANGE' }))],
+      ['an unrecognised machine-readable reason', envelope(invalid({ details: [{ reason: 'SOMETHING_NEW' }] }))]
+    ])('an ambiguous 400 (%s) stays on the 10-second configuration TTL and is labelled ambiguous', async (_label, body) => {
+      const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(new Response(body, { status: 400 }));
+      const res = await GET(req(q(NAME, '&w=640')));
+      expect(res.status).toBe(502);
+      expect(res.headers.get('Cache-Control')).toBe(SHORT);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(JSON.stringify(logged.mock.calls)).toContain('status 400 (ambiguous)');
+    });
+
+    it('a 400 whose body cannot be read still answers safely on the short TTL', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const unreadable = new Response('x', { status: 400 });
+      vi.spyOn(unreadable, 'text').mockRejectedValue(new Error('stream failed'));
+      vi.spyOn(global, 'fetch').mockResolvedValue(unreadable);
+      const res = await GET(req(q(NAME, '&w=640')));
+      expect(res.status).toBe(502);
+      expect(res.headers.get('Cache-Control')).toBe(SHORT);
+    });
+
+    it('401 and 403 keep the short configuration TTL even with a body that looks like a bad reference', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      for (const status of [401, 403]) {
+        vi.spyOn(global, 'fetch').mockResolvedValueOnce(new Response(googleError('Request contains an invalid argument.'), { status }));
+        const res = await GET(req(q(NAME, '&w=640')));
+        expect(res.status).toBe(502);
+        expect(res.headers.get('Cache-Control')).toBe(SHORT);
+      }
+    });
+
+    it('logs only the status and a fixed label for a 400, never the body, key, photo name or URL', async () => {
+      const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+      vi.spyOn(global, 'fetch').mockResolvedValue(new Response(googleError(`leaked ${TEST_KEY} places/ChIJabc123 https://places.googleapis.com/v1/x`), { status: 400 }));
+      await GET(req(q(NAME, '&w=640')));
+      const output = JSON.stringify(logged.mock.calls);
+      expect(output).toContain('status 400 (bad-request)');
+      expect(output).not.toContain(TEST_KEY);
+      expect(output).not.toContain('ChIJ');
+      expect(output).not.toContain('googleapis.com');
+      expect(output).not.toContain('leaked');
+    });
+  });
+
+  it('a successful upstream response keeps the 30-day immutable cache header', async () => {
+    vi.spyOn(global, 'fetch').mockResolvedValue(okImage());
+    const res = await GET(req(q(NAME, '&w=640')));
+    expect(res.status).toBe(200);
+    expect(res.headers.get('Cache-Control')).toBe('public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=604800, immutable');
   });
 
   it.each([429, 500, 503])('Google %i is a briefly-cached 502 after a single attempt', async (status) => {

@@ -3,6 +3,7 @@ import {
   DEFAULT_PER_CLIENT_PER_MINUTE,
   DEFAULT_PER_INSTANCE_PER_MINUTE,
   InMemoryRateStore,
+  classifyUpstreamBadRequest,
   clientKey,
   isPhotoProxyDisabled,
   photoRateLimits
@@ -70,5 +71,69 @@ describe('kill switch and limits configuration', () => {
       perInstance: DEFAULT_PER_INSTANCE_PER_MINUTE
     });
     expect(photoRateLimits({ GOOGLE_PHOTO_PROXY_MAX_PER_CLIENT_PER_MINUTE: '10' }).perClient).toBe(10);
+  });
+});
+
+describe('classifyUpstreamBadRequest', () => {
+  const envelope = (error: unknown) => JSON.stringify({ error });
+  const invalid = (extra: Record<string, unknown> = {}) => ({ code: 400, message: 'Request contains an invalid argument.', status: 'INVALID_ARGUMENT', ...extra });
+
+  it('is confident only for a well-formed INVALID_ARGUMENT with a message, no configuration wording and no reason', () => {
+    expect(classifyUpstreamBadRequest(envelope(invalid()))).toBe('bad-request');
+    expect(classifyUpstreamBadRequest(envelope(invalid({ details: [] })))).toBe('bad-request');
+    expect(classifyUpstreamBadRequest(envelope(invalid({ details: [{ '@type': 'type.googleapis.com/google.rpc.BadRequest', fieldViolations: [] }] })))).toBe('bad-request');
+  });
+
+  it.each([
+    ['API_KEY_INVALID reason', invalid({ message: 'x', details: [{ reason: 'API_KEY_INVALID' }] })],
+    ['API key message', invalid({ message: 'API key not valid. Please pass a valid API key.' })],
+    ['billing', invalid({ status: 'FAILED_PRECONDITION', message: 'Billing must be enabled.' })],
+    ['quota', invalid({ status: 'RESOURCE_EXHAUSTED', message: 'Quota exceeded.' })],
+    ['permission', invalid({ status: 'PERMISSION_DENIED', message: 'nope' })],
+    ['disabled API', invalid({ message: 'API has not been used in project before or it is disabled.' })],
+    ['referer restriction', invalid({ message: 'Requests from referer <empty> are blocked.' })],
+    ['credential wording in an INVALID_ARGUMENT', invalid({ message: 'Invalid credentials supplied.' })]
+  ])('treats %s as ambiguous (configuration problem)', (_label, error) => {
+    expect(classifyUpstreamBadRequest(envelope(error))).toBe('ambiguous');
+  });
+
+  it.each([
+    ['an unrecognised reason', invalid({ details: [{ reason: 'SOMETHING_NEW' }] })],
+    ['a reason in a later detail', invalid({ details: [{ '@type': 'x' }, { reason: 'SOMETHING_NEW' }] })],
+    ['a different status', invalid({ status: 'OUT_OF_RANGE' })],
+    ['a missing status', { code: 400, message: 'Request contains an invalid argument.' }],
+    ['a missing message', { code: 400, status: 'INVALID_ARGUMENT' }],
+    ['an empty message', invalid({ message: '   ' })],
+    ['a non-string message', invalid({ message: 42 })],
+    ['non-array details', invalid({ details: { reason: 'x' } })],
+    ['a null detail', invalid({ details: [null] })],
+    ['a string detail', invalid({ details: ['x'] })],
+    ['an array instead of an error object', []]
+  ])('treats %s as ambiguous (not enough evidence)', (_label, error) => {
+    expect(classifyUpstreamBadRequest(envelope(error))).toBe('ambiguous');
+  });
+
+  it.each([
+    ['an empty body', ''],
+    ['whitespace', '   '],
+    ['plain text', 'not json'],
+    ['HTML', '<html><body>400 Bad Request</body></html>'],
+    ['truncated JSON', '{"error":{"code":400,"status":"INVALID_ARG'],
+    ['a JSON array', '[]'],
+    ['JSON null', 'null'],
+    ['a JSON string', '"INVALID_ARGUMENT"'],
+    ['an empty object', '{}'],
+    ['an error that is a string', '{"error":"a string"}'],
+    ['an error that is null', '{"error":null}'],
+    ['an empty error object', '{"error":{}}'],
+    ['an unrelated JSON shape', '{"unexpected":true}']
+  ])('treats %s as ambiguous (malformed or unrecognised body)', (_label, text) => {
+    expect(classifyUpstreamBadRequest(text)).toBe('ambiguous');
+  });
+
+  it('returns only one of two fixed labels, never any part of the body', () => {
+    const result = classifyUpstreamBadRequest(envelope(invalid({ message: 'secret-token-123' })));
+    expect(['bad-request', 'ambiguous']).toContain(result);
+    expect(result).not.toContain('secret');
   });
 });
