@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ArrowRight, Car, ExternalLink, Globe, MapPin, Sparkles, Users } from 'lucide-react';
 import PropertyCard from '@/components/modules/PropertyCard';
 import StaysGrid, { StayCard } from '@/components/modules/StaysGrid';
+import { toCardStay } from '@/lib/stayCardPayload';
 import { StayPhotoSection } from '@/components/modules/stays/StayPhotoSection';
 import { eligiblePlaceIdFrom, type EligiblePlaceId } from '@/lib/googlePhotoFetch';
 import { hotelToStay, dedupeAgainstCurated } from '@/lib/stayMerge';
@@ -414,7 +415,7 @@ function CatalogListing({ stays, page, totalPages, basePath, emptyMessage }: Cat
     <div>
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {stays.map((stay, index) => (
-          <StayCard key={`${stay.placeId}-${index}`} stay={stay} priority={index < 4} />
+          <StayCard key={`${stay.placeId}-${index}`} stay={toCardStay(stay)} priority={index < 4} />
         ))}
       </div>
 

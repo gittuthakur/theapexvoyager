@@ -4,7 +4,14 @@ import { isLocalDevelopment } from '@/lib/env';
 import { PREVIEW_MOCK_JPEG, googlePhotoPreviewMockMode } from '@/lib/googlePhotoPreviewMock';
 import { images } from '@/config/images.config';
 import { clampPhotoWidth, snapPhotoWidth } from '@/lib/placePhotoUrl';
-import { InMemoryRateStore, clientKey, isPhotoProxyDisabled, photoRateLimits } from '@/lib/photoProxyGuard';
+import {
+  InMemoryRateStore,
+  classifyUpstreamBadRequest,
+  clientKey,
+  isPhotoProxyDisabled,
+  photoRateLimits,
+  type UpstreamBadRequestKind
+} from '@/lib/photoProxyGuard';
 import { ExclusionLookupError, getActiveExclusionSet } from '@/services/properties/propertyExclusion.service';
 
 const PLACES_API_BASE = 'https://places.googleapis.com/v1';
@@ -47,6 +54,12 @@ const MINUTE_MS = 60_000;
 const ERROR_CACHE_NOT_FOUND = 'public, max-age=60, s-maxage=300';
 const ERROR_CACHE_TRANSIENT = 'public, max-age=15, s-maxage=30';
 const ERROR_CACHE_CONFIGURATION = 'public, max-age=0, s-maxage=10';
+// An upstream 400 confidently classified as an ordinary bad request, not a configuration fault (see classifyUpstreamBadRequest). Deliberately identical to
+// ERROR_CACHE_NOT_FOUND: both mean "Google will not give us this photo reference", and 5 minutes at the CDN (the low end of
+// the approved 5-60 minute range) is already proven acceptable for that case. The browser keeps it for 60 seconds.
+const ERROR_CACHE_BAD_REFERENCE = ERROR_CACHE_NOT_FOUND;
+// Upstream error bodies are tiny; this only bounds what is held in memory while classifying.
+const MAX_ERROR_BODY_CHARS = 4096;
 
 function badRequest(message: string) {
   return NextResponse.json({ error: message }, { status: 400, headers: { 'Cache-Control': 'public, max-age=60, s-maxage=300' } });
@@ -179,20 +192,37 @@ export async function GET(request: Request) {
       // One attempt only, never retried here. Error bodies below are not photo content.
       //  - Google 404 (the photo reference is missing or expired): a genuine "not found", short-cached so
       //    repeated requests for the same dead reference do not each reach Google.
-      //  - Google 400/401/403 (a bad request, key, quota, billing or API-enablement problem on OUR side): NOT a
-      //    missing photo. Reported as a temporary failure and cached for only seconds, so a fix takes effect
-      //    almost at once instead of being masked as "not found".
+      //  - Google 401/403, and any 400 that is not confidently an ordinary bad request (see below): NOT a missing
+      //    photo. Reported as a temporary failure and cached for only seconds, so a fix takes effect almost at once
+      //    instead of being masked as "not found".
       //  - Google 429 and 5xx, and anything else: temporary failure, briefly cached.
-      // Only the status code is logged (never the URL, headers, key or response body).
+      // Logging: only the status code is logged, plus, for a 400, one of two fixed labels of our own ('bad-request' or
+      // 'ambiguous'). Never the URL, query string, photo name, headers, key or any part of the response body.
       if (res.status === 404) {
         return photoNotFound();
       }
-      const configurationProblem = res.status === 400 || res.status === 401 || res.status === 403;
-      console.error(`[photo-proxy] upstream responded with status ${res.status}`);
-      return NextResponse.json(
-        { error: 'Photo temporarily unavailable' },
-        { status: 502, headers: { 'Cache-Control': configurationProblem ? ERROR_CACHE_CONFIGURATION : ERROR_CACHE_TRANSIENT } }
-      );
+      // Google 400 is ambiguous by nature: it is how Google reports an unusable request, and also how it can report an invalid
+      // API key. The body is read (bounded, in memory only) solely to tell the two apart; it is never logged or returned.
+      //  - 400 CONFIDENTLY classified 'bad-request' (positive evidence required, see classifyUpstreamBadRequest): cached for
+      //    minutes (ERROR_CACHE_BAD_REFERENCE) so a dead reference does not trigger a function run and an upstream call on
+      //    every view.
+      //  - Any other 400 ('ambiguous': names a configuration problem, carries a machine-readable reason, or is empty,
+      //    unreadable, malformed or not a Google error): stays on the seconds-long configuration TTL.
+      //  - 401/403: unchanged, seconds-long.
+      let badRequestKind: UpstreamBadRequestKind | undefined;
+      if (res.status === 400) {
+        let bodyText = '';
+        try {
+          bodyText = (await res.text()).slice(0, MAX_ERROR_BODY_CHARS);
+        } catch {
+          bodyText = '';
+        }
+        badRequestKind = classifyUpstreamBadRequest(bodyText);
+      }
+      const configurationProblem = res.status === 401 || res.status === 403 || badRequestKind === 'ambiguous';
+      console.error(`[photo-proxy] upstream responded with status ${res.status}${badRequestKind ? ` (${badRequestKind})` : ''}`);
+      const cacheControl = badRequestKind === 'bad-request' ? ERROR_CACHE_BAD_REFERENCE : configurationProblem ? ERROR_CACHE_CONFIGURATION : ERROR_CACHE_TRANSIENT;
+      return NextResponse.json({ error: 'Photo temporarily unavailable' }, { status: 502, headers: { 'Cache-Control': cacheControl } });
     }
 
     const contentType = res.headers.get('content-type') ?? 'image/jpeg';
