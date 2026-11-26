@@ -1,6 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { ImageOff } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { PhotoFallback } from '@/components/ui/PhotoFallback';
 
 export interface MediaPlaceholderProps {
   /** Shown as visible text under the icon (e.g. a destination name) — omit for an
@@ -12,26 +11,14 @@ export interface MediaPlaceholderProps {
 }
 
 /**
- * A neutral "no verified photo" state — a themed gradient plus icon, deliberately never
- * a substituted real photograph of something else. Used wherever a Destination or Stay
- * has no image whose subject can actually be confirmed, so the absence of a verified
- * photo is honestly visible instead of being papered over with an unrelated real one.
- * Visually mirrors SafeImage's own load-failure state for consistency.
+ * A neutral "no verified photo" state — deliberately never a substituted real photograph
+ * of something else. Used wherever a Destination or Stay has no image whose subject can
+ * actually be confirmed, so the absence of a verified photo is honestly visible instead
+ * of being papered over with an unrelated real one.
+ *
+ * Shares its look with SafeImage's own load-failure state (PhotoFallback) so a photo that
+ * was never available and a photo that failed to load read the same way.
  */
-export function MediaPlaceholder({ label, icon: Icon = ImageOff, fill, className }: MediaPlaceholderProps) {
-  return (
-    <div
-      role="img"
-      aria-label={label ?? 'Photo not available'}
-      className={cn(
-        'flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400',
-        fill ? 'absolute inset-0' : className
-      )}
-    >
-      <Icon size={28} aria-hidden="true" />
-      {label ? (
-        <span className="px-4 text-center text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</span>
-      ) : null}
-    </div>
-  );
+export function MediaPlaceholder({ label, icon, fill, className }: MediaPlaceholderProps) {
+  return <PhotoFallback fill={fill} className={className} icon={icon} label={label ?? 'Photo not available'} message={label} />;
 }

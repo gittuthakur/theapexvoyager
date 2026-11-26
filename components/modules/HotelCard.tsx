@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, MapPin, Star } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { PhotoThumbnails } from '@/components/ui/PhotoThumbnails';
 import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { GoogleMapsButton } from '@/components/ui/GoogleMapsButton';
 import { buildGoogleMapsUrl } from '@/lib/googleMapsLink';
@@ -41,19 +42,14 @@ export default function HotelCard({ hotel, checkIn, checkOut, guests }: HotelCar
         </span>
       </div>
       {hotel.places?.photos?.length ? (
-        <div className="mt-3 flex snap-x snap-mandatory gap-2 overflow-x-auto pb-1">
-          {hotel.places.photos.slice(0, 6).map((photo, index) => (
-            <div key={photo} className="relative h-20 w-28 shrink-0 snap-start overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
-              <SafeImage
-                src={photo}
-                alt={`${hotel.title} — Google Places photo ${index + 1}`}
-                fill
-                sizes="112px"
-                className="object-cover"
-              />
-            </div>
-          ))}
-        </div>
+        // Only photos that load are kept; the row disappears when none do.
+        <PhotoThumbnails
+          photos={hotel.places.photos.slice(0, 6)}
+          altFor={(index) => `${hotel.title} — Google Places photo ${index + 1}`}
+          sizes="112px"
+          rowClassName="mt-3 flex snap-x snap-mandatory gap-2 overflow-x-auto pb-1"
+          itemClassName="relative h-20 w-28 shrink-0 snap-start overflow-hidden rounded-lg border border-slate-200 bg-slate-100"
+        />
       ) : null}
       <div className="mt-5 space-y-3">
         <div className="flex items-center justify-between gap-3">

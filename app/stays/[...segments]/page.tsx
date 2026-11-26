@@ -11,7 +11,7 @@ import { hotelToStay, dedupeAgainstCurated } from '@/lib/stayMerge';
 import StayHero from '@/components/modules/stays/StayHero';
 import DetailPageContainer from '@/components/modules/detail/DetailPageContainer';
 import BackButton from '@/components/ui/BackButton';
-import { SafeImage } from '@/components/ui/SafeImage';
+import { PhotoThumbnails } from '@/components/ui/PhotoThumbnails';
 import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { GoogleMapsButton } from '@/components/ui/GoogleMapsButton';
 import { GoogleMapsAttribution } from '@/components/ui/GoogleMapsAttribution';
@@ -488,13 +488,14 @@ async function PropertyDetail({ hotel, checkIn, checkOut, guests }: PropertyDeta
       />
 
       {galleryImages.length > 1 ? (
-        <div className="flex gap-2 overflow-x-auto">
-          {galleryImages.slice(1).map((image, index) => (
-            <div key={image} className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-slate-100">
-              <SafeImage src={image} alt={`${hotel.title} photo ${index + 2}`} fill sizes="112px" className="object-cover" />
-            </div>
-          ))}
-        </div>
+        // Only photos that load are kept; the row disappears when none do.
+        <PhotoThumbnails
+          photos={galleryImages.slice(1)}
+          altFor={(index) => `${hotel.title} photo ${index + 2}`}
+          sizes="112px"
+          rowClassName="flex gap-2 overflow-x-auto"
+          itemClassName="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-slate-100"
+        />
       ) : null}
 
       <div className="rounded-[2rem] border border-slate-200 bg-white p-10 shadow-glow">
