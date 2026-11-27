@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Clock } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { getDestinationTitleBySlug } from '@/config/destinations.config';
 import type { TourPackage } from '@/types/tour';
 
@@ -26,7 +27,9 @@ export default function RegionTourCard({ tour }: RegionTourCardProps) {
       <div className="relative h-48 w-full overflow-hidden bg-slate-100">
         {tour.image ? (
           <SafeImage src={tour.image} alt={tour.title} fill sizes="(min-width: 1024px) 360px, 45vw" className="object-cover transition duration-500 group-hover:scale-105" />
-        ) : null}
+        ) : (
+          <MediaPlaceholder fill />
+        )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-5">
         <h3 className="font-semibold text-slate-900">{tour.title}</h3>

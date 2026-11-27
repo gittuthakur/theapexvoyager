@@ -14,6 +14,7 @@ import CurrentOfficialInfoSection from '@/components/modules/detail/CurrentOffic
 import AccessJourney from '@/components/modules/detail/AccessJourney';
 import BackButton from '@/components/ui/BackButton';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { getCuratedDestinationBySlug } from '@/lib/destinations';
 import { getPackagesByDestinationSlug } from '@/lib/packages';
 import { getToursByDestinationSlug } from '@/lib/tours';
@@ -287,7 +288,9 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
                   <div className="relative h-36 w-full overflow-hidden rounded-xl bg-slate-100">
                     {tour.image ? (
                       <SafeImage src={tour.image} alt={tour.title} fill sizes="(min-width: 1024px) 360px, 45vw" className="object-cover" />
-                    ) : null}
+                    ) : (
+                      <MediaPlaceholder fill />
+                    )}
                   </div>
                   <h3 className="mt-4 font-semibold text-slate-900">{tour.title}</h3>
                   <p className="mt-1 text-sm text-slate-500">{tour.duration}</p>
