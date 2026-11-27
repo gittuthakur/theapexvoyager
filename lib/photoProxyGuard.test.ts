@@ -5,6 +5,7 @@ import {
   InMemoryRateStore,
   classifyUpstreamBadRequest,
   clientKey,
+  describeUpstreamError,
   isPhotoProxyDisabled,
   photoRateLimits
 } from './photoProxyGuard';
@@ -135,5 +136,53 @@ describe('classifyUpstreamBadRequest', () => {
     const result = classifyUpstreamBadRequest(envelope(invalid({ message: 'secret-token-123' })));
     expect(['bad-request', 'ambiguous']).toContain(result);
     expect(result).not.toContain('secret');
+  });
+});
+
+// TEMPORARY DIAGNOSTICS (photo 400 investigation)
+describe('describeUpstreamError', () => {
+  const body = (error: unknown) => JSON.stringify({ error });
+
+  it('keeps only Google status and message', () => {
+    expect(describeUpstreamError(body({ code: 400, message: 'Request contains an invalid argument.', status: 'INVALID_ARGUMENT', details: [{ reason: 'X' }] }))).toEqual({
+      googleStatus: 'INVALID_ARGUMENT',
+      message: 'Request contains an invalid argument.'
+    });
+  });
+
+  it.each(['', 'not json', '[]', 'null', '{"error":"a string"}', '{"unexpected":1}'])('returns nothing for a non-Google body (%j)', (text) => {
+    expect(describeUpstreamError(text)).toEqual({});
+  });
+
+  it('omits a status that is not a bare enum', () => {
+    expect(describeUpstreamError(body({ status: 'places/ChIJabc', message: 'm' }))).toEqual({ message: 'm' });
+  });
+
+  it('redacts literal secrets (as given and URL-encoded), URLs, resource names, key shapes and long tokens', () => {
+    const key = 'my-secret-key-123456';
+    const name = 'places/ChIJabc123/photos/AVxyz789_-=.';
+    const message = `a ${key} b ${name} c ${encodeURIComponent(name)} d https://places.googleapis.com/v1/x?key=${key} e places/zzz/photos/qqq f AIzaSyA1234567890abcdefghij g ${'T'.repeat(40)} h`;
+    const out = describeUpstreamError(body({ status: 'INVALID_ARGUMENT', message }), [key, name, 'ChIJabc123']).message ?? '';
+    for (const forbidden of [key, 'ChIJ', 'AVxyz', 'googleapis', 'places/', 'places%2F', 'AIza', 'TTTT', 'key=']) expect(out).not.toContain(forbidden);
+    expect(out).toMatch(/^a \[redacted\] b/);
+  });
+
+  it('redacts before truncating, so a secret straddling the 300-character cut cannot leak a prefix', () => {
+    const key = 'K'.repeat(30);
+    const message = `${'x '.repeat(145)}${key} tail`;
+    const out = describeUpstreamError(body({ message }), [key]).message ?? '';
+    expect(out.length).toBeLessThanOrEqual(300);
+    expect(out).not.toContain('KKKK');
+  });
+
+  it('caps the message at 300 characters and strips control characters', () => {
+    const out = describeUpstreamError(body({ message: `line1\n\r\t line2 ${'w '.repeat(400)}` })).message ?? '';
+    expect(out.length).toBe(300);
+    expect(out).toMatch(/^line1 line2/);
+    expect(out).not.toMatch(/[\u0000-\u001f]/);
+  });
+
+  it('ignores very short secrets so ordinary words are not mangled', () => {
+    expect(describeUpstreamError(body({ message: 'an invalid argument' }), ['a', 'in'] as string[]).message).toBe('an invalid argument');
   });
 });
