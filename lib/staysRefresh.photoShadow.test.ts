@@ -99,7 +99,7 @@ describe('legacy mode (default): exactly the behaviour before this change', () =
     const groups = run.summary.searchGroupsAttempted;
     expect(groups).toBeGreaterThan(0);
     expect(run.writes).toHaveLength(3 * groups);
-    expect(run.writes.map((call) => (call[1] as { photos: unknown }).photos)).toEqual(times([PLACES[0].photoUrls, PLACES[1].photoUrls, []], groups));
+    expect(run.writes.map((call) => (call[1] as { photos: unknown }).photos)).toEqual(times([PLACES[0].photoUrls, PLACES[1].photoUrls, undefined], groups)); // a place with no photos sends no photos field (placeCachePreserve): stored photos are never overwritten with []
     expect('photoProvenanceShadow' in run.summary).toBe(false);
     expect(Object.keys(run.summary).sort()).toEqual(['budgetLimited', 'destinationsProcessed', 'dueGroupCount', 'errors', 'googleRequestCount', 'manifestTagCount', 'recordsUpserted', 'searchGroupCount', 'searchGroupsAttempted', 'searchGroupsSkippedForBudget']);
   });
@@ -125,8 +125,11 @@ describe('shadow mode changes nothing that is written, requested or returned to 
   it('every stored photo array is exactly what Google returned: nothing replaced, removed, reordered or emptied', async () => {
     arrange();
     const { writes, summary } = await runRefresh('shadow');
-    expect(writes.map((call) => (call[1] as { photos: unknown }).photos)).toEqual(times([PLACES[0].photoUrls, PLACES[1].photoUrls, []], summary.searchGroupsAttempted));
-    for (const call of writes) expect(Object.keys(call[1] as object)).toContain('photos');
+    expect(writes.map((call) => (call[1] as { photos: unknown }).photos)).toEqual(times([PLACES[0].photoUrls, PLACES[1].photoUrls, undefined], summary.searchGroupsAttempted));
+    for (const call of writes) {
+      const photos = (call[1] as { photos?: unknown[] }).photos;
+      expect(Object.keys(call[1] as object).includes('photos')).toBe(Boolean(photos && photos.length > 0));
+    }
   });
 
   it('the summary is identical to legacy apart from the one added aggregate key', async () => {
