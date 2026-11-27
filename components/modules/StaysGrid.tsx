@@ -8,7 +8,7 @@ import { SafeImage } from '@/components/ui/SafeImage';
 import { PhotoFallback } from '@/components/ui/PhotoFallback';
 import { PhotoThumbnails } from '@/components/ui/PhotoThumbnails';
 import { SkeletonGrid } from '@/components/ui/Skeleton';
-import { withPhotoWidth } from '@/lib/placePhotoUrl';
+import { placePhotoByPlaceUrl, withPhotoWidth } from '@/lib/placePhotoUrl';
 import { stayPhotoAlt } from '@/lib/stayPhotoAlt';
 import { GoogleMapsButton } from '@/components/ui/GoogleMapsButton';
 import { GoogleMapsAttribution } from '@/components/ui/GoogleMapsAttribution';
@@ -285,6 +285,8 @@ const CARD_THUMBNAIL_WIDTH_PX = 192; // secondary thumbnail slot: h-14 w-14 (56x
 
 export function StayCard({ stay, priority = false }: { stay: Stay; priority?: boolean }) {
   const href = stayDetailHref(stay);
+  // Only a Google-sourced stay has a Place ID the display-time route can serve; undefined = legacy rendering, unchanged.
+  const cardPhotoMode = stay.source === 'google' ? stay.cardPhotoMode : undefined;
   // `stay.placeId` is only a real Google Place ID when `source === 'google'` — a curated
   // Stay's `placeId` is the synthetic `curated:${slug}` key (lib/stayMerge.ts's
   // hotelToStay), never a real one to build a Maps link from.
@@ -308,7 +310,22 @@ export function StayCard({ stay, priority = false }: { stay: Stay; priority?: bo
                   " · Google" suffix here would be a second, duplicate Google label on the same card. */}
             </span>
           ) : null}
-          {stay.photos[0] ? (
+          {cardPhotoMode === 'display-time' ? (
+            // Display-time photo (lib/photoDisplayMode.ts): the URL carries the stored PLACE ID, never a photo name; the server
+            // fetches a fresh one per request. Lazy for every card except the first few, so only visible cards load.
+            <SafeImage
+              src={placePhotoByPlaceUrl(stay.placeId, 0, CARD_PHOTO_WIDTH_PX)}
+              alt={stayPhotoAlt(stay, 1)}
+              width={CARD_PHOTO_WIDTH_PX}
+              height={CARD_PHOTO_HEIGHT_PX}
+              sizes="(min-width: 1280px) 360px, 90vw"
+              className="h-full w-full object-cover"
+              priority={priority}
+              loading={priority ? undefined : 'lazy'}
+            />
+          ) : cardPhotoMode === 'unavailable' ? (
+            <PhotoFallback fill label={`Photo of ${stay.name} unavailable`} message="No photo available" />
+          ) : stay.photos[0] ? (
             // Intrinsic width/height (the card's 5:3 photo slot) let the browser reserve the space before the photo
             // arrives; the fixed-height box and object-cover keep the rendered size exactly as before.
             <SafeImage
@@ -335,7 +352,7 @@ export function StayCard({ stay, priority = false }: { stay: Stay; priority?: bo
             </p>
           ) : null}
 
-          {stay.photos.length > 1 ? (
+          {!cardPhotoMode && stay.photos.length > 1 ? (
             // Only thumbnails that actually load are kept; the row disappears when none do (no row of identical placeholders).
             <PhotoThumbnails
               photos={stay.photos.slice(1, 4)}

@@ -75,3 +75,13 @@ export function snapPhotoWidth(value: unknown): number {
   const clamped = clampPhotoWidth(value);
   return PHOTO_WIDTH_BUCKETS.find((bucket) => bucket >= clamped) ?? PHOTO_WIDTH_BUCKETS[PHOTO_WIDTH_BUCKETS.length - 1];
 }
+
+/**
+ * URL of the DISPLAY-TIME photo route (app/api/places/photo/by-place/route.ts) for the `index`-th photo of a stored Place ID.
+ * It carries a Place ID (which may be stored) and never a photo name (which may not): the server obtains a fresh name from
+ * Google for each request. The width is snapped to a bucket like every other photo URL.
+ */
+export function placePhotoByPlaceUrl(placeId: string, index: number, widthPx: number): string {
+  const safeIndex = Number.isInteger(index) && index >= 0 && index <= 9 ? index : 0;
+  return `/api/places/photo/by-place?placeId=${encodeURIComponent(placeId)}&i=${safeIndex}&w=${snapPhotoWidth(widthPx)}`;
+}

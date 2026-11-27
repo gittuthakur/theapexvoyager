@@ -64,6 +64,11 @@ export interface Stay {
   rating?: number;
   userRatingCount?: number;
   photos: string[];
+  /** Listing-card photo behaviour for a Google-sourced stay (lib/photoDisplayMode.ts). Absent = legacy: the card renders
+   *  `photos` exactly as before. 'display-time' = the card requests a fresh photo for `placeId` from the display-time route.
+   *  'unavailable' = pilot mode and this place is not in the pilot: the card shows the "No photo available" panel and makes
+   *  no image request. Detail pages ignore this field. */
+  cardPhotoMode?: 'display-time' | 'unavailable';
   customPrice?: number;
   destinationSlug: string;
   updatedAt?: string;
