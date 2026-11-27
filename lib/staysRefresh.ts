@@ -16,6 +16,7 @@
 // and nothing is hardcoded to a calendar date.
 import { connectDB } from '@/lib/mongodb';
 import { PlaceCache } from '@/models/PlaceCache';
+import { omitEmptyPhotos } from '@/lib/placeCachePreserve';
 import { StaysRefreshComboState, type StaysRefreshComboStateDocument } from '@/models/StaysRefreshComboState';
 import { searchStays, placeName, placePhotoUrls, placeCoordinates, type RawGooglePlace } from '@/lib/googlePlaces';
 import { photoPersistenceMode } from '@/lib/photoPersistenceMode';
@@ -246,7 +247,7 @@ async function refreshSearchGroup(
     }
     await Promise.all(
       docs.map((doc) =>
-        PlaceCache.findOneAndUpdate({ placeId: doc.placeId, destinationSlug: doc.destinationSlug, stayType: doc.stayType }, doc, { upsert: true })
+        PlaceCache.findOneAndUpdate({ placeId: doc.placeId, destinationSlug: doc.destinationSlug, stayType: doc.stayType }, omitEmptyPhotos(doc), { upsert: true })
       )
     );
     recordsUpserted += docs.length;

@@ -29,7 +29,7 @@ vi.mock('@/models/StaysRefreshComboState', () => ({
 vi.mock('@/lib/googlePlaces', () => ({
   searchStays: searchStaysMock,
   placeName: (place: { name?: string }) => place.name ?? 'Unnamed',
-  placePhotoUrls: () => [],
+  placePhotoUrls: (place: { photos?: Array<{ name: string }> }) => (place.photos ?? []).map((photo) => `/api/places/photo?name=${photo.name}`),
   placeCoordinates: () => ({ latitude: undefined, longitude: undefined })
 }));
 vi.mock('@/lib/placeLocationSafety', () => ({ classifyPlaceLocation: classifyPlaceLocationMock }));
@@ -346,5 +346,39 @@ describe('refreshAllConfiguredStays — duplicate-search dedup and exclusion fil
 
     expect(summary.manifestTagCount).toBe(0);
     expect(searchStaysMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('refreshAllConfiguredStays — photo / rating preservation on upsert', () => {
+  async function refreshOne(place: Record<string, unknown>) {
+    getCuratedDestinationsMock.mockResolvedValue([MANALI]);
+    searchStaysMock.mockResolvedValue({ places: [{ id: 'p1', name: 'Hotel', types: ['lodging'], ...place }], pagesFetched: 1, saturated: true });
+    await refreshAllConfiguredStays();
+    return placeCacheFindOneAndUpdateMock.mock.calls[0];
+  }
+
+  it('incoming empty photos: the update carries no photos field, so stored photos are not overwritten', async () => {
+    const [query, update, options] = await refreshOne({});
+    expect(update).not.toHaveProperty('photos');
+    expect(update.name).toBe('Hotel');
+    expect(query).toEqual({ placeId: 'p1', destinationSlug: 'manali', stayType: expect.any(String) });
+    expect(options).toEqual({ upsert: true });
+  });
+
+  it('incoming new photos: written as-is and replace the old ones', async () => {
+    const [, update] = await refreshOne({ photos: [{ name: 'places/p1/photos/new1' }, { name: 'places/p1/photos/new2' }] });
+    expect(update.photos).toEqual(['/api/places/photo?name=places/p1/photos/new1', '/api/places/photo?name=places/p1/photos/new2']);
+  });
+
+  it('omitted rating / review count: not present in the update (so never overwritten)', async () => {
+    const [, update] = await refreshOne({});
+    expect(update.rating).toBeUndefined();
+    expect(update.userRatingCount).toBeUndefined();
+  });
+
+  it('provided rating / review count are still written', async () => {
+    const [, update] = await refreshOne({ rating: 4.6, userRatingCount: 120 });
+    expect(update.rating).toBe(4.6);
+    expect(update.userRatingCount).toBe(120);
   });
 });
