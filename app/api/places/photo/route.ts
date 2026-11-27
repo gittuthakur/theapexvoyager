@@ -8,6 +8,7 @@ import {
   InMemoryRateStore,
   classifyUpstreamBadRequest,
   clientKey,
+  describeUpstreamError,
   isPhotoProxyDisabled,
   photoRateLimits,
   type UpstreamBadRequestKind
@@ -210,14 +211,21 @@ export async function GET(request: Request) {
       //    unreadable, malformed or not a Google error): stays on the seconds-long configuration TTL.
       //  - 401/403: unchanged, seconds-long.
       let badRequestKind: UpstreamBadRequestKind | undefined;
-      if (res.status === 400) {
-        let bodyText = '';
-        try {
-          bodyText = (await res.text()).slice(0, MAX_ERROR_BODY_CHARS);
-        } catch {
-          bodyText = '';
-        }
-        badRequestKind = classifyUpstreamBadRequest(bodyText);
+      let bodyText = '';
+      try {
+        bodyText = (await res.text()).slice(0, MAX_ERROR_BODY_CHARS);
+      } catch {
+        bodyText = '';
+      }
+      if (res.status === 400) badRequestKind = classifyUpstreamBadRequest(bodyText);
+      // TEMPORARY DIAGNOSTIC (photo 400 investigation; remove once the cause is known). Only for an upstream error: the
+      // HTTP status, Google's error status enum and its message with keys, photo names/tokens and URLs removed, capped at
+      // 300 characters. Never the raw body, URL, query string, photo name, header or key, and never returned to a client.
+      try {
+        const diagnostic = describeUpstreamError(bodyText, [apiKey, name, placeIdOf(name), name.slice(name.lastIndexOf('/') + 1)]);
+        console.error(`[photo-proxy][diagnostic] ${JSON.stringify({ upstreamStatus: res.status, ...diagnostic })}`);
+      } catch {
+        // Diagnostics must never be able to change the response.
       }
       const configurationProblem = res.status === 401 || res.status === 403 || badRequestKind === 'ambiguous';
       console.error(`[photo-proxy] upstream responded with status ${res.status}${badRequestKind ? ` (${badRequestKind})` : ''}`);

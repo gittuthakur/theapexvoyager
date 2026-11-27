@@ -233,16 +233,82 @@ describe('upstream failures are answered once and never retried', () => {
       }
     });
 
-    it('logs only the status and a fixed label for a 400, never the body, key, photo name or URL', async () => {
+    it('keeps the status line with its fixed label, and never logs the key, photo name, token or URL (even when Google echoes them)', async () => {
       const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
-      vi.spyOn(global, 'fetch').mockResolvedValue(new Response(googleError(`leaked ${TEST_KEY} places/ChIJabc123 https://places.googleapis.com/v1/x`), { status: 400 }));
+      vi.spyOn(global, 'fetch').mockResolvedValue(
+        new Response(googleError(`leaked ${TEST_KEY} ${NAME} ${encodeURIComponent(NAME)} AVxyz789_-=. places/ChIJabc123 https://places.googleapis.com/v1/x?key=abc`), { status: 400 })
+      );
       await GET(req(q(NAME, '&w=640')));
       const output = JSON.stringify(logged.mock.calls);
       expect(output).toContain('status 400 (bad-request)');
-      expect(output).not.toContain(TEST_KEY);
-      expect(output).not.toContain('ChIJ');
-      expect(output).not.toContain('googleapis.com');
-      expect(output).not.toContain('leaked');
+      for (const forbidden of [TEST_KEY, 'ChIJ', 'AVxyz789', 'googleapis.com', 'places/', 'key=abc', '?name=']) expect(output).not.toContain(forbidden);
+    });
+
+    // TEMPORARY DIAGNOSTICS (photo 400 investigation)
+    describe('temporary sanitized upstream diagnostics', () => {
+      const diagnosticLines = (logged: { mock: { calls: unknown[][] } }) =>
+        logged.mock.calls.map((call) => String(call[0])).filter((line) => line.startsWith('[photo-proxy][diagnostic] '));
+
+      it('a 400 logs the HTTP status, Google status and message (nothing else)', async () => {
+        const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(global, 'fetch').mockResolvedValue(new Response(googleError('Request contains an invalid argument.'), { status: 400 }));
+        await GET(req(q(NAME, '&w=640')));
+        const lines = diagnosticLines(logged);
+        expect(lines).toHaveLength(1);
+        expect(JSON.parse(lines[0].replace('[photo-proxy][diagnostic] ', ''))).toEqual({
+          upstreamStatus: 400,
+          googleStatus: 'INVALID_ARGUMENT',
+          message: 'Request contains an invalid argument.'
+        });
+      });
+
+      it('truncates the message to 300 characters', async () => {
+        const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(global, 'fetch').mockResolvedValue(new Response(googleError('word '.repeat(200)), { status: 400 }));
+        await GET(req(q(NAME, '&w=640')));
+        const parsed = JSON.parse(diagnosticLines(logged)[0].replace('[photo-proxy][diagnostic] ', ''));
+        expect(parsed.message.length).toBeLessThanOrEqual(300);
+        expect(parsed.message.length).toBeGreaterThan(250);
+      });
+
+      it('never logs the API key, photo name, token, place id, URL or query string, even when Google echoes them in its message', async () => {
+        const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const echoed = `Invalid photo ${NAME} (${encodeURIComponent(NAME)}) token AVxyz789_-=. for ${TEST_KEY}; see https://places.googleapis.com/v1/${NAME}/media?maxWidthPx=640&key=${TEST_KEY} AIzaSyA1234567890abcdefghij`;
+        vi.spyOn(global, 'fetch').mockResolvedValue(new Response(googleError(echoed), { status: 400 }));
+        await GET(req(q(NAME, '&w=640')));
+        const output = JSON.stringify(logged.mock.calls);
+        expect(diagnosticLines(logged)).toHaveLength(1);
+        for (const forbidden of [TEST_KEY, 'ChIJ', 'abc123', 'AVxyz789', 'googleapis.com', 'maxWidthPx', 'AIza', 'places/', 'places%2F', '?name=']) expect(output).not.toContain(forbidden);
+        expect(output).toContain('Invalid photo');
+      });
+
+      it('any other upstream error is diagnosed too, with a status-only log when the body is not Google JSON', async () => {
+        const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(global, 'fetch').mockResolvedValue(new Response('<html>Bad gateway</html>', { status: 503 }));
+        await GET(req(q(NAME, '&w=640')));
+        const lines = diagnosticLines(logged);
+        expect(lines).toHaveLength(1);
+        expect(JSON.parse(lines[0].replace('[photo-proxy][diagnostic] ', ''))).toEqual({ upstreamStatus: 503 });
+      });
+
+      it('does not log diagnostics for a successful request, a Google 404, or a request rejected before Google', async () => {
+        const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValueOnce(okImage()).mockResolvedValueOnce(new Response('not found', { status: 404 }));
+        await GET(req(q(NAME, '&w=640')));
+        await GET(req(q(NAME, '&w=800')));
+        await GET(req('name=bad&w=640'));
+        expect(fetchSpy).toHaveBeenCalledTimes(2);
+        expect(diagnosticLines(logged)).toHaveLength(0);
+      });
+
+      it('changes nothing the client sees: same 502, same body, same 5-minute cache, no Google detail exposed', async () => {
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(global, 'fetch').mockResolvedValue(new Response(googleError('Distinctive Google detail text.'), { status: 400 }));
+        const res = await GET(req(q(NAME, '&w=640')));
+        expect(res.status).toBe(502);
+        expect(res.headers.get('Cache-Control')).toBe(BAD_REFERENCE);
+        expect(await res.json()).toEqual({ error: 'Photo temporarily unavailable' });
+      });
     });
   });
 

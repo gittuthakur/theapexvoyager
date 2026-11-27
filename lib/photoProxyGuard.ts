@@ -125,3 +125,50 @@ export function classifyUpstreamBadRequest(bodyText: string): UpstreamBadRequest
   }
   return 'bad-request';
 }
+
+// TEMPORARY DIAGNOSTICS (photo 400 investigation). Remove once the cause is known.
+const MAX_DIAGNOSTIC_MESSAGE_CHARS = 300;
+const MIN_REDACTABLE_SECRET_CHARS = 6;
+
+export interface UpstreamErrorDiagnostic {
+  googleStatus?: string;
+  message?: string;
+}
+
+/**
+ * Pure. Reduces an upstream Google error body to the two fields needed to diagnose a failure: Google's error status
+ * (a bare enum such as INVALID_ARGUMENT, or omitted) and its message with everything that could identify a request or
+ * a credential removed, capped at 300 characters. Nothing else from the body is kept, and the body itself is never
+ * logged or returned to a client.
+ *
+ * Redacted BEFORE truncating (so a secret can never be cut in half and slip through): every literal in `secrets` (the
+ * API key and the photo name, as given and URL-encoded), URLs, Places resource names, Google API-key shapes, and any
+ * other long token-like run, which is how photo tokens and bearer values look.
+ */
+export function describeUpstreamError(bodyText: string, secrets: readonly string[] = []): UpstreamErrorDiagnostic {
+  let error: unknown;
+  try {
+    error = (JSON.parse(bodyText) as { error?: unknown } | null)?.error;
+  } catch {
+    return {};
+  }
+  if (typeof error !== 'object' || error === null || Array.isArray(error)) return {};
+  const { status, message } = error as { status?: unknown; message?: unknown };
+  const result: UpstreamErrorDiagnostic = {};
+  if (typeof status === 'string' && /^[A-Z][A-Z0-9_]{0,63}$/.test(status)) result.googleStatus = status;
+  if (typeof message === 'string') {
+    let text = message;
+    const literals = secrets.flatMap((secret) => (secret.length >= MIN_REDACTABLE_SECRET_CHARS ? [secret, encodeURIComponent(secret)] : []));
+    for (const literal of literals) text = text.split(literal).join('[redacted]');
+    text = text
+      .replace(/https?:\/\/\S+/gi, '[redacted]')
+      .replace(/\bplaces\/\S+/gi, '[redacted]')
+      .replace(/AIza[0-9A-Za-z_-]{16,}/g, '[redacted]')
+      .replace(/[A-Za-z0-9_=.-]{24,}/g, '[redacted]')
+      .replace(/[\u0000-\u001f\u007f]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (text) result.message = text.slice(0, MAX_DIAGNOSTIC_MESSAGE_CHARS);
+  }
+  return result;
+}
