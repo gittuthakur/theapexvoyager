@@ -1,5 +1,6 @@
 import { Star } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { GoogleMapsButton } from '@/components/ui/GoogleMapsButton';
 import { buildGoogleMapsUrl } from '@/lib/googleMapsLink';
 import type { RegionBookingStayCardProps } from '@/services/providers/booking/booking.mapper';
@@ -21,7 +22,7 @@ export default function RegionBookingStayCard({ name, photoUrl, rating, googleMa
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg">
       <div className="relative h-48 w-full overflow-hidden bg-slate-100">
-        {photoUrl ? <SafeImage src={photoUrl} alt={name} fill sizes="(min-width: 1024px) 360px, 45vw" className="object-cover" /> : null}
+        {photoUrl ? <SafeImage src={photoUrl} alt={name} fill sizes="(min-width: 1024px) 360px, 45vw" className="object-cover" /> : <MediaPlaceholder fill />}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-5">
         <h3 className="font-semibold text-slate-900">{name}</h3>

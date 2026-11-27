@@ -5,8 +5,11 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { MapPin, Star } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { PhotoFallback } from '@/components/ui/PhotoFallback';
+import { PhotoThumbnails } from '@/components/ui/PhotoThumbnails';
 import { SkeletonGrid } from '@/components/ui/Skeleton';
 import { withPhotoWidth } from '@/lib/placePhotoUrl';
+import { stayPhotoAlt } from '@/lib/stayPhotoAlt';
 import { GoogleMapsButton } from '@/components/ui/GoogleMapsButton';
 import { GoogleMapsAttribution } from '@/components/ui/GoogleMapsAttribution';
 import { buildGoogleMapsUrl } from '@/lib/googleMapsLink';
@@ -277,6 +280,7 @@ function stayDetailHref(stay: Stay): string {
 // on standard-to-high-DPR phones, while still cutting the byte count dramatically
 // versus the previous flat 1200px request for every slot regardless of size.
 const CARD_PHOTO_WIDTH_PX = 640; // main photo slot: h-48 tall, up to 360px wide (see `sizes` below)
+const CARD_PHOTO_HEIGHT_PX = 384; // 5:3 with the width above: intrinsic size only, the box itself is h-48
 const CARD_THUMBNAIL_WIDTH_PX = 192; // secondary thumbnail slot: h-14 w-14 (56x56px)
 
 export function StayCard({ stay, priority = false }: { stay: Stay; priority?: boolean }) {
@@ -305,17 +309,20 @@ export function StayCard({ stay, priority = false }: { stay: Stay; priority?: bo
             </span>
           ) : null}
           {stay.photos[0] ? (
+            // Intrinsic width/height (the card's 5:3 photo slot) let the browser reserve the space before the photo
+            // arrives; the fixed-height box and object-cover keep the rendered size exactly as before.
             <SafeImage
               src={withPhotoWidth(stay.photos[0], CARD_PHOTO_WIDTH_PX)}
-              alt={stay.name}
-              fill
+              alt={stayPhotoAlt(stay, 1)}
+              width={CARD_PHOTO_WIDTH_PX}
+              height={CARD_PHOTO_HEIGHT_PX}
               sizes="(min-width: 1280px) 360px, 90vw"
-              className="object-cover"
+              className="h-full w-full object-cover"
               priority={priority}
               loading={priority ? undefined : 'lazy'}
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-slate-600">No photo available</div>
+            <PhotoFallback fill label={`Photo of ${stay.name} unavailable`} message="No photo available" />
           )}
         </div>
 
@@ -329,13 +336,15 @@ export function StayCard({ stay, priority = false }: { stay: Stay; priority?: bo
           ) : null}
 
           {stay.photos.length > 1 ? (
-            <div className="flex gap-1.5">
-              {stay.photos.slice(1, 4).map((photo, index) => (
-                <span key={photo} className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-slate-200">
-                  <SafeImage src={withPhotoWidth(photo, CARD_THUMBNAIL_WIDTH_PX)} alt={`${stay.name} photo ${index + 2}`} fill sizes="40px" className="object-cover" />
-                </span>
-              ))}
-            </div>
+            // Only thumbnails that actually load are kept; the row disappears when none do (no row of identical placeholders).
+            <PhotoThumbnails
+              photos={stay.photos.slice(1, 4)}
+              srcFor={(photo) => withPhotoWidth(photo, CARD_THUMBNAIL_WIDTH_PX)}
+              altFor={(index) => stayPhotoAlt(stay, index + 2)}
+              sizes="40px"
+              rowClassName="flex gap-1.5"
+              itemClassName="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-slate-200"
+            />
           ) : null}
         </div>
       </Link>

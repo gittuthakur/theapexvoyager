@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Images, X } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { PhotoFallback } from '@/components/ui/PhotoFallback';
 import { PhotoCredit } from '@/components/modules/stays/PhotoCredit';
 import { FOCUSABLE_SELECTOR, SWIPE_THRESHOLD_PX, announceSlide, createFocusRestorer, handleLightboxKeyDown, nearbyIndexes, swipeDirection, wrapIndex, type Point } from '@/components/modules/stays/lightboxLogic';
 import { withPhotoWidth } from '@/lib/placePhotoUrl';
@@ -27,9 +28,25 @@ export interface CreditedPhotoGalleryProps {
 const THUMBNAIL_WIDTH_PX = 192;
 const MAX_THUMBNAILS = 6;
 
-export function CreditedPhotoGallery({ photos, propertyName }: CreditedPhotoGalleryProps) {
+export function CreditedPhotoGallery({ photos: allPhotos, propertyName }: CreditedPhotoGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [failed, setFailed] = useState<ReadonlySet<string>>(() => new Set());
+  const markFailed = useCallback((src: string) => setFailed((current) => new Set(current).add(src)), []);
+  // A photo that fails to load is dropped together with its own credit: the gallery steps only through photos that work,
+  // and each one still carries its own author credit and Google Maps link, exactly as before.
+  const photos = allPhotos.filter((photo) => !failed.has(photo.src));
+
+  if (photos.length === 0) {
+    return (
+      <PhotoFallback
+        className="h-72 w-full rounded-[1.75rem] border border-slate-200 sm:h-96"
+        label={`Photos of ${propertyName} unavailable`}
+        message="Photos temporarily unavailable"
+      />
+    );
+  }
+
   const active = photos[Math.min(activeIndex, photos.length - 1)];
 
   return (
@@ -41,7 +58,17 @@ export function CreditedPhotoGallery({ photos, propertyName }: CreditedPhotoGall
           className="cursor-hover relative block aspect-[4/3] w-full overflow-hidden bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-apex-600 sm:aspect-[16/9] lg:aspect-auto lg:h-[26rem]"
           aria-label={`Open the full-screen gallery for ${propertyName}, photo ${activeIndex + 1} of ${photos.length}`}
         >
-          <SafeImage key={active.src} src={active.src} alt={`${propertyName}, photo ${activeIndex + 1} of ${photos.length}`} fill sizes="(min-width: 1024px) 800px, 100vw" className="object-cover" priority />
+          <SafeImage
+            key={active.src}
+            src={active.src}
+            alt={`${propertyName}, photo ${activeIndex + 1} of ${photos.length}`}
+            fill
+            sizes="(min-width: 1024px) 800px, 100vw"
+            className="object-cover"
+            priority
+            fallback="hidden"
+            onFail={() => markFailed(active.src)}
+          />
         </button>
         <figcaption className="border-t border-slate-200 bg-slate-50 px-4 py-2 sm:px-5">
           <PhotoCredit photo={active} tone="light" />
@@ -63,7 +90,15 @@ export function CreditedPhotoGallery({ photos, propertyName }: CreditedPhotoGall
                     index === activeIndex ? 'border-apex-600' : 'border-slate-200'
                   )}
                 >
-                  <SafeImage src={withPhotoWidth(photo.src, THUMBNAIL_WIDTH_PX)} alt="" fill sizes="120px" className="object-cover" />
+                  <SafeImage
+                    src={withPhotoWidth(photo.src, THUMBNAIL_WIDTH_PX)}
+                    alt=""
+                    fill
+                    sizes="120px"
+                    className="object-cover"
+                    fallback="hidden"
+                    onFail={() => markFailed(photo.src)}
+                  />
                 </button>
               </li>
             ))}
@@ -79,7 +114,9 @@ export function CreditedPhotoGallery({ photos, propertyName }: CreditedPhotoGall
         </div>
       ) : null}
 
-      {lightboxIndex !== null ? <CreditedLightbox photos={photos} propertyName={propertyName} initialIndex={lightboxIndex} onClose={() => setLightboxIndex(null)} /> : null}
+      {lightboxIndex !== null ? (
+        <CreditedLightbox photos={photos} propertyName={propertyName} initialIndex={lightboxIndex} onClose={() => setLightboxIndex(null)} onPhotoFail={markFailed} />
+      ) : null}
     </section>
   );
 }
@@ -89,17 +126,21 @@ export interface CreditedLightboxProps {
   propertyName: string;
   initialIndex: number;
   onClose: () => void;
+  /** Called with a photo's `src` when it fails inside the lightbox, so the parent can drop it (and its credit). */
+  onPhotoFail?: (src: string) => void;
 }
 
 const ROUND_BUTTON =
   'cursor-hover inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white motion-safe:transition';
 
-export function CreditedLightbox({ photos, propertyName, initialIndex, onClose }: CreditedLightboxProps) {
-  const [index, setIndex] = useState(initialIndex);
+export function CreditedLightbox({ photos, propertyName, initialIndex, onClose, onPhotoFail }: CreditedLightboxProps) {
+  const [requestedIndex, setIndex] = useState(initialIndex);
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const swipeStart = useRef<Point | null>(null);
   const count = photos.length;
+  // A photo that fails here is removed from `photos` by the parent, so the position can fall off the end: clamp it.
+  const index = Math.min(requestedIndex, Math.max(0, count - 1));
   const current = photos[index];
 
   const goTo = useCallback((next: number) => setIndex(next), []);
@@ -139,6 +180,13 @@ export function CreditedLightbox({ photos, propertyName, initialIndex, onClose }
     const direction = swipeDirection(start, { x: touch.clientX, y: touch.clientY }, SWIPE_THRESHOLD_PX);
     if (direction) goTo(wrapIndex(index, direction === 'next' ? 1 : -1, count));
   }
+
+  // If every photo has failed there is nothing left to show: close rather than leave an empty dialog.
+  useEffect(() => {
+    if (count === 0) onClose();
+  }, [count, onClose]);
+
+  if (!current) return null;
 
   const visible = nearbyIndexes(index, count);
 
@@ -184,6 +232,8 @@ export function CreditedLightbox({ photos, propertyName, initialIndex, onClose }
                 aria-hidden={photoIndex === index ? undefined : true}
                 className={cn('object-contain motion-safe:transition-opacity motion-safe:duration-200', photoIndex === index ? 'opacity-100' : 'pointer-events-none opacity-0')}
                 priority={photoIndex === index}
+                fallback="hidden"
+                onFail={() => onPhotoFail?.(photo.src)}
               />
             ) : null
           )}
