@@ -521,7 +521,15 @@ describe('scope: not wired anywhere, and existing behaviour unchanged', () => {
     for (const dir of ['app', 'components', 'lib', 'models', 'services', 'types', 'config', 'scripts']) walk(dir);
     // D1-3b wires the library in, on purpose and in exactly three places, all on the Google-sourced property detail
     // path and all gated by GOOGLE_PHOTO_METADATA_MODE (default legacy = never called). Anything else is a regression.
-    expect(importers.sort()).toEqual(['app/stays/[...segments]/page.tsx', 'components/modules/stays/StayPhotoSection.tsx', 'lib/stayPhotoGallery.ts']);
+    // The display-time card route (app/api/places/photo/by-place/route.ts) is the fourth, deliberate caller: it is gated by its own
+    // GOOGLE_PHOTO_DISPLAY_MODE (default legacy = the route answers 404 before any call) and takes only a Place ID that has passed
+    // getStayByPlaceIdResult, as this library's PRECONDITION requires.
+    expect(importers.sort()).toEqual([
+      'app/api/places/photo/by-place/route.ts',
+      'app/stays/[...segments]/page.tsx',
+      'components/modules/stays/StayPhotoSection.tsx',
+      'lib/stayPhotoGallery.ts'
+    ]);
   });
 
   it('the shared instance exists (its only caller is StayPhotoSection, behind the mode switch)', () => {

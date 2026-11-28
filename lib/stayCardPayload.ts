@@ -14,6 +14,18 @@
 /** The most photos a stay card ever renders. Keep in step with StayCard's main image + three thumbnails. */
 export const STAY_CARD_PHOTO_LIMIT = 4;
 
-export function toCardStay<T extends { photos: string[] }>(stay: T): T {
-  return stay.photos.length > STAY_CARD_PHOTO_LIMIT ? { ...stay, photos: stay.photos.slice(0, STAY_CARD_PHOTO_LIMIT) } : stay;
+/**
+ * Display-time photo mode (lib/photoDisplayMode.ts): a card then loads its photo from /api/places/photo/by-place (by Place ID)
+ * and never uses the stored `photos` references, which hold Google photo names that expire and must not be cached. Such a
+ * Stay (`cardPhotoMode` set, to 'display-time' or 'unavailable') therefore ships to the browser with `photos: []`, so the
+ * stored names are not serialized into the page HTML or the /api/destinations JSON. A Stay without `cardPhotoMode` (the
+ * default legacy mode) is returned as the very same object. Detail pages never go through this, they read their own Stay.
+ */
+export function withoutLegacyPhotosInDisplayMode<T extends { photos: string[]; cardPhotoMode?: string }>(stay: T): T {
+  return stay.cardPhotoMode && stay.photos?.length ? { ...stay, photos: [] } : stay;
+}
+
+export function toCardStay<T extends { photos: string[]; cardPhotoMode?: string }>(stay: T): T {
+  const stripped = withoutLegacyPhotosInDisplayMode(stay);
+  return stripped.photos.length > STAY_CARD_PHOTO_LIMIT ? { ...stripped, photos: stripped.photos.slice(0, STAY_CARD_PHOTO_LIMIT) } : stripped;
 }

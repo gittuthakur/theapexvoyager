@@ -6,6 +6,7 @@ import {
   DEFAULT_HIMACHAL_LOCATIONS
 } from '@/lib/destinations';
 import { getStaysForDestination, slugify } from '@/lib/stays';
+import { withoutLegacyPhotosInDisplayMode } from '@/lib/stayCardPayload';
 import { isRateLimited } from '@/lib/rateLimit';
 import { getClientIp } from '@/lib/clientIp';
 import { STAY_TYPES, type StayType } from '@/types/stay';
@@ -104,7 +105,8 @@ export async function GET(request: Request) {
       }
       // Never publicly cached: a property owner's exclusion must take effect on the next request, not
       // after a CDN/browser cache (the generic CACHE_HEADERS above keep a day) has expired.
-      return NextResponse.json({ stays, meta }, { status: 200, headers: { 'Cache-Control': 'private, no-store' } });
+      // In display-time photo mode the stored (expiring) photo names are not sent to the browser at all.
+      return NextResponse.json({ stays: stays.map(withoutLegacyPhotosInDisplayMode), meta }, { status: 200, headers: { 'Cache-Control': 'private, no-store' } });
     }
 
     if (isCuratedBrowseRequest) {

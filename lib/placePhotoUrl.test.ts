@@ -85,3 +85,21 @@ describe('snapPhotoWidth / canonical buckets', () => {
     }
   });
 });
+
+describe('display-time (by-place) URLs', () => {
+  it('placePhotoByPlaceUrl carries place, index, bucketed width and an optional valid match key, never a photo name', async () => {
+    const { placePhotoByPlaceUrl } = await import('./placePhotoUrl');
+    expect(placePhotoByPlaceUrl('ChIJabc', 2, 1000, '0123456789abcdef')).toBe('/api/places/photo/by-place?placeId=ChIJabc&i=2&w=1200&k=0123456789abcdef');
+    expect(placePhotoByPlaceUrl('ChIJabc', 0, 640)).toBe('/api/places/photo/by-place?placeId=ChIJabc&i=0&w=640');
+    expect(placePhotoByPlaceUrl('ChIJabc', 0, 640, 'not-a-key')).not.toContain('&k=');
+  });
+
+  it('withPhotoWidth rewrites only w on a by-place URL and keeps placeId, index and key', () => {
+    const url = '/api/places/photo/by-place?placeId=ChIJabc&i=3&w=1200&k=0123456789abcdef';
+    expect(withPhotoWidth(url, 192)).toBe('/api/places/photo/by-place?placeId=ChIJabc&i=3&w=192&k=0123456789abcdef');
+  });
+
+  it('withPhotoWidth still leaves foreign URLs untouched', () => {
+    expect(withPhotoWidth('https://example.com/a.jpg', 192)).toBe('https://example.com/a.jpg');
+  });
+});

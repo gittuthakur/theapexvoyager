@@ -40,6 +40,27 @@ describe('GET /api/destinations?type=stays — exclusion safety', () => {
     expect((await response.json()).stays).toHaveLength(1);
   });
 
+  it('display-time mode: the JSON carries no stored photo names but keeps rating, count and Maps link', async () => {
+    const stored = ['/api/places/photo?name=places%2FChIJa%2Fphotos%2Fp0&w=1200'];
+    getStaysForDestinationMock.mockResolvedValue({
+      stays: [{ placeId: 'a', name: 'A', photos: stored, cardPhotoMode: 'display-time', rating: 4.6, userRatingCount: 120, googleMapsUri: 'https://maps.google.com/?cid=1' }],
+      meta: []
+    });
+
+    const body = await (await call('location=Manali&destinationSlug=manali')).json();
+
+    expect(body.stays[0].photos).toEqual([]);
+    expect(JSON.stringify(body)).not.toMatch(/photo\?name|photos%2F/);
+    expect(body.stays[0]).toMatchObject({ rating: 4.6, userRatingCount: 120, googleMapsUri: 'https://maps.google.com/?cid=1', cardPhotoMode: 'display-time' });
+  });
+
+  it('legacy mode: the JSON is exactly what the library returned (photos untouched)', async () => {
+    const stored = ['/api/places/photo?name=places%2FChIJa%2Fphotos%2Fp0&w=1200', '/api/places/photo?name=places%2FChIJa%2Fphotos%2Fp1&w=1200'];
+    getStaysForDestinationMock.mockResolvedValue({ stays: [{ placeId: 'a', photos: stored }], meta: [] });
+
+    expect((await (await call('location=Manali&destinationSlug=manali')).json()).stays[0].photos).toEqual(stored);
+  });
+
   it('serves stays from the cache read only (no other destination or provider helper is called)', async () => {
     getStaysForDestinationMock.mockResolvedValue({ stays: [], meta: [] });
     await call('location=Kaza&destinationSlug=spiti-valley');

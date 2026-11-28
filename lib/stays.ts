@@ -2,6 +2,7 @@ import { connectDB } from '@/lib/mongodb';
 import { PlaceCache, type PlaceCacheDocument } from '@/models/PlaceCache';
 import { searchStays, placeName, placePhotoUrls, placeCoordinates, type RawGooglePlace } from '@/lib/googlePlaces';
 import { isLocalDevelopment } from '@/lib/env';
+import { cardPhotoModeFor } from '@/lib/photoDisplayMode';
 import { classifyVerifiedStayType, verifiedStayTypeMongoExpr, hasTreehouseNameEvidence, treehouseNameMongoPattern } from '@/lib/stayClassification';
 import { ExclusionLookupError, filterOutExcludedPlaces, getActiveExclusionSet } from '@/services/properties/propertyExclusion.service';
 import { getPublishedDestinationRefs } from '@/lib/destinations';
@@ -125,6 +126,8 @@ export function toStay(
     rating: doc.rating,
     userRatingCount: doc.userRatingCount,
     photos: storedPhotoUrls(doc.photos),
+    // Absent in the default legacy mode, so the Stay is byte-for-byte what it was before this feature existed.
+    ...(cardPhotoModeFor(doc.placeId, process.env) ? { cardPhotoMode: cardPhotoModeFor(doc.placeId, process.env) } : {}),
     customPrice: doc.customPrice,
     destinationSlug: doc.destinationSlug,
     updatedAt: new Date(doc.updatedAt).toISOString(),
