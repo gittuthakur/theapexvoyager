@@ -7,11 +7,15 @@ import { InMemoryRateStore, clientKey, isPhotoProxyDisabled, photoRateLimits } f
 import { DISPLAY_PLACE_ID_PATTERN, isPlaceIdAllowedForDisplay, photoDisplayMode } from '@/lib/photoDisplayMode';
 import { createConcurrencyGate, createFreshPhotoFetcher, eligiblePlaceIdFrom, type FreshPhotosFailureReason } from '@/lib/googlePhotoFetch';
 import { getStayByPlaceIdResult } from '@/lib/stays';
+import { PHOTO_DISPLAY_KEY_PATTERN, photoDisplayKey } from '@/lib/photoDisplayKey';
 
 /**
  * DISPLAY-TIME Google photo route for stay listing cards.
  *
- *   GET /api/places/photo/by-place?placeId=<PLACE_ID>&i=<0-9>&w=<width bucket>
+ *   GET /api/places/photo/by-place?placeId=<PLACE_ID>&i=<0-9>&w=<width bucket>[&k=<16-hex match key>]
+ *
+ * Used by the listing cards (no `k`) and by the property detail gallery (with `k`, see lib/photoDisplayKey.ts). Neither ever
+ * puts a Google photo name in HTML or in a URL.
  *
  * Google: "You cannot cache a photo name. Also, the name can expire." So no photo name is ever stored. Per request this
  * route (1) checks the Place ID is a public, non-excluded stay we already hold (the same `getStayByPlaceIdResult` check the
@@ -22,7 +26,7 @@ import { getStayByPlaceIdResult } from '@/lib/stays';
  *
  * Only photos whose author credit is fully readable are served (lib/googlePhotoFetch.ts drops the rest), and the credit is
  * returned in `X-Photo-Credit` so the response itself shows the photo is credited. The listing card links to the property
- * page, which shows the full credited gallery.
+ * page, which shows the full credited gallery (author, photo-specific Google Maps link, report link, Google logo).
  *
  * Caching: the image response is `no-store`. Google's applicable terms for caching Places photo BYTES could not be read
  * (the Service Specific Terms page did not load), so no cache lifetime is claimed. Errors carry short lifetimes because
@@ -33,7 +37,7 @@ import { getStayByPlaceIdResult } from '@/lib/stays';
  */
 
 const PLACES_API_BASE = 'https://places.googleapis.com/v1';
-const ALLOWED_PARAMS = new Set(['placeId', 'i', 'w']);
+const ALLOWED_PARAMS = new Set(['placeId', 'i', 'w', 'k']);
 const MINUTE_MS = 60_000;
 const MEDIA_TIMEOUT_MS = 8000;
 const MAX_CREDIT_CHARS = 200;
@@ -96,6 +100,10 @@ export async function GET(request: Request) {
   if (!/^[0-9]$/.test(rawIndex)) return error(400, 'Invalid photo index', 'public, max-age=60, s-maxage=300');
   const index = Number(rawIndex);
 
+  // Optional match key (detail page): the photo at this position must still be the one whose credit the page showed.
+  const matchKey = searchParams.get('k');
+  if (matchKey !== null && !PHOTO_DISPLAY_KEY_PATTERN.test(matchKey)) return error(400, 'Invalid photo key', 'public, max-age=60, s-maxage=300');
+
   const rawWidth = searchParams.get('w');
   if (rawWidth !== null && !/^\d{1,6}$/.test(rawWidth)) return error(400, 'Invalid width', 'public, max-age=60, s-maxage=300');
   const width = snapPhotoWidth(rawWidth);
@@ -105,6 +113,7 @@ export async function GET(request: Request) {
     target.searchParams.set('placeId', placeId);
     target.searchParams.set('i', String(index));
     target.searchParams.set('w', String(width));
+    if (matchKey !== null) target.searchParams.set('k', matchKey);
     return NextResponse.redirect(target, { status: 307, headers: { 'Cache-Control': 'public, max-age=3600, s-maxage=3600' } });
   }
 
@@ -145,6 +154,10 @@ export async function GET(request: Request) {
     }
     const photo = details.photos[index];
     if (!photo) return error(404, 'Photo not found', SHORT_NOT_FOUND);
+    // Detail-page images: serve only if this position still holds the photo whose credit the page displayed. A mismatch
+    // (Google reordered its list between the page render and this request) shows no image rather than one with the wrong credit.
+    // This check precedes the media request, so a mismatch costs no Place Photos request.
+    if (matchKey !== null && (!photo.googleMapsUri || photoDisplayKey(photo.googleMapsUri) !== matchKey)) return error(404, 'Photo not found', SHORT_NOT_FOUND);
 
     // Request 2 of 2: the image, from the name Google returned a moment ago. The key travels only in a header.
     console.info('[photo-display] google-request kind=photo-media');

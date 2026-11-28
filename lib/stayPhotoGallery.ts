@@ -2,6 +2,9 @@ import { photoMetadataMode } from '@/lib/photoMetadataMode';
 import type { EligiblePlaceId, FreshPhotosInput, FreshPhotosResult } from '@/lib/googlePhotoFetch';
 import type { GooglePhotoAuthorAttribution } from '@/lib/googlePhotoAttribution';
 import { toProxiedPhotoUrl } from '@/lib/googlePlaces';
+import { isPlaceIdAllowedForDisplay, photoDisplayMode } from '@/lib/photoDisplayMode';
+import { placePhotoByPlaceUrl } from '@/lib/placePhotoUrl';
+import { photoDisplayKey } from '@/lib/photoDisplayKey';
 
 /**
  * D1-3b — decides what the Google-sourced property gallery shows, per GOOGLE_PHOTO_METADATA_MODE.
@@ -49,14 +52,23 @@ export interface StayGalleryDeps {
 }
 
 const PHOTO_WIDTH_PX = 1200;
+const MAX_DISPLAY_POSITION = 9;
 
 export async function resolveStayGallery(input: { eligiblePlaceId: EligiblePlaceId | null }, deps: StayGalleryDeps): Promise<StayGalleryResolution> {
   const mode = photoMetadataMode(deps.env);
-  if (mode === 'legacy') return { kind: 'legacy' };
+  // GOOGLE_PHOTO_METADATA_MODE=disabled stays the kill switch for every detail-page Google call, display-time included.
   if (mode === 'disabled') return { kind: 'unavailable' };
+
+  // Display-time photo mode (GOOGLE_PHOTO_DISPLAY_MODE=display-time) does NOT need GOOGLE_PHOTO_METADATA_MODE=fresh. It never
+  // uses a stored photo URL and never puts a Google photo name in the page: credits come from one fresh Place Details
+  // response, and each image is requested by Place ID + position through /api/places/photo/by-place (no-store).
+  const displayTime = photoDisplayMode(deps.env) === 'display-time';
+  if (mode === 'legacy' && !displayTime) return { kind: 'legacy' };
 
   // Fresh mode. Never reach Google for a place that did not pass the eligibility and owner-exclusion checks.
   if (!input.eligiblePlaceId) return { kind: 'unavailable' };
+  // A place outside the pilot allowlist gets the placeholder, never its stored (expired) photos, and costs no Google request.
+  if (displayTime && !isPlaceIdAllowedForDisplay(input.eligiblePlaceId, deps.env)) return { kind: 'placeholder' };
 
   let clientKey = 'unknown';
   try {
@@ -77,12 +89,17 @@ export async function resolveStayGallery(input: { eligiblePlaceId: EligiblePlace
   }
 
   const photos: CreditedGalleryPhoto[] = [];
-  for (const photo of result.photos) {
+  for (const [position, photo] of result.photos.entries()) {
     // Hidden, not repaired: a photo with no valid photo-specific Google Maps link cannot satisfy the "view the source
     // photo on Google Maps" requirement, and an incomplete credit never gets here (the fetcher already withheld it).
     if (!photo.googleMapsUri || photo.authorsDropped > 0) continue;
+    // The by-place route addresses a photo by its position (0-9); anything beyond that cannot be requested, so it is not shown.
+    if (displayTime && position > MAX_DISPLAY_POSITION) continue;
     photos.push({
-      src: toProxiedPhotoUrl(photo.name, PHOTO_WIDTH_PX),
+      // Display-time: Place ID + position + one-way match key. No photo name ever leaves the server.
+      src: displayTime
+        ? placePhotoByPlaceUrl(input.eligiblePlaceId, position, PHOTO_WIDTH_PX, photoDisplayKey(photo.googleMapsUri))
+        : toProxiedPhotoUrl(photo.name, PHOTO_WIDTH_PX),
       authors: photo.authorAttributions,
       googleMapsUri: photo.googleMapsUri,
       ...(photo.flagContentUri ? { flagContentUri: photo.flagContentUri } : {})

@@ -51,6 +51,7 @@ export function clampPhotoWidth(value: unknown): number {
  */
 export function withPhotoWidth(photoUrl: string, widthPx: number): string {
   // The emitted width is always one of PHOTO_WIDTH_BUCKETS (see snapPhotoWidth below).
+  if (typeof photoUrl === 'string' && photoUrl.startsWith(BY_PLACE_PREFIX)) return withByPlacePhotoWidth(photoUrl, widthPx);
   if (typeof photoUrl !== 'string' || !photoUrl.startsWith('/api/places/photo?')) return photoUrl;
   try {
     // Second arg is a required-but-unused base for relative-URL parsing only — never
@@ -81,7 +82,22 @@ export function snapPhotoWidth(value: unknown): number {
  * It carries a Place ID (which may be stored) and never a photo name (which may not): the server obtains a fresh name from
  * Google for each request. The width is snapped to a bucket like every other photo URL.
  */
-export function placePhotoByPlaceUrl(placeId: string, index: number, widthPx: number): string {
+export function placePhotoByPlaceUrl(placeId: string, index: number, widthPx: number, matchKey?: string): string {
   const safeIndex = Number.isInteger(index) && index >= 0 && index <= 9 ? index : 0;
-  return `/api/places/photo/by-place?placeId=${encodeURIComponent(placeId)}&i=${safeIndex}&w=${snapPhotoWidth(widthPx)}`;
+  const key = matchKey && /^[0-9a-f]{16}$/.test(matchKey) ? `&k=${matchKey}` : '';
+  return `/api/places/photo/by-place?placeId=${encodeURIComponent(placeId)}&i=${safeIndex}&w=${snapPhotoWidth(widthPx)}${key}`;
+}
+
+const BY_PLACE_PREFIX = '/api/places/photo/by-place?';
+
+/** Rewrites only the `w` of one of this app's own display-time photo URLs (placeId, index and match key untouched). */
+export function withByPlacePhotoWidth(photoUrl: string, widthPx: number): string {
+  if (typeof photoUrl !== 'string' || !photoUrl.startsWith(BY_PLACE_PREFIX)) return photoUrl;
+  try {
+    const url = new URL(photoUrl, 'http://localhost');
+    url.searchParams.set('w', String(snapPhotoWidth(widthPx)));
+    return `${url.pathname}${url.search}`;
+  } catch {
+    return photoUrl;
+  }
 }

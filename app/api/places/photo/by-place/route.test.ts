@@ -266,3 +266,61 @@ describe('persistence guard (static)', () => {
     }
   });
 });
+
+describe('detail-page match key (k)', () => {
+  const MAPS = 'https://www.google.com/maps/place/@1,1,3a/photos/one';
+  const withMaps = (extra: Record<string, unknown> = {}) => [{ name: PHOTO_NAME, authorAttributions: [{ displayName: 'Jane Doe', uri: 'https://maps.google.com/contrib/1' }], googleMapsUri: MAPS, ...extra }];
+
+  it('serves the image when the photo at that position still matches the key', async () => {
+    await load();
+    const { photoDisplayKey } = await import('@/lib/photoDisplayKey');
+    const fetchSpy = mockGoogle(detailsResponse(withMaps()));
+    vi.spyOn(console, 'info').mockImplementation(() => {});
+    const res = await GET(req(q(`&k=${photoDisplayKey(MAPS)}`)));
+    expect(res.status).toBe(200);
+    expect(res.headers.get('cache-control')).toBe('no-store');
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('answers 404 with NO media request when Google now has a different photo at that position', async () => {
+    await load();
+    const { photoDisplayKey } = await import('@/lib/photoDisplayKey');
+    const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValueOnce(detailsResponse(withMaps({ googleMapsUri: `${MAPS}-changed` })));
+    vi.spyOn(console, 'info').mockImplementation(() => {});
+    const res = await GET(req(q(`&k=${photoDisplayKey(MAPS)}`)));
+    expect(res.status).toBe(404);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(String(fetchSpy.mock.calls[0][0])).not.toContain('/media');
+  });
+
+  it('answers 404 with no media request when the photo carries no Maps link to match', async () => {
+    await load();
+    const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValueOnce(detailsResponse(withMaps({ googleMapsUri: undefined })));
+    vi.spyOn(console, 'info').mockImplementation(() => {});
+    expect((await GET(req(q('&k=0123456789abcdef')))).status).toBe(404);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects a malformed key before the database or Google, and a canonical-width redirect keeps the key', async () => {
+    await load();
+    const fetchSpy = vi.spyOn(global, 'fetch');
+    expect((await GET(req(q('&k=zzz')))).status).toBe(400);
+    expect(lookup).not.toHaveBeenCalled();
+    const redirect = await GET(req(`placeId=${PLACE}&i=0&w=600&k=0123456789abcdef`));
+    expect(redirect.status).toBe(307);
+    expect(redirect.headers.get('location')).toContain('k=0123456789abcdef');
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('the response stays no-store and no photo name, token or key is logged', async () => {
+    await load();
+    const { photoDisplayKey } = await import('@/lib/photoDisplayKey');
+    mockGoogle(detailsResponse(withMaps()));
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {});
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const res = await GET(req(q(`&k=${photoDisplayKey(MAPS)}`)));
+    expect(res.headers.get('cache-control')).toBe('no-store');
+    const logged = [...info.mock.calls, ...error.mock.calls].flat().join('\n');
+    for (const secret of [PHOTO_NAME, 'SECRETTOKEN', KEY]) expect(logged).not.toContain(secret);
+  });
+});
